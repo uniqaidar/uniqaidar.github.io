@@ -77,7 +77,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
         .header-logo {
     position: absolute;
     top: 65%;
-    right: -50px; 
+    right: 10px;
     transform: translateY(-50%);
     z-index: 2;
 }
@@ -140,81 +140,6 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
     content: "";
     margin-right: 8px;
 }
-       .filter-container {
-    display: flex;        
-    align-items: center;  
-    background: #1a1a1a;
-    padding: 10px 15px;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    overflow: hidden;   
-    gap: 10px;           
-}
-
-.filter-label {
-    white-space: nowrap;  
-    color: white;
-    font-weight: bold;
-    font-size: 0.95rem;
-    padding-left: 10px;
-    border-left: 2px solid rgba(255,255,255,0.2);
-    cursor: default;
-    pointer-events: none;
-    z-index: 1001;        
-}
-
-.marquee-wrapper {
-    overflow: visible !important; 
-    width: 100%;
-}
-
-.marquee-content {
-    display: flex !important;
-    flex-wrap: wrap !important;   
-    justify-content: center;     
-    gap: 10px;                 
-    animation: none !important;  
-    width: 100% !important;
-}
-
-.marquee-content:hover {
-    animation-play-state: paused;
-}
-
-
-@keyframes scroll-left {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-}
-
-
- .filter-btn {
-    padding: 0 18px;    
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border-radius: 20px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 0.85rem;
-    transition: all 0.3s ease;
-    
-    white-space: nowrap; 
-    display: inline-flex; 
-    align-items: center;  
-    height: 35px;
-    flex-shrink: 0;    
-}
-
-.filter-btn.active, .filter-btn:hover {
-    background: #3498db;
-    color: white;
-    border-color: #3498db;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
-}
-
 .font-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -231,6 +156,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
     flex-direction: column;
     border: 1px solid #eee;
     transition: 0.3s;
+    box-sizing: border-box;
 }
         .preview {
             font-size: 2.5rem;
@@ -735,7 +661,7 @@ footer strong {
     border-radius: 20px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 0.85rem;
+    font-size: 1rem;
     transition: all 0.3s ease;
     flex-shrink: 0; 
     white-space: nowrap;
@@ -881,74 +807,99 @@ footer strong {
     margin-top: 15px;
 }
 
+/* ── مۆبایل: کەمتر لە 768px ─────────────────────────── */
 @media (max-width: 768px) {
-    .header-content {
-        display: flex;
-        flex-direction: column; 
-        align-items: center;
-        text-align: center;
-        height: auto !important; 
-        padding: 20px 10px;
+
+    /* هێدەر */
+    .header {
+        padding: 12px 10px 15px;
     }
 
     .header h1 {
-        position: static !important; 
-        margin: 10px 0 !important;
-        font-size: 1.3rem !important;
-        line-height: 1.4;
+        font-size: 1.2rem !important;
+        height: auto !important;
+        padding: 8px 0;
     }
 
-    .header img, .logo {
-        max-width: 80px; 
-        margin-bottom: 10px;
+    /* لۆگۆ: ئاشکرا نەکە لە مۆبایل */
+    .header-logo {
+        display: none;
     }
 
-    .search-container {
-        width: 90% !important;
-        position: static !important;
-        margin: 15px auto !important;
-    }
-
-    .social-links, .header-actions {
-        display: flex;
+    /* لینکە کۆمەڵایەتییەکان */
+    .social-links {
+        position: static;
         justify-content: center;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 10px;
-        position: static !important;
-    }
-}
-    .header-actions {
-        flex-direction: column;
-        width: 100%;
-        align-items: center;
-        gap: 8px;
+        margin-bottom: 8px;
     }
 
+    /* دوگمەی داگرتن */
     .header-btn {
-        width: 80%; 
-        justify-content: center;
+        font-size: 0.8rem;
+        padding: 7px 12px;
     }
 
-    .filter-group {
-        gap: 8px;
-        padding: 5px;
+    /* بۆکسی تاقیکردنەوە */
+    #test-input {
+        width: 95%;
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+
+    /* فلتەر بار */
+    .filter-container {
+        padding: 10px;
+        border-radius: 0;
+        max-width: 100%;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .filter-btn {
-        font-size: 0.75rem !important; 
-        padding: 0 12px !important;
-        height: 30px !important;
+        font-size: 0.78rem;
+        padding: 0 12px;
+        height: 32px;
     }
 
-    .fonts-grid {
-        grid-template-columns: 1fr; 
+    /* گریدی کارتەکان: یەک ستوون */
+    .font-grid {
+        grid-template-columns: 1fr;
         gap: 15px;
-        padding: 10px;
+        padding: 15px;
     }
-    
-    .font-card {
-        margin: 0 5px; 
+
+    /* فۆنتی پیشاندان لە کارت */
+    .preview {
+        font-size: 1.8rem;
+    }
+
+    /* مۆدال */
+    .modal-content {
+        margin: 20% auto;
+        width: 90%;
+        padding: 25px 15px;
+    }
+}
+
+/* ── تابلێت: 768px - 1024px ─────────────────────────── */
+@media (min-width: 768px) and (max-width: 1024px) {
+
+    .header-logo img {
+        height: 130px;
+        width: 210px;
+    }
+
+    .font-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .filter-container {
+        max-width: 100%;
+        width: 100%;
+        border-radius: 0;
+        box-sizing: border-box;
     }
 }
 
@@ -1002,7 +953,7 @@ footer strong {
 <div class="filter-container">
     <div class="marquee-wrapper">
         <div class="marquee-content">
-            <button class="filter-btn" onclick="filterFonts('nwe', this)">نوێ</button>
+            <button class="filter-btn active" onclick="filterFonts('nwe', this)">نوێ</button>
             <button class="filter-btn" onclick="filterFonts('all', this)">هەمووی</button>
             <button class="filter-btn" onclick="filterFonts('some', this)">ئه‌وانی تر</button>
             <button class="filter-btn" onclick="filterFonts('dstnus', this)">دەستنووس</button>
@@ -1013,7 +964,7 @@ footer strong {
             <button class="filter-btn" onclick="filterFonts('xal', this)">خاڵ</button>
             <button class="filter-btn" onclick="filterFonts('ktib', this)">کتێب</button>
             <button class="filter-btn" onclick="filterFonts('mndalan', this)">منداڵان</button>
-            <button class="filter-btn active" onclick="filterFonts('nastaliq', this)">نەستەلیق</button>
+            <button class="filter-btn" onclick="filterFonts('nastaliq', this)">نەستەلیق</button>
             <button class="filter-btn" onclick="filterFonts('semic', this)">سەمیک</button>
             <button class="filter-btn" onclick="filterFonts('jrnus', this)">ژێرنووس</button>
             <button class="filter-btn" onclick="filterFonts('media', this)">میدیا</button>
@@ -1033,583 +984,950 @@ const fonts = [
         file: "uniqaidar_akarabesque", 
         path: "fonts/ali/uniqaidar_akarabesque.ttf", 
         zip: "fonts/ali/uniqaidar_akarabesque.zip", 
-        category: "ali" 
-    },
+        category: "ali",
+        preview: "هونەری خوشەویستی" },
     { 
         name: "uniqaidar_akalwand", 
         file: "uniqaidar_akalwand", 
         path: "fonts/ali/uniqaidar_akalwand.ttf", 
         zip: "fonts/ali/uniqaidar_akalwand.zip", 
-        category: "ali" 
-    },
+        category: "ali",
+        preview: "گوڵانی بەهار" },
 
-    { name: "uniqaidar_akalwand", file: "uniqaidar_akalwand", path: "fonts/ali/uniqaidar_akalwand.ttf", zip: "fonts/ali/uniqaidar_akalwand.zip", category: "ali" },
-    { name: "uniqaidar_akarabesque", file: "uniqaidar_akarabesque", path: "fonts/ali/uniqaidar_akarabesque.ttf", zip: "fonts/ali/uniqaidar_akarabesque.zip", category: "ali" },
-    { name: "uniqaidar_akazzam", file: "uniqaidar_akazzam", path: "fonts/ali/uniqaidar_akazzam.ttf", zip: "fonts/ali/uniqaidar_akazzam.zip", category: "ali" },
-    { name: "uniqaidar_akhasan", file: "uniqaidar_akhasan", path: "fonts/ali/uniqaidar_akhasan.ttf", zip: "fonts/ali/uniqaidar_akhasan.zip", category: "ali" },
-    { name: "uniqaidar_akhbaria", file: "uniqaidar_akhbaria", path: "fonts/ali/uniqaidar_akhbaria.ttf", zip: "fonts/ali/uniqaidar_akhbaria.zip", category: "ali" },
-    { name: "uniqaidar_akjiddah", file: "uniqaidar_akjiddah", path: "fonts/ali/uniqaidar_akjiddah.ttf", zip: "fonts/ali/uniqaidar_akjiddah.zip", category: "ali" },
-    { name: "uniqaidar_akkhalid", file: "uniqaidar_akkhalid", path: "fonts/ali/uniqaidar_akkhalid.ttf", zip: "fonts/ali/uniqaidar_akkhalid.zip", category: "ali" },
-    { name: "uniqaidar_akkhanaqin", file: "uniqaidar_akkhanaqin", path: "fonts/ali/uniqaidar_akkhanaqin.ttf", zip: "fonts/ali/uniqaidar_akkhanaqin.zip", category: "ali" },
-    { name: "uniqaidar_aksahifa", file: "uniqaidar_aksahifa", path: "fonts/ali/uniqaidar_aksahifa.ttf", zip: "fonts/ali/uniqaidar_aksahifa.zip", category: "ali" },
-    { name: "uniqaidar_aksahifab", file: "uniqaidar_aksahifab", path: "fonts/ali/uniqaidar_aksahifab.ttf", zip: "fonts/ali/uniqaidar_aksahifab.zip", category: "ali" },
-    { name: "uniqaidar_aksamik_001", file: "uniqaidar_aksamik_001", path: "fonts/ali/uniqaidar_aksamik_001.ttf", zip: "fonts/ali/uniqaidar_aksamik_001.zip", category: "ali" },
-    { name: "uniqaidar_aksamik_002", file: "uniqaidar_aksamik_002", path: "fonts/ali/uniqaidar_aksamik_002.ttf", zip: "fonts/ali/uniqaidar_aksamik_002.zip", category: "ali" },
-    { name: "uniqaidar_aksayid", file: "uniqaidar_aksayid", path: "fonts/ali/uniqaidar_aksayid.ttf", zip: "fonts/ali/uniqaidar_aksayid.zip", category: "ali" },
-    { name: "uniqaidar_aksharif", file: "uniqaidar_aksharif", path: "fonts/ali/uniqaidar_aksharif.ttf", zip: "fonts/ali/uniqaidar_aksharif.zip", category: "ali" },
-    { name: "uniqaidar_aksharifb", file: "uniqaidar_aksharifb", path: "fonts/ali/uniqaidar_aksharifb.ttf", zip: "fonts/ali/uniqaidar_aksharifb.zip", category: "ali" },
-    { name: "uniqaidar_aksulaimania", file: "uniqaidar_aksulaimania", path: "fonts/ali/uniqaidar_aksulaimania.ttf", zip: "fonts/ali/uniqaidar_aksulaimania.zip", category: "ali" },
-    { name: "uniqaidar_aktraditional", file: "uniqaidar_aktraditional", path: "fonts/ali/uniqaidar_aktraditional.ttf", zip: "fonts/ali/uniqaidar_aktraditional.zip", category: "ali" },
-    { name: "uniqaidar_bilal_000", file: "uniqaidar_bilal_000", path: "fonts/dstnus/uniqaidar_bilal_000.ttf", zip: "fonts/dstnus/uniqaidar_bilal_000.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_001", file: "uniqaidar_bilal_001", path: "fonts/dstnus/uniqaidar_bilal_001.ttf", zip: "fonts/dstnus/uniqaidar_bilal_001.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_002", file: "uniqaidar_bilal_002", path: "fonts/dstnus/uniqaidar_bilal_002.ttf", zip: "fonts/dstnus/uniqaidar_bilal_002.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_003", file: "uniqaidar_bilal_003", path: "fonts/dstnus/uniqaidar_bilal_003.ttf", zip: "fonts/dstnus/uniqaidar_bilal_003.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_004", file: "uniqaidar_bilal_004", path: "fonts/dstnus/uniqaidar_bilal_004.ttf", zip: "fonts/dstnus/uniqaidar_bilal_004.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_005", file: "uniqaidar_bilal_005", path: "fonts/dstnus/uniqaidar_bilal_005.ttf", zip: "fonts/dstnus/uniqaidar_bilal_005.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_006", file: "uniqaidar_bilal_006", path: "fonts/dstnus/uniqaidar_bilal_006.ttf", zip: "fonts/dstnus/uniqaidar_bilal_006.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_007", file: "uniqaidar_bilal_007", path: "fonts/dstnus/uniqaidar_bilal_007.ttf", zip: "fonts/dstnus/uniqaidar_bilal_007.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_008", file: "uniqaidar_bilal_008", path: "fonts/dstnus/uniqaidar_bilal_008.ttf", zip: "fonts/dstnus/uniqaidar_bilal_008.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_009", file: "uniqaidar_bilal_009", path: "fonts/dstnus/uniqaidar_bilal_009.ttf", zip: "fonts/dstnus/uniqaidar_bilal_009.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_010", file: "uniqaidar_bilal_010", path: "fonts/dstnus/uniqaidar_bilal_010.ttf", zip: "fonts/dstnus/uniqaidar_bilal_010.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_011", file: "uniqaidar_bilal_011", path: "fonts/dstnus/uniqaidar_bilal_011.ttf", zip: "fonts/dstnus/uniqaidar_bilal_011.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_012", file: "uniqaidar_bilal_012", path: "fonts/dstnus/uniqaidar_bilal_012.ttf", zip: "fonts/dstnus/uniqaidar_bilal_012.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_013", file: "uniqaidar_bilal_013", path: "fonts/dstnus/uniqaidar_bilal_013.ttf", zip: "fonts/dstnus/uniqaidar_bilal_013.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_014", file: "uniqaidar_bilal_014", path: "fonts/dstnus/uniqaidar_bilal_014.ttf", zip: "fonts/dstnus/uniqaidar_bilal_014.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_015", file: "uniqaidar_bilal_015", path: "fonts/dstnus/uniqaidar_bilal_015.ttf", zip: "fonts/dstnus/uniqaidar_bilal_015.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_016", file: "uniqaidar_bilal_016", path: "fonts/dstnus/uniqaidar_bilal_016.ttf", zip: "fonts/dstnus/uniqaidar_bilal_016.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_016_py", file: "uniqaidar_bilal_016_py", path: "fonts/dstnus/uniqaidar_bilal_016_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_016_py.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_017", file: "uniqaidar_bilal_017", path: "fonts/dstnus/uniqaidar_bilal_017.ttf", zip: "fonts/dstnus/uniqaidar_bilal_017.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_017_py", file: "uniqaidar_bilal_017_py", path: "fonts/dstnus/uniqaidar_bilal_017_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_017_py.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_018", file: "uniqaidar_bilal_018", path: "fonts/dstnus/uniqaidar_bilal_018.ttf", zip: "fonts/dstnus/uniqaidar_bilal_018.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_019", file: "uniqaidar_bilal_019", path: "fonts/dstnus/uniqaidar_bilal_019.ttf", zip: "fonts/dstnus/uniqaidar_bilal_019.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_020", file: "uniqaidar_bilal_020", path: "fonts/dstnus/uniqaidar_bilal_020.ttf", zip: "fonts/dstnus/uniqaidar_bilal_020.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_020_py", file: "uniqaidar_bilal_020_py", path: "fonts/dstnus/uniqaidar_bilal_020_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_020_py.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_021", file: "uniqaidar_bilal_021", path: "fonts/dstnus/uniqaidar_bilal_021.ttf", zip: "fonts/dstnus/uniqaidar_bilal_021.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_021_py", file: "uniqaidar_bilal_021_py", path: "fonts/dstnus/uniqaidar_bilal_021_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_021_py.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_022", file: "uniqaidar_bilal_022", path: "fonts/dstnus/uniqaidar_bilal_022.ttf", zip: "fonts/dstnus/uniqaidar_bilal_022.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_022_py", file: "uniqaidar_bilal_022_py", path: "fonts/dstnus/uniqaidar_bilal_022_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_022_py.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_023", file: "uniqaidar_bilal_023", path: "fonts/dstnus/uniqaidar_bilal_023.ttf", zip: "fonts/dstnus/uniqaidar_bilal_023.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_024", file: "uniqaidar_bilal_024", path: "fonts/dstnus/uniqaidar_bilal_024.ttf", zip: "fonts/dstnus/uniqaidar_bilal_024.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_024_pynh", file: "uniqaidar_bilal_024_pynh", path: "fonts/dstnus/uniqaidar_bilal_024_pynh.ttf", zip: "fonts/dstnus/uniqaidar_bilal_024_pynh.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_025", file: "uniqaidar_bilal_025", path: "fonts/dstnus/uniqaidar_bilal_025.ttf", zip: "fonts/dstnus/uniqaidar_bilal_025.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_026", file: "uniqaidar_bilal_026", path: "fonts/dstnus/uniqaidar_bilal_026.ttf", zip: "fonts/dstnus/uniqaidar_bilal_026.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_026_py", file: "uniqaidar_bilal_026_py", path: "fonts/dstnus/uniqaidar_bilal_026_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_026_py.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_027", file: "uniqaidar_bilal_027", path: "fonts/dstnus/uniqaidar_bilal_027.ttf", zip: "fonts/dstnus/uniqaidar_bilal_027.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_027_trim", file: "uniqaidar_bilal_027_trim", path: "fonts/dstnus/uniqaidar_bilal_027_trim.ttf", zip: "fonts/dstnus/uniqaidar_bilal_027_trim.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_028", file: "uniqaidar_bilal_028", path: "fonts/dstnus/uniqaidar_bilal_028.ttf", zip: "fonts/dstnus/uniqaidar_bilal_028.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_029", file: "uniqaidar_bilal_029", path: "fonts/dstnus/uniqaidar_bilal_029.ttf", zip: "fonts/dstnus/uniqaidar_bilal_029.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_030", file: "uniqaidar_bilal_030", path: "fonts/dstnus/uniqaidar_bilal_030.ttf", zip: "fonts/dstnus/uniqaidar_bilal_030.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_031", file: "uniqaidar_bilal_031", path: "fonts/dstnus/uniqaidar_bilal_031.ttf", zip: "fonts/dstnus/uniqaidar_bilal_031.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_032", file: "uniqaidar_bilal_032", path: "fonts/dstnus/uniqaidar_bilal_032.ttf", zip: "fonts/dstnus/uniqaidar_bilal_032.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_032_py", file: "uniqaidar_bilal_032_py", path: "fonts/dstnus/uniqaidar_bilal_032_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_032_py.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_033", file: "uniqaidar_bilal_033", path: "fonts/dstnus/uniqaidar_bilal_033.ttf", zip: "fonts/dstnus/uniqaidar_bilal_033.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_034", file: "uniqaidar_bilal_034", path: "fonts/dstnus/uniqaidar_bilal_034.ttf", zip: "fonts/dstnus/uniqaidar_bilal_034.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_035", file: "uniqaidar_bilal_035", path: "fonts/dstnus/uniqaidar_bilal_035.ttf", zip: "fonts/dstnus/uniqaidar_bilal_035.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_036", file: "uniqaidar_bilal_036", path: "fonts/dstnus/uniqaidar_bilal_036.ttf", zip: "fonts/dstnus/uniqaidar_bilal_036.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_036_py", file: "uniqaidar_bilal_036_py", path: "fonts/dstnus/uniqaidar_bilal_036_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_036_py.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_037", file: "uniqaidar_bilal_037", path: "fonts/dstnus/uniqaidar_bilal_037.ttf", zip: "fonts/dstnus/uniqaidar_bilal_037.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_038", file: "uniqaidar_bilal_038", path: "fonts/dstnus/uniqaidar_bilal_038.ttf", zip: "fonts/dstnus/uniqaidar_bilal_038.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_038_py", file: "uniqaidar_bilal_038_py", path: "fonts/dstnus/uniqaidar_bilal_038_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_038_py.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_039", file: "uniqaidar_bilal_039", path: "fonts/dstnus/uniqaidar_bilal_039.ttf", zip: "fonts/dstnus/uniqaidar_bilal_039.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_040", file: "uniqaidar_bilal_040", path: "fonts/dstnus/uniqaidar_bilal_040.ttf", zip: "fonts/dstnus/uniqaidar_bilal_040.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_041", file: "uniqaidar_bilal_041", path: "fonts/dstnus/uniqaidar_bilal_041.ttf", zip: "fonts/dstnus/uniqaidar_bilal_041.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_042", file: "uniqaidar_bilal_042", path: "fonts/dstnus/uniqaidar_bilal_042.ttf", zip: "fonts/dstnus/uniqaidar_bilal_042.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_042_py", file: "uniqaidar_bilal_042_py", path: "fonts/dstnus/uniqaidar_bilal_042_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_042_py.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_043", file: "uniqaidar_bilal_043", path: "fonts/dstnus/uniqaidar_bilal_043.ttf", zip: "fonts/dstnus/uniqaidar_bilal_043.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_044", file: "uniqaidar_bilal_044", path: "fonts/dstnus/uniqaidar_bilal_044.ttf", zip: "fonts/dstnus/uniqaidar_bilal_044.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_044_pnlt_", file: "uniqaidar_bilal_044_pnlt_", path: "fonts/dstnus/uniqaidar_bilal_044_pnlt_.ttf", zip: "fonts/dstnus/uniqaidar_bilal_044_pnlt_.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_045", file: "uniqaidar_bilal_045", path: "fonts/dstnus/uniqaidar_bilal_045.ttf", zip: "fonts/dstnus/uniqaidar_bilal_045.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_046", file: "uniqaidar_bilal_046", path: "fonts/dstnus/uniqaidar_bilal_046.ttf", zip: "fonts/dstnus/uniqaidar_bilal_046.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_046_py", file: "uniqaidar_bilal_046_py", path: "fonts/dstnus/uniqaidar_bilal_046_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_046_py.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_047", file: "uniqaidar_bilal_047", path: "fonts/dstnus/uniqaidar_bilal_047.ttf", zip: "fonts/dstnus/uniqaidar_bilal_047.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_048", file: "uniqaidar_bilal_048", path: "fonts/dstnus/uniqaidar_bilal_048.ttf", zip: "fonts/dstnus/uniqaidar_bilal_048.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_049", file: "uniqaidar_bilal_049", path: "fonts/dstnus/uniqaidar_bilal_049.ttf", zip: "fonts/dstnus/uniqaidar_bilal_049.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_049_py", file: "uniqaidar_bilal_049_py", path: "fonts/dstnus/uniqaidar_bilal_049_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_049_py.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_050", file: "uniqaidar_bilal_050", path: "fonts/dstnus/uniqaidar_bilal_050.ttf", zip: "fonts/dstnus/uniqaidar_bilal_050.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_051", file: "uniqaidar_bilal_051", path: "fonts/dstnus/uniqaidar_bilal_051.ttf", zip: "fonts/dstnus/uniqaidar_bilal_051.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_052", file: "uniqaidar_bilal_052", path: "fonts/dstnus/uniqaidar_bilal_052.ttf", zip: "fonts/dstnus/uniqaidar_bilal_052.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_053", file: "uniqaidar_bilal_053", path: "fonts/dstnus/uniqaidar_bilal_053.ttf", zip: "fonts/dstnus/uniqaidar_bilal_053.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_054", file: "uniqaidar_bilal_054", path: "fonts/dstnus/uniqaidar_bilal_054.ttf", zip: "fonts/dstnus/uniqaidar_bilal_054.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_055", file: "uniqaidar_bilal_055", path: "fonts/dstnus/uniqaidar_bilal_055.ttf", zip: "fonts/dstnus/uniqaidar_bilal_055.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_056", file: "uniqaidar_bilal_056", path: "fonts/dstnus/uniqaidar_bilal_056.ttf", zip: "fonts/dstnus/uniqaidar_bilal_056.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_057", file: "uniqaidar_bilal_057", path: "fonts/dstnus/uniqaidar_bilal_057.ttf", zip: "fonts/dstnus/uniqaidar_bilal_057.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_058", file: "uniqaidar_bilal_058", path: "fonts/dstnus/uniqaidar_bilal_058.ttf", zip: "fonts/dstnus/uniqaidar_bilal_058.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_059", file: "uniqaidar_bilal_059", path: "fonts/dstnus/uniqaidar_bilal_059.ttf", zip: "fonts/dstnus/uniqaidar_bilal_059.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_060", file: "uniqaidar_bilal_060", path: "fonts/dstnus/uniqaidar_bilal_060.ttf", zip: "fonts/dstnus/uniqaidar_bilal_060.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_060_py", file: "uniqaidar_bilal_060_py", path: "fonts/dstnus/uniqaidar_bilal_060_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_060_py.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_061", file: "uniqaidar_bilal_061", path: "fonts/dstnus/uniqaidar_bilal_061.ttf", zip: "fonts/dstnus/uniqaidar_bilal_061.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_062", file: "uniqaidar_bilal_062", path: "fonts/dstnus/uniqaidar_bilal_062.ttf", zip: "fonts/dstnus/uniqaidar_bilal_062.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_063", file: "uniqaidar_bilal_063", path: "fonts/dstnus/uniqaidar_bilal_063.ttf", zip: "fonts/dstnus/uniqaidar_bilal_063.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_063_pynkg", file: "uniqaidar_bilal_063_pynkg", path: "fonts/dstnus/uniqaidar_bilal_063_pynkg.ttf", zip: "fonts/dstnus/uniqaidar_bilal_063_pynkg.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_064", file: "uniqaidar_bilal_064", path: "fonts/dstnus/uniqaidar_bilal_064.ttf", zip: "fonts/dstnus/uniqaidar_bilal_064.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_065", file: "uniqaidar_bilal_065", path: "fonts/dstnus/uniqaidar_bilal_065.ttf", zip: "fonts/dstnus/uniqaidar_bilal_065.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_066", file: "uniqaidar_bilal_066", path: "fonts/dstnus/uniqaidar_bilal_066.ttf", zip: "fonts/dstnus/uniqaidar_bilal_066.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_067", file: "uniqaidar_bilal_067", path: "fonts/dstnus/uniqaidar_bilal_067.ttf", zip: "fonts/dstnus/uniqaidar_bilal_067.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_068", file: "uniqaidar_bilal_068", path: "fonts/dstnus/uniqaidar_bilal_068.ttf", zip: "fonts/dstnus/uniqaidar_bilal_068.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_068_ptknh", file: "uniqaidar_bilal_068_ptknh", path: "fonts/dstnus/uniqaidar_bilal_068_ptknh.ttf", zip: "fonts/dstnus/uniqaidar_bilal_068_ptknh.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_069", file: "uniqaidar_bilal_069", path: "fonts/dstnus/uniqaidar_bilal_069.ttf", zip: "fonts/dstnus/uniqaidar_bilal_069.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_070", file: "uniqaidar_bilal_070", path: "fonts/dstnus/uniqaidar_bilal_070.ttf", zip: "fonts/dstnus/uniqaidar_bilal_070.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_070_py", file: "uniqaidar_bilal_070_py", path: "fonts/dstnus/uniqaidar_bilal_070_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_070_py.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_071", file: "uniqaidar_bilal_071", path: "fonts/dstnus/uniqaidar_bilal_071.ttf", zip: "fonts/dstnus/uniqaidar_bilal_071.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_072", file: "uniqaidar_bilal_072", path: "fonts/dstnus/uniqaidar_bilal_072.ttf", zip: "fonts/dstnus/uniqaidar_bilal_072.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_073", file: "uniqaidar_bilal_073", path: "fonts/dstnus/uniqaidar_bilal_073.ttf", zip: "fonts/dstnus/uniqaidar_bilal_073.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_074", file: "uniqaidar_bilal_074", path: "fonts/dstnus/uniqaidar_bilal_074.ttf", zip: "fonts/dstnus/uniqaidar_bilal_074.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_075", file: "uniqaidar_bilal_075", path: "fonts/dstnus/uniqaidar_bilal_075.ttf", zip: "fonts/dstnus/uniqaidar_bilal_075.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_075_pykgnh", file: "uniqaidar_bilal_075_pykgnh", path: "fonts/dstnus/uniqaidar_bilal_075_pykgnh.ttf", zip: "fonts/dstnus/uniqaidar_bilal_075_pykgnh.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_076", file: "uniqaidar_bilal_076", path: "fonts/dstnus/uniqaidar_bilal_076.ttf", zip: "fonts/dstnus/uniqaidar_bilal_076.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_077", file: "uniqaidar_bilal_077", path: "fonts/dstnus/uniqaidar_bilal_077.ttf", zip: "fonts/dstnus/uniqaidar_bilal_077.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_078", file: "uniqaidar_bilal_078", path: "fonts/dstnus/uniqaidar_bilal_078.ttf", zip: "fonts/dstnus/uniqaidar_bilal_078.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_079", file: "uniqaidar_bilal_079", path: "fonts/dstnus/uniqaidar_bilal_079.ttf", zip: "fonts/dstnus/uniqaidar_bilal_079.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_080", file: "uniqaidar_bilal_080", path: "fonts/dstnus/uniqaidar_bilal_080.ttf", zip: "fonts/dstnus/uniqaidar_bilal_080.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_081", file: "uniqaidar_bilal_081", path: "fonts/dstnus/uniqaidar_bilal_081.ttf", zip: "fonts/dstnus/uniqaidar_bilal_081.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_082", file: "uniqaidar_bilal_082", path: "fonts/dstnus/uniqaidar_bilal_082.ttf", zip: "fonts/dstnus/uniqaidar_bilal_082.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_083", file: "uniqaidar_bilal_083", path: "fonts/dstnus/uniqaidar_bilal_083.ttf", zip: "fonts/dstnus/uniqaidar_bilal_083.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_084", file: "uniqaidar_bilal_084", path: "fonts/dstnus/uniqaidar_bilal_084.ttf", zip: "fonts/dstnus/uniqaidar_bilal_084.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_085", file: "uniqaidar_bilal_085", path: "fonts/dstnus/uniqaidar_bilal_085.ttf", zip: "fonts/dstnus/uniqaidar_bilal_085.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_086", file: "uniqaidar_bilal_086", path: "fonts/dstnus/uniqaidar_bilal_086.ttf", zip: "fonts/dstnus/uniqaidar_bilal_086.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_087", file: "uniqaidar_bilal_087", path: "fonts/dstnus/uniqaidar_bilal_087.ttf", zip: "fonts/dstnus/uniqaidar_bilal_087.zip", category: "dstnus" },
-    { name: "uniqaidar_bilal_088", file: "uniqaidar_bilal_088", path: "fonts/dstnus/uniqaidar_bilal_088.ttf", zip: "fonts/dstnus/uniqaidar_bilal_088.zip", category: "dstnus" },
-    { name: "uniqaidar_7emze", file: "uniqaidar_7emze", path: "fonts/hwal/uniqaidar_7emze.ttf", zip: "fonts/hwal/uniqaidar_7emze.zip", category: "hwal" },
-    { name: "uniqaidar_bukra_001", file: "uniqaidar_bukra_001", path: "fonts/hwal/uniqaidar_bukra_001.ttf", zip: "fonts/hwal/uniqaidar_bukra_001.zip", category: "hwal" },
-    { name: "uniqaidar_bukra_002", file: "uniqaidar_bukra_002", path: "fonts/hwal/uniqaidar_bukra_002.ttf", zip: "fonts/hwal/uniqaidar_bukra_002.zip", category: "hwal" },
-    { name: "uniqaidar_bukra_003", file: "uniqaidar_bukra_003", path: "fonts/hwal/uniqaidar_bukra_003.ttf", zip: "fonts/hwal/uniqaidar_bukra_003.zip", category: "hwal" },
-    { name: "uniqaidar_bukra_004", file: "uniqaidar_bukra_004", path: "fonts/hwal/uniqaidar_bukra_004.ttf", zip: "fonts/hwal/uniqaidar_bukra_004.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_000", file: "uniqaidar_hewal_000", path: "fonts/hwal/uniqaidar_hewal_000.ttf", zip: "fonts/hwal/uniqaidar_hewal_000.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_001", file: "uniqaidar_hewal_001", path: "fonts/hwal/uniqaidar_hewal_001.ttf", zip: "fonts/hwal/uniqaidar_hewal_001.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_002", file: "uniqaidar_hewal_002", path: "fonts/hwal/uniqaidar_hewal_002.ttf", zip: "fonts/hwal/uniqaidar_hewal_002.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_003", file: "uniqaidar_hewal_003", path: "fonts/hwal/uniqaidar_hewal_003.ttf", zip: "fonts/hwal/uniqaidar_hewal_003.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_004", file: "uniqaidar_hewal_004", path: "fonts/hwal/uniqaidar_hewal_004.ttf", zip: "fonts/hwal/uniqaidar_hewal_004.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_005", file: "uniqaidar_hewal_005", path: "fonts/hwal/uniqaidar_hewal_005.ttf", zip: "fonts/hwal/uniqaidar_hewal_005.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_006", file: "uniqaidar_hewal_006", path: "fonts/hwal/uniqaidar_hewal_006.ttf", zip: "fonts/hwal/uniqaidar_hewal_006.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_007", file: "uniqaidar_hewal_007", path: "fonts/hwal/uniqaidar_hewal_007.ttf", zip: "fonts/hwal/uniqaidar_hewal_007.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_008", file: "uniqaidar_hewal_008", path: "fonts/hwal/uniqaidar_hewal_008.ttf", zip: "fonts/hwal/uniqaidar_hewal_008.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_009", file: "uniqaidar_hewal_009", path: "fonts/hwal/uniqaidar_hewal_009.ttf", zip: "fonts/hwal/uniqaidar_hewal_009.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_010", file: "uniqaidar_hewal_010", path: "fonts/hwal/uniqaidar_hewal_010.ttf", zip: "fonts/hwal/uniqaidar_hewal_010.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_011", file: "uniqaidar_hewal_011", path: "fonts/hwal/uniqaidar_hewal_011.ttf", zip: "fonts/hwal/uniqaidar_hewal_011.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_012", file: "uniqaidar_hewal_012", path: "fonts/hwal/uniqaidar_hewal_012.ttf", zip: "fonts/hwal/uniqaidar_hewal_012.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_013", file: "uniqaidar_hewal_013", path: "fonts/hwal/uniqaidar_hewal_013.ttf", zip: "fonts/hwal/uniqaidar_hewal_013.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_014", file: "uniqaidar_hewal_014", path: "fonts/hwal/uniqaidar_hewal_014.ttf", zip: "fonts/hwal/uniqaidar_hewal_014.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_015", file: "uniqaidar_hewal_015", path: "fonts/hwal/uniqaidar_hewal_015.ttf", zip: "fonts/hwal/uniqaidar_hewal_015.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_016", file: "uniqaidar_hewal_016", path: "fonts/hwal/uniqaidar_hewal_016.ttf", zip: "fonts/hwal/uniqaidar_hewal_016.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_017", file: "uniqaidar_hewal_017", path: "fonts/hwal/uniqaidar_hewal_017.ttf", zip: "fonts/hwal/uniqaidar_hewal_017.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_018", file: "uniqaidar_hewal_018", path: "fonts/hwal/uniqaidar_hewal_018.ttf", zip: "fonts/hwal/uniqaidar_hewal_018.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_019", file: "uniqaidar_hewal_019", path: "fonts/hwal/uniqaidar_hewal_019.ttf", zip: "fonts/hwal/uniqaidar_hewal_019.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_020", file: "uniqaidar_hewal_020", path: "fonts/hwal/uniqaidar_hewal_020.ttf", zip: "fonts/hwal/uniqaidar_hewal_020.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_021", file: "uniqaidar_hewal_021", path: "fonts/hwal/uniqaidar_hewal_021.ttf", zip: "fonts/hwal/uniqaidar_hewal_021.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_022", file: "uniqaidar_hewal_022", path: "fonts/hwal/uniqaidar_hewal_022.ttf", zip: "fonts/hwal/uniqaidar_hewal_022.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_023", file: "uniqaidar_hewal_023", path: "fonts/hwal/uniqaidar_hewal_023.ttf", zip: "fonts/hwal/uniqaidar_hewal_023.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_024", file: "uniqaidar_hewal_024", path: "fonts/hwal/uniqaidar_hewal_024.ttf", zip: "fonts/hwal/uniqaidar_hewal_024.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_025", file: "uniqaidar_hewal_025", path: "fonts/hwal/uniqaidar_hewal_025.ttf", zip: "fonts/hwal/uniqaidar_hewal_025.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_026", file: "uniqaidar_hewal_026", path: "fonts/hwal/uniqaidar_hewal_026.ttf", zip: "fonts/hwal/uniqaidar_hewal_026.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_027", file: "uniqaidar_hewal_027", path: "fonts/hwal/uniqaidar_hewal_027.ttf", zip: "fonts/hwal/uniqaidar_hewal_027.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_028", file: "uniqaidar_hewal_028", path: "fonts/hwal/uniqaidar_hewal_028.ttf", zip: "fonts/hwal/uniqaidar_hewal_028.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_029", file: "uniqaidar_hewal_029", path: "fonts/hwal/uniqaidar_hewal_029.ttf", zip: "fonts/hwal/uniqaidar_hewal_029.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_030", file: "uniqaidar_hewal_030", path: "fonts/hwal/uniqaidar_hewal_030.ttf", zip: "fonts/hwal/uniqaidar_hewal_030.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_031", file: "uniqaidar_hewal_031", path: "fonts/hwal/uniqaidar_hewal_031.ttf", zip: "fonts/hwal/uniqaidar_hewal_031.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_032", file: "uniqaidar_hewal_032", path: "fonts/hwal/uniqaidar_hewal_032.ttf", zip: "fonts/hwal/uniqaidar_hewal_032.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_033", file: "uniqaidar_hewal_033", path: "fonts/hwal/uniqaidar_hewal_033.ttf", zip: "fonts/hwal/uniqaidar_hewal_033.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_034", file: "uniqaidar_hewal_034", path: "fonts/hwal/uniqaidar_hewal_034.ttf", zip: "fonts/hwal/uniqaidar_hewal_034.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_035", file: "uniqaidar_hewal_035", path: "fonts/hwal/uniqaidar_hewal_035.ttf", zip: "fonts/hwal/uniqaidar_hewal_035.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_036", file: "uniqaidar_hewal_036", path: "fonts/hwal/uniqaidar_hewal_036.ttf", zip: "fonts/hwal/uniqaidar_hewal_036.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_037", file: "uniqaidar_hewal_037", path: "fonts/hwal/uniqaidar_hewal_037.ttf", zip: "fonts/hwal/uniqaidar_hewal_037.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_038", file: "uniqaidar_hewal_038", path: "fonts/hwal/uniqaidar_hewal_038.ttf", zip: "fonts/hwal/uniqaidar_hewal_038.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_039", file: "uniqaidar_hewal_039", path: "fonts/hwal/uniqaidar_hewal_039.ttf", zip: "fonts/hwal/uniqaidar_hewal_039.zip", category: "hwal" },
-    { name: "uniqaidar_hewal_040", file: "uniqaidar_hewal_040", path: "fonts/hwal/uniqaidar_hewal_040.ttf", zip: "fonts/hwal/uniqaidar_hewal_040.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_001", file: "uniqaidar_newsheadline_001", path: "fonts/hwal/uniqaidar_newsheadline_001.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_001.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_002", file: "uniqaidar_newsheadline_002", path: "fonts/hwal/uniqaidar_newsheadline_002.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_002.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_003", file: "uniqaidar_newsheadline_003", path: "fonts/hwal/uniqaidar_newsheadline_003.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_003.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_004", file: "uniqaidar_newsheadline_004", path: "fonts/hwal/uniqaidar_newsheadline_004.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_004.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_004bold", file: "uniqaidar_newsheadline_004bold", path: "fonts/hwal/uniqaidar_newsheadline_004bold.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_004bold.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_005", file: "uniqaidar_newsheadline_005", path: "fonts/hwal/uniqaidar_newsheadline_005.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_005.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_006", file: "uniqaidar_newsheadline_006", path: "fonts/hwal/uniqaidar_newsheadline_006.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_006.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_007", file: "uniqaidar_newsheadline_007", path: "fonts/hwal/uniqaidar_newsheadline_007.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_007.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_008", file: "uniqaidar_newsheadline_008", path: "fonts/hwal/uniqaidar_newsheadline_008.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_008.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_009", file: "uniqaidar_newsheadline_009", path: "fonts/hwal/uniqaidar_newsheadline_009.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_009.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_010", file: "uniqaidar_newsheadline_010", path: "fonts/hwal/uniqaidar_newsheadline_010.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_010.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_011", file: "uniqaidar_newsheadline_011", path: "fonts/hwal/uniqaidar_newsheadline_011.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_011.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_012", file: "uniqaidar_newsheadline_012", path: "fonts/hwal/uniqaidar_newsheadline_012.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_012.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_013", file: "uniqaidar_newsheadline_013", path: "fonts/hwal/uniqaidar_newsheadline_013.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_013.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_014", file: "uniqaidar_newsheadline_014", path: "fonts/hwal/uniqaidar_newsheadline_014.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_014.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_015", file: "uniqaidar_newsheadline_015", path: "fonts/hwal/uniqaidar_newsheadline_015.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_015.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_016", file: "uniqaidar_newsheadline_016", path: "fonts/hwal/uniqaidar_newsheadline_016.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_016.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_017", file: "uniqaidar_newsheadline_017", path: "fonts/hwal/uniqaidar_newsheadline_017.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_017.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_018", file: "uniqaidar_newsheadline_018", path: "fonts/hwal/uniqaidar_newsheadline_018.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_018.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_019", file: "uniqaidar_newsheadline_019", path: "fonts/hwal/uniqaidar_newsheadline_019.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_019.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_019_nv", file: "uniqaidar_newsheadline_019_nv", path: "fonts/hwal/uniqaidar_newsheadline_019_nv.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_019_nv.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_019_r", file: "uniqaidar_newsheadline_019_r", path: "fonts/hwal/uniqaidar_newsheadline_019_r.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_019_r.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_020", file: "uniqaidar_newsheadline_020", path: "fonts/hwal/uniqaidar_newsheadline_020.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_020.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_021", file: "uniqaidar_newsheadline_021", path: "fonts/hwal/uniqaidar_newsheadline_021.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_021.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_022", file: "uniqaidar_newsheadline_022", path: "fonts/hwal/uniqaidar_newsheadline_022.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_022.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_023", file: "uniqaidar_newsheadline_023", path: "fonts/hwal/uniqaidar_newsheadline_023.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_023.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_024", file: "uniqaidar_newsheadline_024", path: "fonts/hwal/uniqaidar_newsheadline_024.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_024.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_025", file: "uniqaidar_newsheadline_025", path: "fonts/hwal/uniqaidar_newsheadline_025.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_025.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_026", file: "uniqaidar_newsheadline_026", path: "fonts/hwal/uniqaidar_newsheadline_026.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_026.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_027", file: "uniqaidar_newsheadline_027", path: "fonts/hwal/uniqaidar_newsheadline_027.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_027.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_028", file: "uniqaidar_newsheadline_028", path: "fonts/hwal/uniqaidar_newsheadline_028.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_028.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_029", file: "uniqaidar_newsheadline_029", path: "fonts/hwal/uniqaidar_newsheadline_029.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_029.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_030", file: "uniqaidar_newsheadline_030", path: "fonts/hwal/uniqaidar_newsheadline_030.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_030.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_031", file: "uniqaidar_newsheadline_031", path: "fonts/hwal/uniqaidar_newsheadline_031.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_031.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_032", file: "uniqaidar_newsheadline_032", path: "fonts/hwal/uniqaidar_newsheadline_032.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_032.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_033", file: "uniqaidar_newsheadline_033", path: "fonts/hwal/uniqaidar_newsheadline_033.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_033.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_034", file: "uniqaidar_newsheadline_034", path: "fonts/hwal/uniqaidar_newsheadline_034.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_034.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_035", file: "uniqaidar_newsheadline_035", path: "fonts/hwal/uniqaidar_newsheadline_035.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_035.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_036", file: "uniqaidar_newsheadline_036", path: "fonts/hwal/uniqaidar_newsheadline_036.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_036.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_036_py", file: "uniqaidar_newsheadline_036_py", path: "fonts/hwal/uniqaidar_newsheadline_036_py.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_036_py.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_036_pym", file: "uniqaidar_newsheadline_036_pym", path: "fonts/hwal/uniqaidar_newsheadline_036_pym.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_036_pym.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_037", file: "uniqaidar_newsheadline_037", path: "fonts/hwal/uniqaidar_newsheadline_037.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_037.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_038", file: "uniqaidar_newsheadline_038", path: "fonts/hwal/uniqaidar_newsheadline_038.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_038.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_039", file: "uniqaidar_newsheadline_039", path: "fonts/hwal/uniqaidar_newsheadline_039.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_039.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_040", file: "uniqaidar_newsheadline_040", path: "fonts/hwal/uniqaidar_newsheadline_040.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_040.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_041", file: "uniqaidar_newsheadline_041", path: "fonts/hwal/uniqaidar_newsheadline_041.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_041.zip", category: "hwal" },
-    { name: "uniqaidar_newsheadline_042", file: "uniqaidar_newsheadline_042", path: "fonts/hwal/uniqaidar_newsheadline_042.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_042.zip", category: "hwal" },
-    { name: "uniqaidar_pure_001", file: "uniqaidar_pure_001", path: "fonts/hwal/uniqaidar_pure_001.ttf", zip: "fonts/hwal/uniqaidar_pure_001.zip", category: "hwal" },
-    { name: "uniqaidar_pure_002", file: "uniqaidar_pure_002", path: "fonts/hwal/uniqaidar_pure_002.ttf", zip: "fonts/hwal/uniqaidar_pure_002.zip", category: "hwal" },
-    { name: "uniqaidar_pure_003", file: "uniqaidar_pure_003", path: "fonts/hwal/uniqaidar_pure_003.ttf", zip: "fonts/hwal/uniqaidar_pure_003.zip", category: "hwal" },
-    { name: "qaidar_islamic00", file: "qaidar_islamic00", path: "fonts/islami/qaidar_islamic00.ttf", zip: "fonts/islami/qaidar_islamic00.zip", category: "islami" },
-    { name: "qaidar_islamic01", file: "qaidar_islamic01", path: "fonts/islami/qaidar_islamic01.ttf", zip: "fonts/islami/qaidar_islamic01.zip", category: "islami" },
-    { name: "qaidar_islamic02", file: "qaidar_islamic02", path: "fonts/islami/qaidar_islamic02.ttf", zip: "fonts/islami/qaidar_islamic02.zip", category: "islami" },
-    { name: "qaidar_islamic03", file: "qaidar_islamic03", path: "fonts/islami/qaidar_islamic03.ttf", zip: "fonts/islami/qaidar_islamic03.zip", category: "islami" },
-    { name: "qaidar_islamic04", file: "qaidar_islamic04", path: "fonts/islami/qaidar_islamic04.ttf", zip: "fonts/islami/qaidar_islamic04.zip", category: "islami" },
-    { name: "uniqaidar_esra&mieraj", file: "uniqaidar_esra&mieraj", path: "fonts/islami/uniqaidar_esra&mieraj.ttf", zip: "fonts/islami/uniqaidar_esra&mieraj.zip", category: "islami" },
-    { name: "uniqaidar_islamic00", file: "uniqaidar_islamic00", path: "fonts/islami/uniqaidar_islamic00.ttf", zip: "fonts/islami/uniqaidar_islamic00.zip", category: "islami" },
-    { name: "uniqaidar_islamic01", file: "uniqaidar_islamic01", path: "fonts/islami/uniqaidar_islamic01.ttf", zip: "fonts/islami/uniqaidar_islamic01.zip", category: "islami" },
-    { name: "uniqaidar_islamic02", file: "uniqaidar_islamic02", path: "fonts/islami/uniqaidar_islamic02.ttf", zip: "fonts/islami/uniqaidar_islamic02.zip", category: "islami" },
-    { name: "uniqaidar_islamic03", file: "uniqaidar_islamic03", path: "fonts/islami/uniqaidar_islamic03.ttf", zip: "fonts/islami/uniqaidar_islamic03.zip", category: "islami" },
-    { name: "uniqaidar_islamic04", file: "uniqaidar_islamic04", path: "fonts/islami/uniqaidar_islamic04.ttf", zip: "fonts/islami/uniqaidar_islamic04.zip", category: "islami" },
-    { name: "uniqaidar_remezan_000", file: "uniqaidar_remezan_000", path: "fonts/islami/uniqaidar_remezan_000.ttf", zip: "fonts/islami/uniqaidar_remezan_000.zip", category: "islami" },
-    { name: "uniqaidar_remezan_001", file: "uniqaidar_remezan_001", path: "fonts/islami/uniqaidar_remezan_001.ttf", zip: "fonts/islami/uniqaidar_remezan_001.zip", category: "islami" },
-    { name: "uniqaidar_subtitle_000", file: "uniqaidar_subtitle_000", path: "fonts/jrnus/uniqaidar_subtitle_000.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_000.zip", category: "jrnus" },
-    { name: "uniqaidar_subtitle_001", file: "uniqaidar_subtitle_001", path: "fonts/jrnus/uniqaidar_subtitle_001.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_001.zip", category: "jrnus" },
-    { name: "uniqaidar_subtitle_002", file: "uniqaidar_subtitle_002", path: "fonts/jrnus/uniqaidar_subtitle_002.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_002.zip", category: "jrnus" },
-    { name: "uniqaidar_subtitle_003", file: "uniqaidar_subtitle_003", path: "fonts/jrnus/uniqaidar_subtitle_003.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_003.zip", category: "jrnus" },
-    { name: "uniqaidar_subtitle_004", file: "uniqaidar_subtitle_004", path: "fonts/jrnus/uniqaidar_subtitle_004.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_004.zip", category: "jrnus" },
-    { name: "uniqaidar_subtitle_005", file: "uniqaidar_subtitle_005", path: "fonts/jrnus/uniqaidar_subtitle_005.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_005.zip", category: "jrnus" },
-    { name: "uniqaidar_subtitle_006", file: "uniqaidar_subtitle_006", path: "fonts/jrnus/uniqaidar_subtitle_006.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_006.zip", category: "jrnus" },
-    { name: "uniqaidar_subtitle_007", file: "uniqaidar_subtitle_007", path: "fonts/jrnus/uniqaidar_subtitle_007.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_007.zip", category: "jrnus" },
-    { name: "uniqaidar_subtitle_008", file: "uniqaidar_subtitle_008", path: "fonts/jrnus/uniqaidar_subtitle_008.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_008.zip", category: "jrnus" },
-    { name: "uniqaidar_subtitle_009", file: "uniqaidar_subtitle_009", path: "fonts/jrnus/uniqaidar_subtitle_009.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_009.zip", category: "jrnus" },
-    { name: "uniqaidar_subtitle_010", file: "uniqaidar_subtitle_010", path: "fonts/jrnus/uniqaidar_subtitle_010.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_010.zip", category: "jrnus" },
-    { name: "uniqaidar_subtitle_011", file: "uniqaidar_subtitle_011", path: "fonts/jrnus/uniqaidar_subtitle_011.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_011.zip", category: "jrnus" },
-    { name: "uniqaidar_afarin_001", file: "uniqaidar_afarin_001", path: "fonts/kanal/uniqaidar_afarin_001.ttf", zip: "fonts/kanal/uniqaidar_afarin_001.zip", category: "kanal" },
-    { name: "uniqaidar_afarin_002", file: "uniqaidar_afarin_002", path: "fonts/kanal/uniqaidar_afarin_002.ttf", zip: "fonts/kanal/uniqaidar_afarin_002.zip", category: "kanal" },
-    { name: "uniqaidar_afarin_003", file: "uniqaidar_afarin_003", path: "fonts/kanal/uniqaidar_afarin_003.ttf", zip: "fonts/kanal/uniqaidar_afarin_003.zip", category: "kanal" },
-    { name: "uniqaidar_amozhgary_001", file: "uniqaidar_amozhgary_001", path: "fonts/kanal/uniqaidar_amozhgary_001.ttf", zip: "fonts/kanal/uniqaidar_amozhgary_001.zip", category: "kanal" },
-    { name: "uniqaidar_amozhgary_002", file: "uniqaidar_amozhgary_002", path: "fonts/kanal/uniqaidar_amozhgary_002.ttf", zip: "fonts/kanal/uniqaidar_amozhgary_002.zip", category: "kanal" },
-    { name: "uniqaidar_amozhgary_003", file: "uniqaidar_amozhgary_003", path: "fonts/kanal/uniqaidar_amozhgary_003.ttf", zip: "fonts/kanal/uniqaidar_amozhgary_003.zip", category: "kanal" },
-    { name: "uniqaidar_arabyeh", file: "uniqaidar_arabyeh", path: "fonts/kanal/uniqaidar_arabyeh.ttf", zip: "fonts/kanal/uniqaidar_arabyeh.zip", category: "kanal" },
-    { name: "uniqaidar_aramco", file: "uniqaidar_aramco", path: "fonts/kanal/uniqaidar_aramco.ttf", zip: "fonts/kanal/uniqaidar_aramco.zip", category: "kanal" },
-    { name: "uniqaidar_asiacell_001", file: "uniqaidar_asiacell_001", path: "fonts/kanal/uniqaidar_asiacell_001.ttf", zip: "fonts/kanal/uniqaidar_asiacell_001.zip", category: "kanal" },
-    { name: "uniqaidar_asiacell_002", file: "uniqaidar_asiacell_002", path: "fonts/kanal/uniqaidar_asiacell_002.ttf", zip: "fonts/kanal/uniqaidar_asiacell_002.zip", category: "kanal" },
-    { name: "uniqaidar_asya", file: "uniqaidar_asya", path: "fonts/kanal/uniqaidar_asya.ttf", zip: "fonts/kanal/uniqaidar_asya.zip", category: "kanal" },
-    { name: "uniqaidar_baxshin_hospital_001", file: "uniqaidar_baxshin_hospital_001", path: "fonts/kanal/uniqaidar_baxshin_hospital_001.ttf", zip: "fonts/kanal/uniqaidar_baxshin_hospital_001.zip", category: "kanal" },
-    { name: "uniqaidar_baxshin_hospital_002", file: "uniqaidar_baxshin_hospital_002", path: "fonts/kanal/uniqaidar_baxshin_hospital_002.ttf", zip: "fonts/kanal/uniqaidar_baxshin_hospital_002.zip", category: "kanal" },
-    { name: "uniqaidar_fastlink_01", file: "uniqaidar_fastlink_01", path: "fonts/kanal/uniqaidar_fastlink_01.ttf", zip: "fonts/kanal/uniqaidar_fastlink_01.zip", category: "kanal" },
-    { name: "uniqaidar_fastlink_02", file: "uniqaidar_fastlink_02", path: "fonts/kanal/uniqaidar_fastlink_02.ttf", zip: "fonts/kanal/uniqaidar_fastlink_02.zip", category: "kanal" },
-    { name: "uniqaidar_fastlink_03", file: "uniqaidar_fastlink_03", path: "fonts/kanal/uniqaidar_fastlink_03.ttf", zip: "fonts/kanal/uniqaidar_fastlink_03.zip", category: "kanal" },
-    { name: "uniqaidar_fastlink_04", file: "uniqaidar_fastlink_04", path: "fonts/kanal/uniqaidar_fastlink_04.ttf", zip: "fonts/kanal/uniqaidar_fastlink_04.zip", category: "kanal" },
-    { name: "uniqaidar_fnunokia", file: "uniqaidar_fnunokia", path: "fonts/kanal/uniqaidar_fnunokia.ttf", zip: "fonts/kanal/uniqaidar_fnunokia.zip", category: "kanal" },
-    { name: "uniqaidar_harem_hospital_001", file: "uniqaidar_harem_hospital_001", path: "fonts/kanal/uniqaidar_harem_hospital_001.ttf", zip: "fonts/kanal/uniqaidar_harem_hospital_001.zip", category: "kanal" },
-    { name: "uniqaidar_harem_hospital_002", file: "uniqaidar_harem_hospital_002", path: "fonts/kanal/uniqaidar_harem_hospital_002.ttf", zip: "fonts/kanal/uniqaidar_harem_hospital_002.zip", category: "kanal" },
-    { name: "uniqaidar_khwendkar_001", file: "uniqaidar_khwendkar_001", path: "fonts/kanal/uniqaidar_khwendkar_001.ttf", zip: "fonts/kanal/uniqaidar_khwendkar_001.zip", category: "kanal" },
-    { name: "uniqaidar_khwendkar_002", file: "uniqaidar_khwendkar_002", path: "fonts/kanal/uniqaidar_khwendkar_002.ttf", zip: "fonts/kanal/uniqaidar_khwendkar_002.zip", category: "kanal" },
-    { name: "uniqaidar_khwendkar_003", file: "uniqaidar_khwendkar_003", path: "fonts/kanal/uniqaidar_khwendkar_003.ttf", zip: "fonts/kanal/uniqaidar_khwendkar_003.zip", category: "kanal" },
-    { name: "uniqaidar_mobile_tv", file: "uniqaidar_mobile_tv", path: "fonts/kanal/uniqaidar_mobile_tv.ttf", zip: "fonts/kanal/uniqaidar_mobile_tv.zip", category: "kanal" },
-    { name: "uniqaidar_money_heist_001", file: "uniqaidar_money_heist_001", path: "fonts/kanal/uniqaidar_money_heist_001.ttf", zip: "fonts/kanal/uniqaidar_money_heist_001.zip", category: "kanal" },
-    { name: "uniqaidar_money_heist_002", file: "uniqaidar_money_heist_002", path: "fonts/kanal/uniqaidar_money_heist_002.ttf", zip: "fonts/kanal/uniqaidar_money_heist_002.zip", category: "kanal" },
-    { name: "uniqaidar_nawa", file: "uniqaidar_nawa", path: "fonts/kanal/uniqaidar_nawa.ttf", zip: "fonts/kanal/uniqaidar_nawa.zip", category: "kanal" },
-    { name: "uniqaidar_newpayam_01", file: "uniqaidar_newpayam_01", path: "fonts/kanal/uniqaidar_newpayam_01.ttf", zip: "fonts/kanal/uniqaidar_newpayam_01.zip", category: "kanal" },
-    { name: "uniqaidar_newpayam_02", file: "uniqaidar_newpayam_02", path: "fonts/kanal/uniqaidar_newpayam_02.ttf", zip: "fonts/kanal/uniqaidar_newpayam_02.zip", category: "kanal" },
-    { name: "uniqaidar_newpayam_03", file: "uniqaidar_newpayam_03", path: "fonts/kanal/uniqaidar_newpayam_03.ttf", zip: "fonts/kanal/uniqaidar_newpayam_03.zip", category: "kanal" },
-    { name: "uniqaidar_newpayam_04", file: "uniqaidar_newpayam_04", path: "fonts/kanal/uniqaidar_newpayam_04.ttf", zip: "fonts/kanal/uniqaidar_newpayam_04.zip", category: "kanal" },
-    { name: "uniqaidar_payam", file: "uniqaidar_payam", path: "fonts/kanal/uniqaidar_payam.ttf", zip: "fonts/kanal/uniqaidar_payam.zip", category: "kanal" },
-    { name: "uniqaidar_payamnews", file: "uniqaidar_payamnews", path: "fonts/kanal/uniqaidar_payamnews.ttf", zip: "fonts/kanal/uniqaidar_payamnews.zip", category: "kanal" },
-    { name: "uniqaidar_payamnews_ku_numbers", file: "uniqaidar_payamnews_ku_numbers", path: "fonts/kanal/uniqaidar_payamnews_ku_numbers.ttf", zip: "fonts/kanal/uniqaidar_payamnews_ku_numbers.zip", category: "kanal" },
-    { name: "uniqaidar_payam_hd_001", file: "uniqaidar_payam_hd_001", path: "fonts/kanal/uniqaidar_payam_hd_001.ttf", zip: "fonts/kanal/uniqaidar_payam_hd_001.zip", category: "kanal" },
-    { name: "uniqaidar_payam_hd_002", file: "uniqaidar_payam_hd_002", path: "fonts/kanal/uniqaidar_payam_hd_002.ttf", zip: "fonts/kanal/uniqaidar_payam_hd_002.zip", category: "kanal" },
-    { name: "uniqaidar_payam_hd_003", file: "uniqaidar_payam_hd_003", path: "fonts/kanal/uniqaidar_payam_hd_003.ttf", zip: "fonts/kanal/uniqaidar_payam_hd_003.zip", category: "kanal" },
-    { name: "uniqaidar_payam_hd_004", file: "uniqaidar_payam_hd_004", path: "fonts/kanal/uniqaidar_payam_hd_004.ttf", zip: "fonts/kanal/uniqaidar_payam_hd_004.zip", category: "kanal" },
-    { name: "uniqaidar_peregraf_01", file: "uniqaidar_peregraf_01", path: "fonts/kanal/uniqaidar_peregraf_01.ttf", zip: "fonts/kanal/uniqaidar_peregraf_01.zip", category: "kanal" },
-    { name: "uniqaidar_peregraf_02", file: "uniqaidar_peregraf_02", path: "fonts/kanal/uniqaidar_peregraf_02.ttf", zip: "fonts/kanal/uniqaidar_peregraf_02.zip", category: "kanal" },
-    { name: "uniqaidar_sahar", file: "uniqaidar_sahar", path: "fonts/kanal/uniqaidar_sahar.ttf", zip: "fonts/kanal/uniqaidar_sahar.zip", category: "kanal" },
-    { name: "uniqaidar_squid_game_002", file: "uniqaidar_squid_game_002", path: "fonts/kanal/uniqaidar_squid_game_002.ttf", zip: "fonts/kanal/uniqaidar_squid_game_002.zip", category: "kanal" },
-    { name: "uniqaidar_talabat_01", file: "uniqaidar_talabat_01", path: "fonts/kanal/uniqaidar_talabat_01.ttf", zip: "fonts/kanal/uniqaidar_talabat_01.zip", category: "kanal" },
-    { name: "uniqaidar_talabat_02", file: "uniqaidar_talabat_02", path: "fonts/kanal/uniqaidar_talabat_02.ttf", zip: "fonts/kanal/uniqaidar_talabat_02.zip", category: "kanal" },
-    { name: "uniqaidar_trt_01", file: "uniqaidar_trt_01", path: "fonts/kanal/uniqaidar_trt_01.ttf", zip: "fonts/kanal/uniqaidar_trt_01.zip", category: "kanal" },
-    { name: "uniqaidar_trt_02", file: "uniqaidar_trt_02", path: "fonts/kanal/uniqaidar_trt_02.ttf", zip: "fonts/kanal/uniqaidar_trt_02.zip", category: "kanal" },
-    { name: "uniqaidar_trt_03", file: "uniqaidar_trt_03", path: "fonts/kanal/uniqaidar_trt_03.ttf", zip: "fonts/kanal/uniqaidar_trt_03.zip", category: "kanal" },
-    { name: "uniqaidar_trt_04", file: "uniqaidar_trt_04", path: "fonts/kanal/uniqaidar_trt_04.ttf", zip: "fonts/kanal/uniqaidar_trt_04.zip", category: "kanal" },
-    { name: "uniqaidar_zhyan_001", file: "uniqaidar_zhyan_001", path: "fonts/kanal/uniqaidar_zhyan_001.ttf", zip: "fonts/kanal/uniqaidar_zhyan_001.zip", category: "kanal" },
-    { name: "uniqaidar_zhyan_002", file: "uniqaidar_zhyan_002", path: "fonts/kanal/uniqaidar_zhyan_002.ttf", zip: "fonts/kanal/uniqaidar_zhyan_002.zip", category: "kanal" },
-    { name: "uniqaidar_zhyan_003", file: "uniqaidar_zhyan_003", path: "fonts/kanal/uniqaidar_zhyan_003.ttf", zip: "fonts/kanal/uniqaidar_zhyan_003.zip", category: "kanal" },
-    { name: "uniqaidar_a7med", file: "uniqaidar_a7med", path: "fonts/ktib/uniqaidar_a7med.ttf", zip: "fonts/ktib/uniqaidar_a7med.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_000", file: "uniqaidar_blawkrawe_000", path: "fonts/ktib/uniqaidar_blawkrawe_000.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_000.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_001", file: "uniqaidar_blawkrawe_001", path: "fonts/ktib/uniqaidar_blawkrawe_001.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_001.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_002", file: "uniqaidar_blawkrawe_002", path: "fonts/ktib/uniqaidar_blawkrawe_002.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_002.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_003", file: "uniqaidar_blawkrawe_003", path: "fonts/ktib/uniqaidar_blawkrawe_003.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_003.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_004", file: "uniqaidar_blawkrawe_004", path: "fonts/ktib/uniqaidar_blawkrawe_004.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_004.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_004_hollow", file: "uniqaidar_blawkrawe_004_hollow", path: "fonts/ktib/uniqaidar_blawkrawe_004_hollow.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_004_hollow.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_005", file: "uniqaidar_blawkrawe_005", path: "fonts/ktib/uniqaidar_blawkrawe_005.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_005.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_006", file: "uniqaidar_blawkrawe_006", path: "fonts/ktib/uniqaidar_blawkrawe_006.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_006.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_007", file: "uniqaidar_blawkrawe_007", path: "fonts/ktib/uniqaidar_blawkrawe_007.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_007.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_008", file: "uniqaidar_blawkrawe_008", path: "fonts/ktib/uniqaidar_blawkrawe_008.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_008.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_009", file: "uniqaidar_blawkrawe_009", path: "fonts/ktib/uniqaidar_blawkrawe_009.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_009.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_010_book", file: "uniqaidar_blawkrawe_010_book", path: "fonts/ktib/uniqaidar_blawkrawe_010_book.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_010_book.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_011", file: "uniqaidar_blawkrawe_011", path: "fonts/ktib/uniqaidar_blawkrawe_011.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_011.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_012", file: "uniqaidar_blawkrawe_012", path: "fonts/ktib/uniqaidar_blawkrawe_012.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_012.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_013", file: "uniqaidar_blawkrawe_013", path: "fonts/ktib/uniqaidar_blawkrawe_013.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_013.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_014", file: "uniqaidar_blawkrawe_014", path: "fonts/ktib/uniqaidar_blawkrawe_014.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_014.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_015", file: "uniqaidar_blawkrawe_015", path: "fonts/ktib/uniqaidar_blawkrawe_015.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_015.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_016", file: "uniqaidar_blawkrawe_016", path: "fonts/ktib/uniqaidar_blawkrawe_016.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_016.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_017", file: "uniqaidar_blawkrawe_017", path: "fonts/ktib/uniqaidar_blawkrawe_017.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_017.zip", category: "ktib" },
-    { name: "uniqaidar_blawkrawe_018", file: "uniqaidar_blawkrawe_018", path: "fonts/ktib/uniqaidar_blawkrawe_018.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_018.zip", category: "ktib" },
-    { name: "uniqaidar_dwange", file: "uniqaidar_dwange", path: "fonts/ktib/uniqaidar_dwange.ttf", zip: "fonts/ktib/uniqaidar_dwange.zip", category: "ktib" },
-    { name: "uniqaidar_ebrahim", file: "uniqaidar_ebrahim", path: "fonts/ktib/uniqaidar_ebrahim.ttf", zip: "fonts/ktib/uniqaidar_ebrahim.zip", category: "ktib" },
-    { name: "uniqaidar_edeb", file: "uniqaidar_edeb", path: "fonts/ktib/uniqaidar_edeb.ttf", zip: "fonts/ktib/uniqaidar_edeb.zip", category: "ktib" },
-    { name: "uniqaidar_hemin", file: "uniqaidar_hemin", path: "fonts/ktib/uniqaidar_hemin.ttf", zip: "fonts/ktib/uniqaidar_hemin.zip", category: "ktib" },
-    { name: "uniqaidar_kurdistan_001", file: "uniqaidar_kurdistan_001", path: "fonts/ktib/uniqaidar_kurdistan_001.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_001.zip", category: "ktib" },
-    { name: "uniqaidar_kurdistan_002", file: "uniqaidar_kurdistan_002", path: "fonts/ktib/uniqaidar_kurdistan_002.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_002.zip", category: "ktib" },
-    { name: "uniqaidar_kurdistan_003", file: "uniqaidar_kurdistan_003", path: "fonts/ktib/uniqaidar_kurdistan_003.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_003.zip", category: "ktib" },
-    { name: "uniqaidar_kurdistan_004", file: "uniqaidar_kurdistan_004", path: "fonts/ktib/uniqaidar_kurdistan_004.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_004.zip", category: "ktib" },
-    { name: "uniqaidar_kurdistan_005", file: "uniqaidar_kurdistan_005", path: "fonts/ktib/uniqaidar_kurdistan_005.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_005.zip", category: "ktib" },
-    { name: "uniqaidar_kurdistan_006", file: "uniqaidar_kurdistan_006", path: "fonts/ktib/uniqaidar_kurdistan_006.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_006.zip", category: "ktib" },
-    { name: "uniqaidar_kurdistan_007", file: "uniqaidar_kurdistan_007", path: "fonts/ktib/uniqaidar_kurdistan_007.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_007.zip", category: "ktib" },
-    { name: "uniqaidar_muhammad", file: "uniqaidar_muhammad", path: "fonts/ktib/uniqaidar_muhammad.ttf", zip: "fonts/ktib/uniqaidar_muhammad.zip", category: "ktib" },
-    { name: "uniqaidar_naskh_bold", file: "uniqaidar_naskh_bold", path: "fonts/ktib/uniqaidar_naskh_bold.ttf", zip: "fonts/ktib/uniqaidar_naskh_bold.zip", category: "ktib" },
-    { name: "uniqaidar_naskh_regular", file: "uniqaidar_naskh_regular", path: "fonts/ktib/uniqaidar_naskh_regular.ttf", zip: "fonts/ktib/uniqaidar_naskh_regular.zip", category: "ktib" },
-    { name: "uniqaidar_rojname", file: "uniqaidar_rojname", path: "fonts/ktib/uniqaidar_rojname.ttf", zip: "fonts/ktib/uniqaidar_rojname.zip", category: "ktib" },
-    { name: "uniqaidar_rojnameb", file: "uniqaidar_rojnameb", path: "fonts/ktib/uniqaidar_rojnameb.ttf", zip: "fonts/ktib/uniqaidar_rojnameb.zip", category: "ktib" },
-    { name: "uniqaidar_sami", file: "uniqaidar_sami", path: "fonts/ktib/uniqaidar_sami.ttf", zip: "fonts/ktib/uniqaidar_sami.zip", category: "ktib" },
-    { name: "uniqaidar_yelda", file: "uniqaidar_yelda", path: "fonts/ktib/uniqaidar_yelda.ttf", zip: "fonts/ktib/uniqaidar_yelda.zip", category: "ktib" },
-    { name: "uniqaidar_social_media_001", file: "uniqaidar_social_media_001", path: "fonts/media/uniqaidar_social_media_001.ttf", zip: "fonts/media/uniqaidar_social_media_001.zip", category: "media" },
-    { name: "uniqaidar_social_media_002", file: "uniqaidar_social_media_002", path: "fonts/media/uniqaidar_social_media_002.ttf", zip: "fonts/media/uniqaidar_social_media_002.zip", category: "media" },
-    { name: "uniqaidar_social_media_003", file: "uniqaidar_social_media_003", path: "fonts/media/uniqaidar_social_media_003.ttf", zip: "fonts/media/uniqaidar_social_media_003.zip", category: "media" },
-    { name: "uniqaidar_social_media_004", file: "uniqaidar_social_media_004", path: "fonts/media/uniqaidar_social_media_004.ttf", zip: "fonts/media/uniqaidar_social_media_004.zip", category: "media" },
-    { name: "uniqaidar_social_media_005", file: "uniqaidar_social_media_005", path: "fonts/media/uniqaidar_social_media_005.ttf", zip: "fonts/media/uniqaidar_social_media_005.zip", category: "media" },
-    { name: "uniqaidar_social_media_006", file: "uniqaidar_social_media_006", path: "fonts/media/uniqaidar_social_media_006.ttf", zip: "fonts/media/uniqaidar_social_media_006.zip", category: "media" },
-    { name: "uniqaidar_squid_game_001", file: "uniqaidar_squid_game_001", path: "fonts/media/uniqaidar_squid_game_001.ttf", zip: "fonts/media/uniqaidar_squid_game_001.zip", category: "media" },
-    { name: "uniqaidar_free_000", file: "uniqaidar_free_000", path: "fonts/mndalan/uniqaidar_free_000.ttf", zip: "fonts/mndalan/uniqaidar_free_000.zip", category: "mndalan" },
-    { name: "uniqaidar_free_001", file: "uniqaidar_free_001", path: "fonts/mndalan/uniqaidar_free_001.ttf", zip: "fonts/mndalan/uniqaidar_free_001.zip", category: "mndalan" },
-    { name: "uniqaidar_free_002", file: "uniqaidar_free_002", path: "fonts/mndalan/uniqaidar_free_002.ttf", zip: "fonts/mndalan/uniqaidar_free_002.zip", category: "mndalan" },
-    { name: "uniqaidar_free_003", file: "uniqaidar_free_003", path: "fonts/mndalan/uniqaidar_free_003.ttf", zip: "fonts/mndalan/uniqaidar_free_003.zip", category: "mndalan" },
-    { name: "uniqaidar_free_004", file: "uniqaidar_free_004", path: "fonts/mndalan/uniqaidar_free_004.ttf", zip: "fonts/mndalan/uniqaidar_free_004.zip", category: "mndalan" },
-    { name: "uniqaidar_free_005", file: "uniqaidar_free_005", path: "fonts/mndalan/uniqaidar_free_005.ttf", zip: "fonts/mndalan/uniqaidar_free_005.zip", category: "mndalan" },
-    { name: "uniqaidar_free_006", file: "uniqaidar_free_006", path: "fonts/mndalan/uniqaidar_free_006.ttf", zip: "fonts/mndalan/uniqaidar_free_006.zip", category: "mndalan" },
-    { name: "uniqaidar_free_007", file: "uniqaidar_free_007", path: "fonts/mndalan/uniqaidar_free_007.ttf", zip: "fonts/mndalan/uniqaidar_free_007.zip", category: "mndalan" },
-    { name: "uniqaidar_free_008", file: "uniqaidar_free_008", path: "fonts/mndalan/uniqaidar_free_008.ttf", zip: "fonts/mndalan/uniqaidar_free_008.zip", category: "mndalan" },
-    { name: "uniqaidar_free_009", file: "uniqaidar_free_009", path: "fonts/mndalan/uniqaidar_free_009.ttf", zip: "fonts/mndalan/uniqaidar_free_009.zip", category: "mndalan" },
-    { name: "uniqaidar_free_010", file: "uniqaidar_free_010", path: "fonts/mndalan/uniqaidar_free_010.ttf", zip: "fonts/mndalan/uniqaidar_free_010.zip", category: "mndalan" },
-    { name: "uniqaidar_free_011", file: "uniqaidar_free_011", path: "fonts/mndalan/uniqaidar_free_011.ttf", zip: "fonts/mndalan/uniqaidar_free_011.zip", category: "mndalan" },
-    { name: "uniqaidar_free_012", file: "uniqaidar_free_012", path: "fonts/mndalan/uniqaidar_free_012.ttf", zip: "fonts/mndalan/uniqaidar_free_012.zip", category: "mndalan" },
-    { name: "uniqaidar_free_013", file: "uniqaidar_free_013", path: "fonts/mndalan/uniqaidar_free_013.ttf", zip: "fonts/mndalan/uniqaidar_free_013.zip", category: "mndalan" },
-    { name: "uniqaidar_free_014", file: "uniqaidar_free_014", path: "fonts/mndalan/uniqaidar_free_014.ttf", zip: "fonts/mndalan/uniqaidar_free_014.zip", category: "mndalan" },
-    { name: "uniqaidar_life", file: "uniqaidar_life", path: "fonts/mndalan/uniqaidar_life.ttf", zip: "fonts/mndalan/uniqaidar_life.zip", category: "mndalan" },
-    { name: "uniqaidar_zana", file: "uniqaidar_zana", path: "fonts/mndalan/uniqaidar_zana.ttf", zip: "fonts/mndalan/uniqaidar_zana.zip", category: "mndalan" },
-    { name: "uniqaidar_nastaliq_001", file: "uniqaidar_nastaliq_001", path: "fonts/nastaliq/uniqaidar_nastaliq_001.ttf", zip: "fonts/nastaliq/uniqaidar_nastaliq_001.zip", category: "nastaliq" },
-    { name: "uniqaidar_nastaliq_002", file: "uniqaidar_nastaliq_002", path: "fonts/nastaliq/uniqaidar_nastaliq_002.ttf", zip: "fonts/nastaliq/uniqaidar_nastaliq_002.zip", category: "nastaliq" },
-    { name: "uniqaidar_nastaliq_003", file: "uniqaidar_nastaliq_003", path: "fonts/nastaliq/uniqaidar_nastaliq_003.ttf", zip: "fonts/nastaliq/uniqaidar_nastaliq_003.zip", category: "nastaliq" },
-    { name: "uniqaidar_ali", file: "uniqaidar_ali", path: "fonts/semic/uniqaidar_ali.ttf", zip: "fonts/semic/uniqaidar_ali.zip", category: "semic" },
-    { name: "uniqaidar_gate", file: "uniqaidar_gate", path: "fonts/semic/uniqaidar_gate.ttf", zip: "fonts/semic/uniqaidar_gate.zip", category: "semic" },
-    { name: "uniqaidar_soz_000", file: "uniqaidar_soz_000", path: "fonts/semic/uniqaidar_soz_000.ttf", zip: "fonts/semic/uniqaidar_soz_000.zip", category: "semic" },
-    { name: "uniqaidar_soz_001", file: "uniqaidar_soz_001", path: "fonts/semic/uniqaidar_soz_001.ttf", zip: "fonts/semic/uniqaidar_soz_001.zip", category: "semic" },
-    { name: "uniqaidar_soz_002", file: "uniqaidar_soz_002", path: "fonts/semic/uniqaidar_soz_002.ttf", zip: "fonts/semic/uniqaidar_soz_002.zip", category: "semic" },
-    { name: "uniqaidar_soz_003", file: "uniqaidar_soz_003", path: "fonts/semic/uniqaidar_soz_003.ttf", zip: "fonts/semic/uniqaidar_soz_003.zip", category: "semic" },
-    { name: "uniqaidar_soz_004", file: "uniqaidar_soz_004", path: "fonts/semic/uniqaidar_soz_004.ttf", zip: "fonts/semic/uniqaidar_soz_004.zip", category: "semic" },
-    { name: "uniqaidar_soz_005", file: "uniqaidar_soz_005", path: "fonts/semic/uniqaidar_soz_005.ttf", zip: "fonts/semic/uniqaidar_soz_005.zip", category: "semic" },
-    { name: "uniqaidar_soz_006", file: "uniqaidar_soz_006", path: "fonts/semic/uniqaidar_soz_006.ttf", zip: "fonts/semic/uniqaidar_soz_006.zip", category: "semic" },
-    { name: "uniqaidar_soz_007", file: "uniqaidar_soz_007", path: "fonts/semic/uniqaidar_soz_007.ttf", zip: "fonts/semic/uniqaidar_soz_007.zip", category: "semic" },
-    { name: "uniqaidar_soz_008", file: "uniqaidar_soz_008", path: "fonts/semic/uniqaidar_soz_008.ttf", zip: "fonts/semic/uniqaidar_soz_008.zip", category: "semic" },
-    { name: "uniqaidar_soz_009", file: "uniqaidar_soz_009", path: "fonts/semic/uniqaidar_soz_009.ttf", zip: "fonts/semic/uniqaidar_soz_009.zip", category: "semic" },
-    { name: "uniqaidar_soz_010", file: "uniqaidar_soz_010", path: "fonts/semic/uniqaidar_soz_010.ttf", zip: "fonts/semic/uniqaidar_soz_010.zip", category: "semic" },
-    { name: "uniqaidar_soz_010_hollow", file: "uniqaidar_soz_010_hollow", path: "fonts/semic/uniqaidar_soz_010_hollow.ttf", zip: "fonts/semic/uniqaidar_soz_010_hollow.zip", category: "semic" },
-    { name: "uniqaidar_soz_011", file: "uniqaidar_soz_011", path: "fonts/semic/uniqaidar_soz_011.ttf", zip: "fonts/semic/uniqaidar_soz_011.zip", category: "semic" },
-    { name: "uniqaidar_soz_012", file: "uniqaidar_soz_012", path: "fonts/semic/uniqaidar_soz_012.ttf", zip: "fonts/semic/uniqaidar_soz_012.zip", category: "semic" },
-    { name: "uniqaidar_soz_013", file: "uniqaidar_soz_013", path: "fonts/semic/uniqaidar_soz_013.ttf", zip: "fonts/semic/uniqaidar_soz_013.zip", category: "semic" },
-    { name: "uniqaidar_soz_014", file: "uniqaidar_soz_014", path: "fonts/semic/uniqaidar_soz_014.ttf", zip: "fonts/semic/uniqaidar_soz_014.zip", category: "semic" },
-    { name: "uniqaidar_soz_015", file: "uniqaidar_soz_015", path: "fonts/semic/uniqaidar_soz_015.ttf", zip: "fonts/semic/uniqaidar_soz_015.zip", category: "semic" },
-    { name: "uniqaidar_soz_016", file: "uniqaidar_soz_016", path: "fonts/semic/uniqaidar_soz_016.ttf", zip: "fonts/semic/uniqaidar_soz_016.zip", category: "semic" },
-    { name: "uniqaidar_soz_017", file: "uniqaidar_soz_017", path: "fonts/semic/uniqaidar_soz_017.ttf", zip: "fonts/semic/uniqaidar_soz_017.zip", category: "semic" },
-    { name: "uniqaidar_abdullah", file: "uniqaidar_abdullah", path: "fonts/some/uniqaidar_abdullah.ttf", zip: "fonts/some/uniqaidar_abdullah.zip", category: "some" },
-    { name: "uniqaidar_abo_dhabi", file: "uniqaidar_abo_dhabi", path: "fonts/some/uniqaidar_abo_dhabi.ttf", zip: "fonts/some/uniqaidar_abo_dhabi.zip", category: "some" },
-    { name: "uniqaidar_amez", file: "uniqaidar_amez", path: "fonts/some/uniqaidar_amez.ttf", zip: "fonts/some/uniqaidar_amez.zip", category: "some" },
-    { name: "uniqaidar_askandar", file: "uniqaidar_askandar", path: "fonts/some/uniqaidar_askandar.ttf", zip: "fonts/some/uniqaidar_askandar.zip", category: "some" },
-    { name: "uniqaidar_aso", file: "uniqaidar_aso", path: "fonts/some/uniqaidar_aso.ttf", zip: "fonts/some/uniqaidar_aso.zip", category: "some" },
-    { name: "uniqaidar_azadi", file: "uniqaidar_azadi", path: "fonts/some/uniqaidar_azadi.ttf", zip: "fonts/some/uniqaidar_azadi.zip", category: "some" },
-    { name: "uniqaidar_bahar_001", file: "uniqaidar_bahar_001", path: "fonts/some/uniqaidar_bahar_001.ttf", zip: "fonts/some/uniqaidar_bahar_001.zip", category: "some" },
-    { name: "uniqaidar_behmen", file: "uniqaidar_behmen", path: "fonts/some/uniqaidar_behmen.ttf", zip: "fonts/some/uniqaidar_behmen.zip", category: "some" },
-    { name: "uniqaidar_bexud", file: "uniqaidar_bexud", path: "fonts/some/uniqaidar_bexud.ttf", zip: "fonts/some/uniqaidar_bexud.zip", category: "some" },
-    { name: "uniqaidar_dara", file: "uniqaidar_dara", path: "fonts/some/uniqaidar_dara.ttf", zip: "fonts/some/uniqaidar_dara.zip", category: "some" },
-    { name: "uniqaidar_digital", file: "uniqaidar_digital", path: "fonts/some/uniqaidar_digital.ttf", zip: "fonts/some/uniqaidar_digital.zip", category: "some" },
-    { name: "uniqaidar_efriqa", file: "uniqaidar_efriqa", path: "fonts/some/uniqaidar_efriqa.ttf", zip: "fonts/some/uniqaidar_efriqa.zip", category: "some" },
-    { name: "uniqaidar_efsun", file: "uniqaidar_efsun", path: "fonts/some/uniqaidar_efsun.ttf", zip: "fonts/some/uniqaidar_efsun.zip", category: "some" },
-    { name: "uniqaidar_jwneyd", file: "uniqaidar_jwneyd", path: "fonts/some/uniqaidar_jwneyd.ttf", zip: "fonts/some/uniqaidar_jwneyd.zip", category: "some" },
-    { name: "uniqaidar_kamaran", file: "uniqaidar_kamaran", path: "fonts/some/uniqaidar_kamaran.ttf", zip: "fonts/some/uniqaidar_kamaran.zip", category: "some" },
-    { name: "uniqaidar_karmend", file: "uniqaidar_karmend", path: "fonts/some/uniqaidar_karmend.ttf", zip: "fonts/some/uniqaidar_karmend.zip", category: "some" },
-    { name: "uniqaidar_karwan", file: "uniqaidar_karwan", path: "fonts/some/uniqaidar_karwan.ttf", zip: "fonts/some/uniqaidar_karwan.zip", category: "some" },
-    { name: "uniqaidar_khama", file: "uniqaidar_khama", path: "fonts/some/uniqaidar_khama.ttf", zip: "fonts/some/uniqaidar_khama.zip", category: "some" },
-    { name: "uniqaidar_kufi", file: "uniqaidar_kufi", path: "fonts/some/uniqaidar_kufi.ttf", zip: "fonts/some/uniqaidar_kufi.zip", category: "some" },
-    { name: "uniqaidar_meju", file: "uniqaidar_meju", path: "fonts/some/uniqaidar_meju.ttf", zip: "fonts/some/uniqaidar_meju.zip", category: "some" },
-    { name: "uniqaidar_meju_00", file: "uniqaidar_meju_00", path: "fonts/some/uniqaidar_meju_00.ttf", zip: "fonts/some/uniqaidar_meju_00.zip", category: "some" },
-    { name: "uniqaidar_nasrin", file: "uniqaidar_nasrin", path: "fonts/some/uniqaidar_nasrin.ttf", zip: "fonts/some/uniqaidar_nasrin.zip", category: "some" },
-    { name: "uniqaidar_omar", file: "uniqaidar_omar", path: "fonts/some/uniqaidar_omar.ttf", zip: "fonts/some/uniqaidar_omar.zip", category: "some" },
-    { name: "uniqaidar_osama", file: "uniqaidar_osama", path: "fonts/some/uniqaidar_osama.ttf", zip: "fonts/some/uniqaidar_osama.zip", category: "some" },
-    { name: "uniqaidar_osman", file: "uniqaidar_osman", path: "fonts/some/uniqaidar_osman.ttf", zip: "fonts/some/uniqaidar_osman.zip", category: "some" },
-    { name: "uniqaidar_penjwen", file: "uniqaidar_penjwen", path: "fonts/some/uniqaidar_penjwen.ttf", zip: "fonts/some/uniqaidar_penjwen.zip", category: "some" },
-    { name: "uniqaidar_poster", file: "uniqaidar_poster", path: "fonts/some/uniqaidar_poster.ttf", zip: "fonts/some/uniqaidar_poster.zip", category: "some" },
-    { name: "uniqaidar_saman", file: "uniqaidar_saman", path: "fonts/some/uniqaidar_saman.ttf", zip: "fonts/some/uniqaidar_saman.zip", category: "some" },
-    { name: "uniqaidar_taef", file: "uniqaidar_taef", path: "fonts/some/uniqaidar_taef.ttf", zip: "fonts/some/uniqaidar_taef.zip", category: "some" },
-    { name: "uniqaidar_texte", file: "uniqaidar_texte", path: "fonts/some/uniqaidar_texte.ttf", zip: "fonts/some/uniqaidar_texte.zip", category: "some" },
-    { name: "uniqaidar_twana", file: "uniqaidar_twana", path: "fonts/some/uniqaidar_twana.ttf", zip: "fonts/some/uniqaidar_twana.zip", category: "some" },
-    { name: "uniqaidar_yusuf", file: "uniqaidar_yusuf", path: "fonts/some/uniqaidar_yusuf.ttf", zip: "fonts/some/uniqaidar_yusuf.zip", category: "some" },
-    { name: "uniqaidar_xal_00", file: "uniqaidar_xal_00", path: "fonts/xal/uniqaidar_xal_00.ttf", zip: "fonts/xal/uniqaidar_xal_00.zip", category: "xal" },
-    { name: "uniqaidar_xal_01", file: "uniqaidar_xal_01", path: "fonts/xal/uniqaidar_xal_01.ttf", zip: "fonts/xal/uniqaidar_xal_01.zip", category: "xal" },
-    { name: "uniqaidar_xal_02", file: "uniqaidar_xal_02", path: "fonts/xal/uniqaidar_xal_02.ttf", zip: "fonts/xal/uniqaidar_xal_02.zip", category: "xal" },
+    { name: "uniqaidar_akalwand", file: "uniqaidar_akalwand", path: "fonts/ali/uniqaidar_akalwand.ttf", zip: "fonts/ali/uniqaidar_akalwand.zip", category: "ali",
+        preview: "گوڵانی بەهار" },
+    { name: "uniqaidar_akarabesque", file: "uniqaidar_akarabesque", path: "fonts/ali/uniqaidar_akarabesque.ttf", zip: "fonts/ali/uniqaidar_akarabesque.zip", category: "ali",
+        preview: "هونەری خوشەویستی" },
+    { name: "uniqaidar_akazzam", file: "uniqaidar_akazzam", path: "fonts/ali/uniqaidar_akazzam.ttf", zip: "fonts/ali/uniqaidar_akazzam.zip", category: "ali",
+        preview: "ئازادی نیشتمان" },
+    { name: "uniqaidar_akhasan", file: "uniqaidar_akhasan", path: "fonts/ali/uniqaidar_akhasan.ttf", zip: "fonts/ali/uniqaidar_akhasan.zip", category: "ali",
+        preview: "حەسەن و حوسین" },
+    { name: "uniqaidar_akhbaria", file: "uniqaidar_akhbaria", path: "fonts/ali/uniqaidar_akhbaria.ttf", zip: "fonts/ali/uniqaidar_akhbaria.zip", category: "ali",
+        preview: "هەواڵی ڕۆژانە" },
+    { name: "uniqaidar_akjiddah", file: "uniqaidar_akjiddah", path: "fonts/ali/uniqaidar_akjiddah.ttf", zip: "fonts/ali/uniqaidar_akjiddah.zip", category: "ali",
+        preview: "جیددە شاری جوان" },
+    { name: "uniqaidar_akkhalid", file: "uniqaidar_akkhalid", path: "fonts/ali/uniqaidar_akkhalid.ttf", zip: "fonts/ali/uniqaidar_akkhalid.zip", category: "ali",
+        preview: "خالید قەهرەمان" },
+    { name: "uniqaidar_akkhanaqin", file: "uniqaidar_akkhanaqin", path: "fonts/ali/uniqaidar_akkhanaqin.ttf", zip: "fonts/ali/uniqaidar_akkhanaqin.zip", category: "ali",
+        preview: "خانەقین شارەکەم" },
+    { name: "uniqaidar_aksahifa", file: "uniqaidar_aksahifa", path: "fonts/ali/uniqaidar_aksahifa.ttf", zip: "fonts/ali/uniqaidar_aksahifa.zip", category: "ali",
+        preview: "ڕووپەلی ژیان" },
+    { name: "uniqaidar_aksahifab", file: "uniqaidar_aksahifab", path: "fonts/ali/uniqaidar_aksahifab.ttf", zip: "fonts/ali/uniqaidar_aksahifab.zip", category: "ali",
+        preview: "کتێبی میللەت" },
+    { name: "uniqaidar_aksamik_001", file: "uniqaidar_aksamik_001", path: "fonts/ali/uniqaidar_aksamik_001.ttf", zip: "fonts/ali/uniqaidar_aksamik_001.zip", category: "ali",
+        preview: "سەمیکی کوردی" },
+    { name: "uniqaidar_aksamik_002", file: "uniqaidar_aksamik_002", path: "fonts/ali/uniqaidar_aksamik_002.ttf", zip: "fonts/ali/uniqaidar_aksamik_002.zip", category: "ali",
+        preview: "نووسینی ئەدەبی" },
+    { name: "uniqaidar_aksayid", file: "uniqaidar_aksayid", path: "fonts/ali/uniqaidar_aksayid.ttf", zip: "fonts/ali/uniqaidar_aksayid.zip", category: "ali",
+        preview: "سەید نامەکەی" },
+    { name: "uniqaidar_aksharif", file: "uniqaidar_aksharif", path: "fonts/ali/uniqaidar_aksharif.ttf", zip: "fonts/ali/uniqaidar_aksharif.zip", category: "ali",
+        preview: "شەریف و شەرەف" },
+    { name: "uniqaidar_aksharifb", file: "uniqaidar_aksharifb", path: "fonts/ali/uniqaidar_aksharifb.ttf", zip: "fonts/ali/uniqaidar_aksharifb.zip", category: "ali",
+        preview: "بوچووی شەریف" },
+    { name: "uniqaidar_aksulaimania", file: "uniqaidar_aksulaimania", path: "fonts/ali/uniqaidar_aksulaimania.ttf", zip: "fonts/ali/uniqaidar_aksulaimania.zip", category: "ali",
+        preview: "سلێمانی قوبلەی دڵ" },
+    { name: "uniqaidar_aktraditional", file: "uniqaidar_aktraditional", path: "fonts/ali/uniqaidar_aktraditional.ttf", zip: "fonts/ali/uniqaidar_aktraditional.zip", category: "ali",
+        preview: "کلتووری کوردی" },
+    { name: "uniqaidar_bilal_000", file: "uniqaidar_bilal_000", path: "fonts/dstnus/uniqaidar_bilal_000.ttf", zip: "fonts/dstnus/uniqaidar_bilal_000.zip", category: "dstnus",
+        preview: "بڵال دەستنووسی" },
+    { name: "uniqaidar_bilal_001", file: "uniqaidar_bilal_001", path: "fonts/dstnus/uniqaidar_bilal_001.ttf", zip: "fonts/dstnus/uniqaidar_bilal_001.zip", category: "dstnus",
+        preview: "خەتی دەستنووس" },
+    { name: "uniqaidar_bilal_002", file: "uniqaidar_bilal_002", path: "fonts/dstnus/uniqaidar_bilal_002.ttf", zip: "fonts/dstnus/uniqaidar_bilal_002.zip", category: "dstnus",
+        preview: "نامەی خوشەویست" },
+    { name: "uniqaidar_bilal_003", file: "uniqaidar_bilal_003", path: "fonts/dstnus/uniqaidar_bilal_003.ttf", zip: "fonts/dstnus/uniqaidar_bilal_003.zip", category: "dstnus",
+        preview: "دڵی عاشق" },
+    { name: "uniqaidar_bilal_004", file: "uniqaidar_bilal_004", path: "fonts/dstnus/uniqaidar_bilal_004.ttf", zip: "fonts/dstnus/uniqaidar_bilal_004.zip", category: "dstnus",
+        preview: "قەلەمی هونەر" },
+    { name: "uniqaidar_bilal_005", file: "uniqaidar_bilal_005", path: "fonts/dstnus/uniqaidar_bilal_005.ttf", zip: "fonts/dstnus/uniqaidar_bilal_005.zip", category: "dstnus",
+        preview: "گوڵەی بەهار" },
+    { name: "uniqaidar_bilal_006", file: "uniqaidar_bilal_006", path: "fonts/dstnus/uniqaidar_bilal_006.ttf", zip: "fonts/dstnus/uniqaidar_bilal_006.zip", category: "dstnus",
+        preview: "ئەوینی ژیان" },
+    { name: "uniqaidar_bilal_007", file: "uniqaidar_bilal_007", path: "fonts/dstnus/uniqaidar_bilal_007.ttf", zip: "fonts/dstnus/uniqaidar_bilal_007.zip", category: "dstnus",
+        preview: "شیعری شاعیر" },
+    { name: "uniqaidar_bilal_008", file: "uniqaidar_bilal_008", path: "fonts/dstnus/uniqaidar_bilal_008.ttf", zip: "fonts/dstnus/uniqaidar_bilal_008.zip", category: "dstnus",
+        preview: "ئەدەبی کوردی" },
+    { name: "uniqaidar_bilal_009", file: "uniqaidar_bilal_009", path: "fonts/dstnus/uniqaidar_bilal_009.ttf", zip: "fonts/dstnus/uniqaidar_bilal_009.zip", category: "dstnus",
+        preview: "نووسینی جوان" },
+    { name: "uniqaidar_bilal_010", file: "uniqaidar_bilal_010", path: "fonts/dstnus/uniqaidar_bilal_010.ttf", zip: "fonts/dstnus/uniqaidar_bilal_010.zip", category: "dstnus",
+        preview: "مامۆستا و قوتابی" },
+    { name: "uniqaidar_bilal_011", file: "uniqaidar_bilal_011", path: "fonts/dstnus/uniqaidar_bilal_011.ttf", zip: "fonts/dstnus/uniqaidar_bilal_011.zip", category: "dstnus",
+        preview: "یادگاری بەهار" },
+    { name: "uniqaidar_bilal_012", file: "uniqaidar_bilal_012", path: "fonts/dstnus/uniqaidar_bilal_012.ttf", zip: "fonts/dstnus/uniqaidar_bilal_012.zip", category: "dstnus",
+        preview: "هەرگیز لەبیر مەکە" },
+    { name: "uniqaidar_bilal_013", file: "uniqaidar_bilal_013", path: "fonts/dstnus/uniqaidar_bilal_013.ttf", zip: "fonts/dstnus/uniqaidar_bilal_013.zip", category: "dstnus",
+        preview: "خەونی شەو" },
+    { name: "uniqaidar_bilal_014", file: "uniqaidar_bilal_014", path: "fonts/dstnus/uniqaidar_bilal_014.ttf", zip: "fonts/dstnus/uniqaidar_bilal_014.zip", category: "dstnus",
+        preview: "دەریایی دڵ" },
+    { name: "uniqaidar_bilal_015", file: "uniqaidar_bilal_015", path: "fonts/dstnus/uniqaidar_bilal_015.ttf", zip: "fonts/dstnus/uniqaidar_bilal_015.zip", category: "dstnus",
+        preview: "چیروکی میللەت" },
+    { name: "uniqaidar_bilal_016", file: "uniqaidar_bilal_016", path: "fonts/dstnus/uniqaidar_bilal_016.ttf", zip: "fonts/dstnus/uniqaidar_bilal_016.zip", category: "dstnus",
+        preview: "تاران و باران" },
+    { name: "uniqaidar_bilal_016_py", file: "uniqaidar_bilal_016_py", path: "fonts/dstnus/uniqaidar_bilal_016_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_016_py.zip", category: "dstnus",
+        preview: "تاران و باران پى" },
+    { name: "uniqaidar_bilal_017", file: "uniqaidar_bilal_017", path: "fonts/dstnus/uniqaidar_bilal_017.ttf", zip: "fonts/dstnus/uniqaidar_bilal_017.zip", category: "dstnus",
+        preview: "ئاسمانی شیعر" },
+    { name: "uniqaidar_bilal_017_py", file: "uniqaidar_bilal_017_py", path: "fonts/dstnus/uniqaidar_bilal_017_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_017_py.zip", category: "dstnus",
+        preview: "ئاسمانی شیعر پى" },
+    { name: "uniqaidar_bilal_018", file: "uniqaidar_bilal_018", path: "fonts/dstnus/uniqaidar_bilal_018.ttf", zip: "fonts/dstnus/uniqaidar_bilal_018.zip", category: "dstnus",
+        preview: "بوستانی سەر" },
+    { name: "uniqaidar_bilal_019", file: "uniqaidar_bilal_019", path: "fonts/dstnus/uniqaidar_bilal_019.ttf", zip: "fonts/dstnus/uniqaidar_bilal_019.zip", category: "dstnus",
+        preview: "ڕووناک و ڕووشن" },
+    { name: "uniqaidar_bilal_020", file: "uniqaidar_bilal_020", path: "fonts/dstnus/uniqaidar_bilal_020.ttf", zip: "fonts/dstnus/uniqaidar_bilal_020.zip", category: "dstnus",
+        preview: "شین و شادی" },
+    { name: "uniqaidar_bilal_020_py", file: "uniqaidar_bilal_020_py", path: "fonts/dstnus/uniqaidar_bilal_020_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_020_py.zip", category: "dstnus",
+        preview: "شین و شادی پى" },
+    { name: "uniqaidar_bilal_021", file: "uniqaidar_bilal_021", path: "fonts/dstnus/uniqaidar_bilal_021.ttf", zip: "fonts/dstnus/uniqaidar_bilal_021.zip", category: "dstnus",
+        preview: "کۆچی باڵندە" },
+    { name: "uniqaidar_bilal_021_py", file: "uniqaidar_bilal_021_py", path: "fonts/dstnus/uniqaidar_bilal_021_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_021_py.zip", category: "dstnus",
+        preview: "کۆچی باڵندە پى" },
+    { name: "uniqaidar_bilal_022", file: "uniqaidar_bilal_022", path: "fonts/dstnus/uniqaidar_bilal_022.ttf", zip: "fonts/dstnus/uniqaidar_bilal_022.zip", category: "dstnus",
+        preview: "باڵندەی ئازاد" },
+    { name: "uniqaidar_bilal_022_py", file: "uniqaidar_bilal_022_py", path: "fonts/dstnus/uniqaidar_bilal_022_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_022_py.zip", category: "dstnus",
+        preview: "باڵندەی ئازاد پى" },
+    { name: "uniqaidar_bilal_023", file: "uniqaidar_bilal_023", path: "fonts/dstnus/uniqaidar_bilal_023.ttf", zip: "fonts/dstnus/uniqaidar_bilal_023.zip", category: "dstnus",
+        preview: "ئیلهام و دیمەن" },
+    { name: "uniqaidar_bilal_024", file: "uniqaidar_bilal_024", path: "fonts/dstnus/uniqaidar_bilal_024.ttf", zip: "fonts/dstnus/uniqaidar_bilal_024.zip", category: "dstnus",
+        preview: "نەبزی دڵ" },
+    { name: "uniqaidar_bilal_024_pynh", file: "uniqaidar_bilal_024_pynh", path: "fonts/dstnus/uniqaidar_bilal_024_pynh.ttf", zip: "fonts/dstnus/uniqaidar_bilal_024_pynh.zip", category: "dstnus",
+        preview: "نەبزی دڵ نه‌ه" },
+    { name: "uniqaidar_bilal_025", file: "uniqaidar_bilal_025", path: "fonts/dstnus/uniqaidar_bilal_025.ttf", zip: "fonts/dstnus/uniqaidar_bilal_025.zip", category: "dstnus",
+        preview: "ئەمرۆ و سبەی" },
+    { name: "uniqaidar_bilal_026", file: "uniqaidar_bilal_026", path: "fonts/dstnus/uniqaidar_bilal_026.ttf", zip: "fonts/dstnus/uniqaidar_bilal_026.zip", category: "dstnus",
+        preview: "خەفتانی شەو" },
+    { name: "uniqaidar_bilal_026_py", file: "uniqaidar_bilal_026_py", path: "fonts/dstnus/uniqaidar_bilal_026_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_026_py.zip", category: "dstnus",
+        preview: "خەفتانی شەو پى" },
+    { name: "uniqaidar_bilal_027", file: "uniqaidar_bilal_027", path: "fonts/dstnus/uniqaidar_bilal_027.ttf", zip: "fonts/dstnus/uniqaidar_bilal_027.zip", category: "dstnus",
+        preview: "نەغمەی زووری" },
+    { name: "uniqaidar_bilal_027_trim", file: "uniqaidar_bilal_027_trim", path: "fonts/dstnus/uniqaidar_bilal_027_trim.ttf", zip: "fonts/dstnus/uniqaidar_bilal_027_trim.zip", category: "dstnus",
+        preview: "نەغمەی دڵ تریم" },
+    { name: "uniqaidar_bilal_028", file: "uniqaidar_bilal_028", path: "fonts/dstnus/uniqaidar_bilal_028.ttf", zip: "fonts/dstnus/uniqaidar_bilal_028.zip", category: "dstnus",
+        preview: "ئارەزووی دڵ" },
+    { name: "uniqaidar_bilal_029", file: "uniqaidar_bilal_029", path: "fonts/dstnus/uniqaidar_bilal_029.ttf", zip: "fonts/dstnus/uniqaidar_bilal_029.zip", category: "dstnus",
+        preview: "بزووتنەوەی قەڵەم" },
+    { name: "uniqaidar_bilal_030", file: "uniqaidar_bilal_030", path: "fonts/dstnus/uniqaidar_bilal_030.ttf", zip: "fonts/dstnus/uniqaidar_bilal_030.zip", category: "dstnus",
+        preview: "شاعیری کلاسیک" },
+    { name: "uniqaidar_bilal_031", file: "uniqaidar_bilal_031", path: "fonts/dstnus/uniqaidar_bilal_031.ttf", zip: "fonts/dstnus/uniqaidar_bilal_031.zip", category: "dstnus",
+        preview: "زمانی دایک" },
+    { name: "uniqaidar_bilal_032", file: "uniqaidar_bilal_032", path: "fonts/dstnus/uniqaidar_bilal_032.ttf", zip: "fonts/dstnus/uniqaidar_bilal_032.zip", category: "dstnus",
+        preview: "کوردستانی جوان" },
+    { name: "uniqaidar_bilal_032_py", file: "uniqaidar_bilal_032_py", path: "fonts/dstnus/uniqaidar_bilal_032_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_032_py.zip", category: "dstnus",
+        preview: "کوردستانی جوان پى" },
+    { name: "uniqaidar_bilal_033", file: "uniqaidar_bilal_033", path: "fonts/dstnus/uniqaidar_bilal_033.ttf", zip: "fonts/dstnus/uniqaidar_bilal_033.zip", category: "dstnus",
+        preview: "گوڵی سووری" },
+    { name: "uniqaidar_bilal_034", file: "uniqaidar_bilal_034", path: "fonts/dstnus/uniqaidar_bilal_034.ttf", zip: "fonts/dstnus/uniqaidar_bilal_034.zip", category: "dstnus",
+        preview: "شیعری نووی" },
+    { name: "uniqaidar_bilal_035", file: "uniqaidar_bilal_035", path: "fonts/dstnus/uniqaidar_bilal_035.ttf", zip: "fonts/dstnus/uniqaidar_bilal_035.zip", category: "dstnus",
+        preview: "مەزارەوە تا ئەبەد" },
+    { name: "uniqaidar_bilal_036", file: "uniqaidar_bilal_036", path: "fonts/dstnus/uniqaidar_bilal_036.ttf", zip: "fonts/dstnus/uniqaidar_bilal_036.zip", category: "dstnus",
+        preview: "چیای سپیندار" },
+    { name: "uniqaidar_bilal_036_py", file: "uniqaidar_bilal_036_py", path: "fonts/dstnus/uniqaidar_bilal_036_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_036_py.zip", category: "dstnus",
+        preview: "چیای سپیندار پى" },
+    { name: "uniqaidar_bilal_037", file: "uniqaidar_bilal_037", path: "fonts/dstnus/uniqaidar_bilal_037.ttf", zip: "fonts/dstnus/uniqaidar_bilal_037.zip", category: "dstnus",
+        preview: "نەزمی ئازاد" },
+    { name: "uniqaidar_bilal_038", file: "uniqaidar_bilal_038", path: "fonts/dstnus/uniqaidar_bilal_038.ttf", zip: "fonts/dstnus/uniqaidar_bilal_038.zip", category: "dstnus",
+        preview: "دەمی خۆشترین" },
+    { name: "uniqaidar_bilal_038_py", file: "uniqaidar_bilal_038_py", path: "fonts/dstnus/uniqaidar_bilal_038_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_038_py.zip", category: "dstnus",
+        preview: "دەمی خۆشترین پى" },
+    { name: "uniqaidar_bilal_039", file: "uniqaidar_bilal_039", path: "fonts/dstnus/uniqaidar_bilal_039.ttf", zip: "fonts/dstnus/uniqaidar_bilal_039.zip", category: "dstnus",
+        preview: "پەروانەی دڵ" },
+    { name: "uniqaidar_bilal_040", file: "uniqaidar_bilal_040", path: "fonts/dstnus/uniqaidar_bilal_040.ttf", zip: "fonts/dstnus/uniqaidar_bilal_040.zip", category: "dstnus",
+        preview: "ئاوینەی هونەر" },
+    { name: "uniqaidar_bilal_041", file: "uniqaidar_bilal_041", path: "fonts/dstnus/uniqaidar_bilal_041.ttf", zip: "fonts/dstnus/uniqaidar_bilal_041.zip", category: "dstnus",
+        preview: "زیرەکی دەستنووس" },
+    { name: "uniqaidar_bilal_042", file: "uniqaidar_bilal_042", path: "fonts/dstnus/uniqaidar_bilal_042.ttf", zip: "fonts/dstnus/uniqaidar_bilal_042.zip", category: "dstnus",
+        preview: "ئاسمانی کوردستان" },
+    { name: "uniqaidar_bilal_042_py", file: "uniqaidar_bilal_042_py", path: "fonts/dstnus/uniqaidar_bilal_042_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_042_py.zip", category: "dstnus",
+        preview: "ئاسمانی کوردستان پى" },
+    { name: "uniqaidar_bilal_043", file: "uniqaidar_bilal_043", path: "fonts/dstnus/uniqaidar_bilal_043.ttf", zip: "fonts/dstnus/uniqaidar_bilal_043.zip", category: "dstnus",
+        preview: "گوڵبانگی هاوینە" },
+    { name: "uniqaidar_bilal_044", file: "uniqaidar_bilal_044", path: "fonts/dstnus/uniqaidar_bilal_044.ttf", zip: "fonts/dstnus/uniqaidar_bilal_044.zip", category: "dstnus",
+        preview: "تەماشای دیمەن" },
+    { name: "uniqaidar_bilal_044_pnlt_", file: "uniqaidar_bilal_044_pnlt_", path: "fonts/dstnus/uniqaidar_bilal_044_pnlt_.ttf", zip: "fonts/dstnus/uniqaidar_bilal_044_pnlt_.zip", category: "dstnus",
+        preview: "تەماشای دیمەن پنلت" },
+    { name: "uniqaidar_bilal_045", file: "uniqaidar_bilal_045", path: "fonts/dstnus/uniqaidar_bilal_045.ttf", zip: "fonts/dstnus/uniqaidar_bilal_045.zip", category: "dstnus",
+        preview: "کەلەپوور و ئایین" },
+    { name: "uniqaidar_bilal_046", file: "uniqaidar_bilal_046", path: "fonts/dstnus/uniqaidar_bilal_046.ttf", zip: "fonts/dstnus/uniqaidar_bilal_046.zip", category: "dstnus",
+        preview: "خوشەویستی ئەبەدی" },
+    { name: "uniqaidar_bilal_046_py", file: "uniqaidar_bilal_046_py", path: "fonts/dstnus/uniqaidar_bilal_046_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_046_py.zip", category: "dstnus",
+        preview: "خوشەویستی ئەبەدی پى" },
+    { name: "uniqaidar_bilal_047", file: "uniqaidar_bilal_047", path: "fonts/dstnus/uniqaidar_bilal_047.ttf", zip: "fonts/dstnus/uniqaidar_bilal_047.zip", category: "dstnus",
+        preview: "قووتابخانەی شادی" },
+    { name: "uniqaidar_bilal_048", file: "uniqaidar_bilal_048", path: "fonts/dstnus/uniqaidar_bilal_048.ttf", zip: "fonts/dstnus/uniqaidar_bilal_048.zip", category: "dstnus",
+        preview: "نەغمەی کوردستان" },
+    { name: "uniqaidar_bilal_049", file: "uniqaidar_bilal_049", path: "fonts/dstnus/uniqaidar_bilal_049.ttf", zip: "fonts/dstnus/uniqaidar_bilal_049.zip", category: "dstnus",
+        preview: "گەڕانی باڵندە" },
+    { name: "uniqaidar_bilal_049_py", file: "uniqaidar_bilal_049_py", path: "fonts/dstnus/uniqaidar_bilal_049_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_049_py.zip", category: "dstnus",
+        preview: "گەڕانی باڵندە پى" },
+    { name: "uniqaidar_bilal_050", file: "uniqaidar_bilal_050", path: "fonts/dstnus/uniqaidar_bilal_050.ttf", zip: "fonts/dstnus/uniqaidar_bilal_050.zip", category: "dstnus",
+        preview: "سۆرانی قشێندار" },
+    { name: "uniqaidar_bilal_051", file: "uniqaidar_bilal_051", path: "fonts/dstnus/uniqaidar_bilal_051.ttf", zip: "fonts/dstnus/uniqaidar_bilal_051.zip", category: "dstnus",
+        preview: "دڵسۆزی ئایین" },
+    { name: "uniqaidar_bilal_052", file: "uniqaidar_bilal_052", path: "fonts/dstnus/uniqaidar_bilal_052.ttf", zip: "fonts/dstnus/uniqaidar_bilal_052.zip", category: "dstnus",
+        preview: "سنووری نیشتمان" },
+    { name: "uniqaidar_bilal_053", file: "uniqaidar_bilal_053", path: "fonts/dstnus/uniqaidar_bilal_053.ttf", zip: "fonts/dstnus/uniqaidar_bilal_053.zip", category: "dstnus",
+        preview: "تاریخی کوردستان" },
+    { name: "uniqaidar_bilal_054", file: "uniqaidar_bilal_054", path: "fonts/dstnus/uniqaidar_bilal_054.ttf", zip: "fonts/dstnus/uniqaidar_bilal_054.zip", category: "dstnus",
+        preview: "باوەری ئاسمانی" },
+    { name: "uniqaidar_bilal_055", file: "uniqaidar_bilal_055", path: "fonts/dstnus/uniqaidar_bilal_055.ttf", zip: "fonts/dstnus/uniqaidar_bilal_055.zip", category: "dstnus",
+        preview: "ڕووپەڵی مێژوو" },
+    { name: "uniqaidar_bilal_056", file: "uniqaidar_bilal_056", path: "fonts/dstnus/uniqaidar_bilal_056.ttf", zip: "fonts/dstnus/uniqaidar_bilal_056.zip", category: "dstnus",
+        preview: "باران و بۆران" },
+    { name: "uniqaidar_bilal_057", file: "uniqaidar_bilal_057", path: "fonts/dstnus/uniqaidar_bilal_057.ttf", zip: "fonts/dstnus/uniqaidar_bilal_057.zip", category: "dstnus",
+        preview: "ئایندەی ئایندە" },
+    { name: "uniqaidar_bilal_058", file: "uniqaidar_bilal_058", path: "fonts/dstnus/uniqaidar_bilal_058.ttf", zip: "fonts/dstnus/uniqaidar_bilal_058.zip", category: "dstnus",
+        preview: "گۆرانی دیلان" },
+    { name: "uniqaidar_bilal_059", file: "uniqaidar_bilal_059", path: "fonts/dstnus/uniqaidar_bilal_059.ttf", zip: "fonts/dstnus/uniqaidar_bilal_059.zip", category: "dstnus",
+        preview: "سرودی ملیی" },
+    { name: "uniqaidar_bilal_060", file: "uniqaidar_bilal_060", path: "fonts/dstnus/uniqaidar_bilal_060.ttf", zip: "fonts/dstnus/uniqaidar_bilal_060.zip", category: "dstnus",
+        preview: "مۆری میللەت" },
+    { name: "uniqaidar_bilal_060_py", file: "uniqaidar_bilal_060_py", path: "fonts/dstnus/uniqaidar_bilal_060_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_060_py.zip", category: "dstnus",
+        preview: "مۆری میللەت پى" },
+    { name: "uniqaidar_bilal_061", file: "uniqaidar_bilal_061", path: "fonts/dstnus/uniqaidar_bilal_061.ttf", zip: "fonts/dstnus/uniqaidar_bilal_061.zip", category: "dstnus",
+        preview: "پەنجەری ئاسمان" },
+    { name: "uniqaidar_bilal_062", file: "uniqaidar_bilal_062", path: "fonts/dstnus/uniqaidar_bilal_062.ttf", zip: "fonts/dstnus/uniqaidar_bilal_062.zip", category: "dstnus",
+        preview: "گەڵتەی باز" },
+    { name: "uniqaidar_bilal_063", file: "uniqaidar_bilal_063", path: "fonts/dstnus/uniqaidar_bilal_063.ttf", zip: "fonts/dstnus/uniqaidar_bilal_063.zip", category: "dstnus",
+        preview: "ئەوینی پووشپەر" },
+    { name: "uniqaidar_bilal_063_pynkg", file: "uniqaidar_bilal_063_pynkg", path: "fonts/dstnus/uniqaidar_bilal_063_pynkg.ttf", zip: "fonts/dstnus/uniqaidar_bilal_063_pynkg.zip", category: "dstnus",
+        preview: "ئەوینی پووشپەر نکگ" },
+    { name: "uniqaidar_bilal_064", file: "uniqaidar_bilal_064", path: "fonts/dstnus/uniqaidar_bilal_064.ttf", zip: "fonts/dstnus/uniqaidar_bilal_064.zip", category: "dstnus",
+        preview: "شانازی نیشتمان" },
+    { name: "uniqaidar_bilal_065", file: "uniqaidar_bilal_065", path: "fonts/dstnus/uniqaidar_bilal_065.ttf", zip: "fonts/dstnus/uniqaidar_bilal_065.zip", category: "dstnus",
+        preview: "ڕوونی ڕۆژ" },
+    { name: "uniqaidar_bilal_066", file: "uniqaidar_bilal_066", path: "fonts/dstnus/uniqaidar_bilal_066.ttf", zip: "fonts/dstnus/uniqaidar_bilal_066.zip", category: "dstnus",
+        preview: "کوردستانی ئازاد" },
+    { name: "uniqaidar_bilal_067", file: "uniqaidar_bilal_067", path: "fonts/dstnus/uniqaidar_bilal_067.ttf", zip: "fonts/dstnus/uniqaidar_bilal_067.zip", category: "dstnus",
+        preview: "بنەمالەی کوردی" },
+    { name: "uniqaidar_bilal_068", file: "uniqaidar_bilal_068", path: "fonts/dstnus/uniqaidar_bilal_068.ttf", zip: "fonts/dstnus/uniqaidar_bilal_068.zip", category: "dstnus",
+        preview: "هەناری مێژوو" },
+    { name: "uniqaidar_bilal_068_ptknh", file: "uniqaidar_bilal_068_ptknh", path: "fonts/dstnus/uniqaidar_bilal_068_ptknh.ttf", zip: "fonts/dstnus/uniqaidar_bilal_068_ptknh.zip", category: "dstnus",
+        preview: "هەناری مێژوو تکنه" },
+    { name: "uniqaidar_bilal_069", file: "uniqaidar_bilal_069", path: "fonts/dstnus/uniqaidar_bilal_069.ttf", zip: "fonts/dstnus/uniqaidar_bilal_069.zip", category: "dstnus",
+        preview: "کتێبخانەی دڵ" },
+    { name: "uniqaidar_bilal_070", file: "uniqaidar_bilal_070", path: "fonts/dstnus/uniqaidar_bilal_070.ttf", zip: "fonts/dstnus/uniqaidar_bilal_070.zip", category: "dstnus",
+        preview: "کۆمەڵگای کوردی" },
+    { name: "uniqaidar_bilal_070_py", file: "uniqaidar_bilal_070_py", path: "fonts/dstnus/uniqaidar_bilal_070_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_070_py.zip", category: "dstnus",
+        preview: "کۆمەڵگای کوردی پى" },
+    { name: "uniqaidar_bilal_071", file: "uniqaidar_bilal_071", path: "fonts/dstnus/uniqaidar_bilal_071.ttf", zip: "fonts/dstnus/uniqaidar_bilal_071.zip", category: "dstnus",
+        preview: "جوانترین دەنگ" },
+    { name: "uniqaidar_bilal_072", file: "uniqaidar_bilal_072", path: "fonts/dstnus/uniqaidar_bilal_072.ttf", zip: "fonts/dstnus/uniqaidar_bilal_072.zip", category: "dstnus",
+        preview: "میراتی شایستە" },
+    { name: "uniqaidar_bilal_073", file: "uniqaidar_bilal_073", path: "fonts/dstnus/uniqaidar_bilal_073.ttf", zip: "fonts/dstnus/uniqaidar_bilal_073.zip", category: "dstnus",
+        preview: "ئینتیفاضەی قەلەم" },
+    { name: "uniqaidar_bilal_074", file: "uniqaidar_bilal_074", path: "fonts/dstnus/uniqaidar_bilal_074.ttf", zip: "fonts/dstnus/uniqaidar_bilal_074.zip", category: "dstnus",
+        preview: "خوازراوی دڵ" },
+    { name: "uniqaidar_bilal_075", file: "uniqaidar_bilal_075", path: "fonts/dstnus/uniqaidar_bilal_075.ttf", zip: "fonts/dstnus/uniqaidar_bilal_075.zip", category: "dstnus",
+        preview: "نووسینی مۆدێرن" },
+    { name: "uniqaidar_bilal_075_pykgnh", file: "uniqaidar_bilal_075_pykgnh", path: "fonts/dstnus/uniqaidar_bilal_075_pykgnh.ttf", zip: "fonts/dstnus/uniqaidar_bilal_075_pykgnh.zip", category: "dstnus",
+        preview: "نووسینی مۆدێرن کگنه" },
+    { name: "uniqaidar_bilal_076", file: "uniqaidar_bilal_076", path: "fonts/dstnus/uniqaidar_bilal_076.ttf", zip: "fonts/dstnus/uniqaidar_bilal_076.zip", category: "dstnus",
+        preview: "یادگاری خووش" },
+    { name: "uniqaidar_bilal_077", file: "uniqaidar_bilal_077", path: "fonts/dstnus/uniqaidar_bilal_077.ttf", zip: "fonts/dstnus/uniqaidar_bilal_077.zip", category: "dstnus",
+        preview: "هونەر و فڕین" },
+    { name: "uniqaidar_bilal_078", file: "uniqaidar_bilal_078", path: "fonts/dstnus/uniqaidar_bilal_078.ttf", zip: "fonts/dstnus/uniqaidar_bilal_078.zip", category: "dstnus",
+        preview: "تێکەڵی ئاوا" },
+    { name: "uniqaidar_bilal_079", file: "uniqaidar_bilal_079", path: "fonts/dstnus/uniqaidar_bilal_079.ttf", zip: "fonts/dstnus/uniqaidar_bilal_079.zip", category: "dstnus",
+        preview: "ئاراستەی ئاوا" },
+    { name: "uniqaidar_bilal_080", file: "uniqaidar_bilal_080", path: "fonts/dstnus/uniqaidar_bilal_080.ttf", zip: "fonts/dstnus/uniqaidar_bilal_080.zip", category: "dstnus",
+        preview: "هاوین و پاییز" },
+    { name: "uniqaidar_bilal_081", file: "uniqaidar_bilal_081", path: "fonts/dstnus/uniqaidar_bilal_081.ttf", zip: "fonts/dstnus/uniqaidar_bilal_081.zip", category: "dstnus",
+        preview: "پەیامی هاوینە" },
+    { name: "uniqaidar_bilal_082", file: "uniqaidar_bilal_082", path: "fonts/dstnus/uniqaidar_bilal_082.ttf", zip: "fonts/dstnus/uniqaidar_bilal_082.zip", category: "dstnus",
+        preview: "سەرچاوەی دڵ" },
+    { name: "uniqaidar_bilal_083", file: "uniqaidar_bilal_083", path: "fonts/dstnus/uniqaidar_bilal_083.ttf", zip: "fonts/dstnus/uniqaidar_bilal_083.zip", category: "dstnus",
+        preview: "دیمەنی شیعر" },
+    { name: "uniqaidar_bilal_084", file: "uniqaidar_bilal_084", path: "fonts/dstnus/uniqaidar_bilal_084.ttf", zip: "fonts/dstnus/uniqaidar_bilal_084.zip", category: "dstnus",
+        preview: "ژیانی سەفا" },
+    { name: "uniqaidar_bilal_085", file: "uniqaidar_bilal_085", path: "fonts/dstnus/uniqaidar_bilal_085.ttf", zip: "fonts/dstnus/uniqaidar_bilal_085.zip", category: "dstnus",
+        preview: "ئەدەب و فەرهەنگ" },
+    { name: "uniqaidar_bilal_086", file: "uniqaidar_bilal_086", path: "fonts/dstnus/uniqaidar_bilal_086.ttf", zip: "fonts/dstnus/uniqaidar_bilal_086.zip", category: "dstnus",
+        preview: "ئایدیای نوێ" },
+    { name: "uniqaidar_bilal_087", file: "uniqaidar_bilal_087", path: "fonts/dstnus/uniqaidar_bilal_087.ttf", zip: "fonts/dstnus/uniqaidar_bilal_087.zip", category: "dstnus",
+        preview: "دەستپێکی ئەمرۆ" },
+    { name: "uniqaidar_bilal_088", file: "uniqaidar_bilal_088", path: "fonts/dstnus/uniqaidar_bilal_088.ttf", zip: "fonts/dstnus/uniqaidar_bilal_088.zip", category: "dstnus",
+        preview: "ئارامگەی دڵ" },
+    { name: "uniqaidar_7emze", file: "uniqaidar_7emze", path: "fonts/hwal/uniqaidar_7emze.ttf", zip: "fonts/hwal/uniqaidar_7emze.zip", category: "hwal",
+        preview: "هەمزە و خوێندنەوە" },
+    { name: "uniqaidar_bukra_001", file: "uniqaidar_bukra_001", path: "fonts/hwal/uniqaidar_bukra_001.ttf", zip: "fonts/hwal/uniqaidar_bukra_001.zip", category: "hwal",
+        preview: "بوکرا سبەی" },
+    { name: "uniqaidar_bukra_002", file: "uniqaidar_bukra_002", path: "fonts/hwal/uniqaidar_bukra_002.ttf", zip: "fonts/hwal/uniqaidar_bukra_002.zip", category: "hwal",
+        preview: "سبەینی نوێ" },
+    { name: "uniqaidar_bukra_003", file: "uniqaidar_bukra_003", path: "fonts/hwal/uniqaidar_bukra_003.ttf", zip: "fonts/hwal/uniqaidar_bukra_003.zip", category: "hwal",
+        preview: "ئامادەبوون" },
+    { name: "uniqaidar_bukra_004", file: "uniqaidar_bukra_004", path: "fonts/hwal/uniqaidar_bukra_004.ttf", zip: "fonts/hwal/uniqaidar_bukra_004.zip", category: "hwal",
+        preview: "ئایندەی خۆش" },
+    { name: "uniqaidar_hewal_000", file: "uniqaidar_hewal_000", path: "fonts/hwal/uniqaidar_hewal_000.ttf", zip: "fonts/hwal/uniqaidar_hewal_000.zip", category: "hwal",
+        preview: "هەواڵی کوردستان" },
+    { name: "uniqaidar_hewal_001", file: "uniqaidar_hewal_001", path: "fonts/hwal/uniqaidar_hewal_001.ttf", zip: "fonts/hwal/uniqaidar_hewal_001.zip", category: "hwal",
+        preview: "بەرهەمی نوێ" },
+    { name: "uniqaidar_hewal_002", file: "uniqaidar_hewal_002", path: "fonts/hwal/uniqaidar_hewal_002.ttf", zip: "fonts/hwal/uniqaidar_hewal_002.zip", category: "hwal",
+        preview: "ئاگاداری ڕۆژانە" },
+    { name: "uniqaidar_hewal_003", file: "uniqaidar_hewal_003", path: "fonts/hwal/uniqaidar_hewal_003.ttf", zip: "fonts/hwal/uniqaidar_hewal_003.zip", category: "hwal",
+        preview: "ژیانی ڕۆژانە" },
+    { name: "uniqaidar_hewal_004", file: "uniqaidar_hewal_004", path: "fonts/hwal/uniqaidar_hewal_004.ttf", zip: "fonts/hwal/uniqaidar_hewal_004.zip", category: "hwal",
+        preview: "مانەوەی شادی" },
+    { name: "uniqaidar_hewal_005", file: "uniqaidar_hewal_005", path: "fonts/hwal/uniqaidar_hewal_005.ttf", zip: "fonts/hwal/uniqaidar_hewal_005.zip", category: "hwal",
+        preview: "ئەزموونی کار" },
+    { name: "uniqaidar_hewal_006", file: "uniqaidar_hewal_006", path: "fonts/hwal/uniqaidar_hewal_006.ttf", zip: "fonts/hwal/uniqaidar_hewal_006.zip", category: "hwal",
+        preview: "دەقی هەواڵ" },
+    { name: "uniqaidar_hewal_007", file: "uniqaidar_hewal_007", path: "fonts/hwal/uniqaidar_hewal_007.ttf", zip: "fonts/hwal/uniqaidar_hewal_007.zip", category: "hwal",
+        preview: "کوردستانی نوێ" },
+    { name: "uniqaidar_hewal_008", file: "uniqaidar_hewal_008", path: "fonts/hwal/uniqaidar_hewal_008.ttf", zip: "fonts/hwal/uniqaidar_hewal_008.zip", category: "hwal",
+        preview: "پەخشی ڕووداو" },
+    { name: "uniqaidar_hewal_009", file: "uniqaidar_hewal_009", path: "fonts/hwal/uniqaidar_hewal_009.ttf", zip: "fonts/hwal/uniqaidar_hewal_009.zip", category: "hwal",
+        preview: "چاودێری نووسین" },
+    { name: "uniqaidar_hewal_010", file: "uniqaidar_hewal_010", path: "fonts/hwal/uniqaidar_hewal_010.ttf", zip: "fonts/hwal/uniqaidar_hewal_010.zip", category: "hwal",
+        preview: "ڕاپۆرتی ڕووداو" },
+    { name: "uniqaidar_hewal_011", file: "uniqaidar_hewal_011", path: "fonts/hwal/uniqaidar_hewal_011.ttf", zip: "fonts/hwal/uniqaidar_hewal_011.zip", category: "hwal",
+        preview: "هەواڵی خێرا" },
+    { name: "uniqaidar_hewal_012", file: "uniqaidar_hewal_012", path: "fonts/hwal/uniqaidar_hewal_012.ttf", zip: "fonts/hwal/uniqaidar_hewal_012.zip", category: "hwal",
+        preview: "بابەتی ئەدەبی" },
+    { name: "uniqaidar_hewal_013", file: "uniqaidar_hewal_013", path: "fonts/hwal/uniqaidar_hewal_013.ttf", zip: "fonts/hwal/uniqaidar_hewal_013.zip", category: "hwal",
+        preview: "وتاری دیاری" },
+    { name: "uniqaidar_hewal_014", file: "uniqaidar_hewal_014", path: "fonts/hwal/uniqaidar_hewal_014.ttf", zip: "fonts/hwal/uniqaidar_hewal_014.zip", category: "hwal",
+        preview: "لایەنی هەواڵ" },
+    { name: "uniqaidar_hewal_015", file: "uniqaidar_hewal_015", path: "fonts/hwal/uniqaidar_hewal_015.ttf", zip: "fonts/hwal/uniqaidar_hewal_015.zip", category: "hwal",
+        preview: "بلاونەوەی ڕۆژانە" },
+    { name: "uniqaidar_hewal_016", file: "uniqaidar_hewal_016", path: "fonts/hwal/uniqaidar_hewal_016.ttf", zip: "fonts/hwal/uniqaidar_hewal_016.zip", category: "hwal",
+        preview: "تیتری سەرەکی" },
+    { name: "uniqaidar_hewal_017", file: "uniqaidar_hewal_017", path: "fonts/hwal/uniqaidar_hewal_017.ttf", zip: "fonts/hwal/uniqaidar_hewal_017.zip", category: "hwal",
+        preview: "زانیاری کلتووری" },
+    { name: "uniqaidar_hewal_018", file: "uniqaidar_hewal_018", path: "fonts/hwal/uniqaidar_hewal_018.ttf", zip: "fonts/hwal/uniqaidar_hewal_018.zip", category: "hwal",
+        preview: "کۆمەڵایەتی نوێ" },
+    { name: "uniqaidar_hewal_019", file: "uniqaidar_hewal_019", path: "fonts/hwal/uniqaidar_hewal_019.ttf", zip: "fonts/hwal/uniqaidar_hewal_019.zip", category: "hwal",
+        preview: "پاڵنەری بازار" },
+    { name: "uniqaidar_hewal_020", file: "uniqaidar_hewal_020", path: "fonts/hwal/uniqaidar_hewal_020.ttf", zip: "fonts/hwal/uniqaidar_hewal_020.zip", category: "hwal",
+        preview: "ڕاپۆرتی تایبەت" },
+    { name: "uniqaidar_hewal_021", file: "uniqaidar_hewal_021", path: "fonts/hwal/uniqaidar_hewal_021.ttf", zip: "fonts/hwal/uniqaidar_hewal_021.zip", category: "hwal",
+        preview: "هەواڵی شارستانی" },
+    { name: "uniqaidar_hewal_022", file: "uniqaidar_hewal_022", path: "fonts/hwal/uniqaidar_hewal_022.ttf", zip: "fonts/hwal/uniqaidar_hewal_022.zip", category: "hwal",
+        preview: "ڕۆژی جیهانی" },
+    { name: "uniqaidar_hewal_023", file: "uniqaidar_hewal_023", path: "fonts/hwal/uniqaidar_hewal_023.ttf", zip: "fonts/hwal/uniqaidar_hewal_023.zip", category: "hwal",
+        preview: "کارگێڕی نووسین" },
+    { name: "uniqaidar_hewal_024", file: "uniqaidar_hewal_024", path: "fonts/hwal/uniqaidar_hewal_024.ttf", zip: "fonts/hwal/uniqaidar_hewal_024.zip", category: "hwal",
+        preview: "دەرگای زانیاری" },
+    { name: "uniqaidar_hewal_025", file: "uniqaidar_hewal_025", path: "fonts/hwal/uniqaidar_hewal_025.ttf", zip: "fonts/hwal/uniqaidar_hewal_025.zip", category: "hwal",
+        preview: "گوفتوگۆی تایبەت" },
+    { name: "uniqaidar_hewal_026", file: "uniqaidar_hewal_026", path: "fonts/hwal/uniqaidar_hewal_026.ttf", zip: "fonts/hwal/uniqaidar_hewal_026.zip", category: "hwal",
+        preview: "تیشکی ڕۆژانە" },
+    { name: "uniqaidar_hewal_027", file: "uniqaidar_hewal_027", path: "fonts/hwal/uniqaidar_hewal_027.ttf", zip: "fonts/hwal/uniqaidar_hewal_027.zip", category: "hwal",
+        preview: "ئیقلیمی نوێ" },
+    { name: "uniqaidar_hewal_028", file: "uniqaidar_hewal_028", path: "fonts/hwal/uniqaidar_hewal_028.ttf", zip: "fonts/hwal/uniqaidar_hewal_028.zip", category: "hwal",
+        preview: "شارۆچکەی کۆن" },
+    { name: "uniqaidar_hewal_029", file: "uniqaidar_hewal_029", path: "fonts/hwal/uniqaidar_hewal_029.ttf", zip: "fonts/hwal/uniqaidar_hewal_029.zip", category: "hwal",
+        preview: "بلاونەوەی کوردی" },
+    { name: "uniqaidar_hewal_030", file: "uniqaidar_hewal_030", path: "fonts/hwal/uniqaidar_hewal_030.ttf", zip: "fonts/hwal/uniqaidar_hewal_030.zip", category: "hwal",
+        preview: "نووسینی تازە" },
+    { name: "uniqaidar_hewal_031", file: "uniqaidar_hewal_031", path: "fonts/hwal/uniqaidar_hewal_031.ttf", zip: "fonts/hwal/uniqaidar_hewal_031.zip", category: "hwal",
+        preview: "ئاگاداری تایبەت" },
+    { name: "uniqaidar_hewal_032", file: "uniqaidar_hewal_032", path: "fonts/hwal/uniqaidar_hewal_032.ttf", zip: "fonts/hwal/uniqaidar_hewal_032.zip", category: "hwal",
+        preview: "ڕووداوی گەورە" },
+    { name: "uniqaidar_hewal_033", file: "uniqaidar_hewal_033", path: "fonts/hwal/uniqaidar_hewal_033.ttf", zip: "fonts/hwal/uniqaidar_hewal_033.zip", category: "hwal",
+        preview: "ماوەی خۆش" },
+    { name: "uniqaidar_hewal_034", file: "uniqaidar_hewal_034", path: "fonts/hwal/uniqaidar_hewal_034.ttf", zip: "fonts/hwal/uniqaidar_hewal_034.zip", category: "hwal",
+        preview: "ئەرکی نووسەر" },
+    { name: "uniqaidar_hewal_035", file: "uniqaidar_hewal_035", path: "fonts/hwal/uniqaidar_hewal_035.ttf", zip: "fonts/hwal/uniqaidar_hewal_035.zip", category: "hwal",
+        preview: "بەرپرسایەتی دڵ" },
+    { name: "uniqaidar_hewal_036", file: "uniqaidar_hewal_036", path: "fonts/hwal/uniqaidar_hewal_036.ttf", zip: "fonts/hwal/uniqaidar_hewal_036.zip", category: "hwal",
+        preview: "پرسیاری گرنگ" },
+    { name: "uniqaidar_hewal_037", file: "uniqaidar_hewal_037", path: "fonts/hwal/uniqaidar_hewal_037.ttf", zip: "fonts/hwal/uniqaidar_hewal_037.zip", category: "hwal",
+        preview: "وەڵامی هەمیشەیی" },
+    { name: "uniqaidar_hewal_038", file: "uniqaidar_hewal_038", path: "fonts/hwal/uniqaidar_hewal_038.ttf", zip: "fonts/hwal/uniqaidar_hewal_038.zip", category: "hwal",
+        preview: "ئاگاداری کوردی" },
+    { name: "uniqaidar_hewal_039", file: "uniqaidar_hewal_039", path: "fonts/hwal/uniqaidar_hewal_039.ttf", zip: "fonts/hwal/uniqaidar_hewal_039.zip", category: "hwal",
+        preview: "خوێندنەوەی نوێ" },
+    { name: "uniqaidar_hewal_040", file: "uniqaidar_hewal_040", path: "fonts/hwal/uniqaidar_hewal_040.ttf", zip: "fonts/hwal/uniqaidar_hewal_040.zip", category: "hwal",
+        preview: "ڕووناکی دانا" },
+    { name: "uniqaidar_newsheadline_001", file: "uniqaidar_newsheadline_001", path: "fonts/hwal/uniqaidar_newsheadline_001.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_001.zip", category: "hwal",
+        preview: "تیتری هەواڵ" },
+    { name: "uniqaidar_newsheadline_002", file: "uniqaidar_newsheadline_002", path: "fonts/hwal/uniqaidar_newsheadline_002.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_002.zip", category: "hwal",
+        preview: "ڕووداوی گرنگ" },
+    { name: "uniqaidar_newsheadline_003", file: "uniqaidar_newsheadline_003", path: "fonts/hwal/uniqaidar_newsheadline_003.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_003.zip", category: "hwal",
+        preview: "هەواڵی نوێ" },
+    { name: "uniqaidar_newsheadline_004", file: "uniqaidar_newsheadline_004", path: "fonts/hwal/uniqaidar_newsheadline_004.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_004.zip", category: "hwal",
+        preview: "بڵاوکراوەی ئەمرۆ" },
+    { name: "uniqaidar_newsheadline_004bold", file: "uniqaidar_newsheadline_004bold", path: "fonts/hwal/uniqaidar_newsheadline_004bold.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_004bold.zip", category: "hwal",
+        preview: "تیتری بۆڵد" },
+    { name: "uniqaidar_newsheadline_005", file: "uniqaidar_newsheadline_005", path: "fonts/hwal/uniqaidar_newsheadline_005.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_005.zip", category: "hwal",
+        preview: "ئەخباری ئەمرۆ" },
+    { name: "uniqaidar_newsheadline_006", file: "uniqaidar_newsheadline_006", path: "fonts/hwal/uniqaidar_newsheadline_006.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_006.zip", category: "hwal",
+        preview: "دەقی سەرەکی" },
+    { name: "uniqaidar_newsheadline_007", file: "uniqaidar_newsheadline_007", path: "fonts/hwal/uniqaidar_newsheadline_007.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_007.zip", category: "hwal",
+        preview: "پەنجەرەی دنیا" },
+    { name: "uniqaidar_newsheadline_008", file: "uniqaidar_newsheadline_008", path: "fonts/hwal/uniqaidar_newsheadline_008.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_008.zip", category: "hwal",
+        preview: "ماوازەی ڕووداو" },
+    { name: "uniqaidar_newsheadline_009", file: "uniqaidar_newsheadline_009", path: "fonts/hwal/uniqaidar_newsheadline_009.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_009.zip", category: "hwal",
+        preview: "تەقەی قەلەم" },
+    { name: "uniqaidar_newsheadline_010", file: "uniqaidar_newsheadline_010", path: "fonts/hwal/uniqaidar_newsheadline_010.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_010.zip", category: "hwal",
+        preview: "کوردستان ئەمرۆ" },
+    { name: "uniqaidar_newsheadline_011", file: "uniqaidar_newsheadline_011", path: "fonts/hwal/uniqaidar_newsheadline_011.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_011.zip", category: "hwal",
+        preview: "هەواڵی گرنگ" },
+    { name: "uniqaidar_newsheadline_012", file: "uniqaidar_newsheadline_012", path: "fonts/hwal/uniqaidar_newsheadline_012.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_012.zip", category: "hwal",
+        preview: "ڕۆژنامەی کوردی" },
+    { name: "uniqaidar_newsheadline_013", file: "uniqaidar_newsheadline_013", path: "fonts/hwal/uniqaidar_newsheadline_013.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_013.zip", category: "hwal",
+        preview: "ئاگاداری سیاسی" },
+    { name: "uniqaidar_newsheadline_014", file: "uniqaidar_newsheadline_014", path: "fonts/hwal/uniqaidar_newsheadline_014.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_014.zip", category: "hwal",
+        preview: "بینینی ئەمرۆ" },
+    { name: "uniqaidar_newsheadline_015", file: "uniqaidar_newsheadline_015", path: "fonts/hwal/uniqaidar_newsheadline_015.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_015.zip", category: "hwal",
+        preview: "ڕووداوی نوێ" },
+    { name: "uniqaidar_newsheadline_016", file: "uniqaidar_newsheadline_016", path: "fonts/hwal/uniqaidar_newsheadline_016.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_016.zip", category: "hwal",
+        preview: "خوێندنی هەواڵ" },
+    { name: "uniqaidar_newsheadline_017", file: "uniqaidar_newsheadline_017", path: "fonts/hwal/uniqaidar_newsheadline_017.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_017.zip", category: "hwal",
+        preview: "ئاگاداری زانیاری" },
+    { name: "uniqaidar_newsheadline_018", file: "uniqaidar_newsheadline_018", path: "fonts/hwal/uniqaidar_newsheadline_018.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_018.zip", category: "hwal",
+        preview: "داهاتووی کوردستان" },
+    { name: "uniqaidar_newsheadline_019", file: "uniqaidar_newsheadline_019", path: "fonts/hwal/uniqaidar_newsheadline_019.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_019.zip", category: "hwal",
+        preview: "ستاتووی ئیرۆ" },
+    { name: "uniqaidar_newsheadline_019_nv", file: "uniqaidar_newsheadline_019_nv", path: "fonts/hwal/uniqaidar_newsheadline_019_nv.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_019_nv.zip", category: "hwal",
+        preview: "ستاتووی ئیرۆ نڤ" },
+    { name: "uniqaidar_newsheadline_019_r", file: "uniqaidar_newsheadline_019_r", path: "fonts/hwal/uniqaidar_newsheadline_019_r.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_019_r.zip", category: "hwal",
+        preview: "ستاتووی ئیرۆ ر" },
+    { name: "uniqaidar_newsheadline_020", file: "uniqaidar_newsheadline_020", path: "fonts/hwal/uniqaidar_newsheadline_020.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_020.zip", category: "hwal",
+        preview: "سیناریۆی نوێ" },
+    { name: "uniqaidar_newsheadline_021", file: "uniqaidar_newsheadline_021", path: "fonts/hwal/uniqaidar_newsheadline_021.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_021.zip", category: "hwal",
+        preview: "بۆچوونی شارەزا" },
+    { name: "uniqaidar_newsheadline_022", file: "uniqaidar_newsheadline_022", path: "fonts/hwal/uniqaidar_newsheadline_022.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_022.zip", category: "hwal",
+        preview: "کاروباری ئەمرۆ" },
+    { name: "uniqaidar_newsheadline_023", file: "uniqaidar_newsheadline_023", path: "fonts/hwal/uniqaidar_newsheadline_023.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_023.zip", category: "hwal",
+        preview: "ئینتیشار" },
+    { name: "uniqaidar_newsheadline_024", file: "uniqaidar_newsheadline_024", path: "fonts/hwal/uniqaidar_newsheadline_024.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_024.zip", category: "hwal",
+        preview: "پانۆرامای کوردستان" },
+    { name: "uniqaidar_newsheadline_025", file: "uniqaidar_newsheadline_025", path: "fonts/hwal/uniqaidar_newsheadline_025.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_025.zip", category: "hwal",
+        preview: "ئاخاوتنی گرنگ" },
+    { name: "uniqaidar_newsheadline_026", file: "uniqaidar_newsheadline_026", path: "fonts/hwal/uniqaidar_newsheadline_026.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_026.zip", category: "hwal",
+        preview: "رووداوی شاری" },
+    { name: "uniqaidar_newsheadline_027", file: "uniqaidar_newsheadline_027", path: "fonts/hwal/uniqaidar_newsheadline_027.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_027.zip", category: "hwal",
+        preview: "پیرۆزبوونی نوێ" },
+    { name: "uniqaidar_newsheadline_028", file: "uniqaidar_newsheadline_028", path: "fonts/hwal/uniqaidar_newsheadline_028.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_028.zip", category: "hwal",
+        preview: "بینینی سیاسی" },
+    { name: "uniqaidar_newsheadline_029", file: "uniqaidar_newsheadline_029", path: "fonts/hwal/uniqaidar_newsheadline_029.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_029.zip", category: "hwal",
+        preview: "ئاگاداری ئابووری" },
+    { name: "uniqaidar_newsheadline_030", file: "uniqaidar_newsheadline_030", path: "fonts/hwal/uniqaidar_newsheadline_030.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_030.zip", category: "hwal",
+        preview: "وتەی مانادار" },
+    { name: "uniqaidar_newsheadline_031", file: "uniqaidar_newsheadline_031", path: "fonts/hwal/uniqaidar_newsheadline_031.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_031.zip", category: "hwal",
+        preview: "هزری تازە" },
+    { name: "uniqaidar_newsheadline_032", file: "uniqaidar_newsheadline_032", path: "fonts/hwal/uniqaidar_newsheadline_032.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_032.zip", category: "hwal",
+        preview: "باس و بۆچوون" },
+    { name: "uniqaidar_newsheadline_033", file: "uniqaidar_newsheadline_033", path: "fonts/hwal/uniqaidar_newsheadline_033.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_033.zip", category: "hwal",
+        preview: "ڕاپۆرتی تایبەت" },
+    { name: "uniqaidar_newsheadline_034", file: "uniqaidar_newsheadline_034", path: "fonts/hwal/uniqaidar_newsheadline_034.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_034.zip", category: "hwal",
+        preview: "ئازمایشی پلاتفۆرم" },
+    { name: "uniqaidar_newsheadline_035", file: "uniqaidar_newsheadline_035", path: "fonts/hwal/uniqaidar_newsheadline_035.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_035.zip", category: "hwal",
+        preview: "پرسیار و وەڵام" },
+    { name: "uniqaidar_newsheadline_036", file: "uniqaidar_newsheadline_036", path: "fonts/hwal/uniqaidar_newsheadline_036.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_036.zip", category: "hwal",
+        preview: "بابەتی هەواڵی" },
+    { name: "uniqaidar_newsheadline_036_py", file: "uniqaidar_newsheadline_036_py", path: "fonts/hwal/uniqaidar_newsheadline_036_py.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_036_py.zip", category: "hwal",
+        preview: "بابەتی هەواڵی پى" },
+    { name: "uniqaidar_newsheadline_036_pym", file: "uniqaidar_newsheadline_036_pym", path: "fonts/hwal/uniqaidar_newsheadline_036_pym.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_036_pym.zip", category: "hwal",
+        preview: "بابەتی هەواڵی پیم" },
+    { name: "uniqaidar_newsheadline_037", file: "uniqaidar_newsheadline_037", path: "fonts/hwal/uniqaidar_newsheadline_037.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_037.zip", category: "hwal",
+        preview: "ئینفۆگرافیکی" },
+    { name: "uniqaidar_newsheadline_038", file: "uniqaidar_newsheadline_038", path: "fonts/hwal/uniqaidar_newsheadline_038.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_038.zip", category: "hwal",
+        preview: "ڕووداوی ئەمرۆ" },
+    { name: "uniqaidar_newsheadline_039", file: "uniqaidar_newsheadline_039", path: "fonts/hwal/uniqaidar_newsheadline_039.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_039.zip", category: "hwal",
+        preview: "سیاسەتی نوێ" },
+    { name: "uniqaidar_newsheadline_040", file: "uniqaidar_newsheadline_040", path: "fonts/hwal/uniqaidar_newsheadline_040.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_040.zip", category: "hwal",
+        preview: "پوختەی بابەت" },
+    { name: "uniqaidar_newsheadline_041", file: "uniqaidar_newsheadline_041", path: "fonts/hwal/uniqaidar_newsheadline_041.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_041.zip", category: "hwal",
+        preview: "ڕاپۆرتی گرنگ" },
+    { name: "uniqaidar_newsheadline_042", file: "uniqaidar_newsheadline_042", path: "fonts/hwal/uniqaidar_newsheadline_042.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_042.zip", category: "hwal",
+        preview: "ماوازەی سیاسی" },
+    { name: "uniqaidar_pure_001", file: "uniqaidar_pure_001", path: "fonts/hwal/uniqaidar_pure_001.ttf", zip: "fonts/hwal/uniqaidar_pure_001.zip", category: "hwal",
+        preview: "ئامادەی خوێندن" },
+    { name: "uniqaidar_pure_002", file: "uniqaidar_pure_002", path: "fonts/hwal/uniqaidar_pure_002.ttf", zip: "fonts/hwal/uniqaidar_pure_002.zip", category: "hwal",
+        preview: "پیوری نووسین" },
+    { name: "uniqaidar_pure_003", file: "uniqaidar_pure_003", path: "fonts/hwal/uniqaidar_pure_003.ttf", zip: "fonts/hwal/uniqaidar_pure_003.zip", category: "hwal",
+        preview: "سادەی کوردی" },
+    { name: "qaidar_islamic00", file: "qaidar_islamic00", path: "fonts/islami/qaidar_islamic00.ttf", zip: "fonts/islami/qaidar_islamic00.zip", category: "islami",
+        preview: "بسم الله الرحمن" },
+    { name: "qaidar_islamic01", file: "qaidar_islamic01", path: "fonts/islami/qaidar_islamic01.ttf", zip: "fonts/islami/qaidar_islamic01.zip", category: "islami",
+        preview: "الحمد لله رب العالمین" },
+    { name: "qaidar_islamic02", file: "qaidar_islamic02", path: "fonts/islami/qaidar_islamic02.ttf", zip: "fonts/islami/qaidar_islamic02.zip", category: "islami",
+        preview: "سبحان الله و بحمده" },
+    { name: "qaidar_islamic03", file: "qaidar_islamic03", path: "fonts/islami/qaidar_islamic03.ttf", zip: "fonts/islami/qaidar_islamic03.zip", category: "islami",
+        preview: "لا اله الا الله" },
+    { name: "qaidar_islamic04", file: "qaidar_islamic04", path: "fonts/islami/qaidar_islamic04.ttf", zip: "fonts/islami/qaidar_islamic04.zip", category: "islami",
+        preview: "محمد رسول الله" },
+    { name: "uniqaidar_esra&mieraj", file: "uniqaidar_esra&mieraj", path: "fonts/islami/uniqaidar_esra&mieraj.ttf", zip: "fonts/islami/uniqaidar_esra&mieraj.zip", category: "islami",
+        preview: "ئیسرا و مەعراج" },
+    { name: "uniqaidar_islamic00", file: "uniqaidar_islamic00", path: "fonts/islami/uniqaidar_islamic00.ttf", zip: "fonts/islami/uniqaidar_islamic00.zip", category: "islami",
+        preview: "پیرۆزی ئیسلامی" },
+    { name: "uniqaidar_islamic01", file: "uniqaidar_islamic01", path: "fonts/islami/uniqaidar_islamic01.ttf", zip: "fonts/islami/uniqaidar_islamic01.zip", category: "islami",
+        preview: "خوایەرمەت ئیسلام" },
+    { name: "uniqaidar_islamic02", file: "uniqaidar_islamic02", path: "fonts/islami/uniqaidar_islamic02.ttf", zip: "fonts/islami/uniqaidar_islamic02.zip", category: "islami",
+        preview: "ئایەتی قورئانی" },
+    { name: "uniqaidar_islamic03", file: "uniqaidar_islamic03", path: "fonts/islami/uniqaidar_islamic03.ttf", zip: "fonts/islami/uniqaidar_islamic03.zip", category: "islami",
+        preview: "ئامادەی ڕەمەزان" },
+    { name: "uniqaidar_islamic04", file: "uniqaidar_islamic04", path: "fonts/islami/uniqaidar_islamic04.ttf", zip: "fonts/islami/uniqaidar_islamic04.zip", category: "islami",
+        preview: "دوعای ڕۆژانە" },
+    { name: "uniqaidar_remezan_000", file: "uniqaidar_remezan_000", path: "fonts/islami/uniqaidar_remezan_000.ttf", zip: "fonts/islami/uniqaidar_remezan_000.zip", category: "islami",
+        preview: "ڕەمەزانی پیرۆز" },
+    { name: "uniqaidar_remezan_001", file: "uniqaidar_remezan_001", path: "fonts/islami/uniqaidar_remezan_001.ttf", zip: "fonts/islami/uniqaidar_remezan_001.zip", category: "islami",
+        preview: "مانگی ڕۆشنایی" },
+    { name: "uniqaidar_subtitle_000", file: "uniqaidar_subtitle_000", path: "fonts/jrnus/uniqaidar_subtitle_000.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_000.zip", category: "jrnus",
+        preview: "ژێرنووسی فیلم" },
+    { name: "uniqaidar_subtitle_001", file: "uniqaidar_subtitle_001", path: "fonts/jrnus/uniqaidar_subtitle_001.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_001.zip", category: "jrnus",
+        preview: "تێبینی دۆکیومێنت" },
+    { name: "uniqaidar_subtitle_002", file: "uniqaidar_subtitle_002", path: "fonts/jrnus/uniqaidar_subtitle_002.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_002.zip", category: "jrnus",
+        preview: "زانیاری ڤیدیۆ" },
+    { name: "uniqaidar_subtitle_003", file: "uniqaidar_subtitle_003", path: "fonts/jrnus/uniqaidar_subtitle_003.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_003.zip", category: "jrnus",
+        preview: "پۆدکاستی کوردی" },
+    { name: "uniqaidar_subtitle_004", file: "uniqaidar_subtitle_004", path: "fonts/jrnus/uniqaidar_subtitle_004.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_004.zip", category: "jrnus",
+        preview: "دەقی بلاوکراوە" },
+    { name: "uniqaidar_subtitle_005", file: "uniqaidar_subtitle_005", path: "fonts/jrnus/uniqaidar_subtitle_005.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_005.zip", category: "jrnus",
+        preview: "ژێرنووسی تایبەت" },
+    { name: "uniqaidar_subtitle_006", file: "uniqaidar_subtitle_006", path: "fonts/jrnus/uniqaidar_subtitle_006.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_006.zip", category: "jrnus",
+        preview: "تێبینی کەناڵ" },
+    { name: "uniqaidar_subtitle_007", file: "uniqaidar_subtitle_007", path: "fonts/jrnus/uniqaidar_subtitle_007.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_007.zip", category: "jrnus",
+        preview: "دەقی ئەدەبی" },
+    { name: "uniqaidar_subtitle_008", file: "uniqaidar_subtitle_008", path: "fonts/jrnus/uniqaidar_subtitle_008.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_008.zip", category: "jrnus",
+        preview: "خوێندنەوەی ئایین" },
+    { name: "uniqaidar_subtitle_009", file: "uniqaidar_subtitle_009", path: "fonts/jrnus/uniqaidar_subtitle_009.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_009.zip", category: "jrnus",
+        preview: "ژێرنووسی کوردی" },
+    { name: "uniqaidar_subtitle_010", file: "uniqaidar_subtitle_010", path: "fonts/jrnus/uniqaidar_subtitle_010.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_010.zip", category: "jrnus",
+        preview: "تیتری بەرنامە" },
+    { name: "uniqaidar_subtitle_011", file: "uniqaidar_subtitle_011", path: "fonts/jrnus/uniqaidar_subtitle_011.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_011.zip", category: "jrnus",
+        preview: "ئینتەرۆ و ئەندام" },
+    { name: "uniqaidar_afarin_001", file: "uniqaidar_afarin_001", path: "fonts/kanal/uniqaidar_afarin_001.ttf", zip: "fonts/kanal/uniqaidar_afarin_001.zip", category: "kanal",
+        preview: "ئافەرین کەناڵ" },
+    { name: "uniqaidar_afarin_002", file: "uniqaidar_afarin_002", path: "fonts/kanal/uniqaidar_afarin_002.ttf", zip: "fonts/kanal/uniqaidar_afarin_002.zip", category: "kanal",
+        preview: "دەنگی نوێ" },
+    { name: "uniqaidar_afarin_003", file: "uniqaidar_afarin_003", path: "fonts/kanal/uniqaidar_afarin_003.ttf", zip: "fonts/kanal/uniqaidar_afarin_003.zip", category: "kanal",
+        preview: "ستودیۆی کوردی" },
+    { name: "uniqaidar_amozhgary_001", file: "uniqaidar_amozhgary_001", path: "fonts/kanal/uniqaidar_amozhgary_001.ttf", zip: "fonts/kanal/uniqaidar_amozhgary_001.zip", category: "kanal",
+        preview: "فێرکاری ئۆنلاین" },
+    { name: "uniqaidar_amozhgary_002", file: "uniqaidar_amozhgary_002", path: "fonts/kanal/uniqaidar_amozhgary_002.ttf", zip: "fonts/kanal/uniqaidar_amozhgary_002.zip", category: "kanal",
+        preview: "خوێندن و زانین" },
+    { name: "uniqaidar_amozhgary_003", file: "uniqaidar_amozhgary_003", path: "fonts/kanal/uniqaidar_amozhgary_003.ttf", zip: "fonts/kanal/uniqaidar_amozhgary_003.zip", category: "kanal",
+        preview: "پەروەردەی نوێ" },
+    { name: "uniqaidar_arabyeh", file: "uniqaidar_arabyeh", path: "fonts/kanal/uniqaidar_arabyeh.ttf", zip: "fonts/kanal/uniqaidar_arabyeh.zip", category: "kanal",
+        preview: "عەرەبیە فۆنت" },
+    { name: "uniqaidar_aramco", file: "uniqaidar_aramco", path: "fonts/kanal/uniqaidar_aramco.ttf", zip: "fonts/kanal/uniqaidar_aramco.zip", category: "kanal",
+        preview: "ئارامکۆ" },
+    { name: "uniqaidar_asiacell_001", file: "uniqaidar_asiacell_001", path: "fonts/kanal/uniqaidar_asiacell_001.ttf", zip: "fonts/kanal/uniqaidar_asiacell_001.zip", category: "kanal",
+        preview: "ئاسیاسێل یەکەم" },
+    { name: "uniqaidar_asiacell_002", file: "uniqaidar_asiacell_002", path: "fonts/kanal/uniqaidar_asiacell_002.ttf", zip: "fonts/kanal/uniqaidar_asiacell_002.zip", category: "kanal",
+        preview: "ئاسیاسێل دووەم" },
+    { name: "uniqaidar_asya", file: "uniqaidar_asya", path: "fonts/kanal/uniqaidar_asya.ttf", zip: "fonts/kanal/uniqaidar_asya.zip", category: "kanal",
+        preview: "ئاسیا کۆمیونیکیشن" },
+    { name: "uniqaidar_baxshin_hospital_001", file: "uniqaidar_baxshin_hospital_001", path: "fonts/kanal/uniqaidar_baxshin_hospital_001.ttf", zip: "fonts/kanal/uniqaidar_baxshin_hospital_001.zip", category: "kanal",
+        preview: "نەخۆشخانەی باخشین" },
+    { name: "uniqaidar_baxshin_hospital_002", file: "uniqaidar_baxshin_hospital_002", path: "fonts/kanal/uniqaidar_baxshin_hospital_002.ttf", zip: "fonts/kanal/uniqaidar_baxshin_hospital_002.zip", category: "kanal",
+        preview: "خزمەتگوزاری تەندروستی" },
+    { name: "uniqaidar_fastlink_01", file: "uniqaidar_fastlink_01", path: "fonts/kanal/uniqaidar_fastlink_01.ttf", zip: "fonts/kanal/uniqaidar_fastlink_01.zip", category: "kanal",
+        preview: "فاست لینک یەکەم" },
+    { name: "uniqaidar_fastlink_02", file: "uniqaidar_fastlink_02", path: "fonts/kanal/uniqaidar_fastlink_02.ttf", zip: "fonts/kanal/uniqaidar_fastlink_02.zip", category: "kanal",
+        preview: "فاست لینک دووەم" },
+    { name: "uniqaidar_fastlink_03", file: "uniqaidar_fastlink_03", path: "fonts/kanal/uniqaidar_fastlink_03.ttf", zip: "fonts/kanal/uniqaidar_fastlink_03.zip", category: "kanal",
+        preview: "فاست لینک سێیەم" },
+    { name: "uniqaidar_fastlink_04", file: "uniqaidar_fastlink_04", path: "fonts/kanal/uniqaidar_fastlink_04.ttf", zip: "fonts/kanal/uniqaidar_fastlink_04.zip", category: "kanal",
+        preview: "فاست لینک چوارەم" },
+    { name: "uniqaidar_fnunokia", file: "uniqaidar_fnunokia", path: "fonts/kanal/uniqaidar_fnunokia.ttf", zip: "fonts/kanal/uniqaidar_fnunokia.zip", category: "kanal",
+        preview: "نۆکیا فۆن" },
+    { name: "uniqaidar_harem_hospital_001", file: "uniqaidar_harem_hospital_001", path: "fonts/kanal/uniqaidar_harem_hospital_001.ttf", zip: "fonts/kanal/uniqaidar_harem_hospital_001.zip", category: "kanal",
+        preview: "نەخۆشخانەی هەرێم" },
+    { name: "uniqaidar_harem_hospital_002", file: "uniqaidar_harem_hospital_002", path: "fonts/kanal/uniqaidar_harem_hospital_002.ttf", zip: "fonts/kanal/uniqaidar_harem_hospital_002.zip", category: "kanal",
+        preview: "خزمەتگوزاری هەرێم" },
+    { name: "uniqaidar_khwendkar_001", file: "uniqaidar_khwendkar_001", path: "fonts/kanal/uniqaidar_khwendkar_001.ttf", zip: "fonts/kanal/uniqaidar_khwendkar_001.zip", category: "kanal",
+        preview: "خوێندکار یەکەم" },
+    { name: "uniqaidar_khwendkar_002", file: "uniqaidar_khwendkar_002", path: "fonts/kanal/uniqaidar_khwendkar_002.ttf", zip: "fonts/kanal/uniqaidar_khwendkar_002.zip", category: "kanal",
+        preview: "خوێندکار دووەم" },
+    { name: "uniqaidar_khwendkar_003", file: "uniqaidar_khwendkar_003", path: "fonts/kanal/uniqaidar_khwendkar_003.ttf", zip: "fonts/kanal/uniqaidar_khwendkar_003.zip", category: "kanal",
+        preview: "خوێندکار سێیەم" },
+    { name: "uniqaidar_mobile_tv", file: "uniqaidar_mobile_tv", path: "fonts/kanal/uniqaidar_mobile_tv.ttf", zip: "fonts/kanal/uniqaidar_mobile_tv.zip", category: "kanal",
+        preview: "موبایل تڤی کوردی" },
+    { name: "uniqaidar_money_heist_001", file: "uniqaidar_money_heist_001", path: "fonts/kanal/uniqaidar_money_heist_001.ttf", zip: "fonts/kanal/uniqaidar_money_heist_001.zip", category: "kanal",
+        preview: "قەڵای دراو" },
+    { name: "uniqaidar_money_heist_002", file: "uniqaidar_money_heist_002", path: "fonts/kanal/uniqaidar_money_heist_002.ttf", zip: "fonts/kanal/uniqaidar_money_heist_002.zip", category: "kanal",
+        preview: "سینیۆرا" },
+    { name: "uniqaidar_nawa", file: "uniqaidar_nawa", path: "fonts/kanal/uniqaidar_nawa.ttf", zip: "fonts/kanal/uniqaidar_nawa.zip", category: "kanal",
+        preview: "نەوا کەناڵ" },
+    { name: "uniqaidar_newpayam_01", file: "uniqaidar_newpayam_01", path: "fonts/kanal/uniqaidar_newpayam_01.ttf", zip: "fonts/kanal/uniqaidar_newpayam_01.zip", category: "kanal",
+        preview: "پەیام نوێ یەکەم" },
+    { name: "uniqaidar_newpayam_02", file: "uniqaidar_newpayam_02", path: "fonts/kanal/uniqaidar_newpayam_02.ttf", zip: "fonts/kanal/uniqaidar_newpayam_02.zip", category: "kanal",
+        preview: "پەیام نوێ دووەم" },
+    { name: "uniqaidar_newpayam_03", file: "uniqaidar_newpayam_03", path: "fonts/kanal/uniqaidar_newpayam_03.ttf", zip: "fonts/kanal/uniqaidar_newpayam_03.zip", category: "kanal",
+        preview: "پەیام نوێ سێیەم" },
+    { name: "uniqaidar_newpayam_04", file: "uniqaidar_newpayam_04", path: "fonts/kanal/uniqaidar_newpayam_04.ttf", zip: "fonts/kanal/uniqaidar_newpayam_04.zip", category: "kanal",
+        preview: "پەیام نوێ چوارەم" },
+    { name: "uniqaidar_payam", file: "uniqaidar_payam", path: "fonts/kanal/uniqaidar_payam.ttf", zip: "fonts/kanal/uniqaidar_payam.zip", category: "kanal",
+        preview: "پەیامی کوردستان" },
+    { name: "uniqaidar_payamnews", file: "uniqaidar_payamnews", path: "fonts/kanal/uniqaidar_payamnews.ttf", zip: "fonts/kanal/uniqaidar_payamnews.zip", category: "kanal",
+        preview: "هەواڵی پەیام" },
+    { name: "uniqaidar_payamnews_ku_numbers", file: "uniqaidar_payamnews_ku_numbers", path: "fonts/kanal/uniqaidar_payamnews_ku_numbers.ttf", zip: "fonts/kanal/uniqaidar_payamnews_ku_numbers.zip", category: "kanal",
+        preview: "ژمارەی کوردی پەیام" },
+    { name: "uniqaidar_payam_hd_001", file: "uniqaidar_payam_hd_001", path: "fonts/kanal/uniqaidar_payam_hd_001.ttf", zip: "fonts/kanal/uniqaidar_payam_hd_001.zip", category: "kanal",
+        preview: "پەیام HD یەکەم" },
+    { name: "uniqaidar_payam_hd_002", file: "uniqaidar_payam_hd_002", path: "fonts/kanal/uniqaidar_payam_hd_002.ttf", zip: "fonts/kanal/uniqaidar_payam_hd_002.zip", category: "kanal",
+        preview: "پەیام HD دووەم" },
+    { name: "uniqaidar_payam_hd_003", file: "uniqaidar_payam_hd_003", path: "fonts/kanal/uniqaidar_payam_hd_003.ttf", zip: "fonts/kanal/uniqaidar_payam_hd_003.zip", category: "kanal",
+        preview: "پەیام HD سێیەم" },
+    { name: "uniqaidar_payam_hd_004", file: "uniqaidar_payam_hd_004", path: "fonts/kanal/uniqaidar_payam_hd_004.ttf", zip: "fonts/kanal/uniqaidar_payam_hd_004.zip", category: "kanal",
+        preview: "پەیام HD چوارەم" },
+    { name: "uniqaidar_peregraf_01", file: "uniqaidar_peregraf_01", path: "fonts/kanal/uniqaidar_peregraf_01.ttf", zip: "fonts/kanal/uniqaidar_peregraf_01.zip", category: "kanal",
+        preview: "پەرەگراف یەکەم" },
+    { name: "uniqaidar_peregraf_02", file: "uniqaidar_peregraf_02", path: "fonts/kanal/uniqaidar_peregraf_02.ttf", zip: "fonts/kanal/uniqaidar_peregraf_02.zip", category: "kanal",
+        preview: "پەرەگراف دووەم" },
+    { name: "uniqaidar_sahar", file: "uniqaidar_sahar", path: "fonts/kanal/uniqaidar_sahar.ttf", zip: "fonts/kanal/uniqaidar_sahar.zip", category: "kanal",
+        preview: "سەحەری بەهار" },
+    { name: "uniqaidar_squid_game_002", file: "uniqaidar_squid_game_002", path: "fonts/kanal/uniqaidar_squid_game_002.ttf", zip: "fonts/kanal/uniqaidar_squid_game_002.zip", category: "kanal",
+        preview: "یاری مار" },
+    { name: "uniqaidar_talabat_01", file: "uniqaidar_talabat_01", path: "fonts/kanal/uniqaidar_talabat_01.ttf", zip: "fonts/kanal/uniqaidar_talabat_01.zip", category: "kanal",
+        preview: "تاڵابات یەکەم" },
+    { name: "uniqaidar_talabat_02", file: "uniqaidar_talabat_02", path: "fonts/kanal/uniqaidar_talabat_02.ttf", zip: "fonts/kanal/uniqaidar_talabat_02.zip", category: "kanal",
+        preview: "تاڵابات دووەم" },
+    { name: "uniqaidar_trt_01", file: "uniqaidar_trt_01", path: "fonts/kanal/uniqaidar_trt_01.ttf", zip: "fonts/kanal/uniqaidar_trt_01.zip", category: "kanal",
+        preview: "TRT کوردی یەکەم" },
+    { name: "uniqaidar_trt_02", file: "uniqaidar_trt_02", path: "fonts/kanal/uniqaidar_trt_02.ttf", zip: "fonts/kanal/uniqaidar_trt_02.zip", category: "kanal",
+        preview: "TRT کوردی دووەم" },
+    { name: "uniqaidar_trt_03", file: "uniqaidar_trt_03", path: "fonts/kanal/uniqaidar_trt_03.ttf", zip: "fonts/kanal/uniqaidar_trt_03.zip", category: "kanal",
+        preview: "TRT کوردی سێیەم" },
+    { name: "uniqaidar_trt_04", file: "uniqaidar_trt_04", path: "fonts/kanal/uniqaidar_trt_04.ttf", zip: "fonts/kanal/uniqaidar_trt_04.zip", category: "kanal",
+        preview: "TRT کوردی چوارەم" },
+    { name: "uniqaidar_zhyan_001", file: "uniqaidar_zhyan_001", path: "fonts/kanal/uniqaidar_zhyan_001.ttf", zip: "fonts/kanal/uniqaidar_zhyan_001.zip", category: "kanal",
+        preview: "ژیان یەکەم" },
+    { name: "uniqaidar_zhyan_002", file: "uniqaidar_zhyan_002", path: "fonts/kanal/uniqaidar_zhyan_002.ttf", zip: "fonts/kanal/uniqaidar_zhyan_002.zip", category: "kanal",
+        preview: "ژیان دووەم" },
+    { name: "uniqaidar_zhyan_003", file: "uniqaidar_zhyan_003", path: "fonts/kanal/uniqaidar_zhyan_003.ttf", zip: "fonts/kanal/uniqaidar_zhyan_003.zip", category: "kanal",
+        preview: "ژیان سێیەم" },
+    { name: "uniqaidar_a7med", file: "uniqaidar_a7med", path: "fonts/ktib/uniqaidar_a7med.ttf", zip: "fonts/ktib/uniqaidar_a7med.zip", category: "ktib",
+        preview: "ئەحمەد نووسەر" },
+    { name: "uniqaidar_blawkrawe_000", file: "uniqaidar_blawkrawe_000", path: "fonts/ktib/uniqaidar_blawkrawe_000.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_000.zip", category: "ktib",
+        preview: "بلاوکراوەی سفر" },
+    { name: "uniqaidar_blawkrawe_001", file: "uniqaidar_blawkrawe_001", path: "fonts/ktib/uniqaidar_blawkrawe_001.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_001.zip", category: "ktib",
+        preview: "کتێبی یەکەم" },
+    { name: "uniqaidar_blawkrawe_002", file: "uniqaidar_blawkrawe_002", path: "fonts/ktib/uniqaidar_blawkrawe_002.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_002.zip", category: "ktib",
+        preview: "چاپکردنی خوێندن" },
+    { name: "uniqaidar_blawkrawe_003", file: "uniqaidar_blawkrawe_003", path: "fonts/ktib/uniqaidar_blawkrawe_003.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_003.zip", category: "ktib",
+        preview: "فەرهەنگی دڵ" },
+    { name: "uniqaidar_blawkrawe_004", file: "uniqaidar_blawkrawe_004", path: "fonts/ktib/uniqaidar_blawkrawe_004.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_004.zip", category: "ktib",
+        preview: "ئەدەبی کلاسیک" },
+    { name: "uniqaidar_blawkrawe_004_hollow", file: "uniqaidar_blawkrawe_004_hollow", path: "fonts/ktib/uniqaidar_blawkrawe_004_hollow.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_004_hollow.zip", category: "ktib",
+        preview: "ئەدەبی کلاسیک وەدەر" },
+    { name: "uniqaidar_blawkrawe_005", file: "uniqaidar_blawkrawe_005", path: "fonts/ktib/uniqaidar_blawkrawe_005.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_005.zip", category: "ktib",
+        preview: "ڕووپەلی بوک" },
+    { name: "uniqaidar_blawkrawe_006", file: "uniqaidar_blawkrawe_006", path: "fonts/ktib/uniqaidar_blawkrawe_006.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_006.zip", category: "ktib",
+        preview: "نووسینی کتێب" },
+    { name: "uniqaidar_blawkrawe_007", file: "uniqaidar_blawkrawe_007", path: "fonts/ktib/uniqaidar_blawkrawe_007.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_007.zip", category: "ktib",
+        preview: "تاریخی نووسین" },
+    { name: "uniqaidar_blawkrawe_008", file: "uniqaidar_blawkrawe_008", path: "fonts/ktib/uniqaidar_blawkrawe_008.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_008.zip", category: "ktib",
+        preview: "مێژووی کوردستان" },
+    { name: "uniqaidar_blawkrawe_009", file: "uniqaidar_blawkrawe_009", path: "fonts/ktib/uniqaidar_blawkrawe_009.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_009.zip", category: "ktib",
+        preview: "بلاوکردنەوەی داستان" },
+    { name: "uniqaidar_blawkrawe_010_book", file: "uniqaidar_blawkrawe_010_book", path: "fonts/ktib/uniqaidar_blawkrawe_010_book.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_010_book.zip", category: "ktib",
+        preview: "بووکی تایبەت" },
+    { name: "uniqaidar_blawkrawe_011", file: "uniqaidar_blawkrawe_011", path: "fonts/ktib/uniqaidar_blawkrawe_011.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_011.zip", category: "ktib",
+        preview: "رووپەلی کتێب" },
+    { name: "uniqaidar_blawkrawe_012", file: "uniqaidar_blawkrawe_012", path: "fonts/ktib/uniqaidar_blawkrawe_012.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_012.zip", category: "ktib",
+        preview: "داستانی کوردی" },
+    { name: "uniqaidar_blawkrawe_013", file: "uniqaidar_blawkrawe_013", path: "fonts/ktib/uniqaidar_blawkrawe_013.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_013.zip", category: "ktib",
+        preview: "ئەدەبیاتی سەردەم" },
+    { name: "uniqaidar_blawkrawe_014", file: "uniqaidar_blawkrawe_014", path: "fonts/ktib/uniqaidar_blawkrawe_014.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_014.zip", category: "ktib",
+        preview: "نووسینی شیعر" },
+    { name: "uniqaidar_blawkrawe_015", file: "uniqaidar_blawkrawe_015", path: "fonts/ktib/uniqaidar_blawkrawe_015.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_015.zip", category: "ktib",
+        preview: "فیلسوفی ئەدەب" },
+    { name: "uniqaidar_blawkrawe_016", file: "uniqaidar_blawkrawe_016", path: "fonts/ktib/uniqaidar_blawkrawe_016.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_016.zip", category: "ktib",
+        preview: "داهێنانی ئەدەب" },
+    { name: "uniqaidar_blawkrawe_017", file: "uniqaidar_blawkrawe_017", path: "fonts/ktib/uniqaidar_blawkrawe_017.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_017.zip", category: "ktib",
+        preview: "ئەدەبی ڕۆمانتیک" },
+    { name: "uniqaidar_blawkrawe_018", file: "uniqaidar_blawkrawe_018", path: "fonts/ktib/uniqaidar_blawkrawe_018.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_018.zip", category: "ktib",
+        preview: "نووسینی نوێ" },
+    { name: "uniqaidar_dwange", file: "uniqaidar_dwange", path: "fonts/ktib/uniqaidar_dwange.ttf", zip: "fonts/ktib/uniqaidar_dwange.zip", category: "ktib",
+        preview: "دوانگەی سەر" },
+    { name: "uniqaidar_ebrahim", file: "uniqaidar_ebrahim", path: "fonts/ktib/uniqaidar_ebrahim.ttf", zip: "fonts/ktib/uniqaidar_ebrahim.zip", category: "ktib",
+        preview: "ئیبراهیم و دڵ" },
+    { name: "uniqaidar_edeb", file: "uniqaidar_edeb", path: "fonts/ktib/uniqaidar_edeb.ttf", zip: "fonts/ktib/uniqaidar_edeb.zip", category: "ktib",
+        preview: "ئەدەب و جوانی" },
+    { name: "uniqaidar_hemin", file: "uniqaidar_hemin", path: "fonts/ktib/uniqaidar_hemin.ttf", zip: "fonts/ktib/uniqaidar_hemin.zip", category: "ktib",
+        preview: "هەمین موکریانی" },
+    { name: "uniqaidar_kurdistan_001", file: "uniqaidar_kurdistan_001", path: "fonts/ktib/uniqaidar_kurdistan_001.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_001.zip", category: "ktib",
+        preview: "کوردستانی گەورە" },
+    { name: "uniqaidar_kurdistan_002", file: "uniqaidar_kurdistan_002", path: "fonts/ktib/uniqaidar_kurdistan_002.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_002.zip", category: "ktib",
+        preview: "خاکی کوردستان" },
+    { name: "uniqaidar_kurdistan_003", file: "uniqaidar_kurdistan_003", path: "fonts/ktib/uniqaidar_kurdistan_003.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_003.zip", category: "ktib",
+        preview: "ئازادی کوردستان" },
+    { name: "uniqaidar_kurdistan_004", file: "uniqaidar_kurdistan_004", path: "fonts/ktib/uniqaidar_kurdistan_004.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_004.zip", category: "ktib",
+        preview: "کوردستانی ئیمرۆ" },
+    { name: "uniqaidar_kurdistan_005", file: "uniqaidar_kurdistan_005", path: "fonts/ktib/uniqaidar_kurdistan_005.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_005.zip", category: "ktib",
+        preview: "گەلی کوردستان" },
+    { name: "uniqaidar_kurdistan_006", file: "uniqaidar_kurdistan_006", path: "fonts/ktib/uniqaidar_kurdistan_006.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_006.zip", category: "ktib",
+        preview: "یادەی کوردستان" },
+    { name: "uniqaidar_kurdistan_007", file: "uniqaidar_kurdistan_007", path: "fonts/ktib/uniqaidar_kurdistan_007.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_007.zip", category: "ktib",
+        preview: "ڕووناکی کوردستان" },
+    { name: "uniqaidar_muhammad", file: "uniqaidar_muhammad", path: "fonts/ktib/uniqaidar_muhammad.ttf", zip: "fonts/ktib/uniqaidar_muhammad.zip", category: "ktib",
+        preview: "مستەفا ئیبراهیم" },
+    { name: "uniqaidar_naskh_bold", file: "uniqaidar_naskh_bold", path: "fonts/ktib/uniqaidar_naskh_bold.ttf", zip: "fonts/ktib/uniqaidar_naskh_bold.zip", category: "ktib",
+        preview: "نەسخی بۆڵد" },
+    { name: "uniqaidar_naskh_regular", file: "uniqaidar_naskh_regular", path: "fonts/ktib/uniqaidar_naskh_regular.ttf", zip: "fonts/ktib/uniqaidar_naskh_regular.zip", category: "ktib",
+        preview: "نەسخی ڕێگوولار" },
+    { name: "uniqaidar_rojname", file: "uniqaidar_rojname", path: "fonts/ktib/uniqaidar_rojname.ttf", zip: "fonts/ktib/uniqaidar_rojname.zip", category: "ktib",
+        preview: "ڕۆژنامەی کوردی" },
+    { name: "uniqaidar_rojnameb", file: "uniqaidar_rojnameb", path: "fonts/ktib/uniqaidar_rojnameb.ttf", zip: "fonts/ktib/uniqaidar_rojnameb.zip", category: "ktib",
+        preview: "ڕۆژنامەی بۆڵد" },
+    { name: "uniqaidar_sami", file: "uniqaidar_sami", path: "fonts/ktib/uniqaidar_sami.ttf", zip: "fonts/ktib/uniqaidar_sami.zip", category: "ktib",
+        preview: "سامی بەرهەم" },
+    { name: "uniqaidar_yelda", file: "uniqaidar_yelda", path: "fonts/ktib/uniqaidar_yelda.ttf", zip: "fonts/ktib/uniqaidar_yelda.zip", category: "ktib",
+        preview: "یەلدا شەوی دڵ" },
+    { name: "uniqaidar_social_media_001", file: "uniqaidar_social_media_001", path: "fonts/media/uniqaidar_social_media_001.ttf", zip: "fonts/media/uniqaidar_social_media_001.zip", category: "media",
+        preview: "میدیای کۆمەڵایەتی" },
+    { name: "uniqaidar_social_media_002", file: "uniqaidar_social_media_002", path: "fonts/media/uniqaidar_social_media_002.ttf", zip: "fonts/media/uniqaidar_social_media_002.zip", category: "media",
+        preview: "پۆستی مێدیا" },
+    { name: "uniqaidar_social_media_003", file: "uniqaidar_social_media_003", path: "fonts/media/uniqaidar_social_media_003.ttf", zip: "fonts/media/uniqaidar_social_media_003.zip", category: "media",
+        preview: "ئینستاگرام کوردی" },
+    { name: "uniqaidar_social_media_004", file: "uniqaidar_social_media_004", path: "fonts/media/uniqaidar_social_media_004.ttf", zip: "fonts/media/uniqaidar_social_media_004.zip", category: "media",
+        preview: "دیزاینی کۆمەڵایەتی" },
+    { name: "uniqaidar_social_media_005", file: "uniqaidar_social_media_005", path: "fonts/media/uniqaidar_social_media_005.ttf", zip: "fonts/media/uniqaidar_social_media_005.zip", category: "media",
+        preview: "ئەپڵیکەیشنی کوردی" },
+    { name: "uniqaidar_social_media_006", file: "uniqaidar_social_media_006", path: "fonts/media/uniqaidar_social_media_006.ttf", zip: "fonts/media/uniqaidar_social_media_006.zip", category: "media",
+        preview: "فەیسبووکی کوردی" },
+    { name: "uniqaidar_squid_game_001", file: "uniqaidar_squid_game_001", path: "fonts/media/uniqaidar_squid_game_001.ttf", zip: "fonts/media/uniqaidar_squid_game_001.zip", category: "media",
+        preview: "ئاخاوتنی یاری" },
+    { name: "uniqaidar_free_000", file: "uniqaidar_free_000", path: "fonts/mndalan/uniqaidar_free_000.ttf", zip: "fonts/mndalan/uniqaidar_free_000.zip", category: "mndalan",
+        preview: "کتێبی منداڵان" },
+    { name: "uniqaidar_free_001", file: "uniqaidar_free_001", path: "fonts/mndalan/uniqaidar_free_001.ttf", zip: "fonts/mndalan/uniqaidar_free_001.zip", category: "mndalan",
+        preview: "ئامادەی قوتابخانە" },
+    { name: "uniqaidar_free_002", file: "uniqaidar_free_002", path: "fonts/mndalan/uniqaidar_free_002.ttf", zip: "fonts/mndalan/uniqaidar_free_002.zip", category: "mndalan",
+        preview: "فێربوونی خۆش" },
+    { name: "uniqaidar_free_003", file: "uniqaidar_free_003", path: "fonts/mndalan/uniqaidar_free_003.ttf", zip: "fonts/mndalan/uniqaidar_free_003.zip", category: "mndalan",
+        preview: "بازیکردنی جوان" },
+    { name: "uniqaidar_free_004", file: "uniqaidar_free_004", path: "fonts/mndalan/uniqaidar_free_004.ttf", zip: "fonts/mndalan/uniqaidar_free_004.zip", category: "mndalan",
+        preview: "خوێندنی منداڵ" },
+    { name: "uniqaidar_free_005", file: "uniqaidar_free_005", path: "fonts/mndalan/uniqaidar_free_005.ttf", zip: "fonts/mndalan/uniqaidar_free_005.zip", category: "mndalan",
+        preview: "گوڵانی منداڵان" },
+    { name: "uniqaidar_free_006", file: "uniqaidar_free_006", path: "fonts/mndalan/uniqaidar_free_006.ttf", zip: "fonts/mndalan/uniqaidar_free_006.zip", category: "mndalan",
+        preview: "کارتونی کوردی" },
+    { name: "uniqaidar_free_007", file: "uniqaidar_free_007", path: "fonts/mndalan/uniqaidar_free_007.ttf", zip: "fonts/mndalan/uniqaidar_free_007.zip", category: "mndalan",
+        preview: "ئاسمانی منداڵان" },
+    { name: "uniqaidar_free_008", file: "uniqaidar_free_008", path: "fonts/mndalan/uniqaidar_free_008.ttf", zip: "fonts/mndalan/uniqaidar_free_008.zip", category: "mndalan",
+        preview: "دەرسی کوردی" },
+    { name: "uniqaidar_free_009", file: "uniqaidar_free_009", path: "fonts/mndalan/uniqaidar_free_009.ttf", zip: "fonts/mndalan/uniqaidar_free_009.zip", category: "mndalan",
+        preview: "یاری منداڵان" },
+    { name: "uniqaidar_free_010", file: "uniqaidar_free_010", path: "fonts/mndalan/uniqaidar_free_010.ttf", zip: "fonts/mndalan/uniqaidar_free_010.zip", category: "mndalan",
+        preview: "ئەدەبی منداڵانە" },
+    { name: "uniqaidar_free_011", file: "uniqaidar_free_011", path: "fonts/mndalan/uniqaidar_free_011.ttf", zip: "fonts/mndalan/uniqaidar_free_011.zip", category: "mndalan",
+        preview: "خەمەی کوردی" },
+    { name: "uniqaidar_free_012", file: "uniqaidar_free_012", path: "fonts/mndalan/uniqaidar_free_012.ttf", zip: "fonts/mndalan/uniqaidar_free_012.zip", category: "mndalan",
+        preview: "منداڵانی ئازاد" },
+    { name: "uniqaidar_free_013", file: "uniqaidar_free_013", path: "fonts/mndalan/uniqaidar_free_013.ttf", zip: "fonts/mndalan/uniqaidar_free_013.zip", category: "mndalan",
+        preview: "قوتابخانەی نوێ" },
+    { name: "uniqaidar_free_014", file: "uniqaidar_free_014", path: "fonts/mndalan/uniqaidar_free_014.ttf", zip: "fonts/mndalan/uniqaidar_free_014.zip", category: "mndalan",
+        preview: "ستێری ئاسمان" },
+    { name: "uniqaidar_life", file: "uniqaidar_life", path: "fonts/mndalan/uniqaidar_life.ttf", zip: "fonts/mndalan/uniqaidar_life.zip", category: "mndalan",
+        preview: "ژیانی خۆش" },
+    { name: "uniqaidar_zana", file: "uniqaidar_zana", path: "fonts/mndalan/uniqaidar_zana.ttf", zip: "fonts/mndalan/uniqaidar_zana.zip", category: "mndalan",
+        preview: "زانا و دانا" },
+    { name: "uniqaidar_nastaliq_001", file: "uniqaidar_nastaliq_001", path: "fonts/nastaliq/uniqaidar_nastaliq_001.ttf", zip: "fonts/nastaliq/uniqaidar_nastaliq_001.zip", category: "nastaliq",
+        preview: "نەستەلیق جوانترین" },
+    { name: "uniqaidar_nastaliq_002", file: "uniqaidar_nastaliq_002", path: "fonts/nastaliq/uniqaidar_nastaliq_002.ttf", zip: "fonts/nastaliq/uniqaidar_nastaliq_002.zip", category: "nastaliq",
+        preview: "شیعری نەستەلیق" },
+    { name: "uniqaidar_nastaliq_003", file: "uniqaidar_nastaliq_003", path: "fonts/nastaliq/uniqaidar_nastaliq_003.ttf", zip: "fonts/nastaliq/uniqaidar_nastaliq_003.zip", category: "nastaliq",
+        preview: "ئەدەبی کلاسیک" },
+    { name: "uniqaidar_ali", file: "uniqaidar_ali", path: "fonts/semic/uniqaidar_ali.ttf", zip: "fonts/semic/uniqaidar_ali.zip", category: "semic",
+        preview: "علی و هونەر" },
+    { name: "uniqaidar_gate", file: "uniqaidar_gate", path: "fonts/semic/uniqaidar_gate.ttf", zip: "fonts/semic/uniqaidar_gate.zip", category: "semic",
+        preview: "دەروازەی زانیاری" },
+    { name: "uniqaidar_soz_000", file: "uniqaidar_soz_000", path: "fonts/semic/uniqaidar_soz_000.ttf", zip: "fonts/semic/uniqaidar_soz_000.zip", category: "semic",
+        preview: "سۆزی زمان" },
+    { name: "uniqaidar_soz_001", file: "uniqaidar_soz_001", path: "fonts/semic/uniqaidar_soz_001.ttf", zip: "fonts/semic/uniqaidar_soz_001.zip", category: "semic",
+        preview: "وشەی دڵ" },
+    { name: "uniqaidar_soz_002", file: "uniqaidar_soz_002", path: "fonts/semic/uniqaidar_soz_002.ttf", zip: "fonts/semic/uniqaidar_soz_002.zip", category: "semic",
+        preview: "دەنگی سۆز" },
+    { name: "uniqaidar_soz_003", file: "uniqaidar_soz_003", path: "fonts/semic/uniqaidar_soz_003.ttf", zip: "fonts/semic/uniqaidar_soz_003.zip", category: "semic",
+        preview: "سۆزی ئازادی" },
+    { name: "uniqaidar_soz_004", file: "uniqaidar_soz_004", path: "fonts/semic/uniqaidar_soz_004.ttf", zip: "fonts/semic/uniqaidar_soz_004.zip", category: "semic",
+        preview: "سۆزی هاوار" },
+    { name: "uniqaidar_soz_005", file: "uniqaidar_soz_005", path: "fonts/semic/uniqaidar_soz_005.ttf", zip: "fonts/semic/uniqaidar_soz_005.zip", category: "semic",
+        preview: "نەغمەی سۆز" },
+    { name: "uniqaidar_soz_006", file: "uniqaidar_soz_006", path: "fonts/semic/uniqaidar_soz_006.ttf", zip: "fonts/semic/uniqaidar_soz_006.zip", category: "semic",
+        preview: "چیای سۆز" },
+    { name: "uniqaidar_soz_007", file: "uniqaidar_soz_007", path: "fonts/semic/uniqaidar_soz_007.ttf", zip: "fonts/semic/uniqaidar_soz_007.zip", category: "semic",
+        preview: "بانگەشەی سۆز" },
+    { name: "uniqaidar_soz_008", file: "uniqaidar_soz_008", path: "fonts/semic/uniqaidar_soz_008.ttf", zip: "fonts/semic/uniqaidar_soz_008.zip", category: "semic",
+        preview: "گۆرانیی سۆز" },
+    { name: "uniqaidar_soz_009", file: "uniqaidar_soz_009", path: "fonts/semic/uniqaidar_soz_009.ttf", zip: "fonts/semic/uniqaidar_soz_009.zip", category: "semic",
+        preview: "ئاوازی سۆز" },
+    { name: "uniqaidar_soz_010", file: "uniqaidar_soz_010", path: "fonts/semic/uniqaidar_soz_010.ttf", zip: "fonts/semic/uniqaidar_soz_010.zip", category: "semic",
+        preview: "ئاوازی دڵ" },
+    { name: "uniqaidar_soz_010_hollow", file: "uniqaidar_soz_010_hollow", path: "fonts/semic/uniqaidar_soz_010_hollow.ttf", zip: "fonts/semic/uniqaidar_soz_010_hollow.zip", category: "semic",
+        preview: "ئاوازی وەدەر" },
+    { name: "uniqaidar_soz_011", file: "uniqaidar_soz_011", path: "fonts/semic/uniqaidar_soz_011.ttf", zip: "fonts/semic/uniqaidar_soz_011.zip", category: "semic",
+        preview: "سۆزی نوێ" },
+    { name: "uniqaidar_soz_012", file: "uniqaidar_soz_012", path: "fonts/semic/uniqaidar_soz_012.ttf", zip: "fonts/semic/uniqaidar_soz_012.zip", category: "semic",
+        preview: "گوفتوگۆی سۆز" },
+    { name: "uniqaidar_soz_013", file: "uniqaidar_soz_013", path: "fonts/semic/uniqaidar_soz_013.ttf", zip: "fonts/semic/uniqaidar_soz_013.zip", category: "semic",
+        preview: "سۆزی جوانی" },
+    { name: "uniqaidar_soz_014", file: "uniqaidar_soz_014", path: "fonts/semic/uniqaidar_soz_014.ttf", zip: "fonts/semic/uniqaidar_soz_014.zip", category: "semic",
+        preview: "دەقی سۆز" },
+    { name: "uniqaidar_soz_015", file: "uniqaidar_soz_015", path: "fonts/semic/uniqaidar_soz_015.ttf", zip: "fonts/semic/uniqaidar_soz_015.zip", category: "semic",
+        preview: "سۆزی شیعر" },
+    { name: "uniqaidar_soz_016", file: "uniqaidar_soz_016", path: "fonts/semic/uniqaidar_soz_016.ttf", zip: "fonts/semic/uniqaidar_soz_016.zip", category: "semic",
+        preview: "سۆزی کوردی" },
+    { name: "uniqaidar_soz_017", file: "uniqaidar_soz_017", path: "fonts/semic/uniqaidar_soz_017.ttf", zip: "fonts/semic/uniqaidar_soz_017.zip", category: "semic",
+        preview: "سۆزی ئەبەد" },
+    { name: "uniqaidar_abdullah", file: "uniqaidar_abdullah", path: "fonts/some/uniqaidar_abdullah.ttf", zip: "fonts/some/uniqaidar_abdullah.zip", category: "some",
+        preview: "عبدالله و دڵ" },
+    { name: "uniqaidar_abo_dhabi", file: "uniqaidar_abo_dhabi", path: "fonts/some/uniqaidar_abo_dhabi.ttf", zip: "fonts/some/uniqaidar_abo_dhabi.zip", category: "some",
+        preview: "ئەبووظەبی شار" },
+    { name: "uniqaidar_amez", file: "uniqaidar_amez", path: "fonts/some/uniqaidar_amez.ttf", zip: "fonts/some/uniqaidar_amez.zip", category: "some",
+        preview: "ئامێز و هونەر" },
+    { name: "uniqaidar_askandar", file: "uniqaidar_askandar", path: "fonts/some/uniqaidar_askandar.ttf", zip: "fonts/some/uniqaidar_askandar.zip", category: "some",
+        preview: "ئیسکەندەر گەورە" },
+    { name: "uniqaidar_aso", file: "uniqaidar_aso", path: "fonts/some/uniqaidar_aso.ttf", zip: "fonts/some/uniqaidar_aso.zip", category: "some",
+        preview: "ئاسۆ و ئاسمان" },
+    { name: "uniqaidar_azadi", file: "uniqaidar_azadi", path: "fonts/some/uniqaidar_azadi.ttf", zip: "fonts/some/uniqaidar_azadi.zip", category: "some",
+        preview: "ئازادی و ئازاد" },
+    { name: "uniqaidar_bahar_001", file: "uniqaidar_bahar_001", path: "fonts/some/uniqaidar_bahar_001.ttf", zip: "fonts/some/uniqaidar_bahar_001.zip", category: "some",
+        preview: "بەهارێکی خۆش" },
+    { name: "uniqaidar_behmen", file: "uniqaidar_behmen", path: "fonts/some/uniqaidar_behmen.ttf", zip: "fonts/some/uniqaidar_behmen.zip", category: "some",
+        preview: "بهمەن و بوران" },
+    { name: "uniqaidar_bexud", file: "uniqaidar_bexud", path: "fonts/some/uniqaidar_bexud.ttf", zip: "fonts/some/uniqaidar_bexud.zip", category: "some",
+        preview: "بێخودی ئەوین" },
+    { name: "uniqaidar_dara", file: "uniqaidar_dara", path: "fonts/some/uniqaidar_dara.ttf", zip: "fonts/some/uniqaidar_dara.zip", category: "some",
+        preview: "دارا و دیمەن" },
+    { name: "uniqaidar_digital", file: "uniqaidar_digital", path: "fonts/some/uniqaidar_digital.ttf", zip: "fonts/some/uniqaidar_digital.zip", category: "some",
+        preview: "دیجیتاڵی نوێ" },
+    { name: "uniqaidar_efriqa", file: "uniqaidar_efriqa", path: "fonts/some/uniqaidar_efriqa.ttf", zip: "fonts/some/uniqaidar_efriqa.zip", category: "some",
+        preview: "ئەفریقای جوان" },
+    { name: "uniqaidar_efsun", file: "uniqaidar_efsun", path: "fonts/some/uniqaidar_efsun.ttf", zip: "fonts/some/uniqaidar_efsun.zip", category: "some",
+        preview: "ئەفسوونی دڵ" },
+    { name: "uniqaidar_jwneyd", file: "uniqaidar_jwneyd", path: "fonts/some/uniqaidar_jwneyd.ttf", zip: "fonts/some/uniqaidar_jwneyd.zip", category: "some",
+        preview: "جونەید و جوانی" },
+    { name: "uniqaidar_kamaran", file: "uniqaidar_kamaran", path: "fonts/some/uniqaidar_kamaran.ttf", zip: "fonts/some/uniqaidar_kamaran.zip", category: "some",
+        preview: "کامەران و کەناڵ" },
+    { name: "uniqaidar_karmend", file: "uniqaidar_karmend", path: "fonts/some/uniqaidar_karmend.ttf", zip: "fonts/some/uniqaidar_karmend.zip", category: "some",
+        preview: "کارمەندی دڵ" },
+    { name: "uniqaidar_karwan", file: "uniqaidar_karwan", path: "fonts/some/uniqaidar_karwan.ttf", zip: "fonts/some/uniqaidar_karwan.zip", category: "some",
+        preview: "کاروانی ئەدەب" },
+    { name: "uniqaidar_khama", file: "uniqaidar_khama", path: "fonts/some/uniqaidar_khama.ttf", zip: "fonts/some/uniqaidar_khama.zip", category: "some",
+        preview: "خاما و قەلەم" },
+    { name: "uniqaidar_kufi", file: "uniqaidar_kufi", path: "fonts/some/uniqaidar_kufi.ttf", zip: "fonts/some/uniqaidar_kufi.zip", category: "some",
+        preview: "کوفی و کلاسیک" },
+    { name: "uniqaidar_meju", file: "uniqaidar_meju", path: "fonts/some/uniqaidar_meju.ttf", zip: "fonts/some/uniqaidar_meju.zip", category: "some",
+        preview: "مێژوویی کوردستان" },
+    { name: "uniqaidar_meju_00", file: "uniqaidar_meju_00", path: "fonts/some/uniqaidar_meju_00.ttf", zip: "fonts/some/uniqaidar_meju_00.zip", category: "some",
+        preview: "مێژووی سفر" },
+    { name: "uniqaidar_nasrin", file: "uniqaidar_nasrin", path: "fonts/some/uniqaidar_nasrin.ttf", zip: "fonts/some/uniqaidar_nasrin.zip", category: "some",
+        preview: "نەسرین و گوڵ" },
+    { name: "uniqaidar_omar", file: "uniqaidar_omar", path: "fonts/some/uniqaidar_omar.ttf", zip: "fonts/some/uniqaidar_omar.zip", category: "some",
+        preview: "عومەر شایستە" },
+    { name: "uniqaidar_osama", file: "uniqaidar_osama", path: "fonts/some/uniqaidar_osama.ttf", zip: "fonts/some/uniqaidar_osama.zip", category: "some",
+        preview: "ئوسامە بەرهەم" },
+    { name: "uniqaidar_osman", file: "uniqaidar_osman", path: "fonts/some/uniqaidar_osman.ttf", zip: "fonts/some/uniqaidar_osman.zip", category: "some",
+        preview: "عوسمان و ئۆسمان" },
+    { name: "uniqaidar_penjwen", file: "uniqaidar_penjwen", path: "fonts/some/uniqaidar_penjwen.ttf", zip: "fonts/some/uniqaidar_penjwen.zip", category: "some",
+        preview: "پەنجوێن شارۆچکە" },
+    { name: "uniqaidar_poster", file: "uniqaidar_poster", path: "fonts/some/uniqaidar_poster.ttf", zip: "fonts/some/uniqaidar_poster.zip", category: "some",
+        preview: "پۆستەری جوان" },
+    { name: "uniqaidar_saman", file: "uniqaidar_saman", path: "fonts/some/uniqaidar_saman.ttf", zip: "fonts/some/uniqaidar_saman.zip", category: "some",
+        preview: "سامان و ئازادی" },
+    { name: "uniqaidar_taef", file: "uniqaidar_taef", path: "fonts/some/uniqaidar_taef.ttf", zip: "fonts/some/uniqaidar_taef.zip", category: "some",
+        preview: "تائیف و شیعر" },
+    { name: "uniqaidar_texte", file: "uniqaidar_texte", path: "fonts/some/uniqaidar_texte.ttf", zip: "fonts/some/uniqaidar_texte.zip", category: "some",
+        preview: "تێکست و نووسین" },
+    { name: "uniqaidar_twana", file: "uniqaidar_twana", path: "fonts/some/uniqaidar_twana.ttf", zip: "fonts/some/uniqaidar_twana.zip", category: "some",
+        preview: "توانا و ژیان" },
+    { name: "uniqaidar_yusuf", file: "uniqaidar_yusuf", path: "fonts/some/uniqaidar_yusuf.ttf", zip: "fonts/some/uniqaidar_yusuf.zip", category: "some",
+        preview: "یوسف و کوردستان" },
+    { name: "uniqaidar_xal_00", file: "uniqaidar_xal_00", path: "fonts/xal/uniqaidar_xal_00.ttf", zip: "fonts/xal/uniqaidar_xal_00.zip", category: "xal",
+        preview: "خاڵی سفر" },
+    { name: "uniqaidar_xal_01", file: "uniqaidar_xal_01", path: "fonts/xal/uniqaidar_xal_01.ttf", zip: "fonts/xal/uniqaidar_xal_01.zip", category: "xal",
+        preview: "خاڵی دووەم" },
+    { name: "uniqaidar_xal_02", file: "uniqaidar_xal_02", path: "fonts/xal/uniqaidar_xal_02.ttf", zip: "fonts/xal/uniqaidar_xal_02.zip", category: "xal",
+        preview: "خاڵی سێیەم" },
 
 
-    { name: "uniqaidar_fastlink01", file: "uniqaidar_fastlink01", path: "fonts/fastlink/uniqaidar_fastlink01.ttf", zip: "fonts/fastlink/uniqaidar_fastlink01.zip", category: "fastlink" },
-    { name: "uniqaidar_fastlink02", file: "uniqaidar_fastlink02", path: "fonts/fastlink/uniqaidar_fastlink02.ttf", zip: "fonts/fastlink/uniqaidar_fastlink02.zip", category: "fastlink" },
-    { name: "uniqaidar_fastlink03", file: "uniqaidar_fastlink03", path: "fonts/fastlink/uniqaidar_fastlink03.ttf", zip: "fonts/fastlink/uniqaidar_fastlink03.zip", category: "fastlink" },
-    { name: "uniqaidar_fastlink04", file: "uniqaidar_fastlink04", path: "fonts/fastlink/uniqaidar_fastlink04.ttf", zip: "fonts/fastlink/uniqaidar_fastlink04.zip", category: "fastlink" },
+    { name: "uniqaidar_fastlink01", file: "uniqaidar_fastlink01", path: "fonts/fastlink/uniqaidar_fastlink01.ttf", zip: "fonts/fastlink/uniqaidar_fastlink01.zip", category: "fastlink",
+        preview: "فاست لینک یەکەم" },
+    { name: "uniqaidar_fastlink02", file: "uniqaidar_fastlink02", path: "fonts/fastlink/uniqaidar_fastlink02.ttf", zip: "fonts/fastlink/uniqaidar_fastlink02.zip", category: "fastlink",
+        preview: "فاست لینک دووەم" },
+    { name: "uniqaidar_fastlink03", file: "uniqaidar_fastlink03", path: "fonts/fastlink/uniqaidar_fastlink03.ttf", zip: "fonts/fastlink/uniqaidar_fastlink03.zip", category: "fastlink",
+        preview: "فاست لینک سێیەم" },
+    { name: "uniqaidar_fastlink04", file: "uniqaidar_fastlink04", path: "fonts/fastlink/uniqaidar_fastlink04.ttf", zip: "fonts/fastlink/uniqaidar_fastlink04.zip", category: "fastlink",
+        preview: "فاست لینک چوارەم" },
 
 
-    { name: "uniqaidar_bahar001", file: "uniqaidar_bahar001", path: "fonts/nwe/uniqaidar_bahar001.ttf", zip: "fonts/nwe/uniqaidar_bahar001.zip", category: "nwe" },
-    { name: "uniqaidar_subtitle012", file: "uniqaidar_subtitle012", path: "fonts/nwe/uniqaidar_subtitle012.ttf", zip: "fonts/nwe/uniqaidar_subtitle012.zip", category: "nwe" },
+    { name: "uniqaidar_bahar001", file: "uniqaidar_bahar001", path: "fonts/nwe/uniqaidar_bahar001.ttf", zip: "fonts/nwe/uniqaidar_bahar001.zip", category: "nwe",
+        preview: "بەهار نوێ" },
+    { name: "uniqaidar_subtitle012", file: "uniqaidar_subtitle012", path: "fonts/nwe/uniqaidar_subtitle012.ttf", zip: "fonts/nwe/uniqaidar_subtitle012.zip", category: "nwe",
+        preview: "ژێرنووس دوازدەم" },
 
 
 ];
 
 
 
-   const grid = document.getElementById('font-grid');
-    const input = document.getElementById('test-input');
+// ── ئەلێمێنتە سەرەکییەکان ──────────────────────────────
+const grid  = document.getElementById('font-grid');
+const input = document.getElementById('test-input');
 
-    function renderFonts(text, data = fonts) { //
-        grid.innerHTML = "";
-        data.forEach(font => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="card-info">
-                    <span>${font.category.toUpperCase()}</span>
-                    <span style="color:var(--primary)">${font.name}</span>
-                </div>
-                <div class="preview" style="font-family: '${font.name}'">
-                    ${text || 'کوردستان نیشتمانی جوانم'}
-                </div>
-                <a href="${font.zip}" class="download-btn" download>داگرتنی ZIP</a>
-            `;
-            grid.appendChild(card);
-        });
-  
-    }
-
-    function filterFonts(category, btn) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    if(btn) btn.classList.add('active');
-
-    const filtered = (category === 'all') 
-        ? fonts 
-        : fonts.filter(f => f.category === category);
-    
-    renderFonts(input.value, filtered);
-}
-
-function renderFonts(text, data = fonts) {
-    grid.innerHTML = "";
-    data.forEach(font => {
+// ── نیشاندانی کارتەکان ──────────────────────────────────
+// data: لیستی فۆنتەکان بۆ نیشاندان
+// text: دەقی تاقیکردنەوە (ئەگەر بەتاڵ بوو، preview ی فۆنت بەکاردێت)
+function renderFonts(data, text) {
+    grid.innerHTML = '';
+    data.forEach(function(font) {
         const card = document.createElement('div');
         card.className = 'card';
-        card.innerHTML = `
-            <div class="card-info">
-                <span>${font.category.toUpperCase()}</span>
-                <span style="color:var(--primary)">${font.name}</span>
-            </div>
-            <div class="preview" style="font-family: '${font.name}'">
-                ${text || 'فۆنتەکانی یونی‌قەیدار - فۆنتی کوردی'}
-            </div>
-            <a href="${font.zip}" class="download-btn" download>دابه‌زاندنی فۆنت</a>
-        `;
+        card.innerHTML =
+            '<div class="card-info">' +
+                '<span style="color:var(--primary)">' + font.name + '</span>' +
+            '</div>' +
+            '<div class="preview" style="font-family: \'' + font.name + '\'">' +
+                (text || font.preview || 'کوردستانی جوان') +
+            '</div>' +
+            '<a href="' + font.zip + '" class="download-btn" download>دابه‌زاندنی فۆنت</a>';
         grid.appendChild(card);
     });
 }
 
-//تەنها نەستەلیق 
-document.addEventListener('DOMContentLoaded', () => {
-    const nastaliqBtn = document.querySelector('.filter-btn[onclick*="nastaliq"]');
-    filterFonts('nastaliq', nastaliqBtn);
-});
+// ── فلتەر کردن بەپێی کاتێگۆری ──────────────────────────
+// تەنها ئەم فونکشنە دەخوێندرێتەوە کاتێک دوگمەی فلتەر کلیک دەکرێت
+function filterFonts(category, btn) {
+    // دوگمەی چالاک دیاری بکە
+    document.querySelectorAll('.filter-btn').forEach(function(b) {
+        b.classList.remove('active');
+    });
+    if (btn) btn.classList.add('active');
 
-const searchInput = document.getElementById('search-input'); 
-const previewInput = document.getElementById('test-input'); 
+    // فلتەر کردنی لیست
+    // category دەتوانێت string بێت یان array بێت، هەردووکیان کار دەکەن
+    const filtered = (category === 'all') ? fonts : fonts.filter(function(f) {
+        if (Array.isArray(f.category)) return f.category.includes(category);
+        return f.category === category;
+    });
 
-const updateAll = (e) => {
-    const text = e.target.value;
-    
-    if (e.target.id === 'search-input') {
-        previewInput.value = text;
-    }
-    
-    const activeCategory = document.querySelector('.filter-btn.active')?.getAttribute('onclick')?.match(/'([^']+)'/)?.[1] || 'all';
-    
-    if (activeCategory === 'all') {
-        renderFonts(text, fonts);
-    } else {
-        const filtered = fonts.filter(f => f.category === activeCategory);
-        renderFonts(text, filtered);
-    }
-};
-
-if (searchInput) searchInput.addEventListener('input', updateAll);
-if (previewInput) previewInput.addEventListener('input', updateAll);
-
-    renderFonts("");
-const myFonts = [
-    'uniqaidar_peregraf_01'
-];
-
-let fontIndex = 0;
-const titleElement = document.getElementById('main-title');
-
-function changeTitleFont() {
-    if (titleElement) {
-        titleElement.style.fontFamily = `'${myFonts[fontIndex]}'`;
-        fontIndex = (fontIndex + 1) % myFonts.length;
-    }
+    renderFonts(filtered, input.value);
 }
 
-setInterval(changeTitleFont, 3000);
-
-input.addEventListener('input', (e) => {
-    const text = e.target.value;
+// ── بۆکسی تاقیکردنەوە ──────────────────────────────────
+// کاتێک بەکارهێنەر دەنووسێت، هەموو کارتەکان نوێ دەبنەوە
+input.addEventListener('input', function() {
     const activeBtn = document.querySelector('.filter-btn.active');
-    
-    let category = 'all';
-    if (activeBtn) {
-        const onclickAttr = activeBtn.getAttribute('onclick');
-        category = onclickAttr.split("'")[1];
-    }
-
-    const filtered = (category === 'all') ? fonts : fonts.filter(f => f.category === category);
-    
-    renderFonts(text, filtered);
+    const category  = activeBtn ? activeBtn.getAttribute('onclick').split("'")[1] : 'all';
+    const filtered  = (category === 'all') ? fonts : fonts.filter(function(f) {
+        if (Array.isArray(f.category)) return f.category.includes(category);
+        return f.category === category;
+    });
+    renderFonts(filtered, input.value);
 });
 
-var downloadModal = document.getElementById("downloadModal");
-var downloadBtn = document.getElementById("downloadModalBtn");
-var closeDownload = document.getElementsByClassName("close-download")[0];
+// ── کردنەوەی پەیج: سەکشنی "نوێ" بنیشانبدە ──────────────
+document.addEventListener('DOMContentLoaded', function() {
+    const nweBtn = document.querySelector('.filter-btn[onclick*="nwe"]');
+    filterFonts('nwe', nweBtn);
+});
 
-downloadBtn.onclick = function() {
-    downloadModal.style.display = "block";
-}
-
-closeDownload.onclick = function() {
-    downloadModal.style.display = "none";
-}
-
-window.onclick = function(event) {
-    if (event.target == downloadModal) {
-        downloadModal.style.display = "none";
-    }
-}
+// ── مۆدالی داگرتن ───────────────────────────────────────
+const downloadModal = document.getElementById('downloadModal');
+document.getElementById('downloadModalBtn').onclick = function() {
+    downloadModal.style.display = 'block';
+};
+document.querySelector('.close-download').onclick = function() {
+    downloadModal.style.display = 'none';
+};
+window.addEventListener('click', function(e) {
+    if (e.target === downloadModal) downloadModal.style.display = 'none';
+});
 
 </script>
 
@@ -1632,30 +1950,18 @@ window.onclick = function(event) {
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var modal = document.getElementById("aboutModal");
-        var btn = document.getElementById("aboutBtn");
-        var span = document.getElementsByClassName("close-btn")[0];
-
-        if(btn) {
-            btn.onclick = function(e) {
-                e.preventDefault();
-                modal.style.display = "block";
-            }
-        }
-
-        if(span) {
-            span.onclick = function() {
-                modal.style.display = "none";
-            }
-        }
-
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-    });
+// ── مۆدالی دەربارە ──────────────────────────────────────
+const aboutModal = document.getElementById('aboutModal');
+document.getElementById('aboutBtn').onclick = function(e) {
+    e.preventDefault();
+    aboutModal.style.display = 'block';
+};
+document.querySelector('.close-btn').onclick = function() {
+    aboutModal.style.display = 'none';
+};
+window.addEventListener('click', function(e) {
+    if (e.target === aboutModal) aboutModal.style.display = 'none';
+});
 </script>
 
 </body>

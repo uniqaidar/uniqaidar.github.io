@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پانێلی بەڕێوەبردن — UniQaidar</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+:root {
+    --bg:       #0d0d0d;
+    --surface:  #161616;
+    --surface2: #1e1e1e;
+    --border:   #2c2c2c;
+    --accent:   #0984e3;
+    --green:    #00b894;
+    --red:      #e17055;
+    --yellow:   #fdcb6e;
+    --purple:   #a29bfe;
+    --text:     #ececec;
+    --muted:    #555;
+    --mono:     'IBM Plex Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: Tahoma, Arial, sans-serif; min-height: 100vh; direction: rtl; }
+
+/* لۆدینگ */
+#loading-screen {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 9999; gap: 16px;
+}
+.spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* سێتەپ */
+#setup-screen {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+    align-items: center; justify-content: center; z-index: 9998; padding: 20px;
+}
+.setup-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px; max-width: 500px; width: 100%; }
+.setup-box h2 { font-size: 1.2rem; margin-bottom: 6px; }
+.setup-box .sub { color: var(--muted); font-size: 0.82rem; margin-bottom: 20px; line-height: 1.7; }
+.setup-steps { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 0.8rem; line-height: 2.1; margin-bottom: 20px; color: var(--muted); }
+.setup-steps strong { color: var(--yellow); }
+.setup-steps a { color: var(--accent); text-decoration: none; }
+.setup-field { margin-bottom: 12px; }
+.setup-field label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 5px; font-family: var(--mono); }
+
+/* هێدەر */
+header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 13px 22px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; gap: 10px; flex-wrap: wrap; }
+header h1 { font-size: 0.95rem; font-weight: bold; color: var(--accent); }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.repo-badge { font-family: var(--mono); font-size: 0.7rem; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; color: var(--yellow); }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+.status-dot.on { background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+/* ناوەڕۆک */
+main { max-width: 940px; margin: 0 auto; padding: 22px 16px; display: flex; flex-direction: column; gap: 20px; }
+
+/* تابەکان */
+.tabs { display: flex; gap: 3px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px; }
+.tab { flex: 1; padding: 9px 6px; text-align: center; border-radius: 7px; cursor: pointer; font-size: 0.86rem; font-weight: bold; transition: all 0.2s; color: var(--muted); border: none; background: transparent; font-family: Tahoma, Arial, sans-serif; }
+.tab.active { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* بۆکس */
+.box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.box-header { padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: bold; }
+.box-header .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.box-body { padding: 18px; }
+
+/* فۆرم */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.full { grid-column: 1 / -1; }
+label { font-size: 0.75rem; color: var(--muted); font-family: var(--mono); }
+input, select { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 7px; padding: 9px 12px; font-size: 0.88rem; font-family: Tahoma, Arial, sans-serif; width: 100%; transition: border-color 0.2s; direction: rtl; }
+input:focus, select:focus { outline: none; border-color: var(--accent); }
+input[readonly] { color: var(--muted); }
+input::placeholder, select::placeholder { color: var(--muted); }
+select option { background: var(--surface2); }
+
+/* پیلەکانی کاتێگۆری */
+.cat-pills { display: flex; flex-wrap: wrap; gap: 7px; }
+.cat-pill { display: inline-flex; align-items: center; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; cursor: pointer; font-size: 0.84rem; transition: all 0.18s; user-select: none; }
+.cat-pill:hover { border-color: var(--accent); }
+.cat-pill.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* دوگمەکان */
+.btn { padding: 9px 18px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.86rem; font-weight: bold; font-family: Tahoma, Arial, sans-serif; transition: all 0.18s; display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: #0773c5; }
+.btn-green { background: var(--green); color: #fff; }
+.btn-green:hover:not(:disabled) { background: #009e7d; }
+.btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+.btn-ghost:hover { color: var(--text); border-color: var(--text); }
+.btn-row { display: flex; gap: 9px; justify-content: flex-end; margin-top: 14px; flex-wrap: wrap; }
+
+/* ئالەرت */
+.alert { padding: 11px 15px; border-radius: 7px; font-size: 0.83rem; display: none; margin-top: 11px; border-right: 3px solid; line-height: 1.5; }
+.alert.show { display: block; }
+.alert.ok   { background: #00b89418; border-color: var(--green); color: var(--green); }
+.alert.err  { background: #e1705518; border-color: var(--red);   color: var(--red); }
+.alert.inf  { background: #0984e318; border-color: var(--accent); color: var(--accent); }
+
+/* کاتێگۆری لیست */
+.cat-row { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 11px 15px; }
+.cat-row .lbl { flex: 1; }
+.badge { font-family: var(--mono); font-size: 0.68rem; background: var(--border); padding: 3px 8px; border-radius: 4px; color: var(--yellow); }
+.cnt   { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+
+/* ئارشێف */
+.arc-item { display: flex; align-items: center; background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 9px 13px; gap: 10px; flex-wrap: wrap; }
+.arc-name { font-family: var(--mono); font-size: 0.76rem; color: var(--yellow); min-width: 200px; }
+.arc-prev { font-size: 0.8rem; color: var(--muted); flex: 1; }
+
+/* سەیڤ ئۆڤەرلەی */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 5000; align-items: center; justify-content: center; flex-direction: column; gap: 14px; }
+.overlay.show { display: flex; }
+.overlay p { color: var(--text); font-size: 0.95rem; }
+
+@media (max-width: 580px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: 1; }
+    .tabs { gap: 2px; }
+    .tab { font-size: 0.78rem; padding: 8px 3px; }
+}
+</style>
+</head>
+<body>
+
+<!-- لۆدینگ -->
+<div id="loading-screen">
+    <div class="spinner"></div>
+    <p style="color:var(--muted);font-size:0.88rem">بارکردنی index.html لە GitHub...</p>
+</div>
+
+<!-- سێتەپ -->
+<div id="setup-screen">
+    <div class="setup-box">
+        <h2>🔐 پەیوەندی بە GitHub</h2>
+        <p class="sub">پانێل رووناست پەیوەندی بە ڕیپۆی GitHub دەکات و index.html بە خۆی نوێ دەکاتەوە بێ ئەوەی دەستت پێوه بگات.</p>
+
+        <div class="setup-steps">
+            <strong>چۆن تۆکێن دروست بکەیت (یەک جار تەنها):</strong><br>
+            ١. بڕۆ بۆ <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a><br>
+            ٢. ناوێکی بنووسە: <strong>UniQaidar Admin</strong><br>
+            ٣. لە بەشی <strong>Scopes</strong> تیکمارکی <strong>repo</strong> بکە<br>
+            ٤. کلیک بکە <strong>Generate token</strong><br>
+            ٥. تۆکێنەکە کۆپی بکە و لێرە بخرە
+        </div>
+
+        <div class="setup-field">
+            <label>ناوی GitHub (username)</label>
+            <input id="s-user" type="text" placeholder="uniqaidar">
+        </div>
+        <div class="setup-field">
+            <label>ناوی ڕیپۆ (repository name)</label>
+            <input id="s-repo" type="text" placeholder="uniqaidar.github.io">
+        </div>
+        <div class="setup-field">
+            <label>GitHub Token</label>
+            <input id="s-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxx">
+        </div>
+
+        <div id="setup-alert" class="alert"></div>
+
+        <div class="btn-row" style="margin-top:16px">
+            <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px" onclick="connect()">
+                🔌 پەیوەندی کردن و بارکردن
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- سەیڤ ئۆڤەرلەی -->
+<div class="overlay" id="overlay">
+    <div class="spinner"></div>
+    <p id="overlay-msg">تێپەڕاندن بۆ GitHub...</p>
+</div>
+
+<!-- هێدەر -->
+<header>
+    <h1>⚙️ پانێلی UniQaidar</h1>
+    <div class="header-right">
+        <span class="status-dot" id="sdot"></span>
+        <span class="repo-badge" id="rbadge">پەیوەند نەکراوە</span>
+        <button class="btn btn-ghost" style="font-size:0.76rem;padding:5px 10px" onclick="showSetup()">گۆڕین</button>
+    </div>
+</header>
+
+<main>
+    <div class="tabs">
+        <button class="tab active" onclick="go('t-font',this)">➕ فۆنتی نوێ</button>
+        <button class="tab" onclick="go('t-cat',this)">🗂️ کاتێگۆریەکان</button>
+        <button class="tab" onclick="go('t-arc',this)">📋 ئارشێف</button>
+    </div>
+
+    <!-- تابی فۆنت -->
+    <div id="t-font" class="tab-content active">
+        <div class="box">
+            <div class="box-header"><span class="dot" style="background:var(--accent)"></span>زیادکردنی فۆنتی نوێ</div>
+            <div class="box-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>ناوی فۆنت</label>
+                        <input id="f-name" type="text" placeholder="uniqaidar_nwe_003" oninput="fillPaths()">
+                    </div>
+                    <div class="form-group">
+                        <label>فۆڵدەر</label>
+                        <input id="f-folder" type="text" placeholder="nwe" oninput="fillPaths()">
+                    </div>
+                    <div class="form-group">
+                        <label>ڕێگای TTF — ئۆتۆماتیک</label>
+                        <input id="f-path" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>ڕێگای ZIP — ئۆتۆماتیک</label>
+                        <input id="f-zip" readonly>
+                    </div>
+                    <div class="form-group full">
+                        <label>دەقی پیشاندان</label>
+                        <input id="f-prev" type="text" placeholder="کوردستانی جوان">
+                    </div>
+                    <div class="form-group full">
+                        <label>کاتێگۆری — دەتوانیت زیاتر لە یەک هەڵبژێریت</label>
+                        <div class="cat-pills" id="fpills"></div>
+                    </div>
+                </div>
+                <div id="fa" class="alert"></div>
+                <div class="btn-row">
+                    <button class="btn btn-ghost" onclick="clearFont()">پاک کردنەوە</button>
+                    <button class="btn btn-primary" id="fbtn" onclick="addFont()" disabled>💾 زیادکردن و تێپەڕاندن</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- تابی کاتێگۆری -->
+    <div id="t-cat" class="tab-content">
+        <div class="box">
+            <div class="box-header"><span class="dot" style="background:var(--green)"></span>کاتێگۆریە هەیەکان</div>
+            <div class="box-body">
+                <div id="catlist" style="display:flex;flex-direction:column;gap:9px;margin-bottom:18px"></div>
+
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px">
+                    <p style="font-size:0.85rem;font-weight:bold;color:var(--green);margin-bottom:12px">➕ کاتێگۆری نوێ</p>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>ناوی کوردی</label>
+                            <input id="nc-lbl" type="text" placeholder="سپۆرت">
+                        </div>
+                        <div class="form-group">
+                            <label>ID بە ئینگلیزی — بێ بۆشایی</label>
+                            <input id="nc-id" type="text" placeholder="sport">
+                        </div>
+                    </div>
+                    <div id="ca" class="alert"></div>
+                    <div class="btn-row">
+                        <button class="btn btn-green" id="cbtn" onclick="addCat()" disabled>💾 زیادکردن و تێپەڕاندن</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- تابی ئارشێف -->
+    <div id="t-arc" class="tab-content">
+        <div class="box">
+            <div class="box-header"><span class="dot" style="background:var(--purple)"></span>هەموو فۆنتەکان</div>
+            <div class="box-body">
+                <div style="display:flex;gap:10px;margin-bottom:13px;flex-wrap:wrap">
+                    <input id="aq" type="text" placeholder="گەڕان..." oninput="renderArc()" style="max-width:240px">
+                    <select id="acat" onchange="renderArc()" style="max-width:170px">
+                        <option value="all">هەموو کاتێگۆریەکان</option>
+                    </select>
+                    <span id="acnt" style="color:var(--muted);font-size:0.78rem;font-family:var(--mono);align-self:center"></span>
+                </div>
+                <div id="arclist" style="display:flex;flex-direction:column;gap:7px;max-height:540px;overflow-y:auto"></div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+// ══════════════════════════════════════════
+// داتای گلۆبال
+// ══════════════════════════════════════════
+let USER='', REPO='', TOKEN='';
+let SHA='', RAW='';
+let cats=[], fnts=[];
+let ready=false;
+
+// ══════════════════════════════════════════
+// دەستپێکردن
+// ══════════════════════════════════════════
+window.onload = function() {
+    USER  = localStorage.getItem('u') || '';
+    REPO  = localStorage.getItem('r') || '';
+    TOKEN = localStorage.getItem('t') || '';
+    if (USER && REPO && TOKEN) load();
+    else { hide('loading-screen'); showSetup(); }
+};
+
+// ══════════════════════════════════════════
+// GitHub API
+// ══════════════════════════════════════════
+async function load(fromSetup) {
+    show('loading-screen');
+    try {
+        const res  = await ghGet();
+        if (!res.ok) throw 0;
+        const data = await res.json();
+        SHA = data.sha;
+        RAW = decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))));
+        parse();
+        buildAll();
+        setReady(true);
+        hide('loading-screen');
+        return true;
+    } catch(e) {
+        hide('loading-screen');
+        if (!fromSetup) showSetup();
+        return false;
+    }
+}
+
+function ghGet() {
+    return fetch(ghUrl(), { headers: hdrs() });
+}
+
+async function ghPut(content, msg) {
+    showOverlay(msg);
+    try {
+        const encoded = btoa(unescape(encodeURIComponent(content)));
+        const res = await fetch(ghUrl(), {
+            method:'PUT', headers:{...hdrs(),'Content-Type':'application/json'},
+            body: JSON.stringify({ message: msg, content: encoded, sha: SHA })
+        });
+        if (!res.ok) throw 0;
+        const data = await res.json();
+        SHA = data.content.sha;
+        RAW = content;
+        hideOverlay();
+        return true;
+    } catch(e) { hideOverlay(); return false; }
+}
+
+function ghUrl() { return `https://api.github.com/repos/${USER}/${REPO}/contents/index.html`; }
+function hdrs()  { return { 'Authorization': `token ${TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }; }
+
+// ══════════════════════════════════════════
+// خوێندنی داتا لە فایل
+// ══════════════════════════════════════════
+function parse() {
+    cats = []; fnts = [];
+
+    // کاتێگۆریەکان — دوو شێواز پشتیوانی دەکات
+    // شێوازی ئێستا: onclick="filterFonts('id', this)">
+    const br = /onclick="filterFonts\('([^']+)',\s*this\)">([^<]+)<\/button>/g;
+    let m;
+    while ((m = br.exec(RAW)) !== null)
+        cats.push({ id: m[1], label: m[2].trim() });
+
+    // فۆنتەکان
+    const fr = /\{\s*name:\s*"([^"]+)"[^}]*file:\s*"([^"]+)"[^}]*path:\s*"([^"]+)"[^}]*zip:\s*"([^"]+)"[^}]*category:\s*(\[[^\]]+\]|"[^"]+")\s*,\s*preview:\s*"([^"]*)"/g;
+    while ((m = fr.exec(RAW)) !== null) {
+        let cat = m[5].trim();
+        cat = cat.startsWith('[')
+            ? cat.replace(/[\[\]"\s]/g,'').split(',')
+            : cat.replace(/"/g,'');
+        fnts.push({ name:m[1], file:m[2], path:m[3], zip:m[4], category:cat, preview:m[6] });
+    }
+}
+
+// ══════════════════════════════════════════
+// پەیوەندی
+// ══════════════════════════════════════════
+function showSetup() {
+    document.getElementById('s-user').value  = USER;
+    document.getElementById('s-repo').value  = REPO;
+    document.getElementById('s-token').value = TOKEN;
+    document.getElementById('setup-screen').style.display = 'flex';
+}
+
+async function connect() {
+    const u = v('s-user'), r = v('s-repo'), t = v('s-token');
+    const al = document.getElementById('setup-alert');
+    if (!u||!r||!t) return alert2(al,'هەموو خانەکان پڕ بکەرەوە!','err');
+    alert2(al,'پەیوەندی...','inf');
+    USER=u; REPO=r; TOKEN=t;
+    const ok = await load(true);
+    if (ok) {
+        localStorage.setItem('u',u); localStorage.setItem('r',r); localStorage.setItem('t',t);
+        hide('setup-screen');
+    } else {
+        USER=REPO=TOKEN='';
+        alert2(al,'❌ نەتوانرا پەیوەندی بکرێت. تۆکێن یان ناوی ڕیپۆ پشکنە!','err');
+    }
+}
+
+// ══════════════════════════════════════════
+// زیادکردنی فۆنت
+// ══════════════════════════════════════════
+function fillPaths() {
+    const n=v('f-name'), f=v('f-folder');
+    set('f-path', n&&f ? `fonts/${f}/${n}.ttf` : '');
+    set('f-zip',  n&&f ? `fonts/${f}/${n}.zip`  : '');
+}
+
+async function addFont() {
+    const name   = v('f-name');
+    const folder = v('f-folder');
+    const prev   = v('f-prev') || 'کوردستانی جوان';
+    const al     = document.getElementById('fa');
+    const picked = [...document.querySelectorAll('#fpills .cat-pill.on')].map(p => p.dataset.id);
+
+    if (!name)          return alert2(al,'ناوی فۆنت پڕ بکەرەوە!','err');
+    if (!folder)        return alert2(al,'فۆڵدەر پڕ بکەرەوە!','err');
+    if (!picked.length) return alert2(al,'لانیکەم یەک کاتێگۆری هەڵبژێرە!','err');
+    if (fnts.find(f=>f.name===name)) return alert2(al,'ئەم فۆنتە پێشتر هەیە!','err');
+
+    const path = `fonts/${folder}/${name}.ttf`;
+    const zip  = `fonts/${folder}/${name}.zip`;
+    const catVal = picked.length===1 ? `"${picked[0]}"` : `["${picked.join('","')}"]`;
+
+    // ① زیادکردنی @font-face
+    const face = `@font-face { font-family: '${name}'; src: url('${path}'); }\n`;
+    const li   = RAW.lastIndexOf('@font-face');
+    const at   = RAW.indexOf('\n', li) + 1;
+    let next   = RAW.slice(0,at) + face + RAW.slice(at);
+
+    // ② زیادکردنی تۆمار لە fonts array
+    const entry = `\n    { name: "${name}", file: "${name}", path: "${path}", zip: "${zip}", category: ${catVal}, preview: "${prev}" },`;
+    const ci    = next.lastIndexOf('];');
+    next        = next.slice(0,ci) + entry + '\n' + next.slice(ci);
+
+    alert2(al,'تێپەڕاندن بۆ GitHub...','inf');
+    const ok = await ghPut(next, `زیادکردنی فۆنت: ${name}`);
+
+    if (ok) {
+        fnts.push({ name, file:name, path, zip, category: picked.length===1?picked[0]:picked, preview:prev });
+        alert2(al,`✅ فۆنتی "${name}" زیادکرا!`,'ok');
+        clearFont();
+        buildCatList(); // نوێ کردنەوەی ژمارەی فۆنتەکان
+    } else {
+        alert2(al,'❌ هەڵە. تۆکێنەکەت پشکنە!','err');
+    }
+}
+
+function clearFont() {
+    ['f-name','f-folder','f-path','f-zip','f-prev'].forEach(i => set(i,''));
+    document.querySelectorAll('#fpills .cat-pill').forEach(p => p.classList.remove('on'));
+}
+
+// ══════════════════════════════════════════
+// زیادکردنی کاتێگۆری
+// ══════════════════════════════════════════
+async function addCat() {
+    const lbl = v('nc-lbl'), id = v('nc-id');
+    const al  = document.getElementById('ca');
+
+    if (!lbl||!id)                   return alert2(al,'هەردوو خانەکان پڕ بکەرەوە!','err');
+    if (/\s/.test(id))               return alert2(al,'ID نابێت بۆشایی هەبێت!','err');
+    if (cats.find(c=>c.id===id))     return alert2(al,'ئەم کاتێگۆریە پێشتر هەیە!','err');
+
+    // زیادکردنی دوگمەی فلتەر لە HTML — شێوازی گونجاو
+    const btn    = `\n            <button class="filter-btn" onclick="filterFonts('${id}', this)">${lbl}</button>`;
+    const marker = '</div>\n    </div>\n</div>\n\n<div class="font-grid"';
+    const pos    = RAW.indexOf(marker);
+    if (pos===-1) return alert2(al,'❌ شوێنی زیادکردن نەدۆزرایەوە!','err');
+
+    // زیادکردن دوای کۆتایین دوگمە، پێش خەتەکانی داخستن
+    const lastBtnEnd = RAW.lastIndexOf('</button>', pos) + '</button>'.length;
+    const next = RAW.slice(0, lastBtnEnd) + btn + RAW.slice(lastBtnEnd);
+
+    alert2(al,'تێپەڕاندن...','inf');
+    const ok = await ghPut(next, `زیادکردنی کاتێگۆری: ${lbl}`);
+
+    if (ok) {
+        cats.push({ id, label:lbl });
+        set('nc-lbl',''); set('nc-id','');
+        buildCatPills(); buildCatList(); buildArcSel();
+        alert2(al,`✅ کاتێگۆری "${lbl}" زیادکرا!`,'ok');
+    } else {
+        alert2(al,'❌ هەڵە. تۆکێنەکەت پشکنە!','err');
+    }
+}
+
+// ══════════════════════════════════════════
+// دروستکردنی UI
+// ══════════════════════════════════════════
+function buildAll() { buildCatPills(); buildCatList(); buildArcSel(); renderArc(); }
+
+function buildCatPills() {
+    const w = document.getElementById('fpills');
+    w.innerHTML = '';
+    cats.filter(c=>c.id!=='all').forEach(c => {
+        const p = document.createElement('span');
+        p.className = 'cat-pill';
+        p.dataset.id = c.id;
+        p.textContent = c.label;
+        p.onclick = function() { this.classList.toggle('on'); };
+        w.appendChild(p);
+    });
+}
+
+function buildCatList() {
+    const l = document.getElementById('catlist');
+    l.innerHTML = '';
+    cats.forEach((c, idx) => {
+        const n = fnts.filter(f => {
+            const fc = Array.isArray(f.category) ? f.category : [f.category];
+            return fc.includes(c.id);
+        }).length;
+        const row = document.createElement('div');
+        row.className = 'cat-row';
+        row.style.cssText = 'flex-wrap:wrap;gap:8px';
+        row.innerHTML = `
+            <span class="lbl" id="lbl-${idx}">${c.label}</span>
+            <input id="inp-${idx}" value="${c.label}" style="display:none;flex:1;min-width:120px;max-width:180px">
+            <span class="badge">${c.id}</span>
+            <span class="cnt">${n} fonts</span>
+            <button class="btn btn-ghost" style="padding:4px 10px;font-size:0.75rem;margin-right:auto" onclick="startEdit(${idx})">✏️ Edit</button>
+            <button class="btn btn-primary" id="savebtn-${idx}" style="display:none;padding:4px 10px;font-size:0.75rem" onclick="saveCatName(${idx})">💾 Save</button>
+            <button class="btn btn-ghost" id="cancelbtn-${idx}" style="display:none;padding:4px 10px;font-size:0.75rem" onclick="cancelEdit(${idx})">Cancel</button>
+        `;
+        l.appendChild(row);
+    });
+    // ئالەرتی ناوگۆڕین
+    if (!document.getElementById('rename-alert')) {
+        const al = document.createElement('div');
+        al.id = 'rename-alert'; al.className = 'alert';
+        l.after(al);
+    }
+}
+
+function buildArcSel() {
+    const s = document.getElementById('acat');
+    s.innerHTML = '<option value="all">هەموو کاتێگۆریەکان</option>';
+    cats.filter(c=>c.id!=='all').forEach(c => {
+        const o = document.createElement('option');
+        o.value=c.id; o.textContent=c.label; s.appendChild(o);
+    });
+}
+
+function renderArc() {
+    const q   = v('aq').toLowerCase();
+    const cat = document.getElementById('acat').value;
+    const l   = document.getElementById('arclist');
+    const res = fnts.filter(f => {
+        const fc = Array.isArray(f.category) ? f.category : [f.category];
+        return (cat==='all' || fc.includes(cat)) && f.name.toLowerCase().includes(q);
+    });
+    document.getElementById('acnt').textContent = `${res.length} فۆنت`;
+    l.innerHTML = '';
+    if (!res.length) {
+        l.innerHTML = '<div style="color:var(--muted);text-align:center;padding:24px;font-size:0.83rem">هیچ فۆنتێک نەدۆزرایەوە</div>';
+        return;
+    }
+    res.forEach(f => {
+        const fc = Array.isArray(f.category) ? f.category.join(', ') : f.category;
+        const d = document.createElement('div');
+        d.className = 'arc-item';
+        d.innerHTML = `<span class="arc-name">${f.name}</span><span class="arc-prev">${f.preview||''}</span><span class="badge">${fc}</span>`;
+        l.appendChild(d);
+    });
+}
+
+// ══════════════════════════════════════════
+// ناوگۆڕینی کاتێگۆری
+// ══════════════════════════════════════════
+function startEdit(idx) {
+    document.getElementById('lbl-'+idx).style.display = 'none';
+    document.getElementById('inp-'+idx).style.display = 'inline-block';
+    document.getElementById('savebtn-'+idx).style.display = 'inline-flex';
+    document.getElementById('cancelbtn-'+idx).style.display = 'inline-flex';
+    document.getElementById('inp-'+idx).focus();
+}
+
+function cancelEdit(idx) {
+    document.getElementById('inp-'+idx).value = cats[idx].label;
+    document.getElementById('lbl-'+idx).style.display = '';
+    document.getElementById('inp-'+idx).style.display = 'none';
+    document.getElementById('savebtn-'+idx).style.display = 'none';
+    document.getElementById('cancelbtn-'+idx).style.display = 'none';
+}
+
+async function saveCatName(idx) {
+    const newLabel = document.getElementById('inp-'+idx).value.trim();
+    const al = document.getElementById('rename-alert');
+    const oldLabel = cats[idx].label;
+    const id = cats[idx].id;
+
+    if (!newLabel) return alert2(al, 'Name cannot be empty!', 'err');
+    if (newLabel === oldLabel) { cancelEdit(idx); return; }
+
+    // گۆڕینی ناو لە HTML — دوگمەی فلتەر
+    // شێواز: onclick="filterFonts('nwe', this)">نوێ</button>
+    const oldBtn = `onclick="filterFonts('${id}', this)">${oldLabel}</button>`;
+    const newBtn = `onclick="filterFonts('${id}', this)">${newLabel}</button>`;
+
+    if (!RAW.includes(oldBtn)) {
+        return alert2(al, `❌ Could not find the button for "${id}" in index.html. File may have changed.`, 'err');
+    }
+
+    const next = RAW.replace(oldBtn, newBtn);
+
+    alert2(al, 'Saving to GitHub...', 'inf');
+    const ok = await ghPut(next, `Rename category: ${oldLabel} → ${newLabel}`);
+
+    if (ok) {
+        cats[idx].label = newLabel;
+        buildCatPills();
+        buildCatList();
+        buildArcSel();
+        alert2(document.getElementById('rename-alert'), `✅ "${oldLabel}" renamed to "${newLabel}"`, 'ok');
+    } else {
+        alert2(document.getElementById('rename-alert'), '❌ Save failed. Check your token!', 'err');
+    }
+}
+
+// ══════════════════════════════════════════
+
+function setReady(val) {
+    ready = val;
+    const dot = document.getElementById('sdot');
+    dot.className = 'status-dot' + (val ? ' on' : '');
+    document.getElementById('rbadge').textContent = val ? `${USER}/${REPO}` : 'پەیوەند نەکراوە';
+    document.getElementById('fbtn').disabled = !val;
+    document.getElementById('cbtn').disabled = !val;
+}
+
+function go(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+    if (id==='t-arc') renderArc();
+}
+
+function showOverlay(msg) { document.getElementById('overlay-msg').textContent = msg || '...'; document.getElementById('overlay').classList.add('show'); }
+function hideOverlay()    { document.getElementById('overlay').classList.remove('show'); }
+function show(id) { document.getElementById(id).style.display = 'flex'; }
+function hide(id) { document.getElementById(id).style.display = 'none'; }
+function v(id)    { return document.getElementById(id).value.trim(); }
+function set(id,val) { document.getElementById(id).value = val; }
+function alert2(el, msg, type) { el.textContent=msg; el.className=`alert ${type} show`; }
+</script>
+</body>
+</html>
