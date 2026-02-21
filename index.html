@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فۆنته‌كانی یونی قه‌یدار</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+
+        :root {
+            --primary: #2c3e50;
+            --accent: #27ae60;
+            --bg: #f4f7f6;
+        }
+
+
+body, 
+.header, .header *, 
+.footer, .footer *, 
+.search-container, .search-container input, 
+button, 
+.modal-content, .modal-content *,
+h1, h2 {
+    font-family: 'uniqaidar_peregraf_01', Tahoma, Arial, sans-serif !important;
+}
+
+.font-card h3, 
+.font-card p, 
+.font-card span {
+    font-family: inherit !important;
+}
+
+i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
+    font-family: "Font Awesome 6 Brands", "Font Awesome 6 Free", "Font Awesome 5 Brands", "Font Awesome 5 Free", "FontAwesome" !important;
+    font-style: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    line-height: 1 !important;
+    -webkit-font-smoothing: antialiased !important;
+}
+
+        .header {
+    position: relative;
+    /* ڕەنگە نوێیەکە لێرە جێگیر کراوە */
+    background: #1a1a1a; 
+    color: #2d3436; 
+    padding: 5px 10px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.header h1 {
+    margin: 0px 0;
+    font-size: 1.8rem;
+    color: white; 
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    transition: font-family 0.6s ease;
+    height: 50px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    font-weight: normal !important; 
+}
+
+        .social-links {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-logo {
+    position: absolute;
+    top: 65%;
+    right: -50px; 
+    transform: translateY(-50%);
+    z-index: 2;
+}
+
+.header-logo img {
+    height: 200px; 
+    width: 320px;  
+    display: block;
+    object-fit: contain;
+}
+
+        .social-icon {
+            width: 35px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .social-icon:hover {
+            background: #27ae60;
+            transform: scale(1.1);
+        }
+
+        .search-container { margin-top: 15px; }
+
+        #test-input {
+            width: 90%;
+            max-width: 700px;
+            padding: 15px 25px;
+            border-radius: 35px;
+            border: none;
+            font-size: 1.1rem;
+            outline: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+.filter-label {
+    background: rgba(255, 255, 255, 0.2); 
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    border: 1px dashed rgba(255, 255, 255, 0.4); 
+    margin-left: 10px;
+    pointer-events: none; 
+}
+
+.filter-label::after {
+    content: "";
+    margin-right: 8px;
+}
+       .filter-container {
+    display: flex;        
+    align-items: center;  
+    background: #1a1a1a;
+    padding: 10px 15px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    overflow: hidden;   
+    gap: 10px;           
+}
+
+.filter-label {
+    white-space: nowrap;  
+    color: white;
+    font-weight: bold;
+    font-size: 0.95rem;
+    padding-left: 10px;
+    border-left: 2px solid rgba(255,255,255,0.2);
+    cursor: default;
+    pointer-events: none;
+    z-index: 1001;        
+}
+
+.marquee-wrapper {
+    overflow: visible !important; 
+    width: 100%;
+}
+
+.marquee-content {
+    display: flex !important;
+    flex-wrap: wrap !important;   
+    justify-content: center;     
+    gap: 10px;                 
+    animation: none !important;  
+    width: 100% !important;
+}
+
+.marquee-content:hover {
+    animation-play-state: paused;
+}
+
+
+@keyframes scroll-left {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+
+ .filter-btn {
+    padding: 0 18px;    
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    
+    white-space: nowrap; 
+    display: inline-flex; 
+    align-items: center;  
+    height: 35px;
+    flex-shrink: 0;    
+}
+
+.filter-btn.active, .filter-btn:hover {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+}
+
+.font-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+    padding: 40px;
+}
+
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #eee;
+    transition: 0.3s;
+}
+        .preview {
+            font-size: 2.5rem;
+            margin: 20px 0;
+            min-height: 100px;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .download-btn {
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: bold;
+            margin-top: auto;
+        }
+
+/* CSS Fonts */
+@font-face { font-family: 'uniqaidar_akalwand'; src: url('fonts/ali/uniqaidar_akalwand.ttf'); }
+@font-face { font-family: 'uniqaidar_akarabesque'; src: url('fonts/ali/uniqaidar_akarabesque.ttf'); }
+@font-face { font-family: 'uniqaidar_akazzam'; src: url('fonts/ali/uniqaidar_akazzam.ttf'); }
+@font-face { font-family: 'uniqaidar_akhasan'; src: url('fonts/ali/uniqaidar_akhasan.ttf'); }
+@font-face { font-family: 'uniqaidar_akhbaria'; src: url('fonts/ali/uniqaidar_akhbaria.ttf'); }
+@font-face { font-family: 'uniqaidar_akjiddah'; src: url('fonts/ali/uniqaidar_akjiddah.ttf'); }
+@font-face { font-family: 'uniqaidar_akkhalid'; src: url('fonts/ali/uniqaidar_akkhalid.ttf'); }
+@font-face { font-family: 'uniqaidar_akkhanaqin'; src: url('fonts/ali/uniqaidar_akkhanaqin.ttf'); }
+@font-face { font-family: 'uniqaidar_aksahifa'; src: url('fonts/ali/uniqaidar_aksahifa.ttf'); }
+@font-face { font-family: 'uniqaidar_aksahifab'; src: url('fonts/ali/uniqaidar_aksahifab.ttf'); }
+@font-face { font-family: 'uniqaidar_aksamik_001'; src: url('fonts/ali/uniqaidar_aksamik_001.ttf'); }
+@font-face { font-family: 'uniqaidar_aksamik_002'; src: url('fonts/ali/uniqaidar_aksamik_002.ttf'); }
+@font-face { font-family: 'uniqaidar_aksayid'; src: url('fonts/ali/uniqaidar_aksayid.ttf'); }
+@font-face { font-family: 'uniqaidar_aksharif'; src: url('fonts/ali/uniqaidar_aksharif.ttf'); }
+@font-face { font-family: 'uniqaidar_aksharifb'; src: url('fonts/ali/uniqaidar_aksharifb.ttf'); }
+@font-face { font-family: 'uniqaidar_aksulaimania'; src: url('fonts/ali/uniqaidar_aksulaimania.ttf'); }
+@font-face { font-family: 'uniqaidar_aktraditional'; src: url('fonts/ali/uniqaidar_aktraditional.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_000'; src: url('fonts/dstnus/uniqaidar_bilal_000.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_001'; src: url('fonts/dstnus/uniqaidar_bilal_001.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_002'; src: url('fonts/dstnus/uniqaidar_bilal_002.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_003'; src: url('fonts/dstnus/uniqaidar_bilal_003.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_004'; src: url('fonts/dstnus/uniqaidar_bilal_004.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_005'; src: url('fonts/dstnus/uniqaidar_bilal_005.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_006'; src: url('fonts/dstnus/uniqaidar_bilal_006.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_007'; src: url('fonts/dstnus/uniqaidar_bilal_007.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_008'; src: url('fonts/dstnus/uniqaidar_bilal_008.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_009'; src: url('fonts/dstnus/uniqaidar_bilal_009.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_010'; src: url('fonts/dstnus/uniqaidar_bilal_010.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_011'; src: url('fonts/dstnus/uniqaidar_bilal_011.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_012'; src: url('fonts/dstnus/uniqaidar_bilal_012.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_013'; src: url('fonts/dstnus/uniqaidar_bilal_013.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_014'; src: url('fonts/dstnus/uniqaidar_bilal_014.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_015'; src: url('fonts/dstnus/uniqaidar_bilal_015.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_016'; src: url('fonts/dstnus/uniqaidar_bilal_016.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_016_py'; src: url('fonts/dstnus/uniqaidar_bilal_016_py.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_017'; src: url('fonts/dstnus/uniqaidar_bilal_017.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_017_py'; src: url('fonts/dstnus/uniqaidar_bilal_017_py.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_018'; src: url('fonts/dstnus/uniqaidar_bilal_018.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_019'; src: url('fonts/dstnus/uniqaidar_bilal_019.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_020'; src: url('fonts/dstnus/uniqaidar_bilal_020.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_020_py'; src: url('fonts/dstnus/uniqaidar_bilal_020_py.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_021'; src: url('fonts/dstnus/uniqaidar_bilal_021.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_021_py'; src: url('fonts/dstnus/uniqaidar_bilal_021_py.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_022'; src: url('fonts/dstnus/uniqaidar_bilal_022.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_022_py'; src: url('fonts/dstnus/uniqaidar_bilal_022_py.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_023'; src: url('fonts/dstnus/uniqaidar_bilal_023.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_024'; src: url('fonts/dstnus/uniqaidar_bilal_024.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_024_pynh'; src: url('fonts/dstnus/uniqaidar_bilal_024_pynh.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_025'; src: url('fonts/dstnus/uniqaidar_bilal_025.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_026'; src: url('fonts/dstnus/uniqaidar_bilal_026.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_026_py'; src: url('fonts/dstnus/uniqaidar_bilal_026_py.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_027'; src: url('fonts/dstnus/uniqaidar_bilal_027.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_027_trim'; src: url('fonts/dstnus/uniqaidar_bilal_027_trim.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_028'; src: url('fonts/dstnus/uniqaidar_bilal_028.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_029'; src: url('fonts/dstnus/uniqaidar_bilal_029.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_030'; src: url('fonts/dstnus/uniqaidar_bilal_030.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_031'; src: url('fonts/dstnus/uniqaidar_bilal_031.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_032'; src: url('fonts/dstnus/uniqaidar_bilal_032.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_032_py'; src: url('fonts/dstnus/uniqaidar_bilal_032_py.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_033'; src: url('fonts/dstnus/uniqaidar_bilal_033.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_034'; src: url('fonts/dstnus/uniqaidar_bilal_034.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_035'; src: url('fonts/dstnus/uniqaidar_bilal_035.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_036'; src: url('fonts/dstnus/uniqaidar_bilal_036.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_036_py'; src: url('fonts/dstnus/uniqaidar_bilal_036_py.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_037'; src: url('fonts/dstnus/uniqaidar_bilal_037.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_038'; src: url('fonts/dstnus/uniqaidar_bilal_038.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_038_py'; src: url('fonts/dstnus/uniqaidar_bilal_038_py.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_039'; src: url('fonts/dstnus/uniqaidar_bilal_039.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_040'; src: url('fonts/dstnus/uniqaidar_bilal_040.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_041'; src: url('fonts/dstnus/uniqaidar_bilal_041.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_042'; src: url('fonts/dstnus/uniqaidar_bilal_042.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_042_py'; src: url('fonts/dstnus/uniqaidar_bilal_042_py.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_043'; src: url('fonts/dstnus/uniqaidar_bilal_043.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_044'; src: url('fonts/dstnus/uniqaidar_bilal_044.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_044_pnlt_'; src: url('fonts/dstnus/uniqaidar_bilal_044_pnlt_.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_045'; src: url('fonts/dstnus/uniqaidar_bilal_045.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_046'; src: url('fonts/dstnus/uniqaidar_bilal_046.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_046_py'; src: url('fonts/dstnus/uniqaidar_bilal_046_py.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_047'; src: url('fonts/dstnus/uniqaidar_bilal_047.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_048'; src: url('fonts/dstnus/uniqaidar_bilal_048.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_049'; src: url('fonts/dstnus/uniqaidar_bilal_049.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_049_py'; src: url('fonts/dstnus/uniqaidar_bilal_049_py.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_050'; src: url('fonts/dstnus/uniqaidar_bilal_050.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_051'; src: url('fonts/dstnus/uniqaidar_bilal_051.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_052'; src: url('fonts/dstnus/uniqaidar_bilal_052.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_053'; src: url('fonts/dstnus/uniqaidar_bilal_053.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_054'; src: url('fonts/dstnus/uniqaidar_bilal_054.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_055'; src: url('fonts/dstnus/uniqaidar_bilal_055.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_056'; src: url('fonts/dstnus/uniqaidar_bilal_056.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_057'; src: url('fonts/dstnus/uniqaidar_bilal_057.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_058'; src: url('fonts/dstnus/uniqaidar_bilal_058.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_059'; src: url('fonts/dstnus/uniqaidar_bilal_059.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_060'; src: url('fonts/dstnus/uniqaidar_bilal_060.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_060_py'; src: url('fonts/dstnus/uniqaidar_bilal_060_py.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_061'; src: url('fonts/dstnus/uniqaidar_bilal_061.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_062'; src: url('fonts/dstnus/uniqaidar_bilal_062.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_063'; src: url('fonts/dstnus/uniqaidar_bilal_063.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_063_pynkg'; src: url('fonts/dstnus/uniqaidar_bilal_063_pynkg.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_064'; src: url('fonts/dstnus/uniqaidar_bilal_064.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_065'; src: url('fonts/dstnus/uniqaidar_bilal_065.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_066'; src: url('fonts/dstnus/uniqaidar_bilal_066.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_067'; src: url('fonts/dstnus/uniqaidar_bilal_067.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_068'; src: url('fonts/dstnus/uniqaidar_bilal_068.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_068_ptknh'; src: url('fonts/dstnus/uniqaidar_bilal_068_ptknh.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_069'; src: url('fonts/dstnus/uniqaidar_bilal_069.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_070'; src: url('fonts/dstnus/uniqaidar_bilal_070.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_070_py'; src: url('fonts/dstnus/uniqaidar_bilal_070_py.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_071'; src: url('fonts/dstnus/uniqaidar_bilal_071.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_072'; src: url('fonts/dstnus/uniqaidar_bilal_072.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_073'; src: url('fonts/dstnus/uniqaidar_bilal_073.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_074'; src: url('fonts/dstnus/uniqaidar_bilal_074.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_075'; src: url('fonts/dstnus/uniqaidar_bilal_075.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_075_pykgnh'; src: url('fonts/dstnus/uniqaidar_bilal_075_pykgnh.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_076'; src: url('fonts/dstnus/uniqaidar_bilal_076.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_077'; src: url('fonts/dstnus/uniqaidar_bilal_077.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_078'; src: url('fonts/dstnus/uniqaidar_bilal_078.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_079'; src: url('fonts/dstnus/uniqaidar_bilal_079.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_080'; src: url('fonts/dstnus/uniqaidar_bilal_080.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_081'; src: url('fonts/dstnus/uniqaidar_bilal_081.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_082'; src: url('fonts/dstnus/uniqaidar_bilal_082.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_083'; src: url('fonts/dstnus/uniqaidar_bilal_083.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_084'; src: url('fonts/dstnus/uniqaidar_bilal_084.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_085'; src: url('fonts/dstnus/uniqaidar_bilal_085.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_086'; src: url('fonts/dstnus/uniqaidar_bilal_086.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_087'; src: url('fonts/dstnus/uniqaidar_bilal_087.ttf'); }
+@font-face { font-family: 'uniqaidar_bilal_088'; src: url('fonts/dstnus/uniqaidar_bilal_088.ttf'); }
+@font-face { font-family: 'uniqaidar_7emze'; src: url('fonts/hwal/uniqaidar_7emze.ttf'); }
+@font-face { font-family: 'uniqaidar_bukra_001'; src: url('fonts/hwal/uniqaidar_bukra_001.ttf'); }
+@font-face { font-family: 'uniqaidar_bukra_002'; src: url('fonts/hwal/uniqaidar_bukra_002.ttf'); }
+@font-face { font-family: 'uniqaidar_bukra_003'; src: url('fonts/hwal/uniqaidar_bukra_003.ttf'); }
+@font-face { font-family: 'uniqaidar_bukra_004'; src: url('fonts/hwal/uniqaidar_bukra_004.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_000'; src: url('fonts/hwal/uniqaidar_hewal_000.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_001'; src: url('fonts/hwal/uniqaidar_hewal_001.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_002'; src: url('fonts/hwal/uniqaidar_hewal_002.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_003'; src: url('fonts/hwal/uniqaidar_hewal_003.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_004'; src: url('fonts/hwal/uniqaidar_hewal_004.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_005'; src: url('fonts/hwal/uniqaidar_hewal_005.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_006'; src: url('fonts/hwal/uniqaidar_hewal_006.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_007'; src: url('fonts/hwal/uniqaidar_hewal_007.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_008'; src: url('fonts/hwal/uniqaidar_hewal_008.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_009'; src: url('fonts/hwal/uniqaidar_hewal_009.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_010'; src: url('fonts/hwal/uniqaidar_hewal_010.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_011'; src: url('fonts/hwal/uniqaidar_hewal_011.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_012'; src: url('fonts/hwal/uniqaidar_hewal_012.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_013'; src: url('fonts/hwal/uniqaidar_hewal_013.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_014'; src: url('fonts/hwal/uniqaidar_hewal_014.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_015'; src: url('fonts/hwal/uniqaidar_hewal_015.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_016'; src: url('fonts/hwal/uniqaidar_hewal_016.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_017'; src: url('fonts/hwal/uniqaidar_hewal_017.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_018'; src: url('fonts/hwal/uniqaidar_hewal_018.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_019'; src: url('fonts/hwal/uniqaidar_hewal_019.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_020'; src: url('fonts/hwal/uniqaidar_hewal_020.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_021'; src: url('fonts/hwal/uniqaidar_hewal_021.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_022'; src: url('fonts/hwal/uniqaidar_hewal_022.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_023'; src: url('fonts/hwal/uniqaidar_hewal_023.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_024'; src: url('fonts/hwal/uniqaidar_hewal_024.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_025'; src: url('fonts/hwal/uniqaidar_hewal_025.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_026'; src: url('fonts/hwal/uniqaidar_hewal_026.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_027'; src: url('fonts/hwal/uniqaidar_hewal_027.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_028'; src: url('fonts/hwal/uniqaidar_hewal_028.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_029'; src: url('fonts/hwal/uniqaidar_hewal_029.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_030'; src: url('fonts/hwal/uniqaidar_hewal_030.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_031'; src: url('fonts/hwal/uniqaidar_hewal_031.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_032'; src: url('fonts/hwal/uniqaidar_hewal_032.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_033'; src: url('fonts/hwal/uniqaidar_hewal_033.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_034'; src: url('fonts/hwal/uniqaidar_hewal_034.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_035'; src: url('fonts/hwal/uniqaidar_hewal_035.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_036'; src: url('fonts/hwal/uniqaidar_hewal_036.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_037'; src: url('fonts/hwal/uniqaidar_hewal_037.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_038'; src: url('fonts/hwal/uniqaidar_hewal_038.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_039'; src: url('fonts/hwal/uniqaidar_hewal_039.ttf'); }
+@font-face { font-family: 'uniqaidar_hewal_040'; src: url('fonts/hwal/uniqaidar_hewal_040.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_001'; src: url('fonts/hwal/uniqaidar_newsheadline_001.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_002'; src: url('fonts/hwal/uniqaidar_newsheadline_002.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_003'; src: url('fonts/hwal/uniqaidar_newsheadline_003.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_004'; src: url('fonts/hwal/uniqaidar_newsheadline_004.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_004bold'; src: url('fonts/hwal/uniqaidar_newsheadline_004bold.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_005'; src: url('fonts/hwal/uniqaidar_newsheadline_005.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_006'; src: url('fonts/hwal/uniqaidar_newsheadline_006.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_007'; src: url('fonts/hwal/uniqaidar_newsheadline_007.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_008'; src: url('fonts/hwal/uniqaidar_newsheadline_008.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_009'; src: url('fonts/hwal/uniqaidar_newsheadline_009.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_010'; src: url('fonts/hwal/uniqaidar_newsheadline_010.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_011'; src: url('fonts/hwal/uniqaidar_newsheadline_011.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_012'; src: url('fonts/hwal/uniqaidar_newsheadline_012.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_013'; src: url('fonts/hwal/uniqaidar_newsheadline_013.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_014'; src: url('fonts/hwal/uniqaidar_newsheadline_014.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_015'; src: url('fonts/hwal/uniqaidar_newsheadline_015.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_016'; src: url('fonts/hwal/uniqaidar_newsheadline_016.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_017'; src: url('fonts/hwal/uniqaidar_newsheadline_017.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_018'; src: url('fonts/hwal/uniqaidar_newsheadline_018.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_019'; src: url('fonts/hwal/uniqaidar_newsheadline_019.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_019_nv'; src: url('fonts/hwal/uniqaidar_newsheadline_019_nv.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_019_r'; src: url('fonts/hwal/uniqaidar_newsheadline_019_r.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_020'; src: url('fonts/hwal/uniqaidar_newsheadline_020.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_021'; src: url('fonts/hwal/uniqaidar_newsheadline_021.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_022'; src: url('fonts/hwal/uniqaidar_newsheadline_022.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_023'; src: url('fonts/hwal/uniqaidar_newsheadline_023.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_024'; src: url('fonts/hwal/uniqaidar_newsheadline_024.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_025'; src: url('fonts/hwal/uniqaidar_newsheadline_025.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_026'; src: url('fonts/hwal/uniqaidar_newsheadline_026.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_027'; src: url('fonts/hwal/uniqaidar_newsheadline_027.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_028'; src: url('fonts/hwal/uniqaidar_newsheadline_028.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_029'; src: url('fonts/hwal/uniqaidar_newsheadline_029.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_030'; src: url('fonts/hwal/uniqaidar_newsheadline_030.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_031'; src: url('fonts/hwal/uniqaidar_newsheadline_031.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_032'; src: url('fonts/hwal/uniqaidar_newsheadline_032.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_033'; src: url('fonts/hwal/uniqaidar_newsheadline_033.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_034'; src: url('fonts/hwal/uniqaidar_newsheadline_034.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_035'; src: url('fonts/hwal/uniqaidar_newsheadline_035.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_036'; src: url('fonts/hwal/uniqaidar_newsheadline_036.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_036_py'; src: url('fonts/hwal/uniqaidar_newsheadline_036_py.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_036_pym'; src: url('fonts/hwal/uniqaidar_newsheadline_036_pym.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_037'; src: url('fonts/hwal/uniqaidar_newsheadline_037.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_038'; src: url('fonts/hwal/uniqaidar_newsheadline_038.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_039'; src: url('fonts/hwal/uniqaidar_newsheadline_039.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_040'; src: url('fonts/hwal/uniqaidar_newsheadline_040.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_041'; src: url('fonts/hwal/uniqaidar_newsheadline_041.ttf'); }
+@font-face { font-family: 'uniqaidar_newsheadline_042'; src: url('fonts/hwal/uniqaidar_newsheadline_042.ttf'); }
+@font-face { font-family: 'uniqaidar_pure_001'; src: url('fonts/hwal/uniqaidar_pure_001.ttf'); }
+@font-face { font-family: 'uniqaidar_pure_002'; src: url('fonts/hwal/uniqaidar_pure_002.ttf'); }
+@font-face { font-family: 'uniqaidar_pure_003'; src: url('fonts/hwal/uniqaidar_pure_003.ttf'); }
+@font-face { font-family: 'qaidar_islamic00'; src: url('fonts/islami/qaidar_islamic00.ttf'); }
+@font-face { font-family: 'qaidar_islamic01'; src: url('fonts/islami/qaidar_islamic01.ttf'); }
+@font-face { font-family: 'qaidar_islamic02'; src: url('fonts/islami/qaidar_islamic02.ttf'); }
+@font-face { font-family: 'qaidar_islamic03'; src: url('fonts/islami/qaidar_islamic03.ttf'); }
+@font-face { font-family: 'qaidar_islamic04'; src: url('fonts/islami/qaidar_islamic04.ttf'); }
+@font-face { font-family: 'uniqaidar_esra&mieraj'; src: url('fonts/islami/uniqaidar_esra&mieraj.ttf'); }
+@font-face { font-family: 'uniqaidar_islamic00'; src: url('fonts/islami/uniqaidar_islamic00.ttf'); }
+@font-face { font-family: 'uniqaidar_islamic01'; src: url('fonts/islami/uniqaidar_islamic01.ttf'); }
+@font-face { font-family: 'uniqaidar_islamic02'; src: url('fonts/islami/uniqaidar_islamic02.ttf'); }
+@font-face { font-family: 'uniqaidar_islamic03'; src: url('fonts/islami/uniqaidar_islamic03.ttf'); }
+@font-face { font-family: 'uniqaidar_islamic04'; src: url('fonts/islami/uniqaidar_islamic04.ttf'); }
+@font-face { font-family: 'uniqaidar_remezan_000'; src: url('fonts/islami/uniqaidar_remezan_000.ttf'); }
+@font-face { font-family: 'uniqaidar_remezan_001'; src: url('fonts/islami/uniqaidar_remezan_001.ttf'); }
+@font-face { font-family: 'uniqaidar_subtitle_000'; src: url('fonts/jrnus/uniqaidar_subtitle_000.ttf'); }
+@font-face { font-family: 'uniqaidar_subtitle_001'; src: url('fonts/jrnus/uniqaidar_subtitle_001.ttf'); }
+@font-face { font-family: 'uniqaidar_subtitle_002'; src: url('fonts/jrnus/uniqaidar_subtitle_002.ttf'); }
+@font-face { font-family: 'uniqaidar_subtitle_003'; src: url('fonts/jrnus/uniqaidar_subtitle_003.ttf'); }
+@font-face { font-family: 'uniqaidar_subtitle_004'; src: url('fonts/jrnus/uniqaidar_subtitle_004.ttf'); }
+@font-face { font-family: 'uniqaidar_subtitle_005'; src: url('fonts/jrnus/uniqaidar_subtitle_005.ttf'); }
+@font-face { font-family: 'uniqaidar_subtitle_006'; src: url('fonts/jrnus/uniqaidar_subtitle_006.ttf'); }
+@font-face { font-family: 'uniqaidar_subtitle_007'; src: url('fonts/jrnus/uniqaidar_subtitle_007.ttf'); }
+@font-face { font-family: 'uniqaidar_subtitle_008'; src: url('fonts/jrnus/uniqaidar_subtitle_008.ttf'); }
+@font-face { font-family: 'uniqaidar_subtitle_009'; src: url('fonts/jrnus/uniqaidar_subtitle_009.ttf'); }
+@font-face { font-family: 'uniqaidar_subtitle_010'; src: url('fonts/jrnus/uniqaidar_subtitle_010.ttf'); }
+@font-face { font-family: 'uniqaidar_subtitle_011'; src: url('fonts/jrnus/uniqaidar_subtitle_011.ttf'); }
+@font-face { font-family: 'uniqaidar_afarin_001'; src: url('fonts/kanal/uniqaidar_afarin_001.ttf'); }
+@font-face { font-family: 'uniqaidar_afarin_002'; src: url('fonts/kanal/uniqaidar_afarin_002.ttf'); }
+@font-face { font-family: 'uniqaidar_afarin_003'; src: url('fonts/kanal/uniqaidar_afarin_003.ttf'); }
+@font-face { font-family: 'uniqaidar_amozhgary_001'; src: url('fonts/kanal/uniqaidar_amozhgary_001.ttf'); }
+@font-face { font-family: 'uniqaidar_amozhgary_002'; src: url('fonts/kanal/uniqaidar_amozhgary_002.ttf'); }
+@font-face { font-family: 'uniqaidar_amozhgary_003'; src: url('fonts/kanal/uniqaidar_amozhgary_003.ttf'); }
+@font-face { font-family: 'uniqaidar_arabyeh'; src: url('fonts/kanal/uniqaidar_arabyeh.ttf'); }
+@font-face { font-family: 'uniqaidar_aramco'; src: url('fonts/kanal/uniqaidar_aramco.ttf'); }
+@font-face { font-family: 'uniqaidar_asiacell_001'; src: url('fonts/kanal/uniqaidar_asiacell_001.ttf'); }
+@font-face { font-family: 'uniqaidar_asiacell_002'; src: url('fonts/kanal/uniqaidar_asiacell_002.ttf'); }
+@font-face { font-family: 'uniqaidar_asya'; src: url('fonts/kanal/uniqaidar_asya.ttf'); }
+@font-face { font-family: 'uniqaidar_baxshin_hospital_001'; src: url('fonts/kanal/uniqaidar_baxshin_hospital_001.ttf'); }
+@font-face { font-family: 'uniqaidar_baxshin_hospital_002'; src: url('fonts/kanal/uniqaidar_baxshin_hospital_002.ttf'); }
+@font-face { font-family: 'uniqaidar_fastlink_01'; src: url('fonts/kanal/uniqaidar_fastlink_01.ttf'); }
+@font-face { font-family: 'uniqaidar_fastlink_02'; src: url('fonts/kanal/uniqaidar_fastlink_02.ttf'); }
+@font-face { font-family: 'uniqaidar_fastlink_03'; src: url('fonts/kanal/uniqaidar_fastlink_03.ttf'); }
+@font-face { font-family: 'uniqaidar_fastlink_04'; src: url('fonts/kanal/uniqaidar_fastlink_04.ttf'); }
+@font-face { font-family: 'uniqaidar_fnunokia'; src: url('fonts/kanal/uniqaidar_fnunokia.ttf'); }
+@font-face { font-family: 'uniqaidar_harem_hospital_001'; src: url('fonts/kanal/uniqaidar_harem_hospital_001.ttf'); }
+@font-face { font-family: 'uniqaidar_harem_hospital_002'; src: url('fonts/kanal/uniqaidar_harem_hospital_002.ttf'); }
+@font-face { font-family: 'uniqaidar_khwendkar_001'; src: url('fonts/kanal/uniqaidar_khwendkar_001.ttf'); }
+@font-face { font-family: 'uniqaidar_khwendkar_002'; src: url('fonts/kanal/uniqaidar_khwendkar_002.ttf'); }
+@font-face { font-family: 'uniqaidar_khwendkar_003'; src: url('fonts/kanal/uniqaidar_khwendkar_003.ttf'); }
+@font-face { font-family: 'uniqaidar_mobile_tv'; src: url('fonts/kanal/uniqaidar_mobile_tv.ttf'); }
+@font-face { font-family: 'uniqaidar_money_heist_001'; src: url('fonts/kanal/uniqaidar_money_heist_001.ttf'); }
+@font-face { font-family: 'uniqaidar_money_heist_002'; src: url('fonts/kanal/uniqaidar_money_heist_002.ttf'); }
+@font-face { font-family: 'uniqaidar_nawa'; src: url('fonts/kanal/uniqaidar_nawa.ttf'); }
+@font-face { font-family: 'uniqaidar_newpayam_01'; src: url('fonts/kanal/uniqaidar_newpayam_01.ttf'); }
+@font-face { font-family: 'uniqaidar_newpayam_02'; src: url('fonts/kanal/uniqaidar_newpayam_02.ttf'); }
+@font-face { font-family: 'uniqaidar_newpayam_03'; src: url('fonts/kanal/uniqaidar_newpayam_03.ttf'); }
+@font-face { font-family: 'uniqaidar_newpayam_04'; src: url('fonts/kanal/uniqaidar_newpayam_04.ttf'); }
+@font-face { font-family: 'uniqaidar_payam'; src: url('fonts/kanal/uniqaidar_payam.ttf'); }
+@font-face { font-family: 'uniqaidar_payamnews'; src: url('fonts/kanal/uniqaidar_payamnews.ttf'); }
+@font-face { font-family: 'uniqaidar_payamnews_ku_numbers'; src: url('fonts/kanal/uniqaidar_payamnews_ku_numbers.ttf'); }
+@font-face { font-family: 'uniqaidar_payam_hd_001'; src: url('fonts/kanal/uniqaidar_payam_hd_001.ttf'); }
+@font-face { font-family: 'uniqaidar_payam_hd_002'; src: url('fonts/kanal/uniqaidar_payam_hd_002.ttf'); }
+@font-face { font-family: 'uniqaidar_payam_hd_003'; src: url('fonts/kanal/uniqaidar_payam_hd_003.ttf'); }
+@font-face { font-family: 'uniqaidar_payam_hd_004'; src: url('fonts/kanal/uniqaidar_payam_hd_004.ttf'); }
+@font-face { font-family: 'uniqaidar_peregraf_01'; src: url('fonts/kanal/uniqaidar_peregraf_01.ttf'); }
+@font-face { font-family: 'uniqaidar_peregraf_02'; src: url('fonts/kanal/uniqaidar_peregraf_02.ttf'); }
+@font-face { font-family: 'uniqaidar_sahar'; src: url('fonts/kanal/uniqaidar_sahar.ttf'); }
+@font-face { font-family: 'uniqaidar_squid_game_002'; src: url('fonts/kanal/uniqaidar_squid_game_002.ttf'); }
+@font-face { font-family: 'uniqaidar_talabat_01'; src: url('fonts/kanal/uniqaidar_talabat_01.ttf'); }
+@font-face { font-family: 'uniqaidar_talabat_02'; src: url('fonts/kanal/uniqaidar_talabat_02.ttf'); }
+@font-face { font-family: 'uniqaidar_trt_01'; src: url('fonts/kanal/uniqaidar_trt_01.ttf'); }
+@font-face { font-family: 'uniqaidar_trt_02'; src: url('fonts/kanal/uniqaidar_trt_02.ttf'); }
+@font-face { font-family: 'uniqaidar_trt_03'; src: url('fonts/kanal/uniqaidar_trt_03.ttf'); }
+@font-face { font-family: 'uniqaidar_trt_04'; src: url('fonts/kanal/uniqaidar_trt_04.ttf'); }
+@font-face { font-family: 'uniqaidar_zhyan_001'; src: url('fonts/kanal/uniqaidar_zhyan_001.ttf'); }
+@font-face { font-family: 'uniqaidar_zhyan_002'; src: url('fonts/kanal/uniqaidar_zhyan_002.ttf'); }
+@font-face { font-family: 'uniqaidar_zhyan_003'; src: url('fonts/kanal/uniqaidar_zhyan_003.ttf'); }
+@font-face { font-family: 'uniqaidar_a7med'; src: url('fonts/ktib/uniqaidar_a7med.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_000'; src: url('fonts/ktib/uniqaidar_blawkrawe_000.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_001'; src: url('fonts/ktib/uniqaidar_blawkrawe_001.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_002'; src: url('fonts/ktib/uniqaidar_blawkrawe_002.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_003'; src: url('fonts/ktib/uniqaidar_blawkrawe_003.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_004'; src: url('fonts/ktib/uniqaidar_blawkrawe_004.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_004_hollow'; src: url('fonts/ktib/uniqaidar_blawkrawe_004_hollow.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_005'; src: url('fonts/ktib/uniqaidar_blawkrawe_005.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_006'; src: url('fonts/ktib/uniqaidar_blawkrawe_006.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_007'; src: url('fonts/ktib/uniqaidar_blawkrawe_007.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_008'; src: url('fonts/ktib/uniqaidar_blawkrawe_008.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_009'; src: url('fonts/ktib/uniqaidar_blawkrawe_009.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_010_book'; src: url('fonts/ktib/uniqaidar_blawkrawe_010_book.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_011'; src: url('fonts/ktib/uniqaidar_blawkrawe_011.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_012'; src: url('fonts/ktib/uniqaidar_blawkrawe_012.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_013'; src: url('fonts/ktib/uniqaidar_blawkrawe_013.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_014'; src: url('fonts/ktib/uniqaidar_blawkrawe_014.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_015'; src: url('fonts/ktib/uniqaidar_blawkrawe_015.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_016'; src: url('fonts/ktib/uniqaidar_blawkrawe_016.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_017'; src: url('fonts/ktib/uniqaidar_blawkrawe_017.ttf'); }
+@font-face { font-family: 'uniqaidar_blawkrawe_018'; src: url('fonts/ktib/uniqaidar_blawkrawe_018.ttf'); }
+@font-face { font-family: 'uniqaidar_dwange'; src: url('fonts/ktib/uniqaidar_dwange.ttf'); }
+@font-face { font-family: 'uniqaidar_ebrahim'; src: url('fonts/ktib/uniqaidar_ebrahim.ttf'); }
+@font-face { font-family: 'uniqaidar_edeb'; src: url('fonts/ktib/uniqaidar_edeb.ttf'); }
+@font-face { font-family: 'uniqaidar_hemin'; src: url('fonts/ktib/uniqaidar_hemin.ttf'); }
+@font-face { font-family: 'uniqaidar_kurdistan_001'; src: url('fonts/ktib/uniqaidar_kurdistan_001.ttf'); }
+@font-face { font-family: 'uniqaidar_kurdistan_002'; src: url('fonts/ktib/uniqaidar_kurdistan_002.ttf'); }
+@font-face { font-family: 'uniqaidar_kurdistan_003'; src: url('fonts/ktib/uniqaidar_kurdistan_003.ttf'); }
+@font-face { font-family: 'uniqaidar_kurdistan_004'; src: url('fonts/ktib/uniqaidar_kurdistan_004.ttf'); }
+@font-face { font-family: 'uniqaidar_kurdistan_005'; src: url('fonts/ktib/uniqaidar_kurdistan_005.ttf'); }
+@font-face { font-family: 'uniqaidar_kurdistan_006'; src: url('fonts/ktib/uniqaidar_kurdistan_006.ttf'); }
+@font-face { font-family: 'uniqaidar_kurdistan_007'; src: url('fonts/ktib/uniqaidar_kurdistan_007.ttf'); }
+@font-face { font-family: 'uniqaidar_muhammad'; src: url('fonts/ktib/uniqaidar_muhammad.ttf'); }
+@font-face { font-family: 'uniqaidar_naskh_bold'; src: url('fonts/ktib/uniqaidar_naskh_bold.ttf'); }
+@font-face { font-family: 'uniqaidar_naskh_regular'; src: url('fonts/ktib/uniqaidar_naskh_regular.ttf'); }
+@font-face { font-family: 'uniqaidar_rojname'; src: url('fonts/ktib/uniqaidar_rojname.ttf'); }
+@font-face { font-family: 'uniqaidar_rojnameb'; src: url('fonts/ktib/uniqaidar_rojnameb.ttf'); }
+@font-face { font-family: 'uniqaidar_sami'; src: url('fonts/ktib/uniqaidar_sami.ttf'); }
+@font-face { font-family: 'uniqaidar_yelda'; src: url('fonts/ktib/uniqaidar_yelda.ttf'); }
+@font-face { font-family: 'uniqaidar_social_media_001'; src: url('fonts/media/uniqaidar_social_media_001.ttf'); }
+@font-face { font-family: 'uniqaidar_social_media_002'; src: url('fonts/media/uniqaidar_social_media_002.ttf'); }
+@font-face { font-family: 'uniqaidar_social_media_003'; src: url('fonts/media/uniqaidar_social_media_003.ttf'); }
+@font-face { font-family: 'uniqaidar_social_media_004'; src: url('fonts/media/uniqaidar_social_media_004.ttf'); }
+@font-face { font-family: 'uniqaidar_social_media_005'; src: url('fonts/media/uniqaidar_social_media_005.ttf'); }
+@font-face { font-family: 'uniqaidar_social_media_006'; src: url('fonts/media/uniqaidar_social_media_006.ttf'); }
+@font-face { font-family: 'uniqaidar_squid_game_001'; src: url('fonts/media/uniqaidar_squid_game_001.ttf'); }
+@font-face { font-family: 'uniqaidar_free_000'; src: url('fonts/mndalan/uniqaidar_free_000.ttf'); }
+@font-face { font-family: 'uniqaidar_free_001'; src: url('fonts/mndalan/uniqaidar_free_001.ttf'); }
+@font-face { font-family: 'uniqaidar_free_002'; src: url('fonts/mndalan/uniqaidar_free_002.ttf'); }
+@font-face { font-family: 'uniqaidar_free_003'; src: url('fonts/mndalan/uniqaidar_free_003.ttf'); }
+@font-face { font-family: 'uniqaidar_free_004'; src: url('fonts/mndalan/uniqaidar_free_004.ttf'); }
+@font-face { font-family: 'uniqaidar_free_005'; src: url('fonts/mndalan/uniqaidar_free_005.ttf'); }
+@font-face { font-family: 'uniqaidar_free_006'; src: url('fonts/mndalan/uniqaidar_free_006.ttf'); }
+@font-face { font-family: 'uniqaidar_free_007'; src: url('fonts/mndalan/uniqaidar_free_007.ttf'); }
+@font-face { font-family: 'uniqaidar_free_008'; src: url('fonts/mndalan/uniqaidar_free_008.ttf'); }
+@font-face { font-family: 'uniqaidar_free_009'; src: url('fonts/mndalan/uniqaidar_free_009.ttf'); }
+@font-face { font-family: 'uniqaidar_free_010'; src: url('fonts/mndalan/uniqaidar_free_010.ttf'); }
+@font-face { font-family: 'uniqaidar_free_011'; src: url('fonts/mndalan/uniqaidar_free_011.ttf'); }
+@font-face { font-family: 'uniqaidar_free_012'; src: url('fonts/mndalan/uniqaidar_free_012.ttf'); }
+@font-face { font-family: 'uniqaidar_free_013'; src: url('fonts/mndalan/uniqaidar_free_013.ttf'); }
+@font-face { font-family: 'uniqaidar_free_014'; src: url('fonts/mndalan/uniqaidar_free_014.ttf'); }
+@font-face { font-family: 'uniqaidar_life'; src: url('fonts/mndalan/uniqaidar_life.ttf'); }
+@font-face { font-family: 'uniqaidar_zana'; src: url('fonts/mndalan/uniqaidar_zana.ttf'); }
+@font-face { font-family: 'uniqaidar_nastaliq_001'; src: url('fonts/nastaliq/uniqaidar_nastaliq_001.ttf'); }
+@font-face { font-family: 'uniqaidar_nastaliq_002'; src: url('fonts/nastaliq/uniqaidar_nastaliq_002.ttf'); }
+@font-face { font-family: 'uniqaidar_nastaliq_003'; src: url('fonts/nastaliq/uniqaidar_nastaliq_003.ttf'); }
+@font-face { font-family: 'uniqaidar_ali'; src: url('fonts/semic/uniqaidar_ali.ttf'); }
+@font-face { font-family: 'uniqaidar_gate'; src: url('fonts/semic/uniqaidar_gate.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_000'; src: url('fonts/semic/uniqaidar_soz_000.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_001'; src: url('fonts/semic/uniqaidar_soz_001.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_002'; src: url('fonts/semic/uniqaidar_soz_002.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_003'; src: url('fonts/semic/uniqaidar_soz_003.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_004'; src: url('fonts/semic/uniqaidar_soz_004.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_005'; src: url('fonts/semic/uniqaidar_soz_005.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_006'; src: url('fonts/semic/uniqaidar_soz_006.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_007'; src: url('fonts/semic/uniqaidar_soz_007.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_008'; src: url('fonts/semic/uniqaidar_soz_008.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_009'; src: url('fonts/semic/uniqaidar_soz_009.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_010'; src: url('fonts/semic/uniqaidar_soz_010.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_010_hollow'; src: url('fonts/semic/uniqaidar_soz_010_hollow.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_011'; src: url('fonts/semic/uniqaidar_soz_011.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_012'; src: url('fonts/semic/uniqaidar_soz_012.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_013'; src: url('fonts/semic/uniqaidar_soz_013.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_014'; src: url('fonts/semic/uniqaidar_soz_014.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_015'; src: url('fonts/semic/uniqaidar_soz_015.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_016'; src: url('fonts/semic/uniqaidar_soz_016.ttf'); }
+@font-face { font-family: 'uniqaidar_soz_017'; src: url('fonts/semic/uniqaidar_soz_017.ttf'); }
+@font-face { font-family: 'uniqaidar_abdullah'; src: url('fonts/some/uniqaidar_abdullah.ttf'); }
+@font-face { font-family: 'uniqaidar_abo_dhabi'; src: url('fonts/some/uniqaidar_abo_dhabi.ttf'); }
+@font-face { font-family: 'uniqaidar_amez'; src: url('fonts/some/uniqaidar_amez.ttf'); }
+@font-face { font-family: 'uniqaidar_askandar'; src: url('fonts/some/uniqaidar_askandar.ttf'); }
+@font-face { font-family: 'uniqaidar_aso'; src: url('fonts/some/uniqaidar_aso.ttf'); }
+@font-face { font-family: 'uniqaidar_azadi'; src: url('fonts/some/uniqaidar_azadi.ttf'); }
+@font-face { font-family: 'uniqaidar_bahar_001'; src: url('fonts/some/uniqaidar_bahar_001.ttf'); }
+@font-face { font-family: 'uniqaidar_behmen'; src: url('fonts/some/uniqaidar_behmen.ttf'); }
+@font-face { font-family: 'uniqaidar_bexud'; src: url('fonts/some/uniqaidar_bexud.ttf'); }
+@font-face { font-family: 'uniqaidar_dara'; src: url('fonts/some/uniqaidar_dara.ttf'); }
+@font-face { font-family: 'uniqaidar_digital'; src: url('fonts/some/uniqaidar_digital.ttf'); }
+@font-face { font-family: 'uniqaidar_efriqa'; src: url('fonts/some/uniqaidar_efriqa.ttf'); }
+@font-face { font-family: 'uniqaidar_efsun'; src: url('fonts/some/uniqaidar_efsun.ttf'); }
+@font-face { font-family: 'uniqaidar_jwneyd'; src: url('fonts/some/uniqaidar_jwneyd.ttf'); }
+@font-face { font-family: 'uniqaidar_kamaran'; src: url('fonts/some/uniqaidar_kamaran.ttf'); }
+@font-face { font-family: 'uniqaidar_karmend'; src: url('fonts/some/uniqaidar_karmend.ttf'); }
+@font-face { font-family: 'uniqaidar_karwan'; src: url('fonts/some/uniqaidar_karwan.ttf'); }
+@font-face { font-family: 'uniqaidar_khama'; src: url('fonts/some/uniqaidar_khama.ttf'); }
+@font-face { font-family: 'uniqaidar_kufi'; src: url('fonts/some/uniqaidar_kufi.ttf'); }
+@font-face { font-family: 'uniqaidar_meju'; src: url('fonts/some/uniqaidar_meju.ttf'); }
+@font-face { font-family: 'uniqaidar_meju_00'; src: url('fonts/some/uniqaidar_meju_00.ttf'); }
+@font-face { font-family: 'uniqaidar_nasrin'; src: url('fonts/some/uniqaidar_nasrin.ttf'); }
+@font-face { font-family: 'uniqaidar_omar'; src: url('fonts/some/uniqaidar_omar.ttf'); }
+@font-face { font-family: 'uniqaidar_osama'; src: url('fonts/some/uniqaidar_osama.ttf'); }
+@font-face { font-family: 'uniqaidar_osman'; src: url('fonts/some/uniqaidar_osman.ttf'); }
+@font-face { font-family: 'uniqaidar_penjwen'; src: url('fonts/some/uniqaidar_penjwen.ttf'); }
+@font-face { font-family: 'uniqaidar_poster'; src: url('fonts/some/uniqaidar_poster.ttf'); }
+@font-face { font-family: 'uniqaidar_saman'; src: url('fonts/some/uniqaidar_saman.ttf'); }
+@font-face { font-family: 'uniqaidar_taef'; src: url('fonts/some/uniqaidar_taef.ttf'); }
+@font-face { font-family: 'uniqaidar_texte'; src: url('fonts/some/uniqaidar_texte.ttf'); }
+@font-face { font-family: 'uniqaidar_twana'; src: url('fonts/some/uniqaidar_twana.ttf'); }
+@font-face { font-family: 'uniqaidar_yusuf'; src: url('fonts/some/uniqaidar_yusuf.ttf'); }
+@font-face { font-family: 'uniqaidar_xal_00'; src: url('fonts/xal/uniqaidar_xal_00.ttf'); }
+@font-face { font-family: 'uniqaidar_xal_01'; src: url('fonts/xal/uniqaidar_xal_01.ttf'); }
+@font-face { font-family: 'uniqaidar_xal_02'; src: url('fonts/xal/uniqaidar_xal_02.ttf'); }
+
+@font-face { font-family: 'uniqaidar_fastlink01'; src: url('fonts/fastlink/uniqaidar_fastlink01.ttf'); }
+@font-face { font-family: 'uniqaidar_fastlink02'; src: url('fonts/fastlink/uniqaidar_fastlink02.ttf'); }
+@font-face { font-family: 'uniqaidar_fastlink03'; src: url('fonts/fastlink/uniqaidar_fastlink03.ttf'); }
+@font-face { font-family: 'uniqaidar_fastlink04'; src: url('fonts/fastlink/uniqaidar_fastlink04.ttf'); }
+
+
+@font-face { font-family: 'uniqaidar_bahar001'; src: url('fonts/nwe/uniqaidar_bahar001.ttf'); }
+@font-face { font-family: 'uniqaidar_subtitle012'; src: url('fonts/nwe/uniqaidar_subtitle012.ttf'); }
+
+
+
+footer {
+    text-align: center;
+    padding: 4px 10px;
+    background-color: #1a252f; 
+    color: #ecf0f1;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin-top: 50px;
+    border-top: 4px solid #27ae60; 
+}
+
+footer p {
+    margin: 5px 0;
+    letter-spacing: 1px; 
+}
+
+footer strong {
+    color: #27ae60; 
+    font-size: 1.1rem;
+}
+
+.marquee-wrapper {
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+    display: flex;
+}
+
+.filter-container {
+    display: flex; 
+    margin: 0 auto !important; 
+    /* ٢. ئەمانەش بۆ شێوەکەی */
+    background: #1a1a1a;
+    padding: 15px 30px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    
+    max-width: fit-content; 
+    min-width: 200px;
+    border-radius: 0 0 15px 15px; 
+}
+
+.filter-btn {
+    padding: 9px 18px;
+    margin: 3px 0px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    flex-shrink: 0; 
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.filter-btn.active, .filter-btn:hover {
+    background: #0984e3; 
+    color: white;
+    border-color: #0984e3;
+    transform: translateY(-2px);
+}
+
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px); /* لێڵکردنی پشتەوە بۆ جوانی */
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background: linear-gradient(145deg, #ffffff, #f0f4f8);
+    margin: 10% auto;
+    padding: 40px 30px;
+    border-radius: 25px;
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+    position: relative;
+    direction: rtl;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transform: translateY(0);
+    animation: slideUp 0.4s ease-out;
+}
+
+.close-btn {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    color: #888;
+    font-size: 24px;
+    background: #eee;
+    width: 35px;
+    height: 35px;
+    line-height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.close-btn:hover {
+    background: #ff4d4d;
+    color: white;
+    transform: rotate(90deg);
+}
+
+.modal-content h2 {
+    color: #339cff; 
+    margin-bottom: 20px;
+    font-size: 24px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+.modal-content p {
+    color: #555;
+    line-height: 1.8;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+
+.header-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.header-btn:hover {
+    background: #27ae60; 
+    border-color: #27ae60;
+    transform: translateY(-2px);
+}
+
+.header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.close-download {
+    color: #aaa;
+    float: left; 
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-download:hover {
+    color: #e74c3c;
+}
+
+.download-box {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    margin-top: 15px;
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        display: flex;
+        flex-direction: column; 
+        align-items: center;
+        text-align: center;
+        height: auto !important; 
+        padding: 20px 10px;
+    }
+
+    .header h1 {
+        position: static !important; 
+        margin: 10px 0 !important;
+        font-size: 1.3rem !important;
+        line-height: 1.4;
+    }
+
+    .header img, .logo {
+        max-width: 80px; 
+        margin-bottom: 10px;
+    }
+
+    .search-container {
+        width: 90% !important;
+        position: static !important;
+        margin: 15px auto !important;
+    }
+
+    .social-links, .header-actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        position: static !important;
+    }
+}
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .header-btn {
+        width: 80%; 
+        justify-content: center;
+    }
+
+    .filter-group {
+        gap: 8px;
+        padding: 5px;
+    }
+
+    .filter-btn {
+        font-size: 0.75rem !important; 
+        padding: 0 12px !important;
+        height: 30px !important;
+    }
+
+    .fonts-grid {
+        grid-template-columns: 1fr; 
+        gap: 15px;
+        padding: 10px;
+    }
+    
+    .font-card {
+        margin: 0 5px; 
+    }
+}
+
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="social-links">
+        <a href="https://web.facebook.com/UniQaiidarFonts?_rdc=1&_rdr#" target="_blank" class="social-icon">
+            <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="https://t.me/UniQaidar_Fonts" target="_blank" class="social-icon">
+            <i class="fab fa-telegram-plane"></i>
+        </a>
+<a href="#" id="aboutBtn" class="social-icon">
+    <i class="fas fa-info-circle"></i>
+</a>
+
+
+<button id="downloadModalBtn" class="header-btn">
+    <i class="fas fa-download"></i> داگرتنی فۆنتەکان
+</button>
+
+<div id="downloadModal" class="modal">
+    <div class="modal-content">
+        <span class="close-download">&times;</span>
+        <h2>داگرتنی فۆنتەکان</h2>
+        <div class="download-box" style="text-align: center; padding: 12px 25px !important;">
+            <i class="fas fa-file-archive" style="font-size: 50px; color: #f1c40f; margin-bottom: 15px;"></i>
+            <p style="font-size: 1.2rem; margin-bottom: 20px;">فەرموو لەگەڵ داگرتنی 420 فۆنتی یونی قەیدار بە شێوەی زیپ (ZIP)</p>
+            
+            <a href="kak qaidar" target="_blank" class="header-btn" style="background: #27ae60; padding: 12px 30px; font-size: 1.0rem;">
+                <i class="fas fa-cloud-download-alt"></i> كلیك بكه‌ بۆ داگرتنی فۆنته‌كان 
+            </a>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <div class="header-logo">
+        <img src="https://i.ibb.co/spKL7BT3/uniqai.png" alt="UniQaidar logo">
+    </div>
+
+    <h1 id="main-title">فۆنته‌كانی یونی قه‌یدار</h1>
+    <div class="search-container">
+        <input type="text" id="test-input" placeholder="لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنتەکان
+...">
+    </div>
+</div> 
+<div class="filter-container">
+    <div class="marquee-wrapper">
+        <div class="marquee-content">
+            <button class="filter-btn" onclick="filterFonts('nwe', this)">نوێ</button>
+            <button class="filter-btn" onclick="filterFonts('all', this)">هەمووی</button>
+            <button class="filter-btn" onclick="filterFonts('some', this)">ئه‌وانی تر</button>
+            <button class="filter-btn" onclick="filterFonts('dstnus', this)">دەستنووس</button>
+            <button class="filter-btn" onclick="filterFonts('ali', this)">عه‌لی-یونیكۆد</button>
+            <button class="filter-btn" onclick="filterFonts('hwal', this)">هەواڵ</button>
+            <button class="filter-btn" onclick="filterFonts('islami', this)">ئیسلامی</button>
+            <button class="filter-btn" onclick="filterFonts('kanal', this)">کەناڵ</button>
+            <button class="filter-btn" onclick="filterFonts('xal', this)">خاڵ</button>
+            <button class="filter-btn" onclick="filterFonts('ktib', this)">کتێب</button>
+            <button class="filter-btn" onclick="filterFonts('mndalan', this)">منداڵان</button>
+            <button class="filter-btn active" onclick="filterFonts('nastaliq', this)">نەستەلیق</button>
+            <button class="filter-btn" onclick="filterFonts('semic', this)">سەمیک</button>
+            <button class="filter-btn" onclick="filterFonts('jrnus', this)">ژێرنووس</button>
+            <button class="filter-btn" onclick="filterFonts('media', this)">میدیا</button>
+            <button class="filter-btn" onclick="filterFonts('fastlink', this)">فاست لینك</button>
+                    
+
+        </div>
+    </div>
+</div>
+
+<div class="font-grid" id="font-grid"></div>
+<script>
+
+const fonts = [
+    { 
+        name: "UniQAIDAR_AKArabesque", 
+        file: "uniqaidar_akarabesque", 
+        path: "fonts/ali/uniqaidar_akarabesque.ttf", 
+        zip: "fonts/ali/uniqaidar_akarabesque.zip", 
+        category: "ali" 
+    },
+    { 
+        name: "uniqaidar_akalwand", 
+        file: "uniqaidar_akalwand", 
+        path: "fonts/ali/uniqaidar_akalwand.ttf", 
+        zip: "fonts/ali/uniqaidar_akalwand.zip", 
+        category: "ali" 
+    },
+
+    { name: "uniqaidar_akalwand", file: "uniqaidar_akalwand", path: "fonts/ali/uniqaidar_akalwand.ttf", zip: "fonts/ali/uniqaidar_akalwand.zip", category: "ali" },
+    { name: "uniqaidar_akarabesque", file: "uniqaidar_akarabesque", path: "fonts/ali/uniqaidar_akarabesque.ttf", zip: "fonts/ali/uniqaidar_akarabesque.zip", category: "ali" },
+    { name: "uniqaidar_akazzam", file: "uniqaidar_akazzam", path: "fonts/ali/uniqaidar_akazzam.ttf", zip: "fonts/ali/uniqaidar_akazzam.zip", category: "ali" },
+    { name: "uniqaidar_akhasan", file: "uniqaidar_akhasan", path: "fonts/ali/uniqaidar_akhasan.ttf", zip: "fonts/ali/uniqaidar_akhasan.zip", category: "ali" },
+    { name: "uniqaidar_akhbaria", file: "uniqaidar_akhbaria", path: "fonts/ali/uniqaidar_akhbaria.ttf", zip: "fonts/ali/uniqaidar_akhbaria.zip", category: "ali" },
+    { name: "uniqaidar_akjiddah", file: "uniqaidar_akjiddah", path: "fonts/ali/uniqaidar_akjiddah.ttf", zip: "fonts/ali/uniqaidar_akjiddah.zip", category: "ali" },
+    { name: "uniqaidar_akkhalid", file: "uniqaidar_akkhalid", path: "fonts/ali/uniqaidar_akkhalid.ttf", zip: "fonts/ali/uniqaidar_akkhalid.zip", category: "ali" },
+    { name: "uniqaidar_akkhanaqin", file: "uniqaidar_akkhanaqin", path: "fonts/ali/uniqaidar_akkhanaqin.ttf", zip: "fonts/ali/uniqaidar_akkhanaqin.zip", category: "ali" },
+    { name: "uniqaidar_aksahifa", file: "uniqaidar_aksahifa", path: "fonts/ali/uniqaidar_aksahifa.ttf", zip: "fonts/ali/uniqaidar_aksahifa.zip", category: "ali" },
+    { name: "uniqaidar_aksahifab", file: "uniqaidar_aksahifab", path: "fonts/ali/uniqaidar_aksahifab.ttf", zip: "fonts/ali/uniqaidar_aksahifab.zip", category: "ali" },
+    { name: "uniqaidar_aksamik_001", file: "uniqaidar_aksamik_001", path: "fonts/ali/uniqaidar_aksamik_001.ttf", zip: "fonts/ali/uniqaidar_aksamik_001.zip", category: "ali" },
+    { name: "uniqaidar_aksamik_002", file: "uniqaidar_aksamik_002", path: "fonts/ali/uniqaidar_aksamik_002.ttf", zip: "fonts/ali/uniqaidar_aksamik_002.zip", category: "ali" },
+    { name: "uniqaidar_aksayid", file: "uniqaidar_aksayid", path: "fonts/ali/uniqaidar_aksayid.ttf", zip: "fonts/ali/uniqaidar_aksayid.zip", category: "ali" },
+    { name: "uniqaidar_aksharif", file: "uniqaidar_aksharif", path: "fonts/ali/uniqaidar_aksharif.ttf", zip: "fonts/ali/uniqaidar_aksharif.zip", category: "ali" },
+    { name: "uniqaidar_aksharifb", file: "uniqaidar_aksharifb", path: "fonts/ali/uniqaidar_aksharifb.ttf", zip: "fonts/ali/uniqaidar_aksharifb.zip", category: "ali" },
+    { name: "uniqaidar_aksulaimania", file: "uniqaidar_aksulaimania", path: "fonts/ali/uniqaidar_aksulaimania.ttf", zip: "fonts/ali/uniqaidar_aksulaimania.zip", category: "ali" },
+    { name: "uniqaidar_aktraditional", file: "uniqaidar_aktraditional", path: "fonts/ali/uniqaidar_aktraditional.ttf", zip: "fonts/ali/uniqaidar_aktraditional.zip", category: "ali" },
+    { name: "uniqaidar_bilal_000", file: "uniqaidar_bilal_000", path: "fonts/dstnus/uniqaidar_bilal_000.ttf", zip: "fonts/dstnus/uniqaidar_bilal_000.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_001", file: "uniqaidar_bilal_001", path: "fonts/dstnus/uniqaidar_bilal_001.ttf", zip: "fonts/dstnus/uniqaidar_bilal_001.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_002", file: "uniqaidar_bilal_002", path: "fonts/dstnus/uniqaidar_bilal_002.ttf", zip: "fonts/dstnus/uniqaidar_bilal_002.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_003", file: "uniqaidar_bilal_003", path: "fonts/dstnus/uniqaidar_bilal_003.ttf", zip: "fonts/dstnus/uniqaidar_bilal_003.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_004", file: "uniqaidar_bilal_004", path: "fonts/dstnus/uniqaidar_bilal_004.ttf", zip: "fonts/dstnus/uniqaidar_bilal_004.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_005", file: "uniqaidar_bilal_005", path: "fonts/dstnus/uniqaidar_bilal_005.ttf", zip: "fonts/dstnus/uniqaidar_bilal_005.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_006", file: "uniqaidar_bilal_006", path: "fonts/dstnus/uniqaidar_bilal_006.ttf", zip: "fonts/dstnus/uniqaidar_bilal_006.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_007", file: "uniqaidar_bilal_007", path: "fonts/dstnus/uniqaidar_bilal_007.ttf", zip: "fonts/dstnus/uniqaidar_bilal_007.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_008", file: "uniqaidar_bilal_008", path: "fonts/dstnus/uniqaidar_bilal_008.ttf", zip: "fonts/dstnus/uniqaidar_bilal_008.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_009", file: "uniqaidar_bilal_009", path: "fonts/dstnus/uniqaidar_bilal_009.ttf", zip: "fonts/dstnus/uniqaidar_bilal_009.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_010", file: "uniqaidar_bilal_010", path: "fonts/dstnus/uniqaidar_bilal_010.ttf", zip: "fonts/dstnus/uniqaidar_bilal_010.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_011", file: "uniqaidar_bilal_011", path: "fonts/dstnus/uniqaidar_bilal_011.ttf", zip: "fonts/dstnus/uniqaidar_bilal_011.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_012", file: "uniqaidar_bilal_012", path: "fonts/dstnus/uniqaidar_bilal_012.ttf", zip: "fonts/dstnus/uniqaidar_bilal_012.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_013", file: "uniqaidar_bilal_013", path: "fonts/dstnus/uniqaidar_bilal_013.ttf", zip: "fonts/dstnus/uniqaidar_bilal_013.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_014", file: "uniqaidar_bilal_014", path: "fonts/dstnus/uniqaidar_bilal_014.ttf", zip: "fonts/dstnus/uniqaidar_bilal_014.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_015", file: "uniqaidar_bilal_015", path: "fonts/dstnus/uniqaidar_bilal_015.ttf", zip: "fonts/dstnus/uniqaidar_bilal_015.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_016", file: "uniqaidar_bilal_016", path: "fonts/dstnus/uniqaidar_bilal_016.ttf", zip: "fonts/dstnus/uniqaidar_bilal_016.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_016_py", file: "uniqaidar_bilal_016_py", path: "fonts/dstnus/uniqaidar_bilal_016_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_016_py.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_017", file: "uniqaidar_bilal_017", path: "fonts/dstnus/uniqaidar_bilal_017.ttf", zip: "fonts/dstnus/uniqaidar_bilal_017.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_017_py", file: "uniqaidar_bilal_017_py", path: "fonts/dstnus/uniqaidar_bilal_017_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_017_py.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_018", file: "uniqaidar_bilal_018", path: "fonts/dstnus/uniqaidar_bilal_018.ttf", zip: "fonts/dstnus/uniqaidar_bilal_018.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_019", file: "uniqaidar_bilal_019", path: "fonts/dstnus/uniqaidar_bilal_019.ttf", zip: "fonts/dstnus/uniqaidar_bilal_019.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_020", file: "uniqaidar_bilal_020", path: "fonts/dstnus/uniqaidar_bilal_020.ttf", zip: "fonts/dstnus/uniqaidar_bilal_020.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_020_py", file: "uniqaidar_bilal_020_py", path: "fonts/dstnus/uniqaidar_bilal_020_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_020_py.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_021", file: "uniqaidar_bilal_021", path: "fonts/dstnus/uniqaidar_bilal_021.ttf", zip: "fonts/dstnus/uniqaidar_bilal_021.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_021_py", file: "uniqaidar_bilal_021_py", path: "fonts/dstnus/uniqaidar_bilal_021_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_021_py.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_022", file: "uniqaidar_bilal_022", path: "fonts/dstnus/uniqaidar_bilal_022.ttf", zip: "fonts/dstnus/uniqaidar_bilal_022.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_022_py", file: "uniqaidar_bilal_022_py", path: "fonts/dstnus/uniqaidar_bilal_022_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_022_py.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_023", file: "uniqaidar_bilal_023", path: "fonts/dstnus/uniqaidar_bilal_023.ttf", zip: "fonts/dstnus/uniqaidar_bilal_023.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_024", file: "uniqaidar_bilal_024", path: "fonts/dstnus/uniqaidar_bilal_024.ttf", zip: "fonts/dstnus/uniqaidar_bilal_024.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_024_pynh", file: "uniqaidar_bilal_024_pynh", path: "fonts/dstnus/uniqaidar_bilal_024_pynh.ttf", zip: "fonts/dstnus/uniqaidar_bilal_024_pynh.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_025", file: "uniqaidar_bilal_025", path: "fonts/dstnus/uniqaidar_bilal_025.ttf", zip: "fonts/dstnus/uniqaidar_bilal_025.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_026", file: "uniqaidar_bilal_026", path: "fonts/dstnus/uniqaidar_bilal_026.ttf", zip: "fonts/dstnus/uniqaidar_bilal_026.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_026_py", file: "uniqaidar_bilal_026_py", path: "fonts/dstnus/uniqaidar_bilal_026_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_026_py.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_027", file: "uniqaidar_bilal_027", path: "fonts/dstnus/uniqaidar_bilal_027.ttf", zip: "fonts/dstnus/uniqaidar_bilal_027.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_027_trim", file: "uniqaidar_bilal_027_trim", path: "fonts/dstnus/uniqaidar_bilal_027_trim.ttf", zip: "fonts/dstnus/uniqaidar_bilal_027_trim.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_028", file: "uniqaidar_bilal_028", path: "fonts/dstnus/uniqaidar_bilal_028.ttf", zip: "fonts/dstnus/uniqaidar_bilal_028.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_029", file: "uniqaidar_bilal_029", path: "fonts/dstnus/uniqaidar_bilal_029.ttf", zip: "fonts/dstnus/uniqaidar_bilal_029.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_030", file: "uniqaidar_bilal_030", path: "fonts/dstnus/uniqaidar_bilal_030.ttf", zip: "fonts/dstnus/uniqaidar_bilal_030.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_031", file: "uniqaidar_bilal_031", path: "fonts/dstnus/uniqaidar_bilal_031.ttf", zip: "fonts/dstnus/uniqaidar_bilal_031.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_032", file: "uniqaidar_bilal_032", path: "fonts/dstnus/uniqaidar_bilal_032.ttf", zip: "fonts/dstnus/uniqaidar_bilal_032.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_032_py", file: "uniqaidar_bilal_032_py", path: "fonts/dstnus/uniqaidar_bilal_032_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_032_py.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_033", file: "uniqaidar_bilal_033", path: "fonts/dstnus/uniqaidar_bilal_033.ttf", zip: "fonts/dstnus/uniqaidar_bilal_033.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_034", file: "uniqaidar_bilal_034", path: "fonts/dstnus/uniqaidar_bilal_034.ttf", zip: "fonts/dstnus/uniqaidar_bilal_034.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_035", file: "uniqaidar_bilal_035", path: "fonts/dstnus/uniqaidar_bilal_035.ttf", zip: "fonts/dstnus/uniqaidar_bilal_035.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_036", file: "uniqaidar_bilal_036", path: "fonts/dstnus/uniqaidar_bilal_036.ttf", zip: "fonts/dstnus/uniqaidar_bilal_036.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_036_py", file: "uniqaidar_bilal_036_py", path: "fonts/dstnus/uniqaidar_bilal_036_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_036_py.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_037", file: "uniqaidar_bilal_037", path: "fonts/dstnus/uniqaidar_bilal_037.ttf", zip: "fonts/dstnus/uniqaidar_bilal_037.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_038", file: "uniqaidar_bilal_038", path: "fonts/dstnus/uniqaidar_bilal_038.ttf", zip: "fonts/dstnus/uniqaidar_bilal_038.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_038_py", file: "uniqaidar_bilal_038_py", path: "fonts/dstnus/uniqaidar_bilal_038_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_038_py.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_039", file: "uniqaidar_bilal_039", path: "fonts/dstnus/uniqaidar_bilal_039.ttf", zip: "fonts/dstnus/uniqaidar_bilal_039.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_040", file: "uniqaidar_bilal_040", path: "fonts/dstnus/uniqaidar_bilal_040.ttf", zip: "fonts/dstnus/uniqaidar_bilal_040.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_041", file: "uniqaidar_bilal_041", path: "fonts/dstnus/uniqaidar_bilal_041.ttf", zip: "fonts/dstnus/uniqaidar_bilal_041.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_042", file: "uniqaidar_bilal_042", path: "fonts/dstnus/uniqaidar_bilal_042.ttf", zip: "fonts/dstnus/uniqaidar_bilal_042.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_042_py", file: "uniqaidar_bilal_042_py", path: "fonts/dstnus/uniqaidar_bilal_042_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_042_py.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_043", file: "uniqaidar_bilal_043", path: "fonts/dstnus/uniqaidar_bilal_043.ttf", zip: "fonts/dstnus/uniqaidar_bilal_043.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_044", file: "uniqaidar_bilal_044", path: "fonts/dstnus/uniqaidar_bilal_044.ttf", zip: "fonts/dstnus/uniqaidar_bilal_044.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_044_pnlt_", file: "uniqaidar_bilal_044_pnlt_", path: "fonts/dstnus/uniqaidar_bilal_044_pnlt_.ttf", zip: "fonts/dstnus/uniqaidar_bilal_044_pnlt_.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_045", file: "uniqaidar_bilal_045", path: "fonts/dstnus/uniqaidar_bilal_045.ttf", zip: "fonts/dstnus/uniqaidar_bilal_045.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_046", file: "uniqaidar_bilal_046", path: "fonts/dstnus/uniqaidar_bilal_046.ttf", zip: "fonts/dstnus/uniqaidar_bilal_046.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_046_py", file: "uniqaidar_bilal_046_py", path: "fonts/dstnus/uniqaidar_bilal_046_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_046_py.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_047", file: "uniqaidar_bilal_047", path: "fonts/dstnus/uniqaidar_bilal_047.ttf", zip: "fonts/dstnus/uniqaidar_bilal_047.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_048", file: "uniqaidar_bilal_048", path: "fonts/dstnus/uniqaidar_bilal_048.ttf", zip: "fonts/dstnus/uniqaidar_bilal_048.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_049", file: "uniqaidar_bilal_049", path: "fonts/dstnus/uniqaidar_bilal_049.ttf", zip: "fonts/dstnus/uniqaidar_bilal_049.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_049_py", file: "uniqaidar_bilal_049_py", path: "fonts/dstnus/uniqaidar_bilal_049_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_049_py.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_050", file: "uniqaidar_bilal_050", path: "fonts/dstnus/uniqaidar_bilal_050.ttf", zip: "fonts/dstnus/uniqaidar_bilal_050.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_051", file: "uniqaidar_bilal_051", path: "fonts/dstnus/uniqaidar_bilal_051.ttf", zip: "fonts/dstnus/uniqaidar_bilal_051.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_052", file: "uniqaidar_bilal_052", path: "fonts/dstnus/uniqaidar_bilal_052.ttf", zip: "fonts/dstnus/uniqaidar_bilal_052.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_053", file: "uniqaidar_bilal_053", path: "fonts/dstnus/uniqaidar_bilal_053.ttf", zip: "fonts/dstnus/uniqaidar_bilal_053.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_054", file: "uniqaidar_bilal_054", path: "fonts/dstnus/uniqaidar_bilal_054.ttf", zip: "fonts/dstnus/uniqaidar_bilal_054.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_055", file: "uniqaidar_bilal_055", path: "fonts/dstnus/uniqaidar_bilal_055.ttf", zip: "fonts/dstnus/uniqaidar_bilal_055.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_056", file: "uniqaidar_bilal_056", path: "fonts/dstnus/uniqaidar_bilal_056.ttf", zip: "fonts/dstnus/uniqaidar_bilal_056.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_057", file: "uniqaidar_bilal_057", path: "fonts/dstnus/uniqaidar_bilal_057.ttf", zip: "fonts/dstnus/uniqaidar_bilal_057.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_058", file: "uniqaidar_bilal_058", path: "fonts/dstnus/uniqaidar_bilal_058.ttf", zip: "fonts/dstnus/uniqaidar_bilal_058.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_059", file: "uniqaidar_bilal_059", path: "fonts/dstnus/uniqaidar_bilal_059.ttf", zip: "fonts/dstnus/uniqaidar_bilal_059.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_060", file: "uniqaidar_bilal_060", path: "fonts/dstnus/uniqaidar_bilal_060.ttf", zip: "fonts/dstnus/uniqaidar_bilal_060.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_060_py", file: "uniqaidar_bilal_060_py", path: "fonts/dstnus/uniqaidar_bilal_060_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_060_py.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_061", file: "uniqaidar_bilal_061", path: "fonts/dstnus/uniqaidar_bilal_061.ttf", zip: "fonts/dstnus/uniqaidar_bilal_061.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_062", file: "uniqaidar_bilal_062", path: "fonts/dstnus/uniqaidar_bilal_062.ttf", zip: "fonts/dstnus/uniqaidar_bilal_062.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_063", file: "uniqaidar_bilal_063", path: "fonts/dstnus/uniqaidar_bilal_063.ttf", zip: "fonts/dstnus/uniqaidar_bilal_063.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_063_pynkg", file: "uniqaidar_bilal_063_pynkg", path: "fonts/dstnus/uniqaidar_bilal_063_pynkg.ttf", zip: "fonts/dstnus/uniqaidar_bilal_063_pynkg.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_064", file: "uniqaidar_bilal_064", path: "fonts/dstnus/uniqaidar_bilal_064.ttf", zip: "fonts/dstnus/uniqaidar_bilal_064.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_065", file: "uniqaidar_bilal_065", path: "fonts/dstnus/uniqaidar_bilal_065.ttf", zip: "fonts/dstnus/uniqaidar_bilal_065.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_066", file: "uniqaidar_bilal_066", path: "fonts/dstnus/uniqaidar_bilal_066.ttf", zip: "fonts/dstnus/uniqaidar_bilal_066.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_067", file: "uniqaidar_bilal_067", path: "fonts/dstnus/uniqaidar_bilal_067.ttf", zip: "fonts/dstnus/uniqaidar_bilal_067.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_068", file: "uniqaidar_bilal_068", path: "fonts/dstnus/uniqaidar_bilal_068.ttf", zip: "fonts/dstnus/uniqaidar_bilal_068.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_068_ptknh", file: "uniqaidar_bilal_068_ptknh", path: "fonts/dstnus/uniqaidar_bilal_068_ptknh.ttf", zip: "fonts/dstnus/uniqaidar_bilal_068_ptknh.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_069", file: "uniqaidar_bilal_069", path: "fonts/dstnus/uniqaidar_bilal_069.ttf", zip: "fonts/dstnus/uniqaidar_bilal_069.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_070", file: "uniqaidar_bilal_070", path: "fonts/dstnus/uniqaidar_bilal_070.ttf", zip: "fonts/dstnus/uniqaidar_bilal_070.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_070_py", file: "uniqaidar_bilal_070_py", path: "fonts/dstnus/uniqaidar_bilal_070_py.ttf", zip: "fonts/dstnus/uniqaidar_bilal_070_py.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_071", file: "uniqaidar_bilal_071", path: "fonts/dstnus/uniqaidar_bilal_071.ttf", zip: "fonts/dstnus/uniqaidar_bilal_071.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_072", file: "uniqaidar_bilal_072", path: "fonts/dstnus/uniqaidar_bilal_072.ttf", zip: "fonts/dstnus/uniqaidar_bilal_072.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_073", file: "uniqaidar_bilal_073", path: "fonts/dstnus/uniqaidar_bilal_073.ttf", zip: "fonts/dstnus/uniqaidar_bilal_073.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_074", file: "uniqaidar_bilal_074", path: "fonts/dstnus/uniqaidar_bilal_074.ttf", zip: "fonts/dstnus/uniqaidar_bilal_074.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_075", file: "uniqaidar_bilal_075", path: "fonts/dstnus/uniqaidar_bilal_075.ttf", zip: "fonts/dstnus/uniqaidar_bilal_075.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_075_pykgnh", file: "uniqaidar_bilal_075_pykgnh", path: "fonts/dstnus/uniqaidar_bilal_075_pykgnh.ttf", zip: "fonts/dstnus/uniqaidar_bilal_075_pykgnh.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_076", file: "uniqaidar_bilal_076", path: "fonts/dstnus/uniqaidar_bilal_076.ttf", zip: "fonts/dstnus/uniqaidar_bilal_076.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_077", file: "uniqaidar_bilal_077", path: "fonts/dstnus/uniqaidar_bilal_077.ttf", zip: "fonts/dstnus/uniqaidar_bilal_077.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_078", file: "uniqaidar_bilal_078", path: "fonts/dstnus/uniqaidar_bilal_078.ttf", zip: "fonts/dstnus/uniqaidar_bilal_078.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_079", file: "uniqaidar_bilal_079", path: "fonts/dstnus/uniqaidar_bilal_079.ttf", zip: "fonts/dstnus/uniqaidar_bilal_079.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_080", file: "uniqaidar_bilal_080", path: "fonts/dstnus/uniqaidar_bilal_080.ttf", zip: "fonts/dstnus/uniqaidar_bilal_080.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_081", file: "uniqaidar_bilal_081", path: "fonts/dstnus/uniqaidar_bilal_081.ttf", zip: "fonts/dstnus/uniqaidar_bilal_081.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_082", file: "uniqaidar_bilal_082", path: "fonts/dstnus/uniqaidar_bilal_082.ttf", zip: "fonts/dstnus/uniqaidar_bilal_082.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_083", file: "uniqaidar_bilal_083", path: "fonts/dstnus/uniqaidar_bilal_083.ttf", zip: "fonts/dstnus/uniqaidar_bilal_083.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_084", file: "uniqaidar_bilal_084", path: "fonts/dstnus/uniqaidar_bilal_084.ttf", zip: "fonts/dstnus/uniqaidar_bilal_084.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_085", file: "uniqaidar_bilal_085", path: "fonts/dstnus/uniqaidar_bilal_085.ttf", zip: "fonts/dstnus/uniqaidar_bilal_085.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_086", file: "uniqaidar_bilal_086", path: "fonts/dstnus/uniqaidar_bilal_086.ttf", zip: "fonts/dstnus/uniqaidar_bilal_086.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_087", file: "uniqaidar_bilal_087", path: "fonts/dstnus/uniqaidar_bilal_087.ttf", zip: "fonts/dstnus/uniqaidar_bilal_087.zip", category: "dstnus" },
+    { name: "uniqaidar_bilal_088", file: "uniqaidar_bilal_088", path: "fonts/dstnus/uniqaidar_bilal_088.ttf", zip: "fonts/dstnus/uniqaidar_bilal_088.zip", category: "dstnus" },
+    { name: "uniqaidar_7emze", file: "uniqaidar_7emze", path: "fonts/hwal/uniqaidar_7emze.ttf", zip: "fonts/hwal/uniqaidar_7emze.zip", category: "hwal" },
+    { name: "uniqaidar_bukra_001", file: "uniqaidar_bukra_001", path: "fonts/hwal/uniqaidar_bukra_001.ttf", zip: "fonts/hwal/uniqaidar_bukra_001.zip", category: "hwal" },
+    { name: "uniqaidar_bukra_002", file: "uniqaidar_bukra_002", path: "fonts/hwal/uniqaidar_bukra_002.ttf", zip: "fonts/hwal/uniqaidar_bukra_002.zip", category: "hwal" },
+    { name: "uniqaidar_bukra_003", file: "uniqaidar_bukra_003", path: "fonts/hwal/uniqaidar_bukra_003.ttf", zip: "fonts/hwal/uniqaidar_bukra_003.zip", category: "hwal" },
+    { name: "uniqaidar_bukra_004", file: "uniqaidar_bukra_004", path: "fonts/hwal/uniqaidar_bukra_004.ttf", zip: "fonts/hwal/uniqaidar_bukra_004.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_000", file: "uniqaidar_hewal_000", path: "fonts/hwal/uniqaidar_hewal_000.ttf", zip: "fonts/hwal/uniqaidar_hewal_000.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_001", file: "uniqaidar_hewal_001", path: "fonts/hwal/uniqaidar_hewal_001.ttf", zip: "fonts/hwal/uniqaidar_hewal_001.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_002", file: "uniqaidar_hewal_002", path: "fonts/hwal/uniqaidar_hewal_002.ttf", zip: "fonts/hwal/uniqaidar_hewal_002.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_003", file: "uniqaidar_hewal_003", path: "fonts/hwal/uniqaidar_hewal_003.ttf", zip: "fonts/hwal/uniqaidar_hewal_003.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_004", file: "uniqaidar_hewal_004", path: "fonts/hwal/uniqaidar_hewal_004.ttf", zip: "fonts/hwal/uniqaidar_hewal_004.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_005", file: "uniqaidar_hewal_005", path: "fonts/hwal/uniqaidar_hewal_005.ttf", zip: "fonts/hwal/uniqaidar_hewal_005.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_006", file: "uniqaidar_hewal_006", path: "fonts/hwal/uniqaidar_hewal_006.ttf", zip: "fonts/hwal/uniqaidar_hewal_006.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_007", file: "uniqaidar_hewal_007", path: "fonts/hwal/uniqaidar_hewal_007.ttf", zip: "fonts/hwal/uniqaidar_hewal_007.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_008", file: "uniqaidar_hewal_008", path: "fonts/hwal/uniqaidar_hewal_008.ttf", zip: "fonts/hwal/uniqaidar_hewal_008.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_009", file: "uniqaidar_hewal_009", path: "fonts/hwal/uniqaidar_hewal_009.ttf", zip: "fonts/hwal/uniqaidar_hewal_009.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_010", file: "uniqaidar_hewal_010", path: "fonts/hwal/uniqaidar_hewal_010.ttf", zip: "fonts/hwal/uniqaidar_hewal_010.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_011", file: "uniqaidar_hewal_011", path: "fonts/hwal/uniqaidar_hewal_011.ttf", zip: "fonts/hwal/uniqaidar_hewal_011.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_012", file: "uniqaidar_hewal_012", path: "fonts/hwal/uniqaidar_hewal_012.ttf", zip: "fonts/hwal/uniqaidar_hewal_012.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_013", file: "uniqaidar_hewal_013", path: "fonts/hwal/uniqaidar_hewal_013.ttf", zip: "fonts/hwal/uniqaidar_hewal_013.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_014", file: "uniqaidar_hewal_014", path: "fonts/hwal/uniqaidar_hewal_014.ttf", zip: "fonts/hwal/uniqaidar_hewal_014.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_015", file: "uniqaidar_hewal_015", path: "fonts/hwal/uniqaidar_hewal_015.ttf", zip: "fonts/hwal/uniqaidar_hewal_015.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_016", file: "uniqaidar_hewal_016", path: "fonts/hwal/uniqaidar_hewal_016.ttf", zip: "fonts/hwal/uniqaidar_hewal_016.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_017", file: "uniqaidar_hewal_017", path: "fonts/hwal/uniqaidar_hewal_017.ttf", zip: "fonts/hwal/uniqaidar_hewal_017.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_018", file: "uniqaidar_hewal_018", path: "fonts/hwal/uniqaidar_hewal_018.ttf", zip: "fonts/hwal/uniqaidar_hewal_018.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_019", file: "uniqaidar_hewal_019", path: "fonts/hwal/uniqaidar_hewal_019.ttf", zip: "fonts/hwal/uniqaidar_hewal_019.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_020", file: "uniqaidar_hewal_020", path: "fonts/hwal/uniqaidar_hewal_020.ttf", zip: "fonts/hwal/uniqaidar_hewal_020.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_021", file: "uniqaidar_hewal_021", path: "fonts/hwal/uniqaidar_hewal_021.ttf", zip: "fonts/hwal/uniqaidar_hewal_021.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_022", file: "uniqaidar_hewal_022", path: "fonts/hwal/uniqaidar_hewal_022.ttf", zip: "fonts/hwal/uniqaidar_hewal_022.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_023", file: "uniqaidar_hewal_023", path: "fonts/hwal/uniqaidar_hewal_023.ttf", zip: "fonts/hwal/uniqaidar_hewal_023.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_024", file: "uniqaidar_hewal_024", path: "fonts/hwal/uniqaidar_hewal_024.ttf", zip: "fonts/hwal/uniqaidar_hewal_024.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_025", file: "uniqaidar_hewal_025", path: "fonts/hwal/uniqaidar_hewal_025.ttf", zip: "fonts/hwal/uniqaidar_hewal_025.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_026", file: "uniqaidar_hewal_026", path: "fonts/hwal/uniqaidar_hewal_026.ttf", zip: "fonts/hwal/uniqaidar_hewal_026.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_027", file: "uniqaidar_hewal_027", path: "fonts/hwal/uniqaidar_hewal_027.ttf", zip: "fonts/hwal/uniqaidar_hewal_027.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_028", file: "uniqaidar_hewal_028", path: "fonts/hwal/uniqaidar_hewal_028.ttf", zip: "fonts/hwal/uniqaidar_hewal_028.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_029", file: "uniqaidar_hewal_029", path: "fonts/hwal/uniqaidar_hewal_029.ttf", zip: "fonts/hwal/uniqaidar_hewal_029.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_030", file: "uniqaidar_hewal_030", path: "fonts/hwal/uniqaidar_hewal_030.ttf", zip: "fonts/hwal/uniqaidar_hewal_030.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_031", file: "uniqaidar_hewal_031", path: "fonts/hwal/uniqaidar_hewal_031.ttf", zip: "fonts/hwal/uniqaidar_hewal_031.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_032", file: "uniqaidar_hewal_032", path: "fonts/hwal/uniqaidar_hewal_032.ttf", zip: "fonts/hwal/uniqaidar_hewal_032.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_033", file: "uniqaidar_hewal_033", path: "fonts/hwal/uniqaidar_hewal_033.ttf", zip: "fonts/hwal/uniqaidar_hewal_033.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_034", file: "uniqaidar_hewal_034", path: "fonts/hwal/uniqaidar_hewal_034.ttf", zip: "fonts/hwal/uniqaidar_hewal_034.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_035", file: "uniqaidar_hewal_035", path: "fonts/hwal/uniqaidar_hewal_035.ttf", zip: "fonts/hwal/uniqaidar_hewal_035.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_036", file: "uniqaidar_hewal_036", path: "fonts/hwal/uniqaidar_hewal_036.ttf", zip: "fonts/hwal/uniqaidar_hewal_036.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_037", file: "uniqaidar_hewal_037", path: "fonts/hwal/uniqaidar_hewal_037.ttf", zip: "fonts/hwal/uniqaidar_hewal_037.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_038", file: "uniqaidar_hewal_038", path: "fonts/hwal/uniqaidar_hewal_038.ttf", zip: "fonts/hwal/uniqaidar_hewal_038.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_039", file: "uniqaidar_hewal_039", path: "fonts/hwal/uniqaidar_hewal_039.ttf", zip: "fonts/hwal/uniqaidar_hewal_039.zip", category: "hwal" },
+    { name: "uniqaidar_hewal_040", file: "uniqaidar_hewal_040", path: "fonts/hwal/uniqaidar_hewal_040.ttf", zip: "fonts/hwal/uniqaidar_hewal_040.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_001", file: "uniqaidar_newsheadline_001", path: "fonts/hwal/uniqaidar_newsheadline_001.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_001.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_002", file: "uniqaidar_newsheadline_002", path: "fonts/hwal/uniqaidar_newsheadline_002.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_002.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_003", file: "uniqaidar_newsheadline_003", path: "fonts/hwal/uniqaidar_newsheadline_003.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_003.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_004", file: "uniqaidar_newsheadline_004", path: "fonts/hwal/uniqaidar_newsheadline_004.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_004.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_004bold", file: "uniqaidar_newsheadline_004bold", path: "fonts/hwal/uniqaidar_newsheadline_004bold.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_004bold.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_005", file: "uniqaidar_newsheadline_005", path: "fonts/hwal/uniqaidar_newsheadline_005.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_005.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_006", file: "uniqaidar_newsheadline_006", path: "fonts/hwal/uniqaidar_newsheadline_006.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_006.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_007", file: "uniqaidar_newsheadline_007", path: "fonts/hwal/uniqaidar_newsheadline_007.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_007.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_008", file: "uniqaidar_newsheadline_008", path: "fonts/hwal/uniqaidar_newsheadline_008.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_008.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_009", file: "uniqaidar_newsheadline_009", path: "fonts/hwal/uniqaidar_newsheadline_009.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_009.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_010", file: "uniqaidar_newsheadline_010", path: "fonts/hwal/uniqaidar_newsheadline_010.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_010.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_011", file: "uniqaidar_newsheadline_011", path: "fonts/hwal/uniqaidar_newsheadline_011.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_011.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_012", file: "uniqaidar_newsheadline_012", path: "fonts/hwal/uniqaidar_newsheadline_012.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_012.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_013", file: "uniqaidar_newsheadline_013", path: "fonts/hwal/uniqaidar_newsheadline_013.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_013.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_014", file: "uniqaidar_newsheadline_014", path: "fonts/hwal/uniqaidar_newsheadline_014.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_014.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_015", file: "uniqaidar_newsheadline_015", path: "fonts/hwal/uniqaidar_newsheadline_015.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_015.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_016", file: "uniqaidar_newsheadline_016", path: "fonts/hwal/uniqaidar_newsheadline_016.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_016.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_017", file: "uniqaidar_newsheadline_017", path: "fonts/hwal/uniqaidar_newsheadline_017.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_017.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_018", file: "uniqaidar_newsheadline_018", path: "fonts/hwal/uniqaidar_newsheadline_018.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_018.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_019", file: "uniqaidar_newsheadline_019", path: "fonts/hwal/uniqaidar_newsheadline_019.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_019.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_019_nv", file: "uniqaidar_newsheadline_019_nv", path: "fonts/hwal/uniqaidar_newsheadline_019_nv.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_019_nv.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_019_r", file: "uniqaidar_newsheadline_019_r", path: "fonts/hwal/uniqaidar_newsheadline_019_r.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_019_r.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_020", file: "uniqaidar_newsheadline_020", path: "fonts/hwal/uniqaidar_newsheadline_020.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_020.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_021", file: "uniqaidar_newsheadline_021", path: "fonts/hwal/uniqaidar_newsheadline_021.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_021.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_022", file: "uniqaidar_newsheadline_022", path: "fonts/hwal/uniqaidar_newsheadline_022.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_022.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_023", file: "uniqaidar_newsheadline_023", path: "fonts/hwal/uniqaidar_newsheadline_023.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_023.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_024", file: "uniqaidar_newsheadline_024", path: "fonts/hwal/uniqaidar_newsheadline_024.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_024.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_025", file: "uniqaidar_newsheadline_025", path: "fonts/hwal/uniqaidar_newsheadline_025.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_025.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_026", file: "uniqaidar_newsheadline_026", path: "fonts/hwal/uniqaidar_newsheadline_026.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_026.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_027", file: "uniqaidar_newsheadline_027", path: "fonts/hwal/uniqaidar_newsheadline_027.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_027.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_028", file: "uniqaidar_newsheadline_028", path: "fonts/hwal/uniqaidar_newsheadline_028.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_028.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_029", file: "uniqaidar_newsheadline_029", path: "fonts/hwal/uniqaidar_newsheadline_029.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_029.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_030", file: "uniqaidar_newsheadline_030", path: "fonts/hwal/uniqaidar_newsheadline_030.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_030.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_031", file: "uniqaidar_newsheadline_031", path: "fonts/hwal/uniqaidar_newsheadline_031.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_031.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_032", file: "uniqaidar_newsheadline_032", path: "fonts/hwal/uniqaidar_newsheadline_032.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_032.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_033", file: "uniqaidar_newsheadline_033", path: "fonts/hwal/uniqaidar_newsheadline_033.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_033.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_034", file: "uniqaidar_newsheadline_034", path: "fonts/hwal/uniqaidar_newsheadline_034.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_034.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_035", file: "uniqaidar_newsheadline_035", path: "fonts/hwal/uniqaidar_newsheadline_035.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_035.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_036", file: "uniqaidar_newsheadline_036", path: "fonts/hwal/uniqaidar_newsheadline_036.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_036.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_036_py", file: "uniqaidar_newsheadline_036_py", path: "fonts/hwal/uniqaidar_newsheadline_036_py.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_036_py.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_036_pym", file: "uniqaidar_newsheadline_036_pym", path: "fonts/hwal/uniqaidar_newsheadline_036_pym.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_036_pym.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_037", file: "uniqaidar_newsheadline_037", path: "fonts/hwal/uniqaidar_newsheadline_037.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_037.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_038", file: "uniqaidar_newsheadline_038", path: "fonts/hwal/uniqaidar_newsheadline_038.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_038.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_039", file: "uniqaidar_newsheadline_039", path: "fonts/hwal/uniqaidar_newsheadline_039.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_039.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_040", file: "uniqaidar_newsheadline_040", path: "fonts/hwal/uniqaidar_newsheadline_040.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_040.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_041", file: "uniqaidar_newsheadline_041", path: "fonts/hwal/uniqaidar_newsheadline_041.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_041.zip", category: "hwal" },
+    { name: "uniqaidar_newsheadline_042", file: "uniqaidar_newsheadline_042", path: "fonts/hwal/uniqaidar_newsheadline_042.ttf", zip: "fonts/hwal/uniqaidar_newsheadline_042.zip", category: "hwal" },
+    { name: "uniqaidar_pure_001", file: "uniqaidar_pure_001", path: "fonts/hwal/uniqaidar_pure_001.ttf", zip: "fonts/hwal/uniqaidar_pure_001.zip", category: "hwal" },
+    { name: "uniqaidar_pure_002", file: "uniqaidar_pure_002", path: "fonts/hwal/uniqaidar_pure_002.ttf", zip: "fonts/hwal/uniqaidar_pure_002.zip", category: "hwal" },
+    { name: "uniqaidar_pure_003", file: "uniqaidar_pure_003", path: "fonts/hwal/uniqaidar_pure_003.ttf", zip: "fonts/hwal/uniqaidar_pure_003.zip", category: "hwal" },
+    { name: "qaidar_islamic00", file: "qaidar_islamic00", path: "fonts/islami/qaidar_islamic00.ttf", zip: "fonts/islami/qaidar_islamic00.zip", category: "islami" },
+    { name: "qaidar_islamic01", file: "qaidar_islamic01", path: "fonts/islami/qaidar_islamic01.ttf", zip: "fonts/islami/qaidar_islamic01.zip", category: "islami" },
+    { name: "qaidar_islamic02", file: "qaidar_islamic02", path: "fonts/islami/qaidar_islamic02.ttf", zip: "fonts/islami/qaidar_islamic02.zip", category: "islami" },
+    { name: "qaidar_islamic03", file: "qaidar_islamic03", path: "fonts/islami/qaidar_islamic03.ttf", zip: "fonts/islami/qaidar_islamic03.zip", category: "islami" },
+    { name: "qaidar_islamic04", file: "qaidar_islamic04", path: "fonts/islami/qaidar_islamic04.ttf", zip: "fonts/islami/qaidar_islamic04.zip", category: "islami" },
+    { name: "uniqaidar_esra&mieraj", file: "uniqaidar_esra&mieraj", path: "fonts/islami/uniqaidar_esra&mieraj.ttf", zip: "fonts/islami/uniqaidar_esra&mieraj.zip", category: "islami" },
+    { name: "uniqaidar_islamic00", file: "uniqaidar_islamic00", path: "fonts/islami/uniqaidar_islamic00.ttf", zip: "fonts/islami/uniqaidar_islamic00.zip", category: "islami" },
+    { name: "uniqaidar_islamic01", file: "uniqaidar_islamic01", path: "fonts/islami/uniqaidar_islamic01.ttf", zip: "fonts/islami/uniqaidar_islamic01.zip", category: "islami" },
+    { name: "uniqaidar_islamic02", file: "uniqaidar_islamic02", path: "fonts/islami/uniqaidar_islamic02.ttf", zip: "fonts/islami/uniqaidar_islamic02.zip", category: "islami" },
+    { name: "uniqaidar_islamic03", file: "uniqaidar_islamic03", path: "fonts/islami/uniqaidar_islamic03.ttf", zip: "fonts/islami/uniqaidar_islamic03.zip", category: "islami" },
+    { name: "uniqaidar_islamic04", file: "uniqaidar_islamic04", path: "fonts/islami/uniqaidar_islamic04.ttf", zip: "fonts/islami/uniqaidar_islamic04.zip", category: "islami" },
+    { name: "uniqaidar_remezan_000", file: "uniqaidar_remezan_000", path: "fonts/islami/uniqaidar_remezan_000.ttf", zip: "fonts/islami/uniqaidar_remezan_000.zip", category: "islami" },
+    { name: "uniqaidar_remezan_001", file: "uniqaidar_remezan_001", path: "fonts/islami/uniqaidar_remezan_001.ttf", zip: "fonts/islami/uniqaidar_remezan_001.zip", category: "islami" },
+    { name: "uniqaidar_subtitle_000", file: "uniqaidar_subtitle_000", path: "fonts/jrnus/uniqaidar_subtitle_000.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_000.zip", category: "jrnus" },
+    { name: "uniqaidar_subtitle_001", file: "uniqaidar_subtitle_001", path: "fonts/jrnus/uniqaidar_subtitle_001.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_001.zip", category: "jrnus" },
+    { name: "uniqaidar_subtitle_002", file: "uniqaidar_subtitle_002", path: "fonts/jrnus/uniqaidar_subtitle_002.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_002.zip", category: "jrnus" },
+    { name: "uniqaidar_subtitle_003", file: "uniqaidar_subtitle_003", path: "fonts/jrnus/uniqaidar_subtitle_003.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_003.zip", category: "jrnus" },
+    { name: "uniqaidar_subtitle_004", file: "uniqaidar_subtitle_004", path: "fonts/jrnus/uniqaidar_subtitle_004.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_004.zip", category: "jrnus" },
+    { name: "uniqaidar_subtitle_005", file: "uniqaidar_subtitle_005", path: "fonts/jrnus/uniqaidar_subtitle_005.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_005.zip", category: "jrnus" },
+    { name: "uniqaidar_subtitle_006", file: "uniqaidar_subtitle_006", path: "fonts/jrnus/uniqaidar_subtitle_006.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_006.zip", category: "jrnus" },
+    { name: "uniqaidar_subtitle_007", file: "uniqaidar_subtitle_007", path: "fonts/jrnus/uniqaidar_subtitle_007.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_007.zip", category: "jrnus" },
+    { name: "uniqaidar_subtitle_008", file: "uniqaidar_subtitle_008", path: "fonts/jrnus/uniqaidar_subtitle_008.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_008.zip", category: "jrnus" },
+    { name: "uniqaidar_subtitle_009", file: "uniqaidar_subtitle_009", path: "fonts/jrnus/uniqaidar_subtitle_009.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_009.zip", category: "jrnus" },
+    { name: "uniqaidar_subtitle_010", file: "uniqaidar_subtitle_010", path: "fonts/jrnus/uniqaidar_subtitle_010.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_010.zip", category: "jrnus" },
+    { name: "uniqaidar_subtitle_011", file: "uniqaidar_subtitle_011", path: "fonts/jrnus/uniqaidar_subtitle_011.ttf", zip: "fonts/jrnus/uniqaidar_subtitle_011.zip", category: "jrnus" },
+    { name: "uniqaidar_afarin_001", file: "uniqaidar_afarin_001", path: "fonts/kanal/uniqaidar_afarin_001.ttf", zip: "fonts/kanal/uniqaidar_afarin_001.zip", category: "kanal" },
+    { name: "uniqaidar_afarin_002", file: "uniqaidar_afarin_002", path: "fonts/kanal/uniqaidar_afarin_002.ttf", zip: "fonts/kanal/uniqaidar_afarin_002.zip", category: "kanal" },
+    { name: "uniqaidar_afarin_003", file: "uniqaidar_afarin_003", path: "fonts/kanal/uniqaidar_afarin_003.ttf", zip: "fonts/kanal/uniqaidar_afarin_003.zip", category: "kanal" },
+    { name: "uniqaidar_amozhgary_001", file: "uniqaidar_amozhgary_001", path: "fonts/kanal/uniqaidar_amozhgary_001.ttf", zip: "fonts/kanal/uniqaidar_amozhgary_001.zip", category: "kanal" },
+    { name: "uniqaidar_amozhgary_002", file: "uniqaidar_amozhgary_002", path: "fonts/kanal/uniqaidar_amozhgary_002.ttf", zip: "fonts/kanal/uniqaidar_amozhgary_002.zip", category: "kanal" },
+    { name: "uniqaidar_amozhgary_003", file: "uniqaidar_amozhgary_003", path: "fonts/kanal/uniqaidar_amozhgary_003.ttf", zip: "fonts/kanal/uniqaidar_amozhgary_003.zip", category: "kanal" },
+    { name: "uniqaidar_arabyeh", file: "uniqaidar_arabyeh", path: "fonts/kanal/uniqaidar_arabyeh.ttf", zip: "fonts/kanal/uniqaidar_arabyeh.zip", category: "kanal" },
+    { name: "uniqaidar_aramco", file: "uniqaidar_aramco", path: "fonts/kanal/uniqaidar_aramco.ttf", zip: "fonts/kanal/uniqaidar_aramco.zip", category: "kanal" },
+    { name: "uniqaidar_asiacell_001", file: "uniqaidar_asiacell_001", path: "fonts/kanal/uniqaidar_asiacell_001.ttf", zip: "fonts/kanal/uniqaidar_asiacell_001.zip", category: "kanal" },
+    { name: "uniqaidar_asiacell_002", file: "uniqaidar_asiacell_002", path: "fonts/kanal/uniqaidar_asiacell_002.ttf", zip: "fonts/kanal/uniqaidar_asiacell_002.zip", category: "kanal" },
+    { name: "uniqaidar_asya", file: "uniqaidar_asya", path: "fonts/kanal/uniqaidar_asya.ttf", zip: "fonts/kanal/uniqaidar_asya.zip", category: "kanal" },
+    { name: "uniqaidar_baxshin_hospital_001", file: "uniqaidar_baxshin_hospital_001", path: "fonts/kanal/uniqaidar_baxshin_hospital_001.ttf", zip: "fonts/kanal/uniqaidar_baxshin_hospital_001.zip", category: "kanal" },
+    { name: "uniqaidar_baxshin_hospital_002", file: "uniqaidar_baxshin_hospital_002", path: "fonts/kanal/uniqaidar_baxshin_hospital_002.ttf", zip: "fonts/kanal/uniqaidar_baxshin_hospital_002.zip", category: "kanal" },
+    { name: "uniqaidar_fastlink_01", file: "uniqaidar_fastlink_01", path: "fonts/kanal/uniqaidar_fastlink_01.ttf", zip: "fonts/kanal/uniqaidar_fastlink_01.zip", category: "kanal" },
+    { name: "uniqaidar_fastlink_02", file: "uniqaidar_fastlink_02", path: "fonts/kanal/uniqaidar_fastlink_02.ttf", zip: "fonts/kanal/uniqaidar_fastlink_02.zip", category: "kanal" },
+    { name: "uniqaidar_fastlink_03", file: "uniqaidar_fastlink_03", path: "fonts/kanal/uniqaidar_fastlink_03.ttf", zip: "fonts/kanal/uniqaidar_fastlink_03.zip", category: "kanal" },
+    { name: "uniqaidar_fastlink_04", file: "uniqaidar_fastlink_04", path: "fonts/kanal/uniqaidar_fastlink_04.ttf", zip: "fonts/kanal/uniqaidar_fastlink_04.zip", category: "kanal" },
+    { name: "uniqaidar_fnunokia", file: "uniqaidar_fnunokia", path: "fonts/kanal/uniqaidar_fnunokia.ttf", zip: "fonts/kanal/uniqaidar_fnunokia.zip", category: "kanal" },
+    { name: "uniqaidar_harem_hospital_001", file: "uniqaidar_harem_hospital_001", path: "fonts/kanal/uniqaidar_harem_hospital_001.ttf", zip: "fonts/kanal/uniqaidar_harem_hospital_001.zip", category: "kanal" },
+    { name: "uniqaidar_harem_hospital_002", file: "uniqaidar_harem_hospital_002", path: "fonts/kanal/uniqaidar_harem_hospital_002.ttf", zip: "fonts/kanal/uniqaidar_harem_hospital_002.zip", category: "kanal" },
+    { name: "uniqaidar_khwendkar_001", file: "uniqaidar_khwendkar_001", path: "fonts/kanal/uniqaidar_khwendkar_001.ttf", zip: "fonts/kanal/uniqaidar_khwendkar_001.zip", category: "kanal" },
+    { name: "uniqaidar_khwendkar_002", file: "uniqaidar_khwendkar_002", path: "fonts/kanal/uniqaidar_khwendkar_002.ttf", zip: "fonts/kanal/uniqaidar_khwendkar_002.zip", category: "kanal" },
+    { name: "uniqaidar_khwendkar_003", file: "uniqaidar_khwendkar_003", path: "fonts/kanal/uniqaidar_khwendkar_003.ttf", zip: "fonts/kanal/uniqaidar_khwendkar_003.zip", category: "kanal" },
+    { name: "uniqaidar_mobile_tv", file: "uniqaidar_mobile_tv", path: "fonts/kanal/uniqaidar_mobile_tv.ttf", zip: "fonts/kanal/uniqaidar_mobile_tv.zip", category: "kanal" },
+    { name: "uniqaidar_money_heist_001", file: "uniqaidar_money_heist_001", path: "fonts/kanal/uniqaidar_money_heist_001.ttf", zip: "fonts/kanal/uniqaidar_money_heist_001.zip", category: "kanal" },
+    { name: "uniqaidar_money_heist_002", file: "uniqaidar_money_heist_002", path: "fonts/kanal/uniqaidar_money_heist_002.ttf", zip: "fonts/kanal/uniqaidar_money_heist_002.zip", category: "kanal" },
+    { name: "uniqaidar_nawa", file: "uniqaidar_nawa", path: "fonts/kanal/uniqaidar_nawa.ttf", zip: "fonts/kanal/uniqaidar_nawa.zip", category: "kanal" },
+    { name: "uniqaidar_newpayam_01", file: "uniqaidar_newpayam_01", path: "fonts/kanal/uniqaidar_newpayam_01.ttf", zip: "fonts/kanal/uniqaidar_newpayam_01.zip", category: "kanal" },
+    { name: "uniqaidar_newpayam_02", file: "uniqaidar_newpayam_02", path: "fonts/kanal/uniqaidar_newpayam_02.ttf", zip: "fonts/kanal/uniqaidar_newpayam_02.zip", category: "kanal" },
+    { name: "uniqaidar_newpayam_03", file: "uniqaidar_newpayam_03", path: "fonts/kanal/uniqaidar_newpayam_03.ttf", zip: "fonts/kanal/uniqaidar_newpayam_03.zip", category: "kanal" },
+    { name: "uniqaidar_newpayam_04", file: "uniqaidar_newpayam_04", path: "fonts/kanal/uniqaidar_newpayam_04.ttf", zip: "fonts/kanal/uniqaidar_newpayam_04.zip", category: "kanal" },
+    { name: "uniqaidar_payam", file: "uniqaidar_payam", path: "fonts/kanal/uniqaidar_payam.ttf", zip: "fonts/kanal/uniqaidar_payam.zip", category: "kanal" },
+    { name: "uniqaidar_payamnews", file: "uniqaidar_payamnews", path: "fonts/kanal/uniqaidar_payamnews.ttf", zip: "fonts/kanal/uniqaidar_payamnews.zip", category: "kanal" },
+    { name: "uniqaidar_payamnews_ku_numbers", file: "uniqaidar_payamnews_ku_numbers", path: "fonts/kanal/uniqaidar_payamnews_ku_numbers.ttf", zip: "fonts/kanal/uniqaidar_payamnews_ku_numbers.zip", category: "kanal" },
+    { name: "uniqaidar_payam_hd_001", file: "uniqaidar_payam_hd_001", path: "fonts/kanal/uniqaidar_payam_hd_001.ttf", zip: "fonts/kanal/uniqaidar_payam_hd_001.zip", category: "kanal" },
+    { name: "uniqaidar_payam_hd_002", file: "uniqaidar_payam_hd_002", path: "fonts/kanal/uniqaidar_payam_hd_002.ttf", zip: "fonts/kanal/uniqaidar_payam_hd_002.zip", category: "kanal" },
+    { name: "uniqaidar_payam_hd_003", file: "uniqaidar_payam_hd_003", path: "fonts/kanal/uniqaidar_payam_hd_003.ttf", zip: "fonts/kanal/uniqaidar_payam_hd_003.zip", category: "kanal" },
+    { name: "uniqaidar_payam_hd_004", file: "uniqaidar_payam_hd_004", path: "fonts/kanal/uniqaidar_payam_hd_004.ttf", zip: "fonts/kanal/uniqaidar_payam_hd_004.zip", category: "kanal" },
+    { name: "uniqaidar_peregraf_01", file: "uniqaidar_peregraf_01", path: "fonts/kanal/uniqaidar_peregraf_01.ttf", zip: "fonts/kanal/uniqaidar_peregraf_01.zip", category: "kanal" },
+    { name: "uniqaidar_peregraf_02", file: "uniqaidar_peregraf_02", path: "fonts/kanal/uniqaidar_peregraf_02.ttf", zip: "fonts/kanal/uniqaidar_peregraf_02.zip", category: "kanal" },
+    { name: "uniqaidar_sahar", file: "uniqaidar_sahar", path: "fonts/kanal/uniqaidar_sahar.ttf", zip: "fonts/kanal/uniqaidar_sahar.zip", category: "kanal" },
+    { name: "uniqaidar_squid_game_002", file: "uniqaidar_squid_game_002", path: "fonts/kanal/uniqaidar_squid_game_002.ttf", zip: "fonts/kanal/uniqaidar_squid_game_002.zip", category: "kanal" },
+    { name: "uniqaidar_talabat_01", file: "uniqaidar_talabat_01", path: "fonts/kanal/uniqaidar_talabat_01.ttf", zip: "fonts/kanal/uniqaidar_talabat_01.zip", category: "kanal" },
+    { name: "uniqaidar_talabat_02", file: "uniqaidar_talabat_02", path: "fonts/kanal/uniqaidar_talabat_02.ttf", zip: "fonts/kanal/uniqaidar_talabat_02.zip", category: "kanal" },
+    { name: "uniqaidar_trt_01", file: "uniqaidar_trt_01", path: "fonts/kanal/uniqaidar_trt_01.ttf", zip: "fonts/kanal/uniqaidar_trt_01.zip", category: "kanal" },
+    { name: "uniqaidar_trt_02", file: "uniqaidar_trt_02", path: "fonts/kanal/uniqaidar_trt_02.ttf", zip: "fonts/kanal/uniqaidar_trt_02.zip", category: "kanal" },
+    { name: "uniqaidar_trt_03", file: "uniqaidar_trt_03", path: "fonts/kanal/uniqaidar_trt_03.ttf", zip: "fonts/kanal/uniqaidar_trt_03.zip", category: "kanal" },
+    { name: "uniqaidar_trt_04", file: "uniqaidar_trt_04", path: "fonts/kanal/uniqaidar_trt_04.ttf", zip: "fonts/kanal/uniqaidar_trt_04.zip", category: "kanal" },
+    { name: "uniqaidar_zhyan_001", file: "uniqaidar_zhyan_001", path: "fonts/kanal/uniqaidar_zhyan_001.ttf", zip: "fonts/kanal/uniqaidar_zhyan_001.zip", category: "kanal" },
+    { name: "uniqaidar_zhyan_002", file: "uniqaidar_zhyan_002", path: "fonts/kanal/uniqaidar_zhyan_002.ttf", zip: "fonts/kanal/uniqaidar_zhyan_002.zip", category: "kanal" },
+    { name: "uniqaidar_zhyan_003", file: "uniqaidar_zhyan_003", path: "fonts/kanal/uniqaidar_zhyan_003.ttf", zip: "fonts/kanal/uniqaidar_zhyan_003.zip", category: "kanal" },
+    { name: "uniqaidar_a7med", file: "uniqaidar_a7med", path: "fonts/ktib/uniqaidar_a7med.ttf", zip: "fonts/ktib/uniqaidar_a7med.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_000", file: "uniqaidar_blawkrawe_000", path: "fonts/ktib/uniqaidar_blawkrawe_000.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_000.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_001", file: "uniqaidar_blawkrawe_001", path: "fonts/ktib/uniqaidar_blawkrawe_001.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_001.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_002", file: "uniqaidar_blawkrawe_002", path: "fonts/ktib/uniqaidar_blawkrawe_002.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_002.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_003", file: "uniqaidar_blawkrawe_003", path: "fonts/ktib/uniqaidar_blawkrawe_003.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_003.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_004", file: "uniqaidar_blawkrawe_004", path: "fonts/ktib/uniqaidar_blawkrawe_004.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_004.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_004_hollow", file: "uniqaidar_blawkrawe_004_hollow", path: "fonts/ktib/uniqaidar_blawkrawe_004_hollow.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_004_hollow.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_005", file: "uniqaidar_blawkrawe_005", path: "fonts/ktib/uniqaidar_blawkrawe_005.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_005.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_006", file: "uniqaidar_blawkrawe_006", path: "fonts/ktib/uniqaidar_blawkrawe_006.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_006.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_007", file: "uniqaidar_blawkrawe_007", path: "fonts/ktib/uniqaidar_blawkrawe_007.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_007.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_008", file: "uniqaidar_blawkrawe_008", path: "fonts/ktib/uniqaidar_blawkrawe_008.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_008.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_009", file: "uniqaidar_blawkrawe_009", path: "fonts/ktib/uniqaidar_blawkrawe_009.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_009.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_010_book", file: "uniqaidar_blawkrawe_010_book", path: "fonts/ktib/uniqaidar_blawkrawe_010_book.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_010_book.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_011", file: "uniqaidar_blawkrawe_011", path: "fonts/ktib/uniqaidar_blawkrawe_011.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_011.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_012", file: "uniqaidar_blawkrawe_012", path: "fonts/ktib/uniqaidar_blawkrawe_012.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_012.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_013", file: "uniqaidar_blawkrawe_013", path: "fonts/ktib/uniqaidar_blawkrawe_013.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_013.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_014", file: "uniqaidar_blawkrawe_014", path: "fonts/ktib/uniqaidar_blawkrawe_014.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_014.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_015", file: "uniqaidar_blawkrawe_015", path: "fonts/ktib/uniqaidar_blawkrawe_015.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_015.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_016", file: "uniqaidar_blawkrawe_016", path: "fonts/ktib/uniqaidar_blawkrawe_016.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_016.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_017", file: "uniqaidar_blawkrawe_017", path: "fonts/ktib/uniqaidar_blawkrawe_017.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_017.zip", category: "ktib" },
+    { name: "uniqaidar_blawkrawe_018", file: "uniqaidar_blawkrawe_018", path: "fonts/ktib/uniqaidar_blawkrawe_018.ttf", zip: "fonts/ktib/uniqaidar_blawkrawe_018.zip", category: "ktib" },
+    { name: "uniqaidar_dwange", file: "uniqaidar_dwange", path: "fonts/ktib/uniqaidar_dwange.ttf", zip: "fonts/ktib/uniqaidar_dwange.zip", category: "ktib" },
+    { name: "uniqaidar_ebrahim", file: "uniqaidar_ebrahim", path: "fonts/ktib/uniqaidar_ebrahim.ttf", zip: "fonts/ktib/uniqaidar_ebrahim.zip", category: "ktib" },
+    { name: "uniqaidar_edeb", file: "uniqaidar_edeb", path: "fonts/ktib/uniqaidar_edeb.ttf", zip: "fonts/ktib/uniqaidar_edeb.zip", category: "ktib" },
+    { name: "uniqaidar_hemin", file: "uniqaidar_hemin", path: "fonts/ktib/uniqaidar_hemin.ttf", zip: "fonts/ktib/uniqaidar_hemin.zip", category: "ktib" },
+    { name: "uniqaidar_kurdistan_001", file: "uniqaidar_kurdistan_001", path: "fonts/ktib/uniqaidar_kurdistan_001.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_001.zip", category: "ktib" },
+    { name: "uniqaidar_kurdistan_002", file: "uniqaidar_kurdistan_002", path: "fonts/ktib/uniqaidar_kurdistan_002.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_002.zip", category: "ktib" },
+    { name: "uniqaidar_kurdistan_003", file: "uniqaidar_kurdistan_003", path: "fonts/ktib/uniqaidar_kurdistan_003.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_003.zip", category: "ktib" },
+    { name: "uniqaidar_kurdistan_004", file: "uniqaidar_kurdistan_004", path: "fonts/ktib/uniqaidar_kurdistan_004.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_004.zip", category: "ktib" },
+    { name: "uniqaidar_kurdistan_005", file: "uniqaidar_kurdistan_005", path: "fonts/ktib/uniqaidar_kurdistan_005.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_005.zip", category: "ktib" },
+    { name: "uniqaidar_kurdistan_006", file: "uniqaidar_kurdistan_006", path: "fonts/ktib/uniqaidar_kurdistan_006.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_006.zip", category: "ktib" },
+    { name: "uniqaidar_kurdistan_007", file: "uniqaidar_kurdistan_007", path: "fonts/ktib/uniqaidar_kurdistan_007.ttf", zip: "fonts/ktib/uniqaidar_kurdistan_007.zip", category: "ktib" },
+    { name: "uniqaidar_muhammad", file: "uniqaidar_muhammad", path: "fonts/ktib/uniqaidar_muhammad.ttf", zip: "fonts/ktib/uniqaidar_muhammad.zip", category: "ktib" },
+    { name: "uniqaidar_naskh_bold", file: "uniqaidar_naskh_bold", path: "fonts/ktib/uniqaidar_naskh_bold.ttf", zip: "fonts/ktib/uniqaidar_naskh_bold.zip", category: "ktib" },
+    { name: "uniqaidar_naskh_regular", file: "uniqaidar_naskh_regular", path: "fonts/ktib/uniqaidar_naskh_regular.ttf", zip: "fonts/ktib/uniqaidar_naskh_regular.zip", category: "ktib" },
+    { name: "uniqaidar_rojname", file: "uniqaidar_rojname", path: "fonts/ktib/uniqaidar_rojname.ttf", zip: "fonts/ktib/uniqaidar_rojname.zip", category: "ktib" },
+    { name: "uniqaidar_rojnameb", file: "uniqaidar_rojnameb", path: "fonts/ktib/uniqaidar_rojnameb.ttf", zip: "fonts/ktib/uniqaidar_rojnameb.zip", category: "ktib" },
+    { name: "uniqaidar_sami", file: "uniqaidar_sami", path: "fonts/ktib/uniqaidar_sami.ttf", zip: "fonts/ktib/uniqaidar_sami.zip", category: "ktib" },
+    { name: "uniqaidar_yelda", file: "uniqaidar_yelda", path: "fonts/ktib/uniqaidar_yelda.ttf", zip: "fonts/ktib/uniqaidar_yelda.zip", category: "ktib" },
+    { name: "uniqaidar_social_media_001", file: "uniqaidar_social_media_001", path: "fonts/media/uniqaidar_social_media_001.ttf", zip: "fonts/media/uniqaidar_social_media_001.zip", category: "media" },
+    { name: "uniqaidar_social_media_002", file: "uniqaidar_social_media_002", path: "fonts/media/uniqaidar_social_media_002.ttf", zip: "fonts/media/uniqaidar_social_media_002.zip", category: "media" },
+    { name: "uniqaidar_social_media_003", file: "uniqaidar_social_media_003", path: "fonts/media/uniqaidar_social_media_003.ttf", zip: "fonts/media/uniqaidar_social_media_003.zip", category: "media" },
+    { name: "uniqaidar_social_media_004", file: "uniqaidar_social_media_004", path: "fonts/media/uniqaidar_social_media_004.ttf", zip: "fonts/media/uniqaidar_social_media_004.zip", category: "media" },
+    { name: "uniqaidar_social_media_005", file: "uniqaidar_social_media_005", path: "fonts/media/uniqaidar_social_media_005.ttf", zip: "fonts/media/uniqaidar_social_media_005.zip", category: "media" },
+    { name: "uniqaidar_social_media_006", file: "uniqaidar_social_media_006", path: "fonts/media/uniqaidar_social_media_006.ttf", zip: "fonts/media/uniqaidar_social_media_006.zip", category: "media" },
+    { name: "uniqaidar_squid_game_001", file: "uniqaidar_squid_game_001", path: "fonts/media/uniqaidar_squid_game_001.ttf", zip: "fonts/media/uniqaidar_squid_game_001.zip", category: "media" },
+    { name: "uniqaidar_free_000", file: "uniqaidar_free_000", path: "fonts/mndalan/uniqaidar_free_000.ttf", zip: "fonts/mndalan/uniqaidar_free_000.zip", category: "mndalan" },
+    { name: "uniqaidar_free_001", file: "uniqaidar_free_001", path: "fonts/mndalan/uniqaidar_free_001.ttf", zip: "fonts/mndalan/uniqaidar_free_001.zip", category: "mndalan" },
+    { name: "uniqaidar_free_002", file: "uniqaidar_free_002", path: "fonts/mndalan/uniqaidar_free_002.ttf", zip: "fonts/mndalan/uniqaidar_free_002.zip", category: "mndalan" },
+    { name: "uniqaidar_free_003", file: "uniqaidar_free_003", path: "fonts/mndalan/uniqaidar_free_003.ttf", zip: "fonts/mndalan/uniqaidar_free_003.zip", category: "mndalan" },
+    { name: "uniqaidar_free_004", file: "uniqaidar_free_004", path: "fonts/mndalan/uniqaidar_free_004.ttf", zip: "fonts/mndalan/uniqaidar_free_004.zip", category: "mndalan" },
+    { name: "uniqaidar_free_005", file: "uniqaidar_free_005", path: "fonts/mndalan/uniqaidar_free_005.ttf", zip: "fonts/mndalan/uniqaidar_free_005.zip", category: "mndalan" },
+    { name: "uniqaidar_free_006", file: "uniqaidar_free_006", path: "fonts/mndalan/uniqaidar_free_006.ttf", zip: "fonts/mndalan/uniqaidar_free_006.zip", category: "mndalan" },
+    { name: "uniqaidar_free_007", file: "uniqaidar_free_007", path: "fonts/mndalan/uniqaidar_free_007.ttf", zip: "fonts/mndalan/uniqaidar_free_007.zip", category: "mndalan" },
+    { name: "uniqaidar_free_008", file: "uniqaidar_free_008", path: "fonts/mndalan/uniqaidar_free_008.ttf", zip: "fonts/mndalan/uniqaidar_free_008.zip", category: "mndalan" },
+    { name: "uniqaidar_free_009", file: "uniqaidar_free_009", path: "fonts/mndalan/uniqaidar_free_009.ttf", zip: "fonts/mndalan/uniqaidar_free_009.zip", category: "mndalan" },
+    { name: "uniqaidar_free_010", file: "uniqaidar_free_010", path: "fonts/mndalan/uniqaidar_free_010.ttf", zip: "fonts/mndalan/uniqaidar_free_010.zip", category: "mndalan" },
+    { name: "uniqaidar_free_011", file: "uniqaidar_free_011", path: "fonts/mndalan/uniqaidar_free_011.ttf", zip: "fonts/mndalan/uniqaidar_free_011.zip", category: "mndalan" },
+    { name: "uniqaidar_free_012", file: "uniqaidar_free_012", path: "fonts/mndalan/uniqaidar_free_012.ttf", zip: "fonts/mndalan/uniqaidar_free_012.zip", category: "mndalan" },
+    { name: "uniqaidar_free_013", file: "uniqaidar_free_013", path: "fonts/mndalan/uniqaidar_free_013.ttf", zip: "fonts/mndalan/uniqaidar_free_013.zip", category: "mndalan" },
+    { name: "uniqaidar_free_014", file: "uniqaidar_free_014", path: "fonts/mndalan/uniqaidar_free_014.ttf", zip: "fonts/mndalan/uniqaidar_free_014.zip", category: "mndalan" },
+    { name: "uniqaidar_life", file: "uniqaidar_life", path: "fonts/mndalan/uniqaidar_life.ttf", zip: "fonts/mndalan/uniqaidar_life.zip", category: "mndalan" },
+    { name: "uniqaidar_zana", file: "uniqaidar_zana", path: "fonts/mndalan/uniqaidar_zana.ttf", zip: "fonts/mndalan/uniqaidar_zana.zip", category: "mndalan" },
+    { name: "uniqaidar_nastaliq_001", file: "uniqaidar_nastaliq_001", path: "fonts/nastaliq/uniqaidar_nastaliq_001.ttf", zip: "fonts/nastaliq/uniqaidar_nastaliq_001.zip", category: "nastaliq" },
+    { name: "uniqaidar_nastaliq_002", file: "uniqaidar_nastaliq_002", path: "fonts/nastaliq/uniqaidar_nastaliq_002.ttf", zip: "fonts/nastaliq/uniqaidar_nastaliq_002.zip", category: "nastaliq" },
+    { name: "uniqaidar_nastaliq_003", file: "uniqaidar_nastaliq_003", path: "fonts/nastaliq/uniqaidar_nastaliq_003.ttf", zip: "fonts/nastaliq/uniqaidar_nastaliq_003.zip", category: "nastaliq" },
+    { name: "uniqaidar_ali", file: "uniqaidar_ali", path: "fonts/semic/uniqaidar_ali.ttf", zip: "fonts/semic/uniqaidar_ali.zip", category: "semic" },
+    { name: "uniqaidar_gate", file: "uniqaidar_gate", path: "fonts/semic/uniqaidar_gate.ttf", zip: "fonts/semic/uniqaidar_gate.zip", category: "semic" },
+    { name: "uniqaidar_soz_000", file: "uniqaidar_soz_000", path: "fonts/semic/uniqaidar_soz_000.ttf", zip: "fonts/semic/uniqaidar_soz_000.zip", category: "semic" },
+    { name: "uniqaidar_soz_001", file: "uniqaidar_soz_001", path: "fonts/semic/uniqaidar_soz_001.ttf", zip: "fonts/semic/uniqaidar_soz_001.zip", category: "semic" },
+    { name: "uniqaidar_soz_002", file: "uniqaidar_soz_002", path: "fonts/semic/uniqaidar_soz_002.ttf", zip: "fonts/semic/uniqaidar_soz_002.zip", category: "semic" },
+    { name: "uniqaidar_soz_003", file: "uniqaidar_soz_003", path: "fonts/semic/uniqaidar_soz_003.ttf", zip: "fonts/semic/uniqaidar_soz_003.zip", category: "semic" },
+    { name: "uniqaidar_soz_004", file: "uniqaidar_soz_004", path: "fonts/semic/uniqaidar_soz_004.ttf", zip: "fonts/semic/uniqaidar_soz_004.zip", category: "semic" },
+    { name: "uniqaidar_soz_005", file: "uniqaidar_soz_005", path: "fonts/semic/uniqaidar_soz_005.ttf", zip: "fonts/semic/uniqaidar_soz_005.zip", category: "semic" },
+    { name: "uniqaidar_soz_006", file: "uniqaidar_soz_006", path: "fonts/semic/uniqaidar_soz_006.ttf", zip: "fonts/semic/uniqaidar_soz_006.zip", category: "semic" },
+    { name: "uniqaidar_soz_007", file: "uniqaidar_soz_007", path: "fonts/semic/uniqaidar_soz_007.ttf", zip: "fonts/semic/uniqaidar_soz_007.zip", category: "semic" },
+    { name: "uniqaidar_soz_008", file: "uniqaidar_soz_008", path: "fonts/semic/uniqaidar_soz_008.ttf", zip: "fonts/semic/uniqaidar_soz_008.zip", category: "semic" },
+    { name: "uniqaidar_soz_009", file: "uniqaidar_soz_009", path: "fonts/semic/uniqaidar_soz_009.ttf", zip: "fonts/semic/uniqaidar_soz_009.zip", category: "semic" },
+    { name: "uniqaidar_soz_010", file: "uniqaidar_soz_010", path: "fonts/semic/uniqaidar_soz_010.ttf", zip: "fonts/semic/uniqaidar_soz_010.zip", category: "semic" },
+    { name: "uniqaidar_soz_010_hollow", file: "uniqaidar_soz_010_hollow", path: "fonts/semic/uniqaidar_soz_010_hollow.ttf", zip: "fonts/semic/uniqaidar_soz_010_hollow.zip", category: "semic" },
+    { name: "uniqaidar_soz_011", file: "uniqaidar_soz_011", path: "fonts/semic/uniqaidar_soz_011.ttf", zip: "fonts/semic/uniqaidar_soz_011.zip", category: "semic" },
+    { name: "uniqaidar_soz_012", file: "uniqaidar_soz_012", path: "fonts/semic/uniqaidar_soz_012.ttf", zip: "fonts/semic/uniqaidar_soz_012.zip", category: "semic" },
+    { name: "uniqaidar_soz_013", file: "uniqaidar_soz_013", path: "fonts/semic/uniqaidar_soz_013.ttf", zip: "fonts/semic/uniqaidar_soz_013.zip", category: "semic" },
+    { name: "uniqaidar_soz_014", file: "uniqaidar_soz_014", path: "fonts/semic/uniqaidar_soz_014.ttf", zip: "fonts/semic/uniqaidar_soz_014.zip", category: "semic" },
+    { name: "uniqaidar_soz_015", file: "uniqaidar_soz_015", path: "fonts/semic/uniqaidar_soz_015.ttf", zip: "fonts/semic/uniqaidar_soz_015.zip", category: "semic" },
+    { name: "uniqaidar_soz_016", file: "uniqaidar_soz_016", path: "fonts/semic/uniqaidar_soz_016.ttf", zip: "fonts/semic/uniqaidar_soz_016.zip", category: "semic" },
+    { name: "uniqaidar_soz_017", file: "uniqaidar_soz_017", path: "fonts/semic/uniqaidar_soz_017.ttf", zip: "fonts/semic/uniqaidar_soz_017.zip", category: "semic" },
+    { name: "uniqaidar_abdullah", file: "uniqaidar_abdullah", path: "fonts/some/uniqaidar_abdullah.ttf", zip: "fonts/some/uniqaidar_abdullah.zip", category: "some" },
+    { name: "uniqaidar_abo_dhabi", file: "uniqaidar_abo_dhabi", path: "fonts/some/uniqaidar_abo_dhabi.ttf", zip: "fonts/some/uniqaidar_abo_dhabi.zip", category: "some" },
+    { name: "uniqaidar_amez", file: "uniqaidar_amez", path: "fonts/some/uniqaidar_amez.ttf", zip: "fonts/some/uniqaidar_amez.zip", category: "some" },
+    { name: "uniqaidar_askandar", file: "uniqaidar_askandar", path: "fonts/some/uniqaidar_askandar.ttf", zip: "fonts/some/uniqaidar_askandar.zip", category: "some" },
+    { name: "uniqaidar_aso", file: "uniqaidar_aso", path: "fonts/some/uniqaidar_aso.ttf", zip: "fonts/some/uniqaidar_aso.zip", category: "some" },
+    { name: "uniqaidar_azadi", file: "uniqaidar_azadi", path: "fonts/some/uniqaidar_azadi.ttf", zip: "fonts/some/uniqaidar_azadi.zip", category: "some" },
+    { name: "uniqaidar_bahar_001", file: "uniqaidar_bahar_001", path: "fonts/some/uniqaidar_bahar_001.ttf", zip: "fonts/some/uniqaidar_bahar_001.zip", category: "some" },
+    { name: "uniqaidar_behmen", file: "uniqaidar_behmen", path: "fonts/some/uniqaidar_behmen.ttf", zip: "fonts/some/uniqaidar_behmen.zip", category: "some" },
+    { name: "uniqaidar_bexud", file: "uniqaidar_bexud", path: "fonts/some/uniqaidar_bexud.ttf", zip: "fonts/some/uniqaidar_bexud.zip", category: "some" },
+    { name: "uniqaidar_dara", file: "uniqaidar_dara", path: "fonts/some/uniqaidar_dara.ttf", zip: "fonts/some/uniqaidar_dara.zip", category: "some" },
+    { name: "uniqaidar_digital", file: "uniqaidar_digital", path: "fonts/some/uniqaidar_digital.ttf", zip: "fonts/some/uniqaidar_digital.zip", category: "some" },
+    { name: "uniqaidar_efriqa", file: "uniqaidar_efriqa", path: "fonts/some/uniqaidar_efriqa.ttf", zip: "fonts/some/uniqaidar_efriqa.zip", category: "some" },
+    { name: "uniqaidar_efsun", file: "uniqaidar_efsun", path: "fonts/some/uniqaidar_efsun.ttf", zip: "fonts/some/uniqaidar_efsun.zip", category: "some" },
+    { name: "uniqaidar_jwneyd", file: "uniqaidar_jwneyd", path: "fonts/some/uniqaidar_jwneyd.ttf", zip: "fonts/some/uniqaidar_jwneyd.zip", category: "some" },
+    { name: "uniqaidar_kamaran", file: "uniqaidar_kamaran", path: "fonts/some/uniqaidar_kamaran.ttf", zip: "fonts/some/uniqaidar_kamaran.zip", category: "some" },
+    { name: "uniqaidar_karmend", file: "uniqaidar_karmend", path: "fonts/some/uniqaidar_karmend.ttf", zip: "fonts/some/uniqaidar_karmend.zip", category: "some" },
+    { name: "uniqaidar_karwan", file: "uniqaidar_karwan", path: "fonts/some/uniqaidar_karwan.ttf", zip: "fonts/some/uniqaidar_karwan.zip", category: "some" },
+    { name: "uniqaidar_khama", file: "uniqaidar_khama", path: "fonts/some/uniqaidar_khama.ttf", zip: "fonts/some/uniqaidar_khama.zip", category: "some" },
+    { name: "uniqaidar_kufi", file: "uniqaidar_kufi", path: "fonts/some/uniqaidar_kufi.ttf", zip: "fonts/some/uniqaidar_kufi.zip", category: "some" },
+    { name: "uniqaidar_meju", file: "uniqaidar_meju", path: "fonts/some/uniqaidar_meju.ttf", zip: "fonts/some/uniqaidar_meju.zip", category: "some" },
+    { name: "uniqaidar_meju_00", file: "uniqaidar_meju_00", path: "fonts/some/uniqaidar_meju_00.ttf", zip: "fonts/some/uniqaidar_meju_00.zip", category: "some" },
+    { name: "uniqaidar_nasrin", file: "uniqaidar_nasrin", path: "fonts/some/uniqaidar_nasrin.ttf", zip: "fonts/some/uniqaidar_nasrin.zip", category: "some" },
+    { name: "uniqaidar_omar", file: "uniqaidar_omar", path: "fonts/some/uniqaidar_omar.ttf", zip: "fonts/some/uniqaidar_omar.zip", category: "some" },
+    { name: "uniqaidar_osama", file: "uniqaidar_osama", path: "fonts/some/uniqaidar_osama.ttf", zip: "fonts/some/uniqaidar_osama.zip", category: "some" },
+    { name: "uniqaidar_osman", file: "uniqaidar_osman", path: "fonts/some/uniqaidar_osman.ttf", zip: "fonts/some/uniqaidar_osman.zip", category: "some" },
+    { name: "uniqaidar_penjwen", file: "uniqaidar_penjwen", path: "fonts/some/uniqaidar_penjwen.ttf", zip: "fonts/some/uniqaidar_penjwen.zip", category: "some" },
+    { name: "uniqaidar_poster", file: "uniqaidar_poster", path: "fonts/some/uniqaidar_poster.ttf", zip: "fonts/some/uniqaidar_poster.zip", category: "some" },
+    { name: "uniqaidar_saman", file: "uniqaidar_saman", path: "fonts/some/uniqaidar_saman.ttf", zip: "fonts/some/uniqaidar_saman.zip", category: "some" },
+    { name: "uniqaidar_taef", file: "uniqaidar_taef", path: "fonts/some/uniqaidar_taef.ttf", zip: "fonts/some/uniqaidar_taef.zip", category: "some" },
+    { name: "uniqaidar_texte", file: "uniqaidar_texte", path: "fonts/some/uniqaidar_texte.ttf", zip: "fonts/some/uniqaidar_texte.zip", category: "some" },
+    { name: "uniqaidar_twana", file: "uniqaidar_twana", path: "fonts/some/uniqaidar_twana.ttf", zip: "fonts/some/uniqaidar_twana.zip", category: "some" },
+    { name: "uniqaidar_yusuf", file: "uniqaidar_yusuf", path: "fonts/some/uniqaidar_yusuf.ttf", zip: "fonts/some/uniqaidar_yusuf.zip", category: "some" },
+    { name: "uniqaidar_xal_00", file: "uniqaidar_xal_00", path: "fonts/xal/uniqaidar_xal_00.ttf", zip: "fonts/xal/uniqaidar_xal_00.zip", category: "xal" },
+    { name: "uniqaidar_xal_01", file: "uniqaidar_xal_01", path: "fonts/xal/uniqaidar_xal_01.ttf", zip: "fonts/xal/uniqaidar_xal_01.zip", category: "xal" },
+    { name: "uniqaidar_xal_02", file: "uniqaidar_xal_02", path: "fonts/xal/uniqaidar_xal_02.ttf", zip: "fonts/xal/uniqaidar_xal_02.zip", category: "xal" },
+
+
+    { name: "uniqaidar_fastlink01", file: "uniqaidar_fastlink01", path: "fonts/fastlink/uniqaidar_fastlink01.ttf", zip: "fonts/fastlink/uniqaidar_fastlink01.zip", category: "fastlink" },
+    { name: "uniqaidar_fastlink02", file: "uniqaidar_fastlink02", path: "fonts/fastlink/uniqaidar_fastlink02.ttf", zip: "fonts/fastlink/uniqaidar_fastlink02.zip", category: "fastlink" },
+    { name: "uniqaidar_fastlink03", file: "uniqaidar_fastlink03", path: "fonts/fastlink/uniqaidar_fastlink03.ttf", zip: "fonts/fastlink/uniqaidar_fastlink03.zip", category: "fastlink" },
+    { name: "uniqaidar_fastlink04", file: "uniqaidar_fastlink04", path: "fonts/fastlink/uniqaidar_fastlink04.ttf", zip: "fonts/fastlink/uniqaidar_fastlink04.zip", category: "fastlink" },
+
+
+    { name: "uniqaidar_bahar001", file: "uniqaidar_bahar001", path: "fonts/nwe/uniqaidar_bahar001.ttf", zip: "fonts/nwe/uniqaidar_bahar001.zip", category: "nwe" },
+    { name: "uniqaidar_subtitle012", file: "uniqaidar_subtitle012", path: "fonts/nwe/uniqaidar_subtitle012.ttf", zip: "fonts/nwe/uniqaidar_subtitle012.zip", category: "nwe" },
+
+
+];
+
+
+
+   const grid = document.getElementById('font-grid');
+    const input = document.getElementById('test-input');
+
+    function renderFonts(text, data = fonts) { //
+        grid.innerHTML = "";
+        data.forEach(font => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="card-info">
+                    <span>${font.category.toUpperCase()}</span>
+                    <span style="color:var(--primary)">${font.name}</span>
+                </div>
+                <div class="preview" style="font-family: '${font.name}'">
+                    ${text || 'کوردستان نیشتمانی جوانم'}
+                </div>
+                <a href="${font.zip}" class="download-btn" download>داگرتنی ZIP</a>
+            `;
+            grid.appendChild(card);
+        });
+  
+    }
+
+    function filterFonts(category, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+
+    const filtered = (category === 'all') 
+        ? fonts 
+        : fonts.filter(f => f.category === category);
+    
+    renderFonts(input.value, filtered);
+}
+
+function renderFonts(text, data = fonts) {
+    grid.innerHTML = "";
+    data.forEach(font => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+            <div class="card-info">
+                <span>${font.category.toUpperCase()}</span>
+                <span style="color:var(--primary)">${font.name}</span>
+            </div>
+            <div class="preview" style="font-family: '${font.name}'">
+                ${text || 'فۆنتەکانی یونی‌قەیدار - فۆنتی کوردی'}
+            </div>
+            <a href="${font.zip}" class="download-btn" download>دابه‌زاندنی فۆنت</a>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+//تەنها نەستەلیق 
+document.addEventListener('DOMContentLoaded', () => {
+    const nastaliqBtn = document.querySelector('.filter-btn[onclick*="nastaliq"]');
+    filterFonts('nastaliq', nastaliqBtn);
+});
+
+const searchInput = document.getElementById('search-input'); 
+const previewInput = document.getElementById('test-input'); 
+
+const updateAll = (e) => {
+    const text = e.target.value;
+    
+    if (e.target.id === 'search-input') {
+        previewInput.value = text;
+    }
+    
+    const activeCategory = document.querySelector('.filter-btn.active')?.getAttribute('onclick')?.match(/'([^']+)'/)?.[1] || 'all';
+    
+    if (activeCategory === 'all') {
+        renderFonts(text, fonts);
+    } else {
+        const filtered = fonts.filter(f => f.category === activeCategory);
+        renderFonts(text, filtered);
+    }
+};
+
+if (searchInput) searchInput.addEventListener('input', updateAll);
+if (previewInput) previewInput.addEventListener('input', updateAll);
+
+    renderFonts("");
+const myFonts = [
+    'uniqaidar_peregraf_01'
+];
+
+let fontIndex = 0;
+const titleElement = document.getElementById('main-title');
+
+function changeTitleFont() {
+    if (titleElement) {
+        titleElement.style.fontFamily = `'${myFonts[fontIndex]}'`;
+        fontIndex = (fontIndex + 1) % myFonts.length;
+    }
+}
+
+setInterval(changeTitleFont, 3000);
+
+input.addEventListener('input', (e) => {
+    const text = e.target.value;
+    const activeBtn = document.querySelector('.filter-btn.active');
+    
+    let category = 'all';
+    if (activeBtn) {
+        const onclickAttr = activeBtn.getAttribute('onclick');
+        category = onclickAttr.split("'")[1];
+    }
+
+    const filtered = (category === 'all') ? fonts : fonts.filter(f => f.category === category);
+    
+    renderFonts(text, filtered);
+});
+
+var downloadModal = document.getElementById("downloadModal");
+var downloadBtn = document.getElementById("downloadModalBtn");
+var closeDownload = document.getElementsByClassName("close-download")[0];
+
+downloadBtn.onclick = function() {
+    downloadModal.style.display = "block";
+}
+
+closeDownload.onclick = function() {
+    downloadModal.style.display = "none";
+}
+
+window.onclick = function(event) {
+    if (event.target == downloadModal) {
+        downloadModal.style.display = "none";
+    }
+}
+
+</script>
+
+<footer>
+    <p>Designed and Developed by <strong>Arkan Dara</strong> All rights reserved 2026</p>
+</footer>
+
+<div id="aboutModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>دەربارەی پڕۆژە</h2>
+        <p>فۆنتەکانی یونی‌قەیدار (UniQaidar Fonts) کۆمەڵێک فۆنتی کوردی و عەرەبی بەکوالیتی بەرزن کە بۆ دیزاین، نوسین و، بوارە جیاوازەکانی تری وەک ماڵپەڕ و بەڵگەنامەکان گونجاون. ئەم فۆنتانە بە تایبەتمەندی ڕێکی و ڕەوانی لە دیزایندا ناسراون و لەلایەن بەکارھێنەرانی کوردەوە بۆ گشت کارە هونەری و نوسینەکان بەکاردێن. 
+تایبەتمەندییە سەرەکییەکانی فۆنتەکانی یونی قەیدار:
+گونجاو بۆ گشت بوارەکان: لە دیزاینی گرافیکەوە تا نووسینی دەقی درێژ.
+سەرنجڕاکێش و ڕێک: دیزاینێکی مۆدێرن و سەرنجڕاکێشیان هەیە.
+پشتیوانی زمانی کوردی: بە تەواوی کوردی و عەرەبی پشتیوانی دەکەن. 
+ئەم فۆنتانە یارمەتیدەرن بۆ ئەوەی بەرهەمەکانت زیاتر پرۆفیشناڵ و جوان دەربکەون.</p>
+        <p>گەشەپێدەر: قه‌یدار ڕه‌حیم</p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.getElementById("aboutModal");
+        var btn = document.getElementById("aboutBtn");
+        var span = document.getElementsByClassName("close-btn")[0];
+
+        if(btn) {
+            btn.onclick = function(e) {
+                e.preventDefault();
+                modal.style.display = "block";
+            }
+        }
+
+        if(span) {
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
