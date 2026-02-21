@@ -123,6 +123,21 @@ select option { background: var(--surface2); }
 .overlay.show { display: flex; }
 .overlay p { color: var(--text); font-size: 0.95rem; }
 
+/* ── مۆدالی دەستکاریکردنی فۆنت ── */
+.modal-backdrop {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8); z-index: 4000;
+    align-items: center; justify-content: center; padding: 16px;
+}
+.modal-backdrop.show { display: flex; }
+.modal-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px; width: 100%; max-width: 560px;
+    max-height: 90vh; overflow-y: auto;
+}
+.modal-box h3 { font-size: 1rem; margin-bottom: 16px; color: var(--accent); }
+.modal-footer { display: flex; gap: 9px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
+
 @media (max-width: 580px) {
     .form-grid { grid-template-columns: 1fr; }
     .form-group.full { grid-column: 1; }
@@ -285,6 +300,32 @@ select option { background: var(--surface2); }
         </div>
     </div>
 </main>
+
+<!-- مۆدالی دەستکاریکردنی فۆنت -->
+<div class="modal-backdrop" id="edit-modal">
+    <div class="modal-box">
+        <h3>✏️ Edit Font</h3>
+        <div class="form-grid">
+            <div class="form-group full">
+                <label>Font Name (readonly)</label>
+                <input id="e-name" readonly>
+            </div>
+            <div class="form-group full">
+                <label>Preview Text</label>
+                <input id="e-prev" type="text" placeholder="کوردستانی جوان">
+            </div>
+            <div class="form-group full">
+                <label>Categories — select one or more</label>
+                <div class="cat-pills" id="e-pills"></div>
+            </div>
+        </div>
+        <div id="edit-alert" class="alert"></div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+            <button class="btn btn-primary" id="edit-save-btn" onclick="saveEditFont()">💾 Save Changes</button>
+        </div>
+    </div>
+</div>
 
 <script>
 // ══════════════════════════════════════════
@@ -556,24 +597,121 @@ function renderArc() {
         const fc = Array.isArray(f.category) ? f.category : [f.category];
         return (cat==='all' || fc.includes(cat)) && f.name.toLowerCase().includes(q);
     });
-    document.getElementById('acnt').textContent = `${res.length} فۆنت`;
+    document.getElementById('acnt').textContent = `${res.length} fonts`;
     l.innerHTML = '';
     if (!res.length) {
-        l.innerHTML = '<div style="color:var(--muted);text-align:center;padding:24px;font-size:0.83rem">هیچ فۆنتێک نەدۆزرایەوە</div>';
+        l.innerHTML = '<div style="color:var(--muted);text-align:center;padding:24px;font-size:0.83rem">No fonts found</div>';
         return;
     }
     res.forEach(f => {
-        const fc = Array.isArray(f.category) ? f.category.join(', ') : f.category;
-        const d = document.createElement('div');
+        const fc  = Array.isArray(f.category) ? f.category.join(', ') : f.category;
+        const idx = fnts.indexOf(f);
+        const d   = document.createElement('div');
         d.className = 'arc-item';
-        d.innerHTML = `<span class="arc-name">${f.name}</span><span class="arc-prev">${f.preview||''}</span><span class="badge">${fc}</span>`;
+        d.innerHTML = `
+            <span class="arc-name">${f.name}</span>
+            <span class="arc-prev">${f.preview || ''}</span>
+            <span class="badge">${fc}</span>
+            <button class="btn btn-ghost" style="padding:4px 10px;font-size:0.75rem;margin-right:auto"
+                onclick="openEditModal(${idx})">✏️ Edit</button>
+        `;
         l.appendChild(d);
     });
 }
 
 // ══════════════════════════════════════════
-// ناوگۆڕینی کاتێگۆری
+// دەستکاریکردنی فۆنتی هەبوو
 // ══════════════════════════════════════════
+let editIdx = -1;
+
+function openEditModal(idx) {
+    editIdx = idx;
+    const f = fnts[idx];
+    const curCats = Array.isArray(f.category) ? f.category : [f.category];
+
+    set('e-name', f.name);
+    set('e-prev', f.preview || '');
+
+    // دروستکردنی پیلەکانی کاتێگۆری بۆ مۆدال
+    const pills = document.getElementById('e-pills');
+    pills.innerHTML = '';
+    cats.filter(c => c.id !== 'all').forEach(c => {
+        const p = document.createElement('span');
+        p.className = 'cat-pill' + (curCats.includes(c.id) ? ' on' : '');
+        p.dataset.id = c.id;
+        p.textContent = c.label;
+        p.onclick = function() { this.classList.toggle('on'); };
+        pills.appendChild(p);
+    });
+
+    document.getElementById('edit-alert').className = 'alert';
+    document.getElementById('edit-modal').classList.add('show');
+}
+
+function closeEditModal() {
+    document.getElementById('edit-modal').classList.remove('show');
+    editIdx = -1;
+}
+
+async function saveEditFont() {
+    if (editIdx < 0) return;
+    const f       = fnts[editIdx];
+    const newPrev = v('e-prev') || 'کوردستانی جوان';
+    const picked  = [...document.querySelectorAll('#e-pills .cat-pill.on')].map(p => p.dataset.id);
+    const al      = document.getElementById('edit-alert');
+
+    if (!picked.length) return alert2(al, 'Select at least one category!', 'err');
+
+    const newCatVal = picked.length === 1
+        ? `"${picked[0]}"`
+        : `["${picked.join('","')}"]`;
+
+    // دۆزینەوەی هێڵی کۆنی فۆنت لە RAW و جێگرتنەوەی
+    // شێواز: { name: "x", file: "x", path: "...", zip: "...", category: ..., preview: "..." }
+    const oldCats = Array.isArray(f.category) ? f.category : [f.category];
+    const oldCatVal = oldCats.length === 1
+        ? `"${oldCats[0]}"`
+        : `["${oldCats.join('","')}"]`;
+
+    // دروستکردنی regex بۆ دۆزینەوەی تۆماری فۆنت — بە ناوی تایبەت
+    const escaped = f.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const entryRx = new RegExp(
+        `\\{\\s*name:\\s*"${escaped}"[^}]*preview:\\s*"[^"]*"\\s*\\}`,
+        ''
+    );
+
+    const oldEntry = RAW.match(entryRx);
+    if (!oldEntry) return alert2(al, `❌ Could not find font "${f.name}" in index.html!`, 'err');
+
+    // دروستکردنی تۆماری نوێ — تەنها preview و category دەگۆڕێت
+    const newEntry = oldEntry[0]
+        .replace(/category:\s*(\[[^\]]+\]|"[^"]+")/, `category: ${newCatVal}`)
+        .replace(/preview:\s*"[^"]*"/, `preview: "${newPrev}"`);
+
+    const next = RAW.replace(oldEntry[0], newEntry);
+
+    alert2(al, 'Saving to GitHub...', 'inf');
+    const ok = await ghPut(next, `Edit font: ${f.name}`);
+
+    if (ok) {
+        fnts[editIdx].preview  = newPrev;
+        fnts[editIdx].category = picked.length === 1 ? picked[0] : picked;
+        alert2(al, `✅ "${f.name}" updated!`, 'ok');
+        buildCatList();
+        renderArc();
+        setTimeout(closeEditModal, 1200);
+    } else {
+        alert2(al, '❌ Save failed. Check your token!', 'err');
+    }
+}
+
+// داخستنی مۆدال بە کلیکی دەرەوە
+document.getElementById('edit-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeEditModal();
+});
+
+// ══════════════════════════════════════════
+
 function startEdit(idx) {
     document.getElementById('lbl-'+idx).style.display = 'none';
     document.getElementById('inp-'+idx).style.display = 'inline-block';
