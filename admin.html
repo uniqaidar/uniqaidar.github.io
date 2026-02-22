@@ -837,17 +837,45 @@ async function deleteFont() {
     const al = document.getElementById('edit-alert');
     if (!confirm(`Delete "${f.name}" from the website?\n\nNote: Only removes it from index.html. The .ttf file in UniQaidarFonts/ stays on GitHub.`)) return;
 
-    const escaped = f.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const faceRx  = new RegExp(`@font-face \\{ font-family: '${escaped}';[^\\n]+\\n`, '');
-    const entryRx = new RegExp(`\\n?[ \\t]*\\{[ \\t]*name:[ \\t]*"${escaped}"[^}]*preview:[^}]*\\}[ \\t]*,?`, '');
-
-    let next = RAW.replace(faceRx, '').replace(entryRx, '');
-
     alert2(al, 'Deleting from GitHub...', 'inf');
+
+    const escaped = f.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    // ① Remove @font-face — search by file name in src URL (may not exist for old fonts)
+    const fileEscaped = (f.file || f.name).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const faceRx = new RegExp(`\\n?[ \\t]*@font-face \\{ font-family: '[^']*'; src: url\\('[^']*${fileEscaped}[^']*'\\)[^}]*\\}`, 'g');
+    let next = RAW.replace(faceRx, '');
+
+    // ② Remove fonts array entry — multiline safe: match { ... name: "X" ... }
+    // Removes the entry plus its leading comma/whitespace
+    const entryRx = new RegExp(`,?\\s*\\{[^{}]*name:\\s*"${escaped}"[\\s\\S]*?\\}(?=\\s*[,\\n])`, 'g');
+    next = next.replace(entryRx, '');
+
+    // ③ Fallback: if entry still exists, try removing just the line-by-line block
+    if (next.includes(`name: "${f.name}"`)) {
+        // Find the entry start and end manually
+        const startMarker = `name: "${f.name}"`;
+        const idx = next.indexOf(startMarker);
+        if (idx !== -1) {
+            // Walk back to find opening {
+            let open = idx;
+            while (open > 0 && next[open] !== '{') open--;
+            // Walk forward to find closing }
+            let close = idx;
+            while (close < next.length && next[close] !== '}') close++;
+            // Remove from before { (including comma/whitespace) to after }
+            let removeStart = open;
+            while (removeStart > 0 && /[\s,]/.test(next[removeStart - 1])) removeStart--;
+            let removeEnd = close + 1;
+            if (next[removeEnd] === ',') removeEnd++;
+            next = next.slice(0, removeStart) + next.slice(removeEnd);
+        }
+    }
+
     const ok = await ghPut(next, `Delete font: ${f.name}`);
     if (ok) {
         fnts.splice(editIdx, 1);
-        alert2(al, `✅ "${f.name}" deleted from website!`, 'ok');
+        alert2(al, `✅ "${f.name}" deleted!`, 'ok');
         buildCatList(); renderArc();
         setTimeout(closeEditModal, 1000);
     } else {
