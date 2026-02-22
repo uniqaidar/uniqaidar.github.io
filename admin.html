@@ -219,38 +219,61 @@ select option { background: var(--surface2); }
     <!-- تابی فۆنت -->
     <div id="t-font" class="tab-content active">
         <div class="box">
-            <div class="box-header"><span class="dot" style="background:var(--accent)"></span>زیادکردنی فۆنتی نوێ</div>
+            <div class="box-header"><span class="dot" style="background:var(--accent)"></span>Add New Font</div>
             <div class="box-body">
+
+                <!-- Step 1: Scan folder -->
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:16px">
+                    <p style="font-size:0.82rem;color:var(--muted);margin-bottom:10px">
+                        <strong style="color:var(--yellow)">Step 1 —</strong> Choose a folder to scan for <code style="color:var(--accent)">.ttf</code> files
+                    </p>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+                        <select id="scan-folder" style="flex:1;min-width:140px;max-width:200px">
+                            <option value="">— select folder —</option>
+                        </select>
+                        <button class="btn btn-ghost" style="padding:8px 16px" onclick="scanFolder()">🔍 Scan</button>
+                        <span id="scan-status" style="font-size:0.78rem;color:var(--muted);font-family:var(--mono)"></span>
+                    </div>
+                </div>
+
+                <!-- Step 2: Pick font from dropdown -->
                 <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Step 2 — Select font file from scanned list</label>
+                        <select id="f-select" onchange="onFontSelect()" style="font-family:var(--mono)">
+                            <option value="">— scan a folder first —</option>
+                        </select>
+                    </div>
+
                     <div class="form-group">
-                        <label>ناوی فۆنت</label>
-                        <input id="f-name" type="text" placeholder="uniqaidar_nwe_003" oninput="fillPaths()">
+                        <label>Font file name (auto-filled)</label>
+                        <input id="f-name" readonly style="color:var(--muted)">
                     </div>
                     <div class="form-group">
-                        <label>فۆڵدەر</label>
-                        <input id="f-folder" type="text" placeholder="nwe" oninput="fillPaths()">
+                        <label>Folder (auto-filled)</label>
+                        <input id="f-folder" readonly style="color:var(--muted)">
                     </div>
                     <div class="form-group">
-                        <label>ڕێگای TTF — ئۆتۆماتیک</label>
-                        <input id="f-path" readonly>
+                        <label>TTF path (auto)</label>
+                        <input id="f-path" readonly style="color:var(--muted)">
                     </div>
                     <div class="form-group">
-                        <label>ڕێگای ZIP — ئۆتۆماتیک</label>
-                        <input id="f-zip" readonly>
+                        <label>ZIP path (auto)</label>
+                        <input id="f-zip" readonly style="color:var(--muted)">
                     </div>
                     <div class="form-group full">
-                        <label>دەقی پیشاندان</label>
+                        <label>Preview text — دەقی پیشاندان</label>
                         <input id="f-prev" type="text" placeholder="کوردستانی جوان">
                     </div>
                     <div class="form-group full">
-                        <label>کاتێگۆری — دەتوانیت زیاتر لە یەک هەڵبژێریت</label>
+                        <label>Categories — select one or more</label>
                         <div class="cat-pills" id="fpills"></div>
                     </div>
                 </div>
                 <div id="fa" class="alert"></div>
                 <div class="btn-row">
-                    <button class="btn btn-ghost" onclick="clearFont()">پاک کردنەوە</button>
-                    <button class="btn btn-primary" id="fbtn" onclick="addFont()" disabled>💾 زیادکردن و تێپەڕاندن</button>
+                    <button class="btn btn-ghost" onclick="clearFont()">Clear</button>
+                    <button class="btn btn-primary" id="fbtn" onclick="addFont()" disabled>💾 Add & Push to GitHub</button>
                 </div>
             </div>
         </div>
@@ -491,54 +514,162 @@ async function connect() {
 // ══════════════════════════════════════════
 // زیادکردنی فۆنت
 // ══════════════════════════════════════════
+// ══════════════════════════════════════════
+// Folder Scanner — reads .ttf files from GitHub
+// ══════════════════════════════════════════
+
+// Known folders — built from categories at load time
+function buildFolderList() {
+    const sel = document.getElementById('scan-folder');
+    const current = sel.value;
+    // Get unique folder names from existing fonts
+    const folders = new Set();
+    fnts.forEach(f => {
+        const m = f.path.match(/^fonts\/([^/]+)\//);
+        if (m) folders.add(m[1]);
+    });
+    // Also add from category IDs that match folder names
+    cats.filter(c => c.id !== 'all').forEach(c => folders.add(c.id));
+
+    sel.innerHTML = '<option value="">— select folder —</option>';
+    [...folders].sort().forEach(folder => {
+        const o = document.createElement('option');
+        o.value = folder;
+        o.textContent = folder;
+        sel.appendChild(o);
+    });
+    if (current) sel.value = current;
+}
+
+async function scanFolder() {
+    const folder = document.getElementById('scan-folder').value;
+    const status = document.getElementById('scan-status');
+    const fontSel = document.getElementById('f-select');
+
+    if (!folder) return;
+    if (!ready) { status.textContent = '❌ Not connected to GitHub'; return; }
+
+    status.textContent = 'Scanning...';
+    fontSel.innerHTML = '<option value="">Loading...</option>';
+
+    try {
+        const res = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/fonts/${folder}`,
+            { headers: hdrs() }
+        );
+        if (!res.ok) throw new Error('Folder not found');
+        const files = await res.json();
+
+        // Filter only .ttf files, exclude already-added fonts
+        const existingNames = new Set(fnts.map(f => f.name));
+        const ttfFiles = files
+            .filter(f => f.name.toLowerCase().endsWith('.ttf'))
+            .sort((a, b) => a.name.localeCompare(b.name));
+
+        const newFiles  = ttfFiles.filter(f => !existingNames.has(f.name.replace('.ttf', '')));
+        const doneFiles = ttfFiles.filter(f =>  existingNames.has(f.name.replace('.ttf', '')));
+
+        fontSel.innerHTML = `<option value="">— ${ttfFiles.length} fonts found, ${newFiles.length} new —</option>`;
+
+        if (newFiles.length > 0) {
+            const grpNew = document.createElement('optgroup');
+            grpNew.label = `✅ New (${newFiles.length}) — not in website yet`;
+            newFiles.forEach(f => {
+                const o = document.createElement('option');
+                o.value = JSON.stringify({ name: f.name.replace('.ttf',''), folder });
+                o.textContent = f.name.replace('.ttf','');
+                grpNew.appendChild(o);
+            });
+            fontSel.appendChild(grpNew);
+        }
+
+        if (doneFiles.length > 0) {
+            const grpDone = document.createElement('optgroup');
+            grpDone.label = `☑️ Already added (${doneFiles.length})`;
+            doneFiles.forEach(f => {
+                const o = document.createElement('option');
+                o.value = JSON.stringify({ name: f.name.replace('.ttf',''), folder });
+                o.textContent = f.name.replace('.ttf','') + ' ✓';
+                o.style.color = '#555';
+                grpDone.appendChild(o);
+            });
+            fontSel.appendChild(grpDone);
+        }
+
+        status.textContent = `✅ ${ttfFiles.length} .ttf files found`;
+        status.style.color = 'var(--green)';
+
+    } catch(e) {
+        fontSel.innerHTML = '<option value="">❌ Could not scan folder</option>';
+        status.textContent = `❌ ${e.message}`;
+        status.style.color = 'var(--red)';
+    }
+}
+
+function onFontSelect() {
+    const sel = document.getElementById('f-select');
+    if (!sel.value) return;
+    try {
+        const { name, folder } = JSON.parse(sel.value);
+        set('f-name',   name);
+        set('f-folder', folder);
+        set('f-path',   `fonts/${folder}/${name}.ttf`);
+        set('f-zip',    `fonts/${folder}/${name}.zip`);
+    } catch(e) {}
+}
+
 function fillPaths() {
-    const n=v('f-name'), f=v('f-folder');
-    set('f-path', n&&f ? `fonts/${f}/${n}.ttf` : '');
-    set('f-zip',  n&&f ? `fonts/${f}/${n}.zip`  : '');
+    const n = v('f-name'), f = v('f-folder');
+    set('f-path', n && f ? `fonts/${f}/${n}.ttf` : '');
+    set('f-zip',  n && f ? `fonts/${f}/${n}.zip`  : '');
 }
 
 async function addFont() {
-    const name   = v('f-name');
-    const folder = v('f-folder');
-    const prev   = v('f-prev') || 'کوردستانی جوان';
+    const name   = document.getElementById('f-name').value.trim();
+    const folder = document.getElementById('f-folder').value.trim();
+    const prev   = document.getElementById('f-prev').value.trim() || 'کوردستانی جوان';
     const al     = document.getElementById('fa');
     const picked = [...document.querySelectorAll('#fpills .cat-pill.on')].map(p => p.dataset.id);
 
-    if (!name)          return alert2(al,'ناوی فۆنت پڕ بکەرەوە!','err');
-    if (!folder)        return alert2(al,'فۆڵدەر پڕ بکەرەوە!','err');
-    if (!picked.length) return alert2(al,'لانیکەم یەک کاتێگۆری هەڵبژێرە!','err');
-    if (fnts.find(f=>f.name===name)) return alert2(al,'ئەم فۆنتە پێشتر هەیە!','err');
+    if (!name)          return alert2(al, '❌ Please select a font from the dropdown first!', 'err');
+    if (!folder)        return alert2(al, '❌ No folder selected!', 'err');
+    if (!picked.length) return alert2(al, '❌ Select at least one category!', 'err');
+    if (fnts.find(f => f.name === name)) return alert2(al, `❌ "${name}" is already on the website!`, 'err');
 
-    const path = `fonts/${folder}/${name}.ttf`;
-    const zip  = `fonts/${folder}/${name}.zip`;
-    const catVal = picked.length===1 ? `"${picked[0]}"` : `["${picked.join('","')}"]`;
+    const path   = `fonts/${folder}/${name}.ttf`;
+    const zip    = `fonts/${folder}/${name}.zip`;
+    const catVal = picked.length === 1 ? `"${picked[0]}"` : `["${picked.join('","')}"]`;
 
-    // ① زیادکردنی @font-face
+    // ① @font-face — after last existing one
     const face = `@font-face { font-family: '${name}'; src: url('${path}'); }\n`;
     const li   = RAW.lastIndexOf('@font-face');
     const at   = RAW.indexOf('\n', li) + 1;
-    let next   = RAW.slice(0,at) + face + RAW.slice(at);
+    let next   = RAW.slice(0, at) + face + RAW.slice(at);
 
-    // ② زیادکردنی تۆمار لە fonts array
-    const entry = `\n    { name: "${name}", file: "${name}", path: "${path}", zip: "${zip}", category: ${catVal}, preview: "${prev}" },`;
-    const ci    = next.lastIndexOf('];');
-    next        = next.slice(0,ci) + entry + '\n' + next.slice(ci);
+    // ② Insert at TOP of fonts array (appears first = newest on top)
+    const entry   = `    { name: "${name}", file: "${name}", path: "${path}", zip: "${zip}", category: ${catVal}, preview: "${prev}" },\n`;
+    const arrOpen = next.indexOf('const fonts = [\n') + 'const fonts = [\n'.length;
+    next = next.slice(0, arrOpen) + entry + next.slice(arrOpen);
 
-    alert2(al,'تێپەڕاندن بۆ GitHub...','inf');
-    const ok = await ghPut(next, `زیادکردنی فۆنت: ${name}`);
+    alert2(al, 'Pushing to GitHub...', 'inf');
+    const ok = await ghPut(next, `Add font: ${name}`);
 
     if (ok) {
-        fnts.push({ name, file:name, path, zip, category: picked.length===1?picked[0]:picked, preview:prev });
-        alert2(al,`✅ فۆنتی "${name}" زیادکرا!`,'ok');
+        fnts.unshift({ name, file: name, path, zip, category: picked.length === 1 ? picked[0] : picked, preview: prev });
+        alert2(al, `✅ "${name}" added! It will appear at the top of its category.`, 'ok');
         clearFont();
-        buildCatList(); // نوێ کردنەوەی ژمارەی فۆنتەکان
+        buildFolderList();
+        buildCatList();
+        renderArc();
     } else {
-        alert2(al,'❌ هەڵە. تۆکێنەکەت پشکنە!','err');
+        alert2(al, '❌ Push failed. Check your token!', 'err');
     }
 }
 
 function clearFont() {
     ['f-name','f-folder','f-path','f-zip','f-prev'].forEach(i => set(i,''));
+    document.getElementById('f-select').innerHTML = '<option value="">— scan a folder first —</option>';
+    document.getElementById('scan-status').textContent = '';
     document.querySelectorAll('#fpills .cat-pill').forEach(p => p.classList.remove('on'));
 }
 
@@ -579,7 +710,7 @@ async function addCat() {
 // ══════════════════════════════════════════
 // دروستکردنی UI
 // ══════════════════════════════════════════
-function buildAll() { buildCatPills(); buildCatList(); buildArcSel(); renderArc(); }
+function buildAll() { buildCatPills(); buildCatList(); buildArcSel(); buildFolderList(); renderArc(); }
 
 function buildCatPills() {
     const w = document.getElementById('fpills');
