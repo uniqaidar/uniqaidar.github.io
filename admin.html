@@ -235,12 +235,18 @@ select option { background: var(--surface2); }
                         </select>
                     </div>
                     <div class="form-group full">
-                        <label>Font file name (auto)</label>
-                        <input id="f-name" type="text" placeholder="e.g. UniQAIDAR_A7MED">
+                        <label>Preview text — دەقی پیشاندان</label>
+                        <input id="f-prev" type="text" placeholder="فۆنتەکانی یونی‌قەیدار - فۆنتی کوردی" oninput="updateFontPreview()">
                     </div>
                     <div class="form-group full">
-                        <label>Preview text — دەقی پیشاندان</label>
-                        <input id="f-prev" type="text" placeholder="کوردستانی جوان">
+                        <label>Live Preview — پیشاندانی ڕاستەقینە</label>
+                        <div id="live-preview-box" dir="rtl" style="
+                            min-height:80px; background:#111; border:1px solid #333;
+                            border-radius:8px; padding:14px 18px; font-size:2.2rem;
+                            color:#f0f0f0; text-align:center; overflow:hidden;
+                            display:flex; align-items:center; justify-content:center;
+                            font-family: Tahoma, sans-serif;
+                        ">— دووستان فۆنتێک هەڵبژێرە —</div>
                     </div>
                     <div class="form-group full">
                         <label>Categories — select one or more</label>
@@ -303,19 +309,27 @@ select option { background: var(--surface2); }
     <!-- Settings Tab -->
     <div id="t-settings" class="tab-content">
         <div class="box" style="margin-bottom:16px">
-            <div class="box-header"><span class="dot" style="background:var(--yellow)"></span>Download All Fonts — Link</div>
+            <div class="box-header"><span class="dot" style="background:var(--yellow)"></span>📥 داگرتنی فۆنتەکان — Download Modal Editor</div>
             <div class="box-body">
                 <div class="form-group">
-                    <label>URL for "Download All Fonts" button</label>
-                    <input id="dl-url" type="text" placeholder="https://drive.google.com/...">
+                    <label>Modal Title — ناونیشانی مۆدال (e.g. داگرتنی فۆنتەکان)</label>
+                    <input id="dm-title-inp" type="text" placeholder="داگرتنی فۆنتەکان" dir="rtl">
                 </div>
                 <div class="form-group" style="margin-top:10px">
-                    <label>Font count label (e.g. 420)</label>
-                    <input id="dl-count" type="text" placeholder="420">
+                    <label>Description Text — دەقی ناو مۆدال</label>
+                    <input id="dm-desc-inp" type="text" placeholder="فەرموو لەگەڵ داگرتنی 420 فۆنتی..." dir="rtl">
+                </div>
+                <div class="form-group" style="margin-top:10px">
+                    <label>Button Label — دەقی دوگمەی داگرتن</label>
+                    <input id="dm-btn-inp" type="text" placeholder="كلیك بكه‌ بۆ داگرتنی فۆنته‌كان" dir="rtl">
+                </div>
+                <div class="form-group" style="margin-top:10px">
+                    <label>Download URL — لینکی داگرتن</label>
+                    <input id="dl-url" type="text" placeholder="https://drive.google.com/..." dir="ltr">
                 </div>
                 <div id="dl-alert" class="alert"></div>
                 <div class="btn-row">
-                    <button class="btn btn-primary" id="dl-btn" onclick="saveDownloadLink()" disabled>💾 Save & Push</button>
+                    <button class="btn btn-primary" id="dl-btn" onclick="saveDownloadModal()" disabled>💾 Save & Push</button>
                 </div>
             </div>
         </div>
@@ -355,7 +369,11 @@ select option { background: var(--surface2); }
             </div>
             <div class="form-group full">
                 <label>Preview Text</label>
-                <input id="e-prev" type="text" placeholder="کوردستانی جوان">
+                <input id="e-prev" type="text" placeholder="فۆنتەکانی یونی‌قەیدار - فۆنتی کوردی">
+            </div>
+            <div class="form-group full">
+                <label>Date Added on Card (YYYY-MM-DD) — shown on card header</label>
+                <input id="e-date" type="date" style="direction:ltr">
             </div>
             <div class="form-group full">
                 <label>Categories — select one or more</label>
@@ -453,13 +471,13 @@ function parse() {
 
     // فۆنتەکان
     // فۆنتەکان — supports both old (with zip) and new (no zip) format
-    const fr = /\{\s*name:\s*"([^"]+)"[^}]*file:\s*"([^"]+)"[^}]*path:\s*"([^"]+)"(?:[^}]*zip:\s*"([^"]+)")?[^}]*category:\s*(\[[^\]]+\]|"[^"]+")\s*,\s*preview:\s*"([^"]*)"(?:[^}]*displayName:\s*"([^"]*)")?[^}]*\}/g;
+    const fr = /\{\s*name:\s*"([^"]+)"[^}]*file:\s*"([^"]+)"[^}]*path:\s*"([^"]+)"(?:[^}]*zip:\s*"([^"]+)")?[^}]*category:\s*(\[[^\]]+\]|"[^"]+")\s*,\s*preview:\s*"([^"]*)"(?:[^}]*displayName:\s*"([^"]*)")?(?:[^}]*dateAdded:\s*"([^"]*)")?[^}]*\}/g;
         while ((m = fr.exec(RAW)) !== null) {
         let cat = m[5].trim();
         cat = cat.startsWith('[')
             ? cat.replace(/[\[\]"\s]/g,'').split(',')
             : cat.replace(/"/g,'');
-        fnts.push({ name:m[1], file:m[2], path:m[3], zip:m[4]||m[3], category:cat, preview:m[6], displayName: m[7] || undefined });
+        fnts.push({ name:m[1], file:m[2], path:m[3], zip:m[4]||m[3], category:cat, preview:m[6], displayName: m[7] || undefined, dateAdded: m[8] || undefined });
     }
 }
 
@@ -569,15 +587,38 @@ async function scanFonts() {
 }
 
 function onFontSelect() {
-    const filename = document.getElementById('f-select').value; // e.g. UniQAIDAR_AKIwand.ttf
-    if (!filename) { set('f-name', ''); return; }
-    const nameNoExt = filename.replace('.ttf', '');
-    set('f-name', nameNoExt);
+    const filename = document.getElementById('f-select').value;
+    const box = document.getElementById('live-preview-box');
+    if (!filename) {
+        if (box) { box.textContent = '— دووستان فۆنتێک هەڵبژێرە —'; box.style.fontFamily = 'Tahoma, sans-serif'; }
+        return;
+    }
+    updateFontPreview();
 }
+
+function updateFontPreview() {
+    const filename = document.getElementById('f-select').value;
+    if (!filename) return;
+    const name = filename.replace(/\.ttf$/i, '');
+    const prev = document.getElementById('f-prev').value.trim() || 'فۆنتەکانی یونی‌قەیدار - فۆنتی کوردی';
+    const box  = document.getElementById('live-preview-box');
+    if (!box) return;
+    // Inject @font-face dynamically so the real font loads
+    const styleId = 'dyn-' + name.replace(/[^a-zA-Z0-9]/g, '_');
+    if (!document.getElementById(styleId)) {
+        const s = document.createElement('style');
+        s.id = styleId;
+        s.textContent = `@font-face { font-family: '${name}'; src: url('UniQaidarFonts/${filename}') format('truetype'); }`;
+        document.head.appendChild(s);
+    }
+    box.style.fontFamily = `'${name}', Tahoma, sans-serif`;
+    box.textContent = prev;
+}
+
 
 async function addFont() {
     const filename = document.getElementById('f-select').value; // e.g. UniQAIDAR_AKIwand.ttf
-    const name     = document.getElementById('f-name').value.trim(); // without .ttf
+    const name     = filename.replace(/\.ttf$/i, ''); // derived from selected file
     const prev     = document.getElementById('f-prev').value.trim() || 'کوردستانی جوان';
     const al       = document.getElementById('fa');
     const picked   = [...document.querySelectorAll('#fpills .cat-pill.on')].map(p => p.dataset.id);
@@ -616,10 +657,11 @@ async function addFont() {
 }
 
 function clearFont() {
-    set('f-name', '');
     set('f-prev', '');
     document.getElementById('f-select').selectedIndex = 0;
     document.getElementById('scan-status').textContent = '';
+    const box = document.getElementById('live-preview-box');
+    if (box) { box.textContent = '— دووستان فۆنتێک هەڵبژێرە —'; box.style.fontFamily = 'Tahoma, sans-serif'; }
     document.querySelectorAll('#fpills .cat-pill').forEach(p => p.classList.remove('on'));
 }
 
@@ -630,30 +672,32 @@ async function addCat() {
     const lbl = v('nc-lbl'), id = v('nc-id');
     const al  = document.getElementById('ca');
 
-    if (!lbl||!id)                   return alert2(al,'هەردوو خانەکان پڕ بکەرەوە!','err');
-    if (/\s/.test(id))               return alert2(al,'ID نابێت بۆشایی هەبێت!','err');
-    if (cats.find(c=>c.id===id))     return alert2(al,'ئەم کاتێگۆریە پێشتر هەیە!','err');
+    if (!lbl || !id)                  return alert2(al, 'Both fields required!', 'err');
+    if (/\s/.test(id))               return alert2(al, 'ID cannot contain spaces!', 'err');
+    if (cats.find(c => c.id === id))  return alert2(al, 'This category already exists!', 'err');
 
-    // زیادکردنی دوگمەی فلتەر لە HTML — شێوازی گونجاو
-    const btn    = `\n            <button class="filter-btn" onclick="filterFonts('${id}', this)">${lbl}</button>`;
-    const marker = '</div>\n    </div>\n</div>\n\n<div class="font-grid"';
-    const pos    = RAW.indexOf(marker);
-    if (pos===-1) return alert2(al,'❌ شوێنی زیادکردن نەدۆزرایەوە!','err');
+    // Find the marquee-content div and insert after the last </button> inside it
+    const mcStart = RAW.indexOf('<div class="marquee-content">');
+    if (mcStart === -1) return alert2(al, '❌ Cannot find filter bar in index.html!', 'err');
+    // Find end of the marquee-content closing </div>
+    const mcEnd = RAW.indexOf('</div>', mcStart + 100);
+    // Find last </button> inside that region
+    const lastBtn = RAW.lastIndexOf('</button>', mcEnd);
+    if (lastBtn === -1) return alert2(al, '❌ No filter buttons found!', 'err');
+    const insertAt = lastBtn + '</button>'.length;
 
-    // زیادکردن دوای کۆتایین دوگمە، پێش خەتەکانی داخستن
-    const lastBtnEnd = RAW.lastIndexOf('</button>', pos) + '</button>'.length;
-    const next = RAW.slice(0, lastBtnEnd) + btn + RAW.slice(lastBtnEnd);
+    const btnHtml = `\n            <button class="filter-btn" onclick="filterFonts('${id}', this)">${lbl}</button>`;
+    const next = RAW.slice(0, insertAt) + btnHtml + RAW.slice(insertAt);
 
-    alert2(al,'تێپەڕاندن...','inf');
-    const ok = await ghPut(next, `زیادکردنی کاتێگۆری: ${lbl}`);
-
+    alert2(al, 'Saving...', 'inf');
+    const ok = await ghPut(next, `Add category: ${lbl}`);
     if (ok) {
-        cats.push({ id, label:lbl });
-        set('nc-lbl',''); set('nc-id','');
+        cats.push({ id, label: lbl });
+        set('nc-lbl', ''); set('nc-id', '');
         buildCatPills(); buildCatList(); buildArcSel();
-        alert2(al,`✅ کاتێگۆری "${lbl}" زیادکرا!`,'ok');
+        alert2(al, `✅ Category "${lbl}" added!`, 'ok');
     } else {
-        alert2(al,'❌ هەڵە. تۆکێنەکەت پشکنە!','err');
+        alert2(al, '❌ Save failed. Check your token!', 'err');
     }
 }
 
@@ -683,10 +727,16 @@ function buildCatList() {
             const fc = Array.isArray(f.category) ? f.category : [f.category];
             return fc.includes(c.id);
         }).length;
+        const isFirst = idx === 0;
+        const isLast  = idx === cats.length - 1;
         const row = document.createElement('div');
         row.className = 'cat-row';
         row.style.cssText = 'flex-wrap:wrap;gap:8px';
         row.innerHTML = `
+            <div style="display:flex;flex-direction:column;gap:2px;margin-left:2px">
+                <button class="btn btn-ghost" style="padding:1px 7px;font-size:0.7rem;min-width:28px;opacity:${isFirst?'0.25':'1'}" ${isFirst?'disabled':''} onclick="moveCat(${idx},-1)" title="Move Up">▲</button>
+                <button class="btn btn-ghost" style="padding:1px 7px;font-size:0.7rem;min-width:28px;opacity:${isLast?'0.25':'1'}" ${isLast?'disabled':''} onclick="moveCat(${idx},1)" title="Move Down">▼</button>
+            </div>
             <span class="lbl" id="lbl-${idx}">${c.label}</span>
             <input id="inp-${idx}" value="${c.label}" style="display:none;flex:1;min-width:120px;max-width:180px">
             <span class="badge">${c.id}</span>
@@ -698,12 +748,59 @@ function buildCatList() {
         `;
         l.appendChild(row);
     });
-    // ئالەرتی ناوگۆڕین
+    // Reorder save button
+    if (!document.getElementById('reorder-btn-row')) {
+        const btnRow = document.createElement('div');
+        btnRow.id = 'reorder-btn-row';
+        btnRow.style.cssText = 'margin-top:12px;display:flex;gap:10px;align-items:center';
+        btnRow.innerHTML = `
+            <button class="btn btn-primary" onclick="saveReorder()" style="background:var(--accent)">
+                💾 Save New Order to GitHub
+            </button>
+            <div id="reorder-alert" class="alert" style="flex:1"></div>
+        `;
+        l.after(btnRow);
+    }
     if (!document.getElementById('rename-alert')) {
         const al = document.createElement('div');
         al.id = 'rename-alert'; al.className = 'alert';
-        l.after(al);
+        document.getElementById('reorder-btn-row').after(al);
     }
+}
+
+function moveCat(idx, dir) {
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= cats.length) return;
+    // Swap
+    [cats[idx], cats[newIdx]] = [cats[newIdx], cats[idx]];
+    buildCatList();
+}
+
+async function saveReorder() {
+    const al = document.getElementById('reorder-alert');
+    alert2(al, 'Saving new order...', 'inf');
+
+    // Rebuild the entire marquee-content block with cats in new order
+    const mc = document.createElement('div');
+    let btnHtml = '';
+    cats.forEach(c => {
+        const isActive = c.id === 'nwe' ? ' active' : '';
+        btnHtml += `\n            <button class="filter-btn${isActive}" onclick="filterFonts('${c.id}', this)">${c.label}</button>`;
+    });
+
+    // Replace the entire marquee-content block in RAW
+    const mcRx = /(<div class="marquee-content">)([\s\S]*?)(<\/div>\s*<\/div>\s*<\/div>\s*(?:<div id="size-bar"|\n\n<div class="font-grid"))/;
+    const next = RAW.replace(mcRx, (m, open, middle, close) => {
+        return open + btnHtml + '\n        ' + close;
+    });
+
+    if (next === RAW) {
+        return alert2(al, '❌ Could not find filter bar — check index.html structure', 'err');
+    }
+
+    const ok = await ghPut(next, 'Reorder categories');
+    if (ok) alert2(al, '✅ Category order saved!', 'ok');
+    else    alert2(al, '❌ Save failed. Check your token!', 'err');
 }
 
 function buildArcSel() {
@@ -759,6 +856,7 @@ function openEditModal(idx) {
     set('e-name', f.name);
     set('e-display', f.displayName || '');
     set('e-prev', f.preview || '');
+    set('e-date', f.dateAdded || '');
 
     // دروستکردنی پیلەکانی کاتێگۆری بۆ مۆدال
     const pills = document.getElementById('e-pills');
@@ -786,6 +884,7 @@ async function saveEditFont() {
     const f          = fnts[editIdx];
     const newPrev    = v('e-prev') || 'کوردستانی جوان';
     const newDisplay = v('e-display').trim();
+    const newDate    = v('e-date').trim();
     const picked     = [...document.querySelectorAll('#e-pills .cat-pill.on')].map(p => p.dataset.id);
     const al         = document.getElementById('edit-alert');
 
@@ -815,6 +914,17 @@ async function saveEditFont() {
         newEntry = newEntry.replace(/,?\s*displayName:\s*"[^"]*"/, '');
     }
 
+    // dateAdded: زیادکردن یان نوێکردنەوە
+    if (newDate) {
+        if (/dateAdded:\s*"[^"]*"/.test(newEntry)) {
+            newEntry = newEntry.replace(/dateAdded:\s*"[^"]*"/, `dateAdded: "${newDate}"`);
+        } else {
+            newEntry = newEntry.replace(/\s*\}$/, `, dateAdded: "${newDate}" }`);
+        }
+    } else {
+        newEntry = newEntry.replace(/,?\s*dateAdded:\s*"[^"]*"/, '');
+    }
+
     const next = RAW.replace(oldEntry[0], newEntry);
     alert2(al, 'Saving to GitHub...', 'inf');
     const ok = await ghPut(next, `Edit font: ${f.name}`);
@@ -822,6 +932,7 @@ async function saveEditFont() {
     if (ok) {
         fnts[editIdx].preview     = newPrev;
         fnts[editIdx].displayName = newDisplay || undefined;
+        fnts[editIdx].dateAdded   = newDate || undefined;
         fnts[editIdx].category    = picked.length === 1 ? picked[0] : picked;
         alert2(al, `✅ "${f.name}" updated!`, 'ok');
         buildCatList(); renderArc();
@@ -949,7 +1060,7 @@ function setReady(val) {
     document.getElementById('rbadge').textContent = val ? `${USER}/${REPO}` : 'Not connected';
     document.getElementById('fbtn').disabled  = !val;
     document.getElementById('cbtn').disabled  = !val;
-    document.getElementById('dl-btn').disabled    = true; // loaded on tab open
+    document.getElementById('dl-btn').disabled    = true;
     document.getElementById('about-btn').disabled = true;
 }
 
@@ -995,32 +1106,59 @@ async function deleteCat(idx) {
 // Settings: Download Link + About Text
 // ══════════════════════════════════════════
 function loadSettings() {
-    // لینکی داگرتن
-    const dlMatch = RAW.match(/href="([^"]*)"[^>]*>\s*<i[^>]*><\/i>[^<]*\u06a9\u0644\u06cc\u06a9/);
-    if (dlMatch) set('dl-url', dlMatch[1]);
-    // ژمارەی فۆنتەکان
-    const cntMatch = RAW.match(/\u062f\u0627\u06af\u0631\u062a\u0646\u06cc\s+(\d+)\s+\u0641\u06c6\u0646\u062a\u06cc/);
-    if (cntMatch) set('dl-count', cntMatch[1]);
-    // دەقی دەربارە
-    const am = RAW.match(/<p>([\u0600-\u06ff\s\S]*?UniQaidar[\s\S]*?)<\/p>/);
-    if (am) document.getElementById('about-text').value = am[1].replace(/<br\s*\/?>/g, '\n').trim();
+    // ── Download Modal fields ──────────────────────────────
+    const dmTitle = RAW.match(/<h2 id="dm-title">([^<]*)<\/h2>/);
+    if (dmTitle) set('dm-title-inp', dmTitle[1]);
+
+    const dmDesc = RAW.match(/<p id="dm-desc"[^>]*>([^<]*)<\/p>/);
+    if (dmDesc) set('dm-desc-inp', dmDesc[1]);
+
+    const dmBtnLabel = RAW.match(/<span id="dm-btn-label">([^<]*)<\/span>/);
+    if (dmBtnLabel) set('dm-btn-inp', dmBtnLabel[1]);
+
+    const dmHref = RAW.match(/<a id="dm-btn" href="([^"]*)"/);
+    if (dmHref) set('dl-url', dmHref[1]);
+
+    // ── About text ────────────────────────────────────────
+    const amId = RAW.match(/<p id="about-content">([\s\S]*?)<\/p>/);
+    if (amId) {
+        document.getElementById('about-text').value = amId[1].replace(/<br\s*\/?>/g, '\n').trim();
+    } else {
+        const amFb = RAW.match(/<p>([\u0600-\u06ff][^<]{30,})<\/p>/);
+        if (amFb) document.getElementById('about-text').value = amFb[1].replace(/<br\s*\/?>/g, '\n').trim();
+    }
     // enable buttons
     document.getElementById('dl-btn').disabled    = false;
     document.getElementById('about-btn').disabled = false;
 }
 
-async function saveDownloadLink() {
-    const url   = v('dl-url');
-    const count = v('dl-count');
-    const al    = document.getElementById('dl-alert');
+async function saveDownloadModal() {
+    const url       = v('dl-url');
+    const title     = v('dm-title-inp');
+    const desc      = v('dm-desc-inp');
+    const btnLabel  = v('dm-btn-inp');
+    const al        = document.getElementById('dl-alert');
     if (!url) return alert2(al, 'Enter the download URL!', 'err');
 
-    let next = RAW.replace(/href="[^"]*"(\s*target="_blank"\s*class="header-btn")/, `href="${url}"$1`);
-    if (count) next = next.replace(/(\u062f\u0627\u06af\u0631\u062a\u0646\u06cc\s+)\d+(\s+\u0641\u06c6\u0646\u062a\u06cc)/, `$1${count}$2`);
+    let next = RAW;
+
+    // Update modal title
+    if (title) next = next.replace(/<h2 id="dm-title">[^<]*<\/h2>/, `<h2 id="dm-title">${title}<\/h2>`);
+
+    // Update description text
+    if (desc) next = next.replace(/<p id="dm-desc"[^>]*>[^<]*<\/p>/, `<p id="dm-desc" style="font-size: 1.2rem; margin-bottom: 20px;">${desc}<\/p>`);
+
+    // Update button label
+    if (btnLabel) next = next.replace(/<span id="dm-btn-label">[^<]*<\/span>/, `<span id="dm-btn-label">${btnLabel}<\/span>`);
+
+    // Update download href
+    next = next.replace(/(<a id="dm-btn" href=")[^"]*"/, `$1${url}"`);
+
+    if (next === RAW) return alert2(al, '❌ Could not find modal elements. Re-upload latest index.html!', 'err');
 
     alert2(al, 'Saving...', 'inf');
-    const ok = await ghPut(next, 'Update: download link');
-    if (ok) alert2(al, '✅ Download link updated!', 'ok');
+    const ok = await ghPut(next, 'Update: download modal');
+    if (ok) alert2(al, '✅ Download modal updated!', 'ok');
     else    alert2(al, '❌ Save failed. Check your token!', 'err');
 }
 
@@ -1029,12 +1167,13 @@ async function saveAbout() {
     const al   = document.getElementById('about-alert');
     if (!text) return alert2(al, 'About text cannot be empty!', 'err');
 
-    const htmlText = text.replace(/\n/g, '\n');
-    // جێگرتنەوەی دەقی دەربارە
+    const htmlText = text.replace(/\n/g, '<br>\n');
+    // Target precisely using id="about-content"
     const next = RAW.replace(
-        /(<p>)([\u0600-\u06ff][^<]*UniQaidar[^<]*(?:<br[^>]*>[^<]*)*)((?:\n[^<]*)?)(<\/p>)/,
-        `<p>${htmlText}</p>`
+        /<p id="about-content">[\s\S]*?<\/p>/,
+        `<p id="about-content">${htmlText}</p>`
     );
+    if (next === RAW) return alert2(al, '❌ about-content not found. Re-upload index.html first!', 'err');
     alert2(al, 'Saving...', 'inf');
     const ok = await ghPut(next, 'Update: about section');
     if (ok) alert2(al, '✅ About text updated!', 'ok');

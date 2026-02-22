@@ -150,14 +150,50 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
 .card {
     background: white;
     border-radius: 12px;
-    padding: 20px 24px 20px;
+    padding: 0;
     box-shadow: 0 4px 16px rgba(0,0,0,0.07);
     display: flex;
     flex-direction: column;
-    border: 1px solid #eee;
+    border: 1px solid #dde1e7;
     transition: 0.3s;
     box-sizing: border-box;
     min-height: 0;
+    overflow: hidden;
+}
+.card-header {
+    background: #dde1e7;
+    padding: 10px 16px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    text-align: center;
+}
+.card-eng-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #111;
+    font-family: 'UniQAIDAR_Peregraf 01', Tahoma, monospace;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: ltr;
+    text-align: center;
+    width: 100%;
+}
+.card-date {
+    font-size: 0.63rem;
+    color: #555;
+    font-family: monospace;
+    direction: ltr;
+    text-align: center;
+}
+.card-body {
+    padding: 12px 18px 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
         .preview {
             font-size: 2rem;
@@ -607,13 +643,12 @@ footer strong {
 <div id="downloadModal" class="modal">
     <div class="modal-content">
         <span class="close-download">&times;</span>
-        <h2>داگرتنی فۆنتەکان</h2>
+        <h2 id="dm-title">داگرتنی فۆنتەکان</h2>
         <div class="download-box" style="text-align: center; padding: 12px 25px !important;">
             <i class="fas fa-file-archive" style="font-size: 50px; color: #f1c40f; margin-bottom: 15px;"></i>
-            <p style="font-size: 1.2rem; margin-bottom: 20px;">فەرموو لەگەڵ داگرتنی 420 فۆنتی یونی قەیدار بە شێوەی زیپ (ZIP)</p>
-            
-            <a href="https://download1077.mediafire.com/rlu5gwhgcgkg3ePnmAwvJEFPNRNnooS3hVxMvKsPtT6JB_uuS6bcL4TvOw47ESrRIml5L4GGN5WYdzY_brvRVNNMTP194eqXkXmMUZH2QSnevLIfpClNkqDImPfnxaT9TR6O_ErleE6j8xITfCm3ER2jPgFRoEZ40S_ZkupPib-h3HA/0t7mukv7ynhk52e/UniQaidar+Fonts+-+Latest+Update.zip" target="_blank" class="header-btn" style="background: #e67e22; padding: 12px 30px; font-size: 1.0rem;">
-                <i class="fas fa-cloud-download-alt"></i> كلیك بكه‌ بۆ داگرتنی فۆنته‌كان 
+            <p id="dm-desc" style="font-size: 1.2rem; margin-bottom: 20px;">فەرموو لەگەڵ داگرتنی 420 فۆنتی یونی قەیدار بە شێوەی زیپ (ZIP)</p>
+            <a id="dm-btn" href="https://download1077.mediafire.com/rlu5gwhgcgkg3ePnmAwvJEFPNRNnooS3hVxMvKsPtT6JB_uuS6bcL4TvOw47ESrRIml5L4GGN5WYdzY_brvRVNNMTP194eqXkXmMUZH2QSnevLIfpClNkqDImPfnxaT9TR6O_ErleE6j8xITfCm3ER2jPgFRoEZ40S_ZkupPib-h3HA/0t7mukv7ynhk52e/UniQaidar+Fonts+-+Latest+Update.zip" target="_blank" class="header-btn" style="background: #e67e22; padding: 12px 30px; font-size: 1.0rem;">
+                <i class="fas fa-cloud-download-alt"></i> <span id="dm-btn-label">كلیك بكه‌ بۆ داگرتنی فۆنته‌كان</span>
             </a>
         </div>
     </div>
@@ -792,14 +827,19 @@ function renderFonts(data, text) {
     data.forEach(function(font) {
         const card = document.createElement('div');
         card.className = 'card';
+        const engName = font.displayName || font.name;
+        const dateStr = font.dateAdded || '';
         card.innerHTML =
-            '<div class="card-info">' +
-                '<span style="color:var(--primary)">' + (font.displayName || font.name) + '</span>' +
+            '<div class="card-header">' +
+                '<span class="card-eng-name">' + engName + '</span>' +
+                (dateStr ? '<span class="card-date">&#128197; ' + dateStr + '</span>' : '') +
             '</div>' +
-            '<div class="preview" style="font-family: \'' + font.name + '\'">' +
-                (text || font.preview || 'کوردستانی جوان') +
-            '</div>' +
-            '<a href="' + font.path + '" class="download-btn" download>دابه‌زاندنی فۆنت TTF</a>';
+            '<div class="card-body">' +
+                '<div class="preview" style="font-family: \'' + font.name + '\';">' +
+                    (text || font.preview || 'فۆنتەکانی یونی‌قەیدار') +
+                '</div>' +
+                '<a href="' + font.path + '" class="download-btn" download>دابە‌زاندنی فۆنت TTF</a>' +
+            '</div>';
         grid.appendChild(card);
     });
 }
@@ -863,44 +903,18 @@ window.addEventListener('click', function(e) {
     <div class="modal-content">
         <span class="close-btn">&times;</span>
         <h2>دەربارەی پڕۆژە</h2>
-        <p>Designed and Developed by <strong>Qaidar Rahim</strong> All rights reserved 2026</p>
-</footer>
-
-<div id="aboutModal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn">&times;</span>
-        <h2>دەربارەی پڕۆژە</h2>
-        <p><div id="aboutModal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn">&times;</span>
-        <h2>دەربارەی پڕۆژە</h2>
-        <p><div id="aboutModal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn">&times;</span>
-        <h2>دەربارەی پڕۆژە</h2>
-
-<div id="aboutModal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn">&times;</span>
-        <h2>دەربارەی پڕۆژە</h2>
-        <p><div id="aboutModal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn">&times;</span>
-        <h2>دەربارەی پڕۆژە</h2>
-        <p>فۆنتەکانی یونی‌قەیدار (UniQaidar Fonts) کۆمەڵێک فۆنتی کوردی و عەرەبی بەکوالیتی بەرزن کە بۆ دیزاین، نوسین و، بوارە جیاوازەکانی تری وەک ماڵپەڕ و بەڵگەنامەکان گونجاون. ئەم فۆنتانە بە تایبەتمەندی ڕێکی و ڕەوانی لە دیزایندا ناسراون و لەلایەن بەکارھێنەرانی کوردەوە بۆ گشت کارە هونەری و نوسینەکان بەکاردێن. 
-تایبەتمەندییە سەرەکییەکانی فۆنتەکانی یونی قەیدار:
-گونجاو بۆ گشت بوارەکان: لە دیزاینی گرافیکەوە تا نووسینی دەقی درێژ.
-سەرنجڕاکێش و ڕێک: دیزاینێکی مۆدێرن و سەرنجڕاکێشیان هەیە.
-پشتیوانی زمانی کوردی: بە تەواوی کوردی و عەرەبی پشتیوانی دەکەن. 
-ئەم فۆنتانە یارمەتیدەرن بۆ ئەوەی بەرهەمەکانت زیاتر پرۆفیشناڵ و جوان دەربکەون.
-
+        <p id="about-content">فۆنتەکانی یونی‌قەیدار (UniQaidar Fonts) کۆمەڵێک فۆنتی کوردی و عەرەبی بەکوالیتی بەرزن کە بۆ دیزاین، نوسین و بوارە جیاوازەکانی تری وەک ماڵپەڕ و بەڵگەنامەکان گونجاون. ئەم فۆنتانە بە تایبەتمەندی ڕێکی و ڕەوانی لە دیزایندا ناسراون.<br>
+تایبەتمەندییە سەرەکییەکانی فۆنتەکانی یونی قەیدار:<br>
+گونجاو بۆ گشت بوارەکان: لە دیزاینی گرافیکەوە تا نووسینی دەقی درێژ.<br>
+سەرنجڕاکێش و ڕێک: دیزاینێکی مۆدێرن و سەرنجڕاکێشیان هەیە.<br>
+پشتیوانی زمانی کوردی: بە تەواوی کوردی و عەرەبی پشتیوانی دەکەن.<br>
+ئەم فۆنتانە یارمەتیدەرن بۆ ئەوەی بەرهەمەکانت زیاتر پرۆفیشناڵ و جوان دەربکەون.<br>
 یەکەم گورزەی فۆنتەکانی یونی‌قەیدار لە مانگی ئابی ساڵی ٢٠٠٩ بڵاوکراوەتەوە</p>
         <p>گەشەپێدەر: قه‌یدار ڕه‌حیم</p>
     </div>
 </div>
 
 <script>
-// ── مۆدالی دەربارە ──────────────────────────────────────
 const aboutModal = document.getElementById('aboutModal');
 document.getElementById('aboutBtn').onclick = function(e) {
     e.preventDefault();
@@ -913,6 +927,5 @@ window.addEventListener('click', function(e) {
     if (e.target === aboutModal) aboutModal.style.display = 'none';
 });
 </script>
-
 </body>
 </html>
