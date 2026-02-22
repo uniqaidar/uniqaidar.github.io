@@ -210,9 +210,10 @@ select option { background: var(--surface2); }
 
 <main>
     <div class="tabs">
-        <button class="tab active" onclick="go('t-font',this)">➕ فۆنتی نوێ</button>
-        <button class="tab" onclick="go('t-cat',this)">🗂️ کاتێگۆریەکان</button>
-        <button class="tab" onclick="go('t-arc',this)">📋 ئارشێف</button>
+        <button class="tab active" onclick="go('t-font',this)">➕ Font</button>
+        <button class="tab" onclick="go('t-cat',this)">🗂️ Categories</button>
+        <button class="tab" onclick="go('t-arc',this)">📋 Archive</button>
+        <button class="tab" onclick="go('t-settings',this)">⚙️ Settings</button>
     </div>
 
     <!-- تابی فۆنت -->
@@ -299,6 +300,44 @@ select option { background: var(--surface2); }
             </div>
         </div>
     </div>
+    <!-- Settings Tab -->
+    <div id="t-settings" class="tab-content">
+        <div class="box" style="margin-bottom:16px">
+            <div class="box-header"><span class="dot" style="background:var(--yellow)"></span>Download All Fonts — Link</div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label>URL for "Download All Fonts" button</label>
+                    <input id="dl-url" type="text" placeholder="https://drive.google.com/...">
+                </div>
+                <div class="form-group" style="margin-top:10px">
+                    <label>Font count label (e.g. 420)</label>
+                    <input id="dl-count" type="text" placeholder="420">
+                </div>
+                <div id="dl-alert" class="alert"></div>
+                <div class="btn-row">
+                    <button class="btn btn-primary" id="dl-btn" onclick="saveDownloadLink()" disabled>💾 Save & Push</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="box-header"><span class="dot" style="background:var(--purple)"></span>About Section Text</div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label>About text (shown in the ℹ️ modal on the website)</label>
+                    <textarea id="about-text" rows="8"
+                        style="background:var(--bg);border:1px solid var(--border);color:var(--text);
+                        border-radius:7px;padding:10px 12px;font-size:0.88rem;font-family:Tahoma,Arial,sans-serif;
+                        width:100%;resize:vertical;direction:rtl"></textarea>
+                </div>
+                <div id="about-alert" class="alert"></div>
+                <div class="btn-row">
+                    <button class="btn btn-primary" id="about-btn" onclick="saveAbout()" disabled>💾 Save & Push</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </main>
 
 <!-- مۆدالی دەستکاریکردنی فۆنت -->
@@ -307,8 +346,12 @@ select option { background: var(--surface2); }
         <h3>✏️ Edit Font</h3>
         <div class="form-grid">
             <div class="form-group full">
-                <label>Font Name (readonly)</label>
-                <input id="e-name" readonly>
+                <label>Font File Name (readonly — don't change)</label>
+                <input id="e-name" readonly style="color:var(--muted)">
+            </div>
+            <div class="form-group full">
+                <label>Display Name on Card (what visitors see)</label>
+                <input id="e-display" type="text" placeholder="e.g. UniQAIDAR Bahar 001">
             </div>
             <div class="form-group full">
                 <label>Preview Text</label>
@@ -321,6 +364,7 @@ select option { background: var(--surface2); }
         </div>
         <div id="edit-alert" class="alert"></div>
         <div class="modal-footer">
+            <button class="btn btn-red" onclick="deleteFont()" style="margin-left:auto">🗑️ Delete Font</button>
             <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
             <button class="btn btn-primary" id="edit-save-btn" onclick="saveEditFont()">💾 Save Changes</button>
         </div>
@@ -408,13 +452,13 @@ function parse() {
         cats.push({ id: m[1], label: m[2].trim() });
 
     // فۆنتەکان
-    const fr = /\{\s*name:\s*"([^"]+)"[^}]*file:\s*"([^"]+)"[^}]*path:\s*"([^"]+)"[^}]*zip:\s*"([^"]+)"[^}]*category:\s*(\[[^\]]+\]|"[^"]+")\s*,\s*preview:\s*"([^"]*)"/g;
+    const fr = /\{\s*name:\s*"([^"]+)"[^}]*file:\s*"([^"]+)"[^}]*path:\s*"([^"]+)"[^}]*zip:\s*"([^"]+)"[^}]*category:\s*(\[[^\]]+\]|"[^"]+")\s*,\s*preview:\s*"([^"]*)"(?:[^}]*displayName:\s*"([^"]*)")?[^}]*\}/g;
     while ((m = fr.exec(RAW)) !== null) {
         let cat = m[5].trim();
         cat = cat.startsWith('[')
             ? cat.replace(/[\[\]"\s]/g,'').split(',')
             : cat.replace(/"/g,'');
-        fnts.push({ name:m[1], file:m[2], path:m[3], zip:m[4], category:cat, preview:m[6] });
+        fnts.push({ name:m[1], file:m[2], path:m[3], zip:m[4], category:cat, preview:m[6], displayName: m[7] || undefined });
     }
 }
 
@@ -566,7 +610,8 @@ function buildCatList() {
             <input id="inp-${idx}" value="${c.label}" style="display:none;flex:1;min-width:120px;max-width:180px">
             <span class="badge">${c.id}</span>
             <span class="cnt">${n} fonts</span>
-            <button class="btn btn-ghost" style="padding:4px 10px;font-size:0.75rem;margin-right:auto" onclick="startEdit(${idx})">✏️ Edit</button>
+            <button class="btn btn-ghost" style="padding:4px 10px;font-size:0.75rem" onclick="startEdit(${idx})">✏️ Rename</button>
+            <button class="btn btn-red" style="padding:4px 10px;font-size:0.75rem" onclick="deleteCat(${idx})">🗑️</button>
             <button class="btn btn-primary" id="savebtn-${idx}" style="display:none;padding:4px 10px;font-size:0.75rem" onclick="saveCatName(${idx})">💾 Save</button>
             <button class="btn btn-ghost" id="cancelbtn-${idx}" style="display:none;padding:4px 10px;font-size:0.75rem" onclick="cancelEdit(${idx})">Cancel</button>
         `;
@@ -610,6 +655,7 @@ function renderArc() {
         d.className = 'arc-item';
         d.innerHTML = `
             <span class="arc-name">${f.name}</span>
+            ${f.displayName ? `<span style="color:var(--accent);font-size:0.78rem">${f.displayName}</span>` : ''}
             <span class="arc-prev">${f.preview || ''}</span>
             <span class="badge">${fc}</span>
             <button class="btn btn-ghost" style="padding:4px 10px;font-size:0.75rem;margin-right:auto"
@@ -630,6 +676,7 @@ function openEditModal(idx) {
     const curCats = Array.isArray(f.category) ? f.category : [f.category];
 
     set('e-name', f.name);
+    set('e-display', f.displayName || '');
     set('e-prev', f.preview || '');
 
     // دروستکردنی پیلەکانی کاتێگۆری بۆ مۆدال
@@ -655,10 +702,11 @@ function closeEditModal() {
 
 async function saveEditFont() {
     if (editIdx < 0) return;
-    const f       = fnts[editIdx];
-    const newPrev = v('e-prev') || 'کوردستانی جوان';
-    const picked  = [...document.querySelectorAll('#e-pills .cat-pill.on')].map(p => p.dataset.id);
-    const al      = document.getElementById('edit-alert');
+    const f          = fnts[editIdx];
+    const newPrev    = v('e-prev') || 'کوردستانی جوان';
+    const newDisplay = v('e-display').trim();
+    const picked     = [...document.querySelectorAll('#e-pills .cat-pill.on')].map(p => p.dataset.id);
+    const al         = document.getElementById('edit-alert');
 
     if (!picked.length) return alert2(al, 'Select at least one category!', 'err');
 
@@ -666,42 +714,63 @@ async function saveEditFont() {
         ? `"${picked[0]}"`
         : `["${picked.join('","')}"]`;
 
-    // دۆزینەوەی هێڵی کۆنی فۆنت لە RAW و جێگرتنەوەی
-    // شێواز: { name: "x", file: "x", path: "...", zip: "...", category: ..., preview: "..." }
-    const oldCats = Array.isArray(f.category) ? f.category : [f.category];
-    const oldCatVal = oldCats.length === 1
-        ? `"${oldCats[0]}"`
-        : `["${oldCats.join('","')}"]`;
-
-    // دروستکردنی regex بۆ دۆزینەوەی تۆماری فۆنت — بە ناوی تایبەت
     const escaped = f.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const entryRx = new RegExp(
-        `\\{\\s*name:\\s*"${escaped}"[^}]*preview:\\s*"[^"]*"\\s*\\}`,
-        ''
-    );
-
+    const entryRx = new RegExp(`\\{\\s*name:\\s*"${escaped}"[^}]*preview:\\s*"[^"]*"[^}]*\\}`, '');
     const oldEntry = RAW.match(entryRx);
     if (!oldEntry) return alert2(al, `❌ Could not find font "${f.name}" in index.html!`, 'err');
 
-    // دروستکردنی تۆماری نوێ — تەنها preview و category دەگۆڕێت
-    const newEntry = oldEntry[0]
+    let newEntry = oldEntry[0]
         .replace(/category:\s*(\[[^\]]+\]|"[^"]+")/, `category: ${newCatVal}`)
         .replace(/preview:\s*"[^"]*"/, `preview: "${newPrev}"`);
 
-    const next = RAW.replace(oldEntry[0], newEntry);
+    // displayName: زیادکردن یان نوێکردنەوە
+    if (newDisplay) {
+        if (/displayName:\s*"[^"]*"/.test(newEntry)) {
+            newEntry = newEntry.replace(/displayName:\s*"[^"]*"/, `displayName: "${newDisplay}"`);
+        } else {
+            newEntry = newEntry.replace(/\s*\}$/, `, displayName: "${newDisplay}" }`);
+        }
+    } else {
+        newEntry = newEntry.replace(/,?\s*displayName:\s*"[^"]*"/, '');
+    }
 
+    const next = RAW.replace(oldEntry[0], newEntry);
     alert2(al, 'Saving to GitHub...', 'inf');
     const ok = await ghPut(next, `Edit font: ${f.name}`);
 
     if (ok) {
-        fnts[editIdx].preview  = newPrev;
-        fnts[editIdx].category = picked.length === 1 ? picked[0] : picked;
+        fnts[editIdx].preview     = newPrev;
+        fnts[editIdx].displayName = newDisplay || undefined;
+        fnts[editIdx].category    = picked.length === 1 ? picked[0] : picked;
         alert2(al, `✅ "${f.name}" updated!`, 'ok');
-        buildCatList();
-        renderArc();
+        buildCatList(); renderArc();
         setTimeout(closeEditModal, 1200);
     } else {
         alert2(al, '❌ Save failed. Check your token!', 'err');
+    }
+}
+
+async function deleteFont() {
+    if (editIdx < 0) return;
+    const f  = fnts[editIdx];
+    const al = document.getElementById('edit-alert');
+    if (!confirm(`Delete "${f.name}" from the website?\n\nNote: Only removes it from index.html. The .ttf/.zip files on GitHub stay.`)) return;
+
+    const escaped = f.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const faceRx  = new RegExp(`@font-face \\{ font-family: '${escaped}';[^\\n]+\\n`, '');
+    const entryRx = new RegExp(`\\n?[ \\t]*\\{[ \\t]*name:[ \\t]*"${escaped}"[^}]*preview:[^}]*\\}[ \\t]*,?`, '');
+
+    let next = RAW.replace(faceRx, '').replace(entryRx, '');
+
+    alert2(al, 'Deleting from GitHub...', 'inf');
+    const ok = await ghPut(next, `Delete font: ${f.name}`);
+    if (ok) {
+        fnts.splice(editIdx, 1);
+        alert2(al, `✅ "${f.name}" deleted from website!`, 'ok');
+        buildCatList(); renderArc();
+        setTimeout(closeEditModal, 1000);
+    } else {
+        alert2(al, '❌ Delete failed. Check your token!', 'err');
     }
 }
 
@@ -768,9 +837,11 @@ function setReady(val) {
     ready = val;
     const dot = document.getElementById('sdot');
     dot.className = 'status-dot' + (val ? ' on' : '');
-    document.getElementById('rbadge').textContent = val ? `${USER}/${REPO}` : 'پەیوەند نەکراوە';
-    document.getElementById('fbtn').disabled = !val;
-    document.getElementById('cbtn').disabled = !val;
+    document.getElementById('rbadge').textContent = val ? `${USER}/${REPO}` : 'Not connected';
+    document.getElementById('fbtn').disabled  = !val;
+    document.getElementById('cbtn').disabled  = !val;
+    document.getElementById('dl-btn').disabled    = true; // loaded on tab open
+    document.getElementById('about-btn').disabled = true;
 }
 
 function go(id, btn) {
@@ -779,6 +850,86 @@ function go(id, btn) {
     document.getElementById(id).classList.add('active');
     btn.classList.add('active');
     if (id==='t-arc') renderArc();
+    if (id==='t-settings') loadSettings();
+}
+
+// ══════════════════════════════════════════
+// Delete Category
+// ══════════════════════════════════════════
+async function deleteCat(idx) {
+    const c = cats[idx];
+    if (c.id === 'all') return alert('Cannot delete the "All" category.');
+    const n = fnts.filter(f => {
+        const fc = Array.isArray(f.category) ? f.category : [f.category];
+        return fc.includes(c.id);
+    }).length;
+    const msg = n > 0
+        ? `Delete category "${c.label}"?\n\n⚠️ ${n} font(s) are in this category. They will still exist but won't appear under this category.`
+        : `Delete category "${c.label}"?`;
+    if (!confirm(msg)) return;
+
+    const lineRx = new RegExp(`[ \\t]*<button[^>]*filterFonts\\('${c.id.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}'[^>]*>[^<]*<\\/button>\\r?\\n?`, '');
+    const next   = RAW.replace(lineRx, '');
+    if (next === RAW) return alert(`❌ Could not find button for "${c.id}" in index.html.`);
+
+    showOverlay(`Deleting category: ${c.label}...`);
+    const ok = await ghPut(next, `Delete category: ${c.label}`);
+    if (ok) {
+        cats.splice(idx, 1);
+        buildCatPills(); buildCatList(); buildArcSel();
+    } else {
+        alert('❌ Delete failed. Check your token!');
+    }
+}
+
+// ══════════════════════════════════════════
+// Settings: Download Link + About Text
+// ══════════════════════════════════════════
+function loadSettings() {
+    // لینکی داگرتن
+    const dlMatch = RAW.match(/href="([^"]*)"[^>]*>\s*<i[^>]*><\/i>[^<]*\u06a9\u0644\u06cc\u06a9/);
+    if (dlMatch) set('dl-url', dlMatch[1]);
+    // ژمارەی فۆنتەکان
+    const cntMatch = RAW.match(/\u062f\u0627\u06af\u0631\u062a\u0646\u06cc\s+(\d+)\s+\u0641\u06c6\u0646\u062a\u06cc/);
+    if (cntMatch) set('dl-count', cntMatch[1]);
+    // دەقی دەربارە
+    const am = RAW.match(/<p>([\u0600-\u06ff\s\S]*?UniQaidar[\s\S]*?)<\/p>/);
+    if (am) document.getElementById('about-text').value = am[1].replace(/<br\s*\/?>/g, '\n').trim();
+    // enable buttons
+    document.getElementById('dl-btn').disabled    = false;
+    document.getElementById('about-btn').disabled = false;
+}
+
+async function saveDownloadLink() {
+    const url   = v('dl-url');
+    const count = v('dl-count');
+    const al    = document.getElementById('dl-alert');
+    if (!url) return alert2(al, 'Enter the download URL!', 'err');
+
+    let next = RAW.replace(/href="[^"]*"(\s*target="_blank"\s*class="header-btn")/, `href="${url}"$1`);
+    if (count) next = next.replace(/(\u062f\u0627\u06af\u0631\u062a\u0646\u06cc\s+)\d+(\s+\u0641\u06c6\u0646\u062a\u06cc)/, `$1${count}$2`);
+
+    alert2(al, 'Saving...', 'inf');
+    const ok = await ghPut(next, 'Update: download link');
+    if (ok) alert2(al, '✅ Download link updated!', 'ok');
+    else    alert2(al, '❌ Save failed. Check your token!', 'err');
+}
+
+async function saveAbout() {
+    const text = document.getElementById('about-text').value.trim();
+    const al   = document.getElementById('about-alert');
+    if (!text) return alert2(al, 'About text cannot be empty!', 'err');
+
+    const htmlText = text.replace(/\n/g, '\n');
+    // جێگرتنەوەی دەقی دەربارە
+    const next = RAW.replace(
+        /(<p>)([\u0600-\u06ff][^<]*UniQaidar[^<]*(?:<br[^>]*>[^<]*)*)((?:\n[^<]*)?)(<\/p>)/,
+        `<p>${htmlText}</p>`
+    );
+    alert2(al, 'Saving...', 'inf');
+    const ok = await ghPut(next, 'Update: about section');
+    if (ok) alert2(al, '✅ About text updated!', 'ok');
+    else    alert2(al, '❌ Save failed. Check your token!', 'err');
 }
 
 function showOverlay(msg) { document.getElementById('overlay-msg').textContent = msg || '...'; document.getElementById('overlay').classList.add('show'); }
@@ -791,3 +942,4 @@ function alert2(el, msg, type) { el.textContent=msg; el.className=`alert ${type}
 </script>
 </body>
 </html>
+

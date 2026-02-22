@@ -11,7 +11,7 @@
 
         :root {
             --primary: #2c3e50;
-            --accent: #27ae60;
+            --accent: #e67e22;
             --bg: #f4f7f6;
         }
 
@@ -105,7 +105,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
         }
 
         .social-icon:hover {
-            background: #27ae60;
+            background: #e67e22;
             transform: scale(1.1);
         }
 
@@ -149,19 +149,20 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
 
 .card {
     background: white;
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    border-radius: 12px;
+    padding: 20px 24px 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
     display: flex;
     flex-direction: column;
     border: 1px solid #eee;
     transition: 0.3s;
     box-sizing: border-box;
+    min-height: 0;
 }
         .preview {
-            font-size: 2.5rem;
-            margin: 20px 0;
-            min-height: 100px;
+            font-size: 2rem;
+            margin: 12px 0;
+            min-height: 70px;
             color: #2c3e50;
             text-align: center;
         }
@@ -617,7 +618,7 @@ footer {
     color: #ecf0f1;
     font-family: 'Segoe UI', Arial, sans-serif;
     margin-top: 50px;
-    border-top: 4px solid #27ae60; 
+    border-top: 4px solid #e67e22; 
 }
 
 footer p {
@@ -626,7 +627,7 @@ footer p {
 }
 
 footer strong {
-    color: #27ae60; 
+    color: #e67e22; 
     font-size: 1.1rem;
 }
 
@@ -771,8 +772,8 @@ footer strong {
 }
 
 .header-btn:hover {
-    background: #27ae60; 
-    border-color: #27ae60;
+    background: #e67e22; 
+    border-color: #e67e22;
     transform: translateY(-2px);
 }
 
@@ -848,17 +849,30 @@ footer strong {
 
     /* فلتەر بار */
     .filter-container {
-        padding: 10px;
+        padding: 8px 10px;
         border-radius: 0;
         max-width: 100%;
         width: 100%;
         box-sizing: border-box;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .marquee-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+    }
+
+    .marquee-content {
+        flex-wrap: nowrap;
+        width: max-content;
     }
 
     .filter-btn {
-        font-size: 0.78rem;
-        padding: 0 12px;
-        height: 32px;
+        font-size: 0.82rem;
+        padding: 0 14px;
+        height: 34px;
     }
 
     /* گریدی کارتەکان: یەک ستوون */
@@ -891,8 +905,8 @@ footer strong {
 
     .font-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-        padding: 20px;
+        gap: 16px;
+        padding: 16px;
     }
 
     .filter-container {
@@ -900,6 +914,13 @@ footer strong {
         width: 100%;
         border-radius: 0;
         box-sizing: border-box;
+    }
+}
+
+/* ── دێسکتۆپ: زیاتر لە 1024px ── */
+@media (min-width: 1025px) {
+    .font-grid {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
@@ -932,7 +953,7 @@ footer strong {
             <i class="fas fa-file-archive" style="font-size: 50px; color: #f1c40f; margin-bottom: 15px;"></i>
             <p style="font-size: 1.2rem; margin-bottom: 20px;">فەرموو لەگەڵ داگرتنی 420 فۆنتی یونی قەیدار بە شێوەی زیپ (ZIP)</p>
             
-            <a href="kak qaidar" target="_blank" class="header-btn" style="background: #27ae60; padding: 12px 30px; font-size: 1.0rem;">
+            <a href="kak qaidar" target="_blank" class="header-btn" style="background: #e67e22; padding: 12px 30px; font-size: 1.0rem;">
                 <i class="fas fa-cloud-download-alt"></i> كلیك بكه‌ بۆ داگرتنی فۆنته‌كان 
             </a>
         </div>
@@ -974,6 +995,23 @@ footer strong {
 
         </div>
     </div>
+</div>
+
+
+<!-- ── سلایدەری قەبارەی فۆنت ── -->
+<div id="size-bar" style="
+    background:#1a1a1a; padding:8px 20px; display:flex;
+    align-items:center; gap:12px; justify-content:center;
+    flex-wrap:wrap; direction:rtl;
+">
+    <span style="color:#aaa;font-size:0.82rem;white-space:nowrap">قەبارەی فۆنت:</span>
+    <input type="range" id="font-size-slider" min="14" max="80" value="32"
+        style="width:160px;accent-color:#e67e22;cursor:pointer"
+        oninput="changeFontSize(this.value)">
+    <span id="size-label" style="color:#e67e22;font-family:monospace;font-size:0.82rem;min-width:38px">32px</span>
+    <button onclick="changeFontSize(32); document.getElementById('font-size-slider').value=32;"
+        style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#aaa;
+        border-radius:12px;padding:3px 10px;cursor:pointer;font-size:0.75rem;">ڕیسێت</button>
 </div>
 
 <div class="font-grid" id="font-grid"></div>
@@ -1857,6 +1895,15 @@ const fonts = [
 
 
 
+
+// ── سلایدەری قەبارەی فۆنت ──────────────────────────────
+function changeFontSize(val) {
+    document.getElementById('size-label').textContent = val + 'px';
+    document.querySelectorAll('.preview').forEach(function(p) {
+        p.style.fontSize = val + 'px';
+    });
+}
+
 // ── ئەلێمێنتە سەرەکییەکان ──────────────────────────────
 const grid  = document.getElementById('font-grid');
 const input = document.getElementById('test-input');
@@ -1871,7 +1918,7 @@ function renderFonts(data, text) {
         card.className = 'card';
         card.innerHTML =
             '<div class="card-info">' +
-                '<span style="color:var(--primary)">' + font.name + '</span>' +
+                '<span style="color:var(--primary)">' + (font.displayName || font.name) + '</span>' +
             '</div>' +
             '<div class="preview" style="font-family: \'' + font.name + '\'">' +
                 (text || font.preview || 'کوردستانی جوان') +
@@ -1933,7 +1980,7 @@ window.addEventListener('click', function(e) {
 </script>
 
 <footer>
-    <p>Designed and Developed by <strong>Arkan Dara</strong> All rights reserved 2026</p>
+    <p>Designed and Developed by <strong>Qaidar Rahim</strong> All rights reserved 2026</p>
 </footer>
 
 <div id="aboutModal" class="modal">
