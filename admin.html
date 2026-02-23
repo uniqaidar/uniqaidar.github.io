@@ -419,7 +419,11 @@ async function load(fromSetup) {
         if (!res.ok) throw 0;
         const data = await res.json();
         SHA = data.sha;
-        RAW = decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))));
+        try {
+            RAW = decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))));
+        } catch(e) {
+            RAW = new TextDecoder().decode(Uint8Array.from(atob(data.content.replace(/\n/g,'')), c => c.charCodeAt(0)));
+        }
         parse();
         buildAll();
         setReady(true);
@@ -495,15 +499,38 @@ async function connect() {
     const u = v('s-user'), r = v('s-repo'), t = v('s-token');
     const al = document.getElementById('setup-alert');
     if (!u||!r||!t) return alert2(al,'هەموو خانەکان پڕ بکەرەوە!','err');
-    alert2(al,'پەیوەندی...','inf');
-    USER=u; REPO=r; TOKEN=t;
-    const ok = await load(true);
-    if (ok) {
+    alert2(al,'🔄 پەیوەندیکردن...','inf');
+
+    try {
+        const apiUrl = `https://api.github.com/repos/${u}/${r}/contents/index.html`;
+        const res = await fetch(apiUrl, {
+            headers: { 'Authorization': `token ${t}`, 'Accept': 'application/vnd.github.v3+json' }
+        });
+
+        if (res.status === 401) return alert2(al, '❌ تۆکێن هەڵەیە یان کاتی تەواو بووە (401)', 'err');
+        if (res.status === 403) return alert2(al, '❌ تۆکێن مافی repo نییە. scope: repo پشکنە (403)', 'err');
+        if (res.status === 404) return alert2(al, '❌ ناوی یوزەر یان ریپۆ هەڵەیە (404): ' + u + '/' + r, 'err');
+        if (!res.ok) return alert2(al, '❌ هەڵە: HTTP ' + res.status, 'err');
+
+        const data = await res.json();
+        SHA = data.sha;
+        try {
+            RAW = decodeURIComponent(escape(atob(data.content.replace(/
+/g,''))));
+        } catch(decodeErr) {
+            RAW = new TextDecoder().decode(Uint8Array.from(atob(data.content.replace(/
+/g,'')), c => c.charCodeAt(0)));
+        }
+
+        USER=u; REPO=r; TOKEN=t;
+        parse();
+        buildAll();
+        setReady(true);
         localStorage.setItem('u',u); localStorage.setItem('r',r); localStorage.setItem('t',t);
         hide('setup-screen');
-    } else {
-        USER=REPO=TOKEN='';
-        alert2(al,'❌ نەتوانرا پەیوەندی بکرێت. تۆکێن یان ناوی ڕیپۆ پشکنە!','err');
+
+    } catch(err) {
+        alert2(al, '❌ کێشەی ئینتەرنەت یان CORS: ' + err.message, 'err');
     }
 }
 
