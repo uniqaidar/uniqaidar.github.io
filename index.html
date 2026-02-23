@@ -519,7 +519,7 @@ footer strong {
     color: #e0e0e0;
     border-radius: 50px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: normal;
     font-size: 0.92rem;
     transition: background 0.2s, border-color 0.2s;
     display: inline-flex;
@@ -547,7 +547,7 @@ footer strong {
     color: #fff;
     padding: 12px 20px;
     font-size: 1rem;
-    font-weight: bold;
+    font-weight: normal;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -876,7 +876,7 @@ footer strong {
         <button class="filter-mobile-toggle" id="desktop-toggle" onclick="toggleDesktopCats()">
             <span class="toggle-label">
                 <span>&#9776;</span>
-                <span id="desktop-active-label">نوێ</span>
+                <span id="desktop-active-label"></span>
             </span>
             <span class="toggle-arrow">&#9660;</span>
         </button>
@@ -888,7 +888,7 @@ footer strong {
         <button class="filter-mobile-toggle" id="mobile-toggle" onclick="toggleMobileCats()">
             <span class="toggle-label">
                 <span>&#9776;</span>
-                <span id="mobile-active-label">نوێ</span>
+                <span id="mobile-active-label"></span>
             </span>
             <span class="toggle-arrow">&#9660;</span>
         </button>
@@ -1321,9 +1321,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (firstDesktop) firstDesktop.classList.add('active');
     if (firstMobile)  firstMobile.classList.add('active');
 
+    // Read the actual label from the button (respects admin renames like 'فۆنتی نوێ')
+    const activeLabel = firstDesktop ? firstDesktop.textContent.trim() : '';
+    document.getElementById('desktop-active-label').textContent = activeLabel;
+    document.getElementById('mobile-active-label').textContent  = activeLabel;
+
     filterFonts('nwe', null);
-    document.getElementById('desktop-active-label').textContent = 'نوێ';
-    document.getElementById('mobile-active-label').textContent  = 'نوێ';
 
     // Arrow scroll init (kept for compatibility)
     const w = document.getElementById('marquee-wrapper');
