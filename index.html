@@ -896,9 +896,9 @@ footer strong {
 
     <!-- Desktop: arrow buttons + scroll row -->
     <div class="filter-desktop" id="filter-desktop">
-        <button class="filter-arrow" id="arr-left" onclick="scrollCats(-1)" title="Previous">&#8249;</button>
-        <div class="marquee-wrapper" id="marquee-wrapper">
-            <div class="marquee-content" id="marquee-content">
+        <button class="filter-arrow" id="arr-left" onclick="scrollCats(-1)" title="Back">&#8250;</button>
+        <div class="marquee-wrapper" id="marquee-wrapper" dir="ltr">
+            <div class="marquee-content" id="marquee-content" dir="ltr">
                 <button class="filter-btn active" onclick="filterFonts('nwe', this)">نوێ</button>
                 <button class="filter-btn" onclick="filterFonts('all', this)">هەمووی</button>
                 <button class="filter-btn" onclick="filterFonts('some', this)">ئه‌وانی تر</button>
@@ -919,7 +919,7 @@ footer strong {
                 <button class="filter-btn" onclick="filterFonts('Freestyle', this)">فری ستایڵ</button>
             </div>
         </div>
-        <button class="filter-arrow" id="arr-right" onclick="scrollCats(1)" title="Next">&#8250;</button>
+        <button class="filter-arrow" id="arr-right" onclick="scrollCats(1)" title="More">&#8249;</button>
     </div>
 
     <!-- Mobile: collapsible dropdown -->
@@ -1278,25 +1278,31 @@ function renderFonts(data, text) {
 }
 
 // ── Arrow scroll for desktop ────────────────────────────
+// marquee-wrapper has dir="ltr" so scrollLeft is always 0→max (positive)
+// The page is RTL so visually: right side = start (نوێ), left side = end
+// › right arrow  → scrolls RIGHT (toward hidden categories on left visually)
+// ‹ left arrow   → scrolls LEFT  (back toward نوێ on right visually)
 function scrollCats(dir) {
     const w = document.getElementById('marquee-wrapper');
     if (!w) return;
-    w.scrollBy({ left: dir * 260, behavior: 'smooth' });
-    setTimeout(updateArrows, 350);
+    w.scrollBy({ left: dir * 280, behavior: 'smooth' });
+    setTimeout(updateArrows, 400);
 }
 function updateArrows() {
     const w = document.getElementById('marquee-wrapper');
     if (!w) return;
     const l = document.getElementById('arr-left');
     const r = document.getElementById('arr-right');
-    const atStart = w.scrollLeft <= 2;
-    const atEnd   = w.scrollLeft >= w.scrollWidth - w.clientWidth - 2;
-    if (l) l.disabled = atEnd;    // left arrow (‹) goes to start = more items to the left = enabled when NOT at end
-    if (r) r.disabled = atStart;  // right arrow (›) goes to end = disabled when already at start
+    const sl   = Math.round(w.scrollLeft);
+    const maxSl = Math.round(w.scrollWidth - w.clientWidth);
+    if (l) l.disabled = (sl <= 2);          // at start → left does nothing
+    if (r) r.disabled = (sl >= maxSl - 2);  // at end   → right does nothing
 }
 document.addEventListener('DOMContentLoaded', function() {
     const w = document.getElementById('marquee-wrapper');
-    if (w) { w.addEventListener('scroll', updateArrows); updateArrows(); }
+    if (!w) return;
+    w.addEventListener('scroll', updateArrows);
+    updateArrows();
 });
 
 // ── Mobile dropdown ──────────────────────────────────────
