@@ -505,56 +505,9 @@ footer strong {
     z-index: 1000;
 }
 
-/* ── Desktop: arrow + scroll row ── */
+/* ── Desktop: dropdown (same as mobile) ── */
 .filter-desktop {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    padding: 8px 0;
-}
-.filter-arrow {
-    flex-shrink: 0;
-    background: #0984e3;
-    border: none;
-    color: #fff;
-    width: 52px;
-    height: 48px;
-    font-size: 1.8rem;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    margin: 0 6px;
-    transition: background 0.2s, transform 0.1s;
-    z-index: 2;
-    line-height: 1;
-}
-.filter-arrow:hover { background: #0670c5; transform: scale(1.08); }
-.filter-arrow:active { transform: scale(0.96); }
-.filter-arrow:disabled { opacity: 0.25; cursor: default; transform: none; }
-
-.marquee-wrapper {
-    flex: 1;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    padding: 2px 4px;
-    box-sizing: border-box;
-    scroll-behavior: smooth;
-}
-.marquee-wrapper::-webkit-scrollbar { display: none; }
-
-.marquee-content {
-    display: inline-flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    gap: 8px;
-    align-items: center;
-    white-space: nowrap;
+    display: block;
 }
 
 .filter-btn {
@@ -894,32 +847,35 @@ footer strong {
 </div> 
 <div class="filter-container">
 
-    <!-- Desktop: arrow buttons + scroll row -->
+    <!-- Desktop: collapsible dropdown (same as mobile) -->
     <div class="filter-desktop" id="filter-desktop">
-        <button class="filter-arrow" id="arr-left" onclick="scrollCats(-1)" title="Back">&#8250;</button>
-        <div class="marquee-wrapper" id="marquee-wrapper" dir="ltr">
-            <div class="marquee-content" id="marquee-content" dir="ltr">
-                <button class="filter-btn active" onclick="filterFonts('nwe', this)">نوێ</button>
-                <button class="filter-btn" onclick="filterFonts('all', this)">هەمووی</button>
-                <button class="filter-btn" onclick="filterFonts('some', this)">ئه‌وانی تر</button>
-                <button class="filter-btn" onclick="filterFonts('dstnus', this)">دەستنووس</button>
-                <button class="filter-btn" onclick="filterFonts('ali', this)">فۆنتەکانی عه‌لی بە شێوازی یونیكۆد</button>
-                <button class="filter-btn" onclick="filterFonts('hwal', this)">هەواڵ</button>
-                <button class="filter-btn" onclick="filterFonts('islami', this)">ئیسلامی</button>
-                <button class="filter-btn" onclick="filterFonts('kanal', this)">کەناڵ و دەزگاکان</button>
-                <button class="filter-btn" onclick="filterFonts('xal', this)">خاڵدار</button>
-                <button class="filter-btn" onclick="filterFonts('ktib', this)">کتێب و بڵاوکراوە</button>
-                <button class="filter-btn" onclick="filterFonts('mndalan', this)">منداڵان</button>
-                <button class="filter-btn" onclick="filterFonts('nastaliq', this)">نەستەعلیق</button>
-                <button class="filter-btn" onclick="filterFonts('semic', this)">سەمیک</button>
-                <button class="filter-btn" onclick="filterFonts('jrnus', this)">ژێرنووس</button>
-                <button class="filter-btn" onclick="filterFonts('media', this)">میدیا</button>
-                <button class="filter-btn" onclick="filterFonts('Taybat', this)">تایبەت</button>
-                <button class="filter-btn" onclick="filterFonts('Hunari', this)">هونەری</button>
-                <button class="filter-btn" onclick="filterFonts('Freestyle', this)">فری ستایڵ</button>
-            </div>
+        <button class="filter-mobile-toggle" id="desktop-toggle" onclick="toggleDesktopCats()">
+            <span class="toggle-label">
+                <span>&#9776;</span>
+                <span id="desktop-active-label">نوێ</span>
+            </span>
+            <span class="toggle-arrow">&#9660;</span>
+        </button>
+        <div class="filter-mobile-panel" id="desktop-panel">
+            <button class="filter-btn active" onclick="filterFontsDesktop('nwe', this, 'نوێ')">نوێ</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('all', this, 'هەمووی')">هەمووی</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('some', this, 'ئه‌وانی تر')">ئه‌وانی تر</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('dstnus', this, 'دەستنووس')">دەستنووس</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('ali', this, 'فۆنتەکانی عه‌لی')">فۆنتەکانی عه‌لی بە شێوازی یونیكۆد</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('hwal', this, 'هەواڵ')">هەواڵ</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('islami', this, 'ئیسلامی')">ئیسلامی</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('kanal', this, 'کەناڵ و دەزگاکان')">کەناڵ و دەزگاکان</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('xal', this, 'خاڵدار')">خاڵدار</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('ktib', this, 'کتێب و بڵاوکراوە')">کتێب و بڵاوکراوە</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('mndalan', this, 'منداڵان')">منداڵان</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('nastaliq', this, 'نەستەعلیق')">نەستەعلیق</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('semic', this, 'سەمیک')">سەمیک</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('jrnus', this, 'ژێرنووس')">ژێرنووس</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('media', this, 'میدیا')">میدیا</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('Taybat', this, 'تایبەت')">تایبەت</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('Hunari', this, 'هونەری')">هونەری</button>
+            <button class="filter-btn" onclick="filterFontsDesktop('Freestyle', this, 'فری ستایڵ')">فری ستایڵ</button>
         </div>
-        <button class="filter-arrow" id="arr-right" onclick="scrollCats(1)" title="More">&#8249;</button>
     </div>
 
     <!-- Mobile: collapsible dropdown -->
@@ -1305,6 +1261,27 @@ document.addEventListener('DOMContentLoaded', function() {
     updateArrows();
 });
 
+// ── Desktop dropdown ──────────────────────────────────────
+function toggleDesktopCats() {
+    const panel  = document.getElementById('desktop-panel');
+    const toggle = document.getElementById('desktop-toggle');
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    toggle.classList.toggle('open', !isOpen);
+}
+function filterFontsDesktop(category, btn, label) {
+    // Update active state in desktop panel
+    document.querySelectorAll('#desktop-panel .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // Update label on toggle button
+    document.getElementById('desktop-active-label').textContent = label;
+    // Close panel
+    document.getElementById('desktop-panel').classList.remove('open');
+    document.getElementById('desktop-toggle').classList.remove('open');
+    // Filter fonts
+    filterFonts(category, null);
+}
+
 // ── Mobile dropdown ──────────────────────────────────────
 function toggleMobileCats() {
     const panel  = document.getElementById('mobile-panel');
@@ -1361,6 +1338,9 @@ input.addEventListener('input', function() {
 document.addEventListener('DOMContentLoaded', function() {
     const nweBtn = document.querySelector('.filter-btn[onclick*="nwe"]');
     filterFonts('nwe', nweBtn);
+    // Set desktop active label
+    const desktopLabel = document.getElementById('desktop-active-label');
+    if (desktopLabel) desktopLabel.textContent = 'نوێ';
 });
 
 // ── مۆدالی داگرتن ───────────────────────────────────────
