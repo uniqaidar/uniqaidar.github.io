@@ -99,17 +99,18 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
         .search-container { margin-top: 40px; text-align: center; }
 
         #test-input {
-            width: 90%;
+            width: 100%;
             max-width: 700px;
             margin: 0 auto;
             display: block;
-            padding: 15px 25px;
+            padding: 15px 25px 15px 50px;
             border-radius: 35px;
             border: none;
             font-size: 1.1rem;
             outline: none;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
             text-align: center;
+            box-sizing: border-box;
         }
 .filter-label {
     background: rgba(255, 255, 255, 0.2); 
@@ -1018,8 +1019,10 @@ footer strong {
     </div>
 
     <div class="search-container">
-        <input type="text" id="test-input" placeholder="لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنتەکان
-...">
+        <div style="position:relative;display:inline-block;width:90%;max-width:700px;">
+            <input type="text" id="test-input" placeholder="لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنتەکان...">
+            <button id="search-btn" onclick="doSearch()" title="Search" style="position:absolute;left:14px;top:50%;transform:translateY(-50%) scaleX(-1);background:none;border:none;cursor:pointer;font-size:1.3rem;color:#888;padding:0;line-height:1;z-index:2;">&#128269;</button>
+        </div>
     </div>
 </div> 
 <div class="filter-container">
@@ -1637,6 +1640,7 @@ function filterFonts(category, btn) {
 
 // ── بۆکسی تاقیکردنەوە ──────────────────────────────────
 // کاتێک بەکارهێنەر دەنووسێت، هەموو کارتەکان نوێ دەبنەوە
+// ── Live font preview: typing updates card text ──────────
 input.addEventListener('input', function() {
     const activeBtn = document.querySelector('#desktop-panel .filter-btn.active, #mobile-panel .filter-btn.active');
     const category  = activeBtn ? activeBtn.getAttribute('onclick').split("'")[1] : 'nwe';
@@ -1645,6 +1649,27 @@ input.addEventListener('input', function() {
         return f.category === category;
     });
     renderFonts(filtered, input.value);
+});
+
+// ── 🔍 Search button: filters font list by name/displayName/preview ──
+function doSearch() {
+    const q = input.value.trim().toLowerCase();
+    if (!q) {
+        const activeBtn = document.querySelector('#desktop-panel .filter-btn.active, #mobile-panel .filter-btn.active');
+        const category  = activeBtn ? activeBtn.getAttribute('onclick').split("'")[1] : 'nwe';
+        filterFonts(category, null);
+        return;
+    }
+    const results = fonts.filter(function(f) {
+        const nameMatch    = f.name.toLowerCase().includes(q);
+        const displayMatch = f.displayName ? f.displayName.toLowerCase().includes(q) : false;
+        const previewMatch = f.preview ? f.preview.toLowerCase().includes(q) : false;
+        return nameMatch || displayMatch || previewMatch;
+    });
+    renderFonts(results, '');
+}
+input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doSearch();
 });
 
 // ── کردنەوەی پەیج: سەکشنی "نوێ" بنیشانبدە ──────────────

@@ -738,8 +738,9 @@ function buildCatList() {
                 <button class="btn btn-ghost" style="padding:1px 7px;font-size:0.7rem;min-width:28px;opacity:${isLast?'0.25':'1'}" ${isLast?'disabled':''} onclick="moveCat(${idx},1)" title="Move Down">▼</button>
             </div>
             <span class="lbl" id="lbl-${idx}">${c.label}</span>
-            <input id="inp-${idx}" value="${c.label}" style="display:none;flex:1;min-width:120px;max-width:180px">
-            <span class="badge">${c.id}</span>
+            <input id="inp-${idx}" value="${c.label}" style="display:none;flex:1;min-width:120px;max-width:180px" placeholder="Kurdish name">
+            <span class="badge" id="badge-${idx}">${c.id}</span>
+            <input id="inp-id-${idx}" value="${c.id}" style="display:none;width:90px;font-family:var(--mono);font-size:0.75rem;background:var(--bg);border:1px solid var(--yellow);color:var(--yellow);border-radius:5px;padding:4px 8px" placeholder="english-id">
             <span class="cnt">${n} fonts</span>
             <button class="btn btn-ghost" style="padding:4px 10px;font-size:0.75rem" onclick="startEdit(${idx})">✏️ Rename</button>
             <button class="btn btn-red" style="padding:4px 10px;font-size:0.75rem" onclick="deleteCat(${idx})">🗑️</button>
@@ -1021,7 +1022,9 @@ document.getElementById('edit-modal').addEventListener('click', function(e) {
 
 function startEdit(idx) {
     document.getElementById('lbl-'+idx).style.display = 'none';
+    document.getElementById('badge-'+idx).style.display = 'none';
     document.getElementById('inp-'+idx).style.display = 'inline-block';
+    document.getElementById('inp-id-'+idx).style.display = 'inline-block';
     document.getElementById('savebtn-'+idx).style.display = 'inline-flex';
     document.getElementById('cancelbtn-'+idx).style.display = 'inline-flex';
     document.getElementById('inp-'+idx).focus();
@@ -1029,41 +1032,56 @@ function startEdit(idx) {
 
 function cancelEdit(idx) {
     document.getElementById('inp-'+idx).value = cats[idx].label;
+    document.getElementById('inp-id-'+idx).value = cats[idx].id;
     document.getElementById('lbl-'+idx).style.display = '';
+    document.getElementById('badge-'+idx).style.display = '';
     document.getElementById('inp-'+idx).style.display = 'none';
+    document.getElementById('inp-id-'+idx).style.display = 'none';
     document.getElementById('savebtn-'+idx).style.display = 'none';
     document.getElementById('cancelbtn-'+idx).style.display = 'none';
 }
 
 async function saveCatName(idx) {
     const newLabel = document.getElementById('inp-'+idx).value.trim();
+    const newId    = document.getElementById('inp-id-'+idx).value.trim().replace(/\s+/g, '');
     const al = document.getElementById('rename-alert');
     const oldLabel = cats[idx].label;
-    const id = cats[idx].id;
+    const oldId    = cats[idx].id;
 
     if (!newLabel) return alert2(al, 'Name cannot be empty!', 'err');
-    if (newLabel === oldLabel) { cancelEdit(idx); return; }
+    if (!newId)    return alert2(al, 'ID cannot be empty!', 'err');
+    if (/\s/.test(newId)) return alert2(al, 'ID cannot contain spaces!', 'err');
+    const labelChanged = newLabel !== oldLabel;
+    const idChanged    = newId !== oldId;
+    if (!labelChanged && !idChanged) { cancelEdit(idx); return; }
 
-    // گۆڕینی ناو لە HTML — دوگمەی فلتەر
-    // شێواز: onclick="filterFonts('nwe', this)">نوێ</button>
-    const oldBtn = `onclick="filterFonts('${id}', this)">${oldLabel}</button>`;
-    const newBtn = `onclick="filterFonts('${id}', this)">${newLabel}</button>`;
+    // Update button: onclick="filterFonts('ID', this)">LABEL</button>
+    const oldBtn = `onclick="filterFonts('${oldId}', this)">${oldLabel}</button>`;
+    const newBtn = `onclick="filterFonts('${newId}', this)">${newLabel}</button>`;
 
     if (!RAW.includes(oldBtn)) {
-        return alert2(al, `❌ Could not find the button for "${id}" in index.html. File may have changed.`, 'err');
+        return alert2(al, `❌ Could not find the button for "${oldId}" in index.html.`, 'err');
     }
 
-    const next = RAW.replace(oldBtn, newBtn);
+    // Replace button (handles both label and id change)
+    let next = RAW.split(oldBtn).join(newBtn);
+
+    // If ID changed: replace all category references in fonts array using simple string replace
+    if (idChanged) {
+        // Replace: "oldId" → "newId" (in category arrays and single strings)
+        next = next.split(`"${oldId}"`).join(`"${newId}"`);
+    }
 
     alert2(al, 'Saving to GitHub...', 'inf');
-    const ok = await ghPut(next, `Rename category: ${oldLabel} → ${newLabel}`);
+    const ok = await ghPut(next, `Rename: ${oldLabel}(${oldId}) → ${newLabel}(${newId})`);
 
     if (ok) {
         cats[idx].label = newLabel;
+        cats[idx].id    = newId;
         buildCatPills();
         buildCatList();
         buildArcSel();
-        alert2(document.getElementById('rename-alert'), `✅ "${oldLabel}" renamed to "${newLabel}"`, 'ok');
+        alert2(document.getElementById('rename-alert'), `✅ "${oldLabel}" → "${newLabel}" / ID: "${oldId}" → "${newId}"`, 'ok');
     } else {
         alert2(document.getElementById('rename-alert'), '❌ Save failed. Check your token!', 'err');
     }
