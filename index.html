@@ -46,7 +46,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
     /* ڕەنگە نوێیەکە لێرە جێگیر کراوە */
     background: #1a1a1a; 
     color: #2d3436; 
-    padding: 18px 10px 30px;
+    padding: 18px 10px 14px;
     text-align: center;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
@@ -96,7 +96,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
             transform: scale(1.1);
         }
 
-        .search-container { margin-top: 8px; }
+        .search-container { margin-top: 40px; }
 
         #test-input {
             width: 90%;
@@ -702,6 +702,8 @@ footer strong {
     width: 100%;
     background: #1a1a1a;
     border: none;
+    border-top: 2px solid rgba(255,255,255,0.2);
+    margin-top: 14px;
     border-bottom: 1px solid rgba(255,255,255,0.15);
     color: #fff;
     padding: 12px 20px 12px 300px;
@@ -713,7 +715,7 @@ footer strong {
     cursor: pointer;
     font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif;
 }
-.filter-mobile-toggle .toggle-label { display: flex; align-items: center; gap: 10px; }
+.filter-mobile-toggle .toggle-label { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; white-space: nowrap; }
 .filter-mobile-toggle .toggle-arrow { transition: transform 0.25s; font-size: 0.8rem; }
 .filter-mobile-toggle.open .toggle-arrow { transform: rotate(180deg); }
 .filter-mobile-panel {
@@ -913,6 +915,9 @@ footer strong {
     /* فلتەر بار — مۆبایل: dropdown */
     .filter-desktop { display: none !important; }
     .filter-mobile  { display: block !important; }
+    /* سلایدەری قەبارە لە مۆبایل */
+    #size-bar { padding: 6px 10px !important; gap: 6px !important; }
+    #font-size-slider { width: 110px !important; }
     .filter-mobile-panel .filter-btn {
         font-size: 0.88rem;
         padding: 9px 16px;
@@ -1055,7 +1060,7 @@ footer strong {
         <button class="filter-mobile-toggle" id="mobile-toggle" onclick="toggleMobileCats()">
             <span class="toggle-label">
                 <span>&#9776;</span>
-                <span id="mobile-active-label"></span>
+                <span id="mobile-active-label" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100vw - 120px)"></span>
             </span>
             <span class="toggle-arrow">&#9660;</span>
         </button>
@@ -1067,9 +1072,9 @@ footer strong {
 
 <!-- ── سلایدەری قەبارەی فۆنت ── -->
 <div id="size-bar" style="
-    background:#1a1a1a; padding:8px 20px; display:flex;
-    align-items:center; gap:12px; justify-content:center;
-    flex-wrap:wrap; direction:rtl;
+    background:#1a1a1a; padding:8px 16px; display:flex;
+    align-items:center; gap:8px; justify-content:center;
+    flex-wrap:nowrap; direction:rtl; overflow:hidden;
 ">
     <span style="color:#aaa;font-size:0.82rem;white-space:nowrap">قەبارەی فۆنت:</span>
     <input type="range" id="font-size-slider" min="14" max="80" value="32"
