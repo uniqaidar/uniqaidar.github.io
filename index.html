@@ -849,7 +849,7 @@ footer strong {
 
     <!-- SOURCE OF TRUTH: hidden, read/written by admin panel -->
     <div style="display:none" aria-hidden="true">
-        <div class="marquee-content" id="marquee-content" dir="ltr">
+        <div class="marquee-content">
             <button class="filter-btn active" onclick="filterFonts('nwe', this)">نوێ</button>
             <button class="filter-btn" onclick="filterFonts('all', this)">هەمووی</button>
             <button class="filter-btn" onclick="filterFonts('some', this)">ئه‌وانی تر</button>
@@ -1304,7 +1304,7 @@ input.addEventListener('input', function() {
 // ── کردنەوەی پەیج: سەکشنی "نوێ" بنیشانبدە ──────────────
 document.addEventListener('DOMContentLoaded', function() {
     // Populate both dropdown panels from the hidden marquee-content (admin source of truth)
-    const source = document.getElementById('marquee-content');
+    const source = document.querySelector('.marquee-content');
     const desktopPanel = document.getElementById('desktop-panel');
     const mobilePanel  = document.getElementById('mobile-panel');
 
