@@ -498,7 +498,7 @@ footer strong {
     width: 100%;
     box-sizing: border-box;
     background: #1a1a1a;
-    padding: 8px 0;
+    padding: 10px 20px;
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -506,27 +506,15 @@ footer strong {
 
 .marquee-wrapper {
     width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    cursor: grab;
-    active-cursor: grabbing;
-    user-select: none;
-    padding: 4px 16px;
-    box-sizing: border-box;
 }
-.marquee-wrapper::-webkit-scrollbar { display: none; }
-.marquee-wrapper.dragging { cursor: grabbing; }
 
 .marquee-content {
-    display: inline-flex;
+    display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 8px;
     align-items: center;
-    min-width: 100%;
+    justify-content: center;
 }
 
 .filter-btn {
@@ -736,30 +724,14 @@ footer strong {
         overflow: hidden;
     }
 
-    .marquee-wrapper {
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        padding: 4px 10px;
-    }
-    .marquee-wrapper::-webkit-scrollbar { display: none; }
-
     .marquee-content {
-        display: inline-flex;
-        flex-wrap: nowrap;
-        flex-direction: row;
         gap: 6px;
-        align-items: center;
+        justify-content: center;
     }
 
     .filter-btn {
-        font-size: 0.85rem;
-        padding: 8px 16px;
-        height: auto;
-        flex-shrink: 0;
-        touch-action: manipulation;
+        font-size: 0.82rem;
+        padding: 7px 13px;
     }
 
     /* گریدی کارتەکان: یەک ستوون */
@@ -1280,27 +1252,6 @@ window.addEventListener('click', function(e) {
 </div>
 
 <script>
-// ── Drag-to-scroll on category bar (desktop) ────────────
-(function() {
-    const wrapper = document.querySelector('.marquee-wrapper');
-    if (!wrapper) return;
-    let isDown = false, startX, scrollLeft;
-    wrapper.addEventListener('mousedown', function(e) {
-        isDown = true;
-        wrapper.classList.add('dragging');
-        startX = e.pageX - wrapper.offsetLeft;
-        scrollLeft = wrapper.scrollLeft;
-    });
-    document.addEventListener('mouseup',   function() { isDown = false; wrapper.classList.remove('dragging'); });
-    document.addEventListener('mousemove', function(e) {
-        if (!isDown) return;
-        e.preventDefault();
-        const x    = e.pageX - wrapper.offsetLeft;
-        const walk = (x - startX) * 1.5;
-        wrapper.scrollLeft = scrollLeft - walk;
-    });
-})();
-
 const aboutModal = document.getElementById('aboutModal');
 document.getElementById('aboutBtn').onclick = function(e) {
     e.preventDefault();
