@@ -51,20 +51,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.header h1 {
-    margin: 0px 0;
-    font-size: 1.8rem;
-    color: white; 
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-    transition: font-family 0.6s ease;
-    height: 50px; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-
-    font-weight: normal !important; 
-}
+.header h1 { display: none; }
 
         .social-links {
             position: absolute;
@@ -83,8 +70,8 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
 }
 
 .header-logo img {
-    height: 200px; 
-    width: 320px;  
+    height: 90px;
+    width: 270px;
     display: block;
     object-fit: contain;
 }
@@ -109,7 +96,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
             transform: scale(1.1);
         }
 
-        .search-container { margin-top: 15px; }
+        .search-container { margin-top: 35px; }
 
         #test-input {
             width: 90%;
@@ -645,12 +632,14 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
 
 footer {
     text-align: center;
-    padding: 4px 10px;
-    background-color: #1a252f; 
+    padding: 16px 20px;
+    background-color: #1a252f;
     color: #ecf0f1;
     font-family: 'Segoe UI', Arial, sans-serif;
-    margin-top: 50px;
-    border-top: 4px solid #e67e22; 
+    border-top: 4px solid #e67e22;
+    flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 footer p {
@@ -886,9 +875,18 @@ footer strong {
         padding: 8px 0;
     }
 
-    /* لۆگۆ: ئاشکرا نەکە لە مۆبایل */
+    /* لۆگۆ: مۆبایل */
     .header-logo {
-        display: none;
+        position: static;
+        transform: none;
+        display: flex;
+        justify-content: center;
+        margin: 4px auto 2px;
+    }
+    .header-logo img {
+        height: 56px;
+        width: 168px;
+        object-fit: contain;
     }
 
     /* لینکە کۆمەڵایەتییەکان */
@@ -946,7 +944,7 @@ footer strong {
 @media (min-width: 768px) and (max-width: 1024px) {
 
     .header-logo img {
-        height: 130px;
+        height: 70px;
         width: 210px;
     }
 
@@ -970,7 +968,7 @@ footer strong {
 
     </style>
 </head>
-<body>
+<body style="min-height:100vh;display:flex;flex-direction:column;">
 
 <div class="header">
     <div class="social-links">
@@ -1005,10 +1003,9 @@ footer strong {
     </div>
 
     <div class="header-logo">
-        <img src="https://i.ibb.co/spKL7BT3/uniqai.png" alt="UniQaidar logo">
+        <img src="Logo.png" alt="UniQaidar logo">
     </div>
 
-    <h1 id="main-title">فۆنته‌كانی یونی قه‌یدار</h1>
     <div class="search-container">
         <input type="text" id="test-input" placeholder="لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنتەکان
 ...">
@@ -1083,7 +1080,7 @@ footer strong {
         border-radius:12px;padding:3px 10px;cursor:pointer;font-size:0.75rem;">ڕیسێت</button>
 </div>
 
-<div class="font-grid" id="font-grid"></div>
+<div class="font-grid" id="font-grid" style="flex:1"></div>
 <script>
 
 const fonts = [
@@ -1686,7 +1683,7 @@ window.addEventListener('click', function(e) {
 </script>
 
 <footer>
-    <p>Designed and Developed by <strong>Qaidar Rahim</strong> All rights reserved 2026</p>
+    <p dir="ltr">Designed and Developed by <strong>Qaidar Rahim</strong> | © 2026 All Rights Reserved.</p>
 </footer>
 
 <div id="aboutModal" class="modal">
