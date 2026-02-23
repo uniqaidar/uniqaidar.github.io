@@ -1026,7 +1026,7 @@ footer strong {
 
     <div class="search-container">
         <div style="position:relative;display:inline-block;width:90%;max-width:700px;">
-            <input type="text" id="test-input" placeholder="لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنتەکان...">
+            <input type="text" id="test-input" placeholder="لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنتەکان و گەڕان بەدوای فۆنتدا...">
             <button id="search-btn" onclick="doSearch()" title="Search" style="position:absolute;left:14px;top:50%;transform:translateY(-50%) scaleX(-1);background:none;border:none;cursor:pointer;font-size:1.3rem;color:#888;padding:0;line-height:1;z-index:2;">&#128269;</button>
         </div>
     </div>
@@ -1714,6 +1714,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const w = document.getElementById('marquee-wrapper');
     if (w) { w.addEventListener('scroll', updateArrows); updateArrows(); }
 });
+
+// ── placeholder: desktop vs mobile ─────────────────────
+(function() {
+    var inp = document.getElementById('test-input');
+    var MOBILE = 'لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنت..';
+    var DESKTOP = 'لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنتەکان و گەڕان بەدوای فۆنتدا...';
+    function setPlaceholder() {
+        inp.placeholder = window.innerWidth <= 768 ? MOBILE : DESKTOP;
+    }
+    setPlaceholder();
+    window.addEventListener('resize', setPlaceholder);
+})();
 
 // ── مۆدالی داگرتن ───────────────────────────────────────
 const downloadModal = document.getElementById('downloadModal');
