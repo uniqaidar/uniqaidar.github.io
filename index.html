@@ -11,7 +11,7 @@
 
         :root {
             --primary: #2c3e50;
-            --accent: #e67e22;
+            --accent: #ff5700;
             --bg: #f4f7f6;
         }
 
@@ -92,7 +92,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
         }
 
         .social-icon:hover {
-            background: #e67e22;
+            background: #ff5700;
             transform: scale(1.1);
         }
 
@@ -191,7 +191,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
         }
 
         .download-btn {
-            background: #3498db;
+            background: #0070e4;
             color: white;
             text-decoration: none;
             text-align: center;
@@ -636,7 +636,7 @@ footer {
     background-color: #1a252f;
     color: #ecf0f1;
     font-family: 'Segoe UI', Arial, sans-serif;
-    border-top: 4px solid #e67e22;
+    border-top: 4px solid #ff5700;
     flex-shrink: 0;
     width: 100%;
     box-sizing: border-box;
@@ -648,7 +648,7 @@ footer p {
 }
 
 footer strong {
-    color: #e67e22; 
+    color: #ff5700; 
     font-size: 1.1rem;
 }
 
@@ -685,15 +685,16 @@ footer strong {
     touch-action: manipulation;
 }
 .filter-btn:hover {
-    background: rgba(9,132,227,0.35);
-    border-color: #0984e3;
+    background: rgba(0,112,228,0.35);
+    border-color: #0070e4;
     color: #fff;
 }
 .filter-btn.active {
-    background: #0984e3;
-    border-color: #0984e3;
+    background: #0070e4;
+    border-color: #0070e4;
     color: #fff;
-    box-shadow: 0 3px 10px rgba(9,132,227,0.4);
+    font-size: 1.05rem;
+    box-shadow: 0 3px 10px rgba(0,112,228,0.4);
 }
 
 /* ── Mobile: collapsible dropdown ── */
@@ -706,8 +707,8 @@ footer strong {
     margin-top: 14px;
     border-bottom: 1px solid rgba(255,255,255,0.15);
     color: #fff;
-    padding: 12px 20px 12px 300px;
-    font-size: 1rem;
+    padding: 12px 20px;
+    font-size: 1.1rem;
     font-weight: normal;
     display: flex;
     align-items: center;
@@ -828,8 +829,8 @@ footer strong {
 }
 
 .header-btn:hover {
-    background: #e67e22; 
-    border-color: #e67e22;
+    background: #ff5700; 
+    border-color: #ff5700;
     transform: translateY(-2px);
 }
 
@@ -918,6 +919,8 @@ footer strong {
     /* سلایدەری قەبارە لە مۆبایل */
     #size-bar { padding: 6px 10px !important; gap: 6px !important; }
     #font-size-slider { width: 110px !important; }
+    /* کەمکردنەوەی بۆشایی نێوان لۆگۆ و باکسەکە */
+    .search-container { margin-top: 6px !important; }
     .filter-mobile-panel .filter-btn {
         font-size: 0.88rem;
         padding: 9px 16px;
@@ -1000,7 +1003,7 @@ footer strong {
         <div class="download-box" style="text-align: center; padding: 12px 25px !important;">
             <i class="fas fa-file-archive" style="font-size: 50px; color: #f1c40f; margin-bottom: 15px;"></i>
             <p id="dm-desc" style="font-size: 1.2rem; margin-bottom: 20px;">فەرموو لەگەڵ داگرتنی دوایین ئەپدەیتی فۆنتەکانت یونی‌قەیدار بە شێوەی فایلی زیپ (ZIP) کە لە ئێستادا ژمارەی فۆنتەکان 420 فۆنتە</p>
-            <a id="dm-btn" href="https://drive.google.com/uc?export=download&id=1sXwTWo3D8_Z_ohppLHHu-YxALLUteiGe" target="_blank" class="header-btn" style="background: #e67e22; padding: 12px 30px; font-size: 1.0rem;">
+            <a id="dm-btn" href="https://drive.google.com/uc?export=download&id=1sXwTWo3D8_Z_ohppLHHu-YxALLUteiGe" target="_blank" class="header-btn" style="background: #ff5700; padding: 12px 30px; font-size: 1.0rem;">
                 <i class="fas fa-cloud-download-alt"></i> <span id="dm-btn-label">كلیك بكه‌ بۆ داگرتنی فۆنته‌كان</span>
             </a>
         </div>
@@ -1060,7 +1063,7 @@ footer strong {
         <button class="filter-mobile-toggle" id="mobile-toggle" onclick="toggleMobileCats()">
             <span class="toggle-label">
                 <span>&#9776;</span>
-                <span id="mobile-active-label" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100vw - 120px)"></span>
+                <span id="mobile-active-label" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100vw - 80px)">نوێ</span>
             </span>
             <span class="toggle-arrow">&#9660;</span>
         </button>
@@ -1078,9 +1081,9 @@ footer strong {
 ">
     <span style="color:#aaa;font-size:0.82rem;white-space:nowrap">قەبارەی فۆنت:</span>
     <input type="range" id="font-size-slider" min="14" max="80" value="32"
-        style="width:160px;accent-color:#e67e22;cursor:pointer"
+        style="width:160px;accent-color:#ff5700;cursor:pointer"
         oninput="changeFontSize(this.value)">
-    <span id="size-label" style="color:#e67e22;font-family:monospace;font-size:0.82rem;min-width:38px">32px</span>
+    <span id="size-label" style="color:#ff5700;font-family:monospace;font-size:0.82rem;min-width:38px">32px</span>
     <button onclick="changeFontSize(32); document.getElementById('font-size-slider').value=32;"
         style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#aaa;
         border-radius:12px;padding:3px 10px;cursor:pointer;font-size:0.75rem;">ڕیسێت</button>
