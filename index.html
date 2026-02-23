@@ -912,7 +912,7 @@ footer strong {
     /* بۆکسی تاقیکردنەوە */
     #test-input {
         width: 95%;
-        padding: 12px 15px;
+        padding: 12px 15px 12px 45px;
         font-size: 1rem;
     }
 
@@ -1645,9 +1645,10 @@ function filterFonts(category, btn) {
 input.addEventListener('input', function() {
     const activeBtn = document.querySelector('#desktop-panel .filter-btn.active, #mobile-panel .filter-btn.active');
     const category  = activeBtn ? activeBtn.getAttribute('onclick').split("'")[1] : 'nwe';
-    const filtered  = (category === 'all') ? fonts : fonts.filter(function(f) {
-        if (Array.isArray(f.category)) return f.category.includes(category);
-        return f.category === category;
+    const catLower  = category.toLowerCase();
+    const filtered  = (catLower === 'all') ? fonts : fonts.filter(function(f) {
+        if (Array.isArray(f.category)) return f.category.some(function(c) { return c.toLowerCase() === catLower; });
+        return f.category.toLowerCase() === catLower;
     });
     renderFonts(filtered, input.value);
 });
