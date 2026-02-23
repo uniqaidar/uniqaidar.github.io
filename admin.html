@@ -780,22 +780,40 @@ async function saveReorder() {
     const al = document.getElementById('reorder-alert');
     alert2(al, 'Saving new order...', 'inf');
 
-    // Rebuild the entire marquee-content block with cats in new order
-    const mc = document.createElement('div');
+    // Build new button HTML in the new order
     let btnHtml = '';
     cats.forEach(c => {
         const isActive = c.id === 'nwe' ? ' active' : '';
         btnHtml += `\n            <button class="filter-btn${isActive}" onclick="filterFonts('${c.id}', this)">${c.label}</button>`;
     });
+    btnHtml += '\n        ';
 
-    // Replace the entire marquee-content block in RAW
-    const mcRx = /(<div class="marquee-content">)([\s\S]*?)(<\/div>\s*<\/div>\s*<\/div>\s*(?:<div id="size-bar"|\n\n<div class="font-grid"))/;
-    const next = RAW.replace(mcRx, (m, open, middle, close) => {
-        return open + btnHtml + '\n        ' + close;
-    });
+    // Find marquee-content open tag
+    const openTag  = '<div class="marquee-content">';
+    const closeTag = '</div>';
+    const mcStart  = RAW.indexOf(openTag);
+    if (mcStart === -1) {
+        return alert2(al, '❌ Could not find marquee-content — re-upload latest index.html!', 'err');
+    }
+
+    // Find matching closing </div> by counting depth
+    let depth = 0, pos = mcStart;
+    while (pos < RAW.length) {
+        if (RAW.startsWith('<div', pos))       depth++;
+        else if (RAW.startsWith('</div>', pos)) {
+            depth--;
+            if (depth === 0) { pos += 6; break; }
+        }
+        pos++;
+    }
+
+    // Replace content between open+close tags
+    const before = RAW.slice(0, mcStart + openTag.length);
+    const after  = RAW.slice(pos - 6); // keep closing </div>
+    const next   = before + btnHtml + after;
 
     if (next === RAW) {
-        return alert2(al, '❌ Could not find filter bar — check index.html structure', 'err');
+        return alert2(al, '❌ No change detected — order may already be saved', 'inf');
     }
 
     const ok = await ghPut(next, 'Reorder categories');

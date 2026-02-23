@@ -477,39 +477,40 @@ footer strong {
     font-size: 1.1rem;
 }
 
-.marquee-wrapper {
-    overflow-x: auto;
-    overflow-y: hidden;
-    white-space: nowrap;
-    width: 100%;
-    display: flex;
-    scrollbar-width: none;       /* Firefox */
-    -ms-overflow-style: none;    /* IE/Edge */
-    -webkit-overflow-scrolling: touch;
-    cursor: grab;
-}
-.marquee-wrapper::-webkit-scrollbar { display: none; }
-
 .filter-container {
-    display: flex;
     width: 100%;
     box-sizing: border-box;
     background: #1a1a1a;
-    padding: 10px 20px;
+    padding: 8px 0;
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-radius: 0;
     overflow: hidden;
 }
 
+.marquee-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    cursor: grab;
+    active-cursor: grabbing;
+    user-select: none;
+    padding: 4px 16px;
+    box-sizing: border-box;
+}
+.marquee-wrapper::-webkit-scrollbar { display: none; }
+.marquee-wrapper.dragging { cursor: grabbing; }
+
 .marquee-content {
-    display: flex;
+    display: inline-flex;
     flex-direction: row;
     flex-wrap: nowrap;
     gap: 8px;
-    padding: 4px 0;
     align-items: center;
+    min-width: 100%;
 }
 
 .filter-btn {
@@ -715,19 +716,14 @@ footer strong {
     /* فلتەر بار */
     .filter-container {
         padding: 6px 0;
-        border-radius: 0;
-        max-width: 100%;
         width: 100%;
-        box-sizing: border-box;
         overflow: hidden;
     }
 
     .marquee-wrapper {
-        overflow-x: scroll;
+        overflow-x: auto;
         overflow-y: hidden;
         -webkit-overflow-scrolling: touch;
-        scroll-snap-type: x proximity;
-        flex-wrap: nowrap;
         scrollbar-width: none;
         -ms-overflow-style: none;
         padding: 4px 10px;
@@ -735,12 +731,11 @@ footer strong {
     .marquee-wrapper::-webkit-scrollbar { display: none; }
 
     .marquee-content {
+        display: inline-flex;
         flex-wrap: nowrap;
-        display: flex;
         flex-direction: row;
         gap: 6px;
-        width: max-content;
-        padding: 0 4px;
+        align-items: center;
     }
 
     .filter-btn {
@@ -749,7 +744,6 @@ footer strong {
         height: auto;
         flex-shrink: 0;
         touch-action: manipulation;
-        scroll-snap-align: start;
     }
 
     /* گریدی کارتەکان: یەک ستوون */
@@ -1252,6 +1246,27 @@ window.addEventListener('click', function(e) {
 </div>
 
 <script>
+// ── Drag-to-scroll on category bar (desktop) ────────────
+(function() {
+    const wrapper = document.querySelector('.marquee-wrapper');
+    if (!wrapper) return;
+    let isDown = false, startX, scrollLeft;
+    wrapper.addEventListener('mousedown', function(e) {
+        isDown = true;
+        wrapper.classList.add('dragging');
+        startX = e.pageX - wrapper.offsetLeft;
+        scrollLeft = wrapper.scrollLeft;
+    });
+    document.addEventListener('mouseup',   function() { isDown = false; wrapper.classList.remove('dragging'); });
+    document.addEventListener('mousemove', function(e) {
+        if (!isDown) return;
+        e.preventDefault();
+        const x    = e.pageX - wrapper.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        wrapper.scrollLeft = scrollLeft - walk;
+    });
+})();
+
 const aboutModal = document.getElementById('aboutModal');
 document.getElementById('aboutBtn').onclick = function(e) {
     e.preventDefault();
