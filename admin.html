@@ -1166,8 +1166,11 @@ async function saveDownloadModal() {
     // Update description text
     if (desc) next = next.replace(/<p id="dm-desc"[^>]*>[^<]*<\/p>/, `<p id="dm-desc" style="font-size: 1.2rem; margin-bottom: 20px;">${desc}<\/p>`);
 
-    // Update button label
+    // Update button label (modal trigger inside modal)
     if (btnLabel) next = next.replace(/<span id="dm-btn-label">[^<]*<\/span>/, `<span id="dm-btn-label">${btnLabel}<\/span>`);
+
+    // Update header button label (the visible button beside social icons)
+    if (title) next = next.replace(/<span id="header-btn-label">[^<]*<\/span>/, `<span id="header-btn-label">${title}<\/span>`);
 
     // Update download href
     next = next.replace(/(<a id="dm-btn" href=")[^"]*"/, `$1${url}"`);
