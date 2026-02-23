@@ -514,23 +514,26 @@ footer strong {
 }
 .filter-arrow {
     flex-shrink: 0;
-    background: rgba(255,255,255,0.08);
+    background: #0984e3;
     border: none;
     color: #fff;
-    width: 36px;
-    height: 38px;
-    font-size: 1.1rem;
+    width: 52px;
+    height: 48px;
+    font-size: 1.8rem;
+    font-weight: bold;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
-    margin: 0 4px;
-    transition: background 0.2s;
+    border-radius: 10px;
+    margin: 0 6px;
+    transition: background 0.2s, transform 0.1s;
     z-index: 2;
+    line-height: 1;
 }
-.filter-arrow:hover { background: #0984e3; }
-.filter-arrow:disabled { opacity: 0.2; cursor: default; }
+.filter-arrow:hover { background: #0670c5; transform: scale(1.08); }
+.filter-arrow:active { transform: scale(0.96); }
+.filter-arrow:disabled { opacity: 0.25; cursor: default; transform: none; }
 
 .marquee-wrapper {
     flex: 1;
@@ -1278,7 +1281,7 @@ function renderFonts(data, text) {
 function scrollCats(dir) {
     const w = document.getElementById('marquee-wrapper');
     if (!w) return;
-    w.scrollBy({ left: dir * 220, behavior: 'smooth' });
+    w.scrollBy({ left: dir * 260, behavior: 'smooth' });
     setTimeout(updateArrows, 350);
 }
 function updateArrows() {
@@ -1286,8 +1289,10 @@ function updateArrows() {
     if (!w) return;
     const l = document.getElementById('arr-left');
     const r = document.getElementById('arr-right');
-    if (l) l.disabled = w.scrollLeft <= 2;
-    if (r) r.disabled = w.scrollLeft >= w.scrollWidth - w.clientWidth - 2;
+    const atStart = w.scrollLeft <= 2;
+    const atEnd   = w.scrollLeft >= w.scrollWidth - w.clientWidth - 2;
+    if (l) l.disabled = atEnd;    // left arrow (‹) goes to start = more items to the left = enabled when NOT at end
+    if (r) r.disabled = atStart;  // right arrow (›) goes to end = disabled when already at start
 }
 document.addEventListener('DOMContentLoaded', function() {
     const w = document.getElementById('marquee-wrapper');
