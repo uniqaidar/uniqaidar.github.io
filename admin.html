@@ -419,11 +419,7 @@ async function load(fromSetup) {
         if (!res.ok) throw 0;
         const data = await res.json();
         SHA = data.sha;
-        try {
-            RAW = decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))));
-        } catch(e) {
-            RAW = new TextDecoder().decode(Uint8Array.from(atob(data.content.replace(/\n/g,'')), c => c.charCodeAt(0)));
-        }
+        RAW = decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))));
         parse();
         buildAll();
         setReady(true);
@@ -499,38 +495,15 @@ async function connect() {
     const u = v('s-user'), r = v('s-repo'), t = v('s-token');
     const al = document.getElementById('setup-alert');
     if (!u||!r||!t) return alert2(al,'هەموو خانەکان پڕ بکەرەوە!','err');
-    alert2(al,'🔄 پەیوەندیکردن...','inf');
-
-    try {
-        const apiUrl = `https://api.github.com/repos/${u}/${r}/contents/index.html`;
-        const res = await fetch(apiUrl, {
-            headers: { 'Authorization': `token ${t}`, 'Accept': 'application/vnd.github.v3+json' }
-        });
-
-        if (res.status === 401) return alert2(al, '❌ تۆکێن هەڵەیە یان کاتی تەواو بووە (401)', 'err');
-        if (res.status === 403) return alert2(al, '❌ تۆکێن مافی repo نییە. scope: repo پشکنە (403)', 'err');
-        if (res.status === 404) return alert2(al, '❌ ناوی یوزەر یان ریپۆ هەڵەیە (404): ' + u + '/' + r, 'err');
-        if (!res.ok) return alert2(al, '❌ هەڵە: HTTP ' + res.status, 'err');
-
-        const data = await res.json();
-        SHA = data.sha;
-        try {
-            RAW = decodeURIComponent(escape(atob(data.content.replace(/
-/g,''))));
-        } catch(decodeErr) {
-            RAW = new TextDecoder().decode(Uint8Array.from(atob(data.content.replace(/
-/g,'')), c => c.charCodeAt(0)));
-        }
-
-        USER=u; REPO=r; TOKEN=t;
-        parse();
-        buildAll();
-        setReady(true);
+    alert2(al,'پەیوەندی...','inf');
+    USER=u; REPO=r; TOKEN=t;
+    const ok = await load(true);
+    if (ok) {
         localStorage.setItem('u',u); localStorage.setItem('r',r); localStorage.setItem('t',t);
         hide('setup-screen');
-
-    } catch(err) {
-        alert2(al, '❌ کێشەی ئینتەرنەت یان CORS: ' + err.message, 'err');
+    } else {
+        USER=REPO=TOKEN='';
+        alert2(al,'❌ نەتوانرا پەیوەندی بکرێت. تۆکێن یان ناوی ڕیپۆ پشکنە!','err');
     }
 }
 
@@ -765,9 +738,8 @@ function buildCatList() {
                 <button class="btn btn-ghost" style="padding:1px 7px;font-size:0.7rem;min-width:28px;opacity:${isLast?'0.25':'1'}" ${isLast?'disabled':''} onclick="moveCat(${idx},1)" title="Move Down">▼</button>
             </div>
             <span class="lbl" id="lbl-${idx}">${c.label}</span>
-            <input id="inp-${idx}" value="${c.label}" style="display:none;flex:1;min-width:120px;max-width:180px" placeholder="کوردی ناو">
-            <span class="badge" id="badge-${idx}">${c.id}</span>
-            <input id="eng-${idx}" value="${c.id}" style="display:none;width:100px;min-width:80px;font-size:0.75rem;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:2px 6px" placeholder="English ID">
+            <input id="inp-${idx}" value="${c.label}" style="display:none;flex:1;min-width:120px;max-width:180px">
+            <span class="badge">${c.id}</span>
             <span class="cnt">${n} fonts</span>
             <button class="btn btn-ghost" style="padding:4px 10px;font-size:0.75rem" onclick="startEdit(${idx})">✏️ Rename</button>
             <button class="btn btn-red" style="padding:4px 10px;font-size:0.75rem" onclick="deleteCat(${idx})">🗑️</button>
@@ -1052,8 +1024,6 @@ function startEdit(idx) {
     document.getElementById('inp-'+idx).style.display = 'inline-block';
     document.getElementById('savebtn-'+idx).style.display = 'inline-flex';
     document.getElementById('cancelbtn-'+idx).style.display = 'inline-flex';
-    const engEl = document.getElementById('eng-'+idx);
-    if (engEl) { engEl.style.display = 'inline-block'; document.getElementById('badge-'+idx).style.display = 'none'; }
     document.getElementById('inp-'+idx).focus();
 }
 
@@ -1063,66 +1033,67 @@ function cancelEdit(idx) {
     document.getElementById('inp-'+idx).style.display = 'none';
     document.getElementById('savebtn-'+idx).style.display = 'none';
     document.getElementById('cancelbtn-'+idx).style.display = 'none';
-    const engEl = document.getElementById('eng-'+idx);
-    const badgeEl = document.getElementById('badge-'+idx);
-    if (engEl) { engEl.style.display = 'none'; engEl.value = cats[idx].id; }
-    if (badgeEl) badgeEl.style.display = '';
 }
 
 async function saveCatName(idx) {
     const newLabel = document.getElementById('inp-'+idx).value.trim();
-    const engEl    = document.getElementById('eng-'+idx);
-    const newId    = engEl ? engEl.value.trim() : '';
     const al = document.getElementById('rename-alert');
     const oldLabel = cats[idx].label;
-    const oldId    = cats[idx].id;
+    const id = cats[idx].id;
 
     if (!newLabel) return alert2(al, 'Name cannot be empty!', 'err');
+    if (newLabel === oldLabel) { cancelEdit(idx); return; }
 
-    let next = RAW;
-    let changed = false;
+    // گۆڕینی ناو لە HTML — دوگمەی فلتەر
+    // شێواز: onclick="filterFonts('nwe', this)">نوێ</button>
+    const oldBtn = `onclick="filterFonts('${id}', this)">${oldLabel}</button>`;
+    const newBtn = `onclick="filterFonts('${id}', this)">${newLabel}</button>`;
 
-    // Update Kurdish label if changed
-    if (newLabel !== oldLabel) {
-        const oldBtn = `onclick="filterFonts('${oldId}', this)">${oldLabel}</button>`;
-        const newBtn = `onclick="filterFonts('${oldId}', this)">${newLabel}</button>`;
-        if (!next.includes(oldBtn)) return alert2(al, `❌ Could not find button for "${oldId}". Re-upload latest index.html!`, 'err');
-        next = next.replace(oldBtn, newBtn);
-        // Also update mobile panel button
-        const oldMobileBtn = `onclick="filterFontsMobile('${oldId}', this, '${oldLabel}')">${oldLabel}</button>`;
-        const newMobileBtn = `onclick="filterFontsMobile('${oldId}', this, '${newLabel}')">${newLabel}</button>`;
-        next = next.split(oldMobileBtn).join(newMobileBtn);
-        cats[idx].label = newLabel;
-        changed = true;
+    if (!RAW.includes(oldBtn)) {
+        return alert2(al, `❌ Could not find the button for "${id}" in index.html. File may have changed.`, 'err');
     }
 
-    // Update English ID if changed
-    if (newId && newId !== oldId) {
-        // Replace all occurrences of old ID with new ID in filter buttons
-        const re1 = new RegExp(`filterFonts\\('${oldId}',`, 'g');
-        const re2 = new RegExp(`filterFontsMobile\\('${oldId}',`, 'g');
-        next = next.replace(re1, `filterFonts('${newId}',`);
-        next = next.replace(re2, `filterFontsMobile('${newId}',`);
-        // Update mobile label reference
-        const oldMobileRef = `, this, '${newLabel || oldLabel}')">${newLabel || oldLabel}</button>`;
-        cats[idx].id = newId;
-        changed = true;
-    }
+    const next = RAW.replace(oldBtn, newBtn);
 
-    if (!changed) { cancelEdit(idx); return; }
+    alert2(al, 'Saving to GitHub...', 'inf');
+    const ok = await ghPut(next, `Rename category: ${oldLabel} → ${newLabel}`);
 
-    alert2(al, 'Saving...', 'inf');
-    const ok = await ghPut(next, `Rename category: ${oldLabel} → ${newLabel || oldLabel}`);
     if (ok) {
-        alert2(al, '✅ Category updated!', 'ok');
-        cancelEdit(idx);
-        renderCats();
+        cats[idx].label = newLabel;
+        buildCatPills();
+        buildCatList();
+        buildArcSel();
+        alert2(document.getElementById('rename-alert'), `✅ "${oldLabel}" renamed to "${newLabel}"`, 'ok');
     } else {
-        alert2(al, '❌ Save failed. Check your token!', 'err');
+        alert2(document.getElementById('rename-alert'), '❌ Save failed. Check your token!', 'err');
     }
 }
 
+// ══════════════════════════════════════════
 
+function setReady(val) {
+    ready = val;
+    const dot = document.getElementById('sdot');
+    dot.className = 'status-dot' + (val ? ' on' : '');
+    document.getElementById('rbadge').textContent = val ? `${USER}/${REPO}` : 'Not connected';
+    document.getElementById('fbtn').disabled  = !val;
+    document.getElementById('cbtn').disabled  = !val;
+    document.getElementById('dl-btn').disabled    = true;
+    document.getElementById('about-btn').disabled = true;
+}
+
+function go(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+    if (id==='t-arc') renderArc();
+    if (id==='t-settings') loadSettings();
+}
+
+// ══════════════════════════════════════════
+// Delete Category
+// ══════════════════════════════════════════
 async function deleteCat(idx) {
     const c = cats[idx];
     if (c.id === 'all') return alert('Cannot delete the "All" category.');
