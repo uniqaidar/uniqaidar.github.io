@@ -847,7 +847,31 @@ footer strong {
 </div> 
 <div class="filter-container">
 
-    <!-- Desktop: collapsible dropdown (same as mobile) -->
+    <!-- SOURCE OF TRUTH: hidden, read/written by admin panel -->
+    <div style="display:none" aria-hidden="true">
+        <div class="marquee-content" id="marquee-content" dir="ltr">
+            <button class="filter-btn active" onclick="filterFonts('nwe', this)">نوێ</button>
+            <button class="filter-btn" onclick="filterFonts('all', this)">هەمووی</button>
+            <button class="filter-btn" onclick="filterFonts('some', this)">ئه‌وانی تر</button>
+            <button class="filter-btn" onclick="filterFonts('dstnus', this)">دەستنووس</button>
+            <button class="filter-btn" onclick="filterFonts('ali', this)">فۆنتەکانی عه‌لی بە شێوازی یونیكۆد</button>
+            <button class="filter-btn" onclick="filterFonts('hwal', this)">هەواڵ</button>
+            <button class="filter-btn" onclick="filterFonts('islami', this)">ئیسلامی</button>
+            <button class="filter-btn" onclick="filterFonts('kanal', this)">کەناڵ و دەزگاکان</button>
+            <button class="filter-btn" onclick="filterFonts('xal', this)">خاڵدار</button>
+            <button class="filter-btn" onclick="filterFonts('ktib', this)">کتێب و بڵاوکراوە</button>
+            <button class="filter-btn" onclick="filterFonts('mndalan', this)">منداڵان</button>
+            <button class="filter-btn" onclick="filterFonts('nastaliq', this)">نەستەعلیق</button>
+            <button class="filter-btn" onclick="filterFonts('semic', this)">سەمیک</button>
+            <button class="filter-btn" onclick="filterFonts('jrnus', this)">ژێرنووس</button>
+            <button class="filter-btn" onclick="filterFonts('media', this)">میدیا</button>
+            <button class="filter-btn" onclick="filterFonts('Taybat', this)">تایبەت</button>
+            <button class="filter-btn" onclick="filterFonts('Hunari', this)">هونەری</button>
+            <button class="filter-btn" onclick="filterFonts('Freestyle', this)">فری ستایڵ</button>
+        </div>
+    </div>
+
+    <!-- Desktop: collapsible dropdown — populated dynamically from marquee-content -->
     <div class="filter-desktop" id="filter-desktop">
         <button class="filter-mobile-toggle" id="desktop-toggle" onclick="toggleDesktopCats()">
             <span class="toggle-label">
@@ -856,29 +880,10 @@ footer strong {
             </span>
             <span class="toggle-arrow">&#9660;</span>
         </button>
-        <div class="filter-mobile-panel" id="desktop-panel">
-            <button class="filter-btn active" onclick="filterFontsDesktop('nwe', this, 'نوێ')">نوێ</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('all', this, 'هەمووی')">هەمووی</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('some', this, 'ئه‌وانی تر')">ئه‌وانی تر</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('dstnus', this, 'دەستنووس')">دەستنووس</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('ali', this, 'فۆنتەکانی عه‌لی')">فۆنتەکانی عه‌لی بە شێوازی یونیكۆد</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('hwal', this, 'هەواڵ')">هەواڵ</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('islami', this, 'ئیسلامی')">ئیسلامی</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('kanal', this, 'کەناڵ و دەزگاکان')">کەناڵ و دەزگاکان</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('xal', this, 'خاڵدار')">خاڵدار</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('ktib', this, 'کتێب و بڵاوکراوە')">کتێب و بڵاوکراوە</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('mndalan', this, 'منداڵان')">منداڵان</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('nastaliq', this, 'نەستەعلیق')">نەستەعلیق</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('semic', this, 'سەمیک')">سەمیک</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('jrnus', this, 'ژێرنووس')">ژێرنووس</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('media', this, 'میدیا')">میدیا</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('Taybat', this, 'تایبەت')">تایبەت</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('Hunari', this, 'هونەری')">هونەری</button>
-            <button class="filter-btn" onclick="filterFontsDesktop('Freestyle', this, 'فری ستایڵ')">فری ستایڵ</button>
-        </div>
+        <div class="filter-mobile-panel" id="desktop-panel"></div>
     </div>
 
-    <!-- Mobile: collapsible dropdown -->
+    <!-- Mobile: collapsible dropdown — populated dynamically from marquee-content -->
     <div class="filter-mobile" id="filter-mobile">
         <button class="filter-mobile-toggle" id="mobile-toggle" onclick="toggleMobileCats()">
             <span class="toggle-label">
@@ -887,26 +892,7 @@ footer strong {
             </span>
             <span class="toggle-arrow">&#9660;</span>
         </button>
-        <div class="filter-mobile-panel" id="mobile-panel">
-            <button class="filter-btn active" onclick="filterFontsMobile('nwe', this, 'نوێ')">نوێ</button>
-            <button class="filter-btn" onclick="filterFontsMobile('all', this, 'هەمووی')">هەمووی</button>
-            <button class="filter-btn" onclick="filterFontsMobile('some', this, 'ئه‌وانی تر')">ئه‌وانی تر</button>
-            <button class="filter-btn" onclick="filterFontsMobile('dstnus', this, 'دەستنووس')">دەستنووس</button>
-            <button class="filter-btn" onclick="filterFontsMobile('ali', this, 'فۆنتەکانی عه‌لی')">فۆنتەکانی عه‌لی بە شێوازی یونیكۆد</button>
-            <button class="filter-btn" onclick="filterFontsMobile('hwal', this, 'هەواڵ')">هەواڵ</button>
-            <button class="filter-btn" onclick="filterFontsMobile('islami', this, 'ئیسلامی')">ئیسلامی</button>
-            <button class="filter-btn" onclick="filterFontsMobile('kanal', this, 'کەناڵ و دەزگاکان')">کەناڵ و دەزگاکان</button>
-            <button class="filter-btn" onclick="filterFontsMobile('xal', this, 'خاڵدار')">خاڵدار</button>
-            <button class="filter-btn" onclick="filterFontsMobile('ktib', this, 'کتێب و بڵاوکراوە')">کتێب و بڵاوکراوە</button>
-            <button class="filter-btn" onclick="filterFontsMobile('mndalan', this, 'منداڵان')">منداڵان</button>
-            <button class="filter-btn" onclick="filterFontsMobile('nastaliq', this, 'نەستەعلیق')">نەستەعلیق</button>
-            <button class="filter-btn" onclick="filterFontsMobile('semic', this, 'سەمیک')">سەمیک</button>
-            <button class="filter-btn" onclick="filterFontsMobile('jrnus', this, 'ژێرنووس')">ژێرنووس</button>
-            <button class="filter-btn" onclick="filterFontsMobile('media', this, 'میدیا')">میدیا</button>
-            <button class="filter-btn" onclick="filterFontsMobile('Taybat', this, 'تایبەت')">تایبەت</button>
-            <button class="filter-btn" onclick="filterFontsMobile('Hunari', this, 'هونەری')">هونەری</button>
-            <button class="filter-btn" onclick="filterFontsMobile('Freestyle', this, 'فری ستایڵ')">فری ستایڵ</button>
-        </div>
+        <div class="filter-mobile-panel" id="mobile-panel"></div>
     </div>
 
 </div>
@@ -1254,13 +1240,6 @@ function updateArrows() {
     if (l) l.disabled = (sl <= 2);          // at start → left does nothing
     if (r) r.disabled = (sl >= maxSl - 2);  // at end   → right does nothing
 }
-document.addEventListener('DOMContentLoaded', function() {
-    const w = document.getElementById('marquee-wrapper');
-    if (!w) return;
-    w.addEventListener('scroll', updateArrows);
-    updateArrows();
-});
-
 // ── Desktop dropdown ──────────────────────────────────────
 function toggleDesktopCats() {
     const panel  = document.getElementById('desktop-panel');
@@ -1268,18 +1247,6 @@ function toggleDesktopCats() {
     const isOpen = panel.classList.contains('open');
     panel.classList.toggle('open', !isOpen);
     toggle.classList.toggle('open', !isOpen);
-}
-function filterFontsDesktop(category, btn, label) {
-    // Update active state in desktop panel
-    document.querySelectorAll('#desktop-panel .filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    // Update label on toggle button
-    document.getElementById('desktop-active-label').textContent = label;
-    // Close panel
-    document.getElementById('desktop-panel').classList.remove('open');
-    document.getElementById('desktop-toggle').classList.remove('open');
-    // Filter fonts
-    filterFonts(category, null);
 }
 
 // ── Mobile dropdown ──────────────────────────────────────
@@ -1289,18 +1256,6 @@ function toggleMobileCats() {
     const isOpen = panel.classList.contains('open');
     panel.classList.toggle('open', !isOpen);
     toggle.classList.toggle('open', !isOpen);
-}
-function filterFontsMobile(category, btn, label) {
-    // Update active state in mobile panel
-    document.querySelectorAll('#mobile-panel .filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    // Update label on toggle button
-    document.getElementById('mobile-active-label').textContent = label;
-    // Close panel
-    document.getElementById('mobile-panel').classList.remove('open');
-    document.getElementById('mobile-toggle').classList.remove('open');
-    // Filter fonts
-    filterFonts(category, null);
 }
 
 // ── فلتەر کردن بەپێی کاتێگۆری ──────────────────────────
@@ -1312,8 +1267,20 @@ function filterFonts(category, btn) {
     });
     if (btn) btn.classList.add('active');
 
+    // ئەگەر دوگمەکە لە desktop-panel بوو: لیبلی نوێ بدە و دابخە
+    if (btn && btn.closest('#desktop-panel')) {
+        document.getElementById('desktop-active-label').textContent = btn.textContent.trim();
+        document.getElementById('desktop-panel').classList.remove('open');
+        document.getElementById('desktop-toggle').classList.remove('open');
+    }
+    // ئەگەر دوگمەکە لە mobile-panel بوو: لیبلی نوێ بدە و دابخە
+    if (btn && btn.closest('#mobile-panel')) {
+        document.getElementById('mobile-active-label').textContent = btn.textContent.trim();
+        document.getElementById('mobile-panel').classList.remove('open');
+        document.getElementById('mobile-toggle').classList.remove('open');
+    }
+
     // فلتەر کردنی لیست
-    // category دەتوانێت string بێت یان array بێت، هەردووکیان کار دەکەن
     const filtered = (category === 'all') ? fonts : fonts.filter(function(f) {
         if (Array.isArray(f.category)) return f.category.includes(category);
         return f.category === category;
@@ -1325,8 +1292,8 @@ function filterFonts(category, btn) {
 // ── بۆکسی تاقیکردنەوە ──────────────────────────────────
 // کاتێک بەکارهێنەر دەنووسێت، هەموو کارتەکان نوێ دەبنەوە
 input.addEventListener('input', function() {
-    const activeBtn = document.querySelector('.filter-btn.active');
-    const category  = activeBtn ? activeBtn.getAttribute('onclick').split("'")[1] : 'all';
+    const activeBtn = document.querySelector('#desktop-panel .filter-btn.active, #mobile-panel .filter-btn.active');
+    const category  = activeBtn ? activeBtn.getAttribute('onclick').split("'")[1] : 'nwe';
     const filtered  = (category === 'all') ? fonts : fonts.filter(function(f) {
         if (Array.isArray(f.category)) return f.category.includes(category);
         return f.category === category;
@@ -1336,11 +1303,31 @@ input.addEventListener('input', function() {
 
 // ── کردنەوەی پەیج: سەکشنی "نوێ" بنیشانبدە ──────────────
 document.addEventListener('DOMContentLoaded', function() {
-    const nweBtn = document.querySelector('.filter-btn[onclick*="nwe"]');
-    filterFonts('nwe', nweBtn);
-    // Set desktop active label
-    const desktopLabel = document.getElementById('desktop-active-label');
-    if (desktopLabel) desktopLabel.textContent = 'نوێ';
+    // Populate both dropdown panels from the hidden marquee-content (admin source of truth)
+    const source = document.getElementById('marquee-content');
+    const desktopPanel = document.getElementById('desktop-panel');
+    const mobilePanel  = document.getElementById('mobile-panel');
+
+    source.querySelectorAll('.filter-btn').forEach(function(btn) {
+        desktopPanel.appendChild(btn.cloneNode(true));
+        mobilePanel.appendChild(btn.cloneNode(true));
+    });
+
+    // Activate 'نوێ' in both panels
+    const nweBtns = document.querySelectorAll('#desktop-panel .filter-btn, #mobile-panel .filter-btn');
+    nweBtns.forEach(function(b) { b.classList.remove('active'); });
+    const firstDesktop = desktopPanel.querySelector('.filter-btn');
+    const firstMobile  = mobilePanel.querySelector('.filter-btn');
+    if (firstDesktop) firstDesktop.classList.add('active');
+    if (firstMobile)  firstMobile.classList.add('active');
+
+    filterFonts('nwe', null);
+    document.getElementById('desktop-active-label').textContent = 'نوێ';
+    document.getElementById('mobile-active-label').textContent  = 'نوێ';
+
+    // Arrow scroll init (kept for compatibility)
+    const w = document.getElementById('marquee-wrapper');
+    if (w) { w.addEventListener('scroll', updateArrows); updateArrows(); }
 });
 
 // ── مۆدالی داگرتن ───────────────────────────────────────
