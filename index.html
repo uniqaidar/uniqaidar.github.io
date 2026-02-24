@@ -984,6 +984,59 @@ footer strong {
     }
 }
 
+
+/* ── Copy Link buttons ── */
+.copy-cat-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif !important;
+    width: 24px;
+    height: 24px;
+    background: rgba(0,112,228,0.95);
+    border: none;
+    cursor: pointer;
+    opacity: 1;
+    font-size: 14px;
+    line-height: 24px;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif !important;
+    border-radius: 4px;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    overflow: hidden;
+    vertical-align: middle;
+}
+.copy-cat-btn span { display:flex; align-items:center; justify-content:center; width:100%; height:100%; }
+.copy-cat-btn:hover { background: rgba(0,112,228,1); }
+.copy-cat-btn.copied { background: rgba(0,112,228,1); }
+.card-copy-btn {
+    position: absolute;
+    top: 7px;
+    left: 8px;
+    background: rgba(0,112,228,0.95);
+    border: none;
+    cursor: pointer;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif !important;
+    font-size: 14px;
+    opacity: 1;
+    transition: background 0.2s;
+    padding: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 5px;
+    line-height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif !important;
+}
+.card-copy-btn span { display:flex; align-items:center; justify-content:center; width:100%; height:100%; }
+.card-copy-btn:hover { background: rgba(0,112,228,1); }
+.card-copy-btn.copied { background: rgba(0,112,228,1); color: #ff5700; }
+.card-header { position: relative; }
+
     </style>
 </head>
 <body style="min-height:100vh;display:flex;flex-direction:column;">
@@ -1559,6 +1612,17 @@ function renderFonts(data, text) {
         card.className = 'card';
         const engName = font.displayName || font.name;
         const dateStr = font.dateAdded || '';
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'card-copy-btn';
+        copyBtn.title = 'Copy font link';
+        copyBtn.innerHTML = '<span style="position:relative;top:0px;font-style:normal;">🔗</span>';
+        copyBtn.setAttribute('data-font', font.name);
+        copyBtn.addEventListener('click', function() {
+            const activeBtn = document.querySelector('#desktop-panel .filter-btn.active, #mobile-panel .filter-btn.active');
+            const catId = activeBtn ? activeBtn.getAttribute('onclick').split("'")[1] : '';
+            copyFontLink(font.name, catId, copyBtn);
+        });
+
         card.innerHTML =
             '<div class="card-header">' +
                 '<span class="card-eng-name">' + engName + '</span>' +
@@ -1570,6 +1634,7 @@ function renderFonts(data, text) {
                 '</div>' +
                 '<a href="' + font.path + '" class="download-btn" download>دابە‌زاندنی فۆنت TTF</a>' +
             '</div>';
+        card.querySelector('.card-header').appendChild(copyBtn);
         grid.appendChild(card);
     });
 }
@@ -1681,6 +1746,71 @@ input.addEventListener('keydown', function(e) {
 });
 
 // ── کردنەوەی پەیج: سەکشنی "نوێ" بنیشانبدە ──────────────
+
+// ── Copy Link feature ──────────────────────────────────
+function copyLink(url, btn, emoji) {
+    navigator.clipboard.writeText(url).then(function() {
+        const orig = btn.textContent;
+        btn.textContent = '✅';
+        btn.classList.add('copied');
+        setTimeout(function() {
+            btn.textContent = '🔗';
+            btn.classList.remove('copied');
+        }, 1500);
+    });
+}
+
+function copyCatLink(catId, btn) {
+    const url = location.origin + location.pathname + '?cat=' + encodeURIComponent(catId);
+    copyLink(url, btn, '🔗');
+}
+
+function copyFontLink(fontName, catId, btn) {
+    const url = location.origin + location.pathname +
+        '?cat=' + encodeURIComponent(catId) +
+        '&font=' + encodeURIComponent(fontName);
+    copyLink(url, btn, '🔗');
+}
+
+// ── Read URL params on load and apply ──────────────────
+function applyUrlParams() {
+    const params = new URLSearchParams(location.search);
+    const catParam  = params.get('cat');
+    const fontParam = params.get('font');
+    if (!catParam) return;
+
+    // Find and click the matching category button
+    const allBtns = document.querySelectorAll('#desktop-panel .filter-btn');
+    let matched = null;
+    allBtns.forEach(function(b) {
+        const onclick = b.getAttribute('onclick') || '';
+        const id = onclick.split("'")[1];
+        if (id && id.toLowerCase() === catParam.toLowerCase()) matched = b;
+    });
+    if (matched) {
+        filterFonts(matched.getAttribute('onclick').split("'")[1], matched);
+    }
+
+    // Scroll to + highlight specific font card
+    if (fontParam) {
+        setTimeout(function() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(function(card) {
+                const nameEl = card.querySelector('.card-eng-name');
+                if (nameEl && nameEl.textContent.trim() === fontParam) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    card.style.outline = '3px solid #0070e4';
+                    card.style.outlineOffset = '3px';
+                    setTimeout(function() {
+                        card.style.outline = '';
+                        card.style.outlineOffset = '';
+                    }, 3000);
+                }
+            });
+        }, 400);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Populate both dropdown panels from the hidden marquee-content (admin source of truth)
     const source = document.querySelector('.marquee-content');
@@ -1688,8 +1818,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobilePanel  = document.getElementById('mobile-panel');
 
     source.querySelectorAll('.filter-btn').forEach(function(btn) {
-        desktopPanel.appendChild(btn.cloneNode(true));
-        mobilePanel.appendChild(btn.cloneNode(true));
+        const onclick = btn.getAttribute('onclick') || '';
+        const catId = onclick.split("'")[1] || '';
+
+        // Desktop: wrap btn + copy icon in a flex span
+        const dWrap = document.createElement('span');
+        dWrap.style.cssText = 'display:inline-flex;align-items:center;gap:2px;flex-shrink:0;';
+        const dBtn = btn.cloneNode(true);
+        const dCopy = document.createElement('button');
+        dCopy.className = 'copy-cat-btn';
+        dCopy.title = 'Copy category link';
+        dCopy.textContent = '🔗';
+        dCopy.onclick = function(e) { e.stopPropagation(); copyCatLink(catId, dCopy); };
+        dWrap.appendChild(dBtn);
+        dWrap.appendChild(dCopy);
+        desktopPanel.appendChild(dWrap);
+
+        // Mobile: same
+        const mWrap = document.createElement('span');
+        mWrap.style.cssText = 'display:inline-flex;align-items:center;gap:2px;flex-shrink:0;';
+        const mBtn = btn.cloneNode(true);
+        const mCopy = document.createElement('button');
+        mCopy.className = 'copy-cat-btn';
+        mCopy.title = 'Copy category link';
+        mCopy.textContent = '🔗';
+        mCopy.onclick = function(e) { e.stopPropagation(); copyCatLink(catId, mCopy); };
+        mWrap.appendChild(mBtn);
+        mWrap.appendChild(mCopy);
+        mobilePanel.appendChild(mWrap);
     });
 
     // Activate 'نوێ' in both panels
@@ -1713,6 +1869,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Arrow scroll init (kept for compatibility)
     const w = document.getElementById('marquee-wrapper');
     if (w) { w.addEventListener('scroll', updateArrows); updateArrows(); }
+
+    // Apply URL params (?cat= and ?font=)
+    applyUrlParams();
 });
 
 // ── placeholder: desktop vs mobile ─────────────────────
