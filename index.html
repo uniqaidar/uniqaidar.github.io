@@ -630,6 +630,9 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
 @font-face { font-family: 'UniQAIDAR_Taef'; src: url('UniQaidarFonts/UniQAIDAR_Taef.ttf'); }
 @font-face { font-family: 'UniQAIDAR_Squid Game 001'; src: url('UniQaidarFonts/UniQAIDAR_Squid Game 001.ttf'); }
 @font-face { font-family: 'UniQAIDAR_Squid Game 002'; src: url('UniQaidarFonts/UniQAIDAR_Squid Game 002.ttf'); }
+@font-face { font-family: 'UniQAIDAR_NewsHeadLine 045'; src: url('UniQaidarFonts/UniQAIDAR_NewsHeadLine 045.ttf'); }
+@font-face { font-family: 'UniQAIDAR_NewsHeadLine 044'; src: url('UniQaidarFonts/UniQAIDAR_NewsHeadLine 044.ttf'); }
+@font-face { font-family: 'UniQAIDAR_NewsHeadLine 043'; src: url('UniQaidarFonts/UniQAIDAR_NewsHeadLine 043.ttf'); }
 
 
 
@@ -1164,7 +1167,7 @@ footer strong {
 <div class="font-grid" id="font-grid" style="flex:1"></div>
 <script>
 
-const fonts = [,
+const fonts = [
     { name: "UniQAIDAR_NewsHeadLine 043", file: "UniQAIDAR_NewsHeadLine 043", path: "UniQaidarFonts/UniQAIDAR_NewsHeadLine 043.ttf", category: ["Nwe","All","Kanal","Hawal"], preview: "فۆنتی کەناڵی ئێم بی سی - فۆنتی کوردی" },
     { name: "UniQAIDAR_NewsHeadLine 044", file: "UniQAIDAR_NewsHeadLine 044", path: "UniQaidarFonts/UniQAIDAR_NewsHeadLine 044.ttf", category: ["Nwe","All","Kanal","Hawal"], preview: "فۆنتی کەناڵی ئێم بی سی - فۆنتی کوردی" },
     { name: "UniQAIDAR_NewsHeadLine 045", file: "UniQAIDAR_NewsHeadLine 045", path: "UniQaidarFonts/UniQAIDAR_NewsHeadLine 045.ttf", category: ["Nwe","All","Kanal","Hawal"], preview: "فۆنتی کەناڵی ئێم بی سی - فۆنتی کوردی" },
@@ -2489,9 +2492,6 @@ async function downloadFontsDirectly() {
     progressText.textContent = 'کۆکردنەوەی ناونیشانی فۆنتەکان...';
 
     // Dynamically collect all font URLs from @font-face rules
-@font-face { font-family: 'UniQAIDAR_NewsHeadLine 045'; src: url('UniQaidarFonts/UniQAIDAR_NewsHeadLine 045.ttf'); }
-@font-face { font-family: 'UniQAIDAR_NewsHeadLine 044'; src: url('UniQaidarFonts/UniQAIDAR_NewsHeadLine 044.ttf'); }
-@font-face { font-family: 'UniQAIDAR_NewsHeadLine 043'; src: url('UniQaidarFonts/UniQAIDAR_NewsHeadLine 043.ttf'); }
     const fontUrls = new Set();
     for (const sheet of document.styleSheets) {
         try {

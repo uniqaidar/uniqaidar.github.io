@@ -636,14 +636,20 @@ async function addFont() {
     if (!RAW.includes('<!DOCTYPE html>')) return alert2(al, '❌ index.html content looks corrupt. Re-upload the file to GitHub first!', 'err');
 
     // ① Add @font-face — only if not already declared
+    // Insert inside <style> block ONLY — never inside <script>
     const faceDecl = `@font-face { font-family: '${name}'; src: url('${path}'); }`;
     let next = RAW;
     if (!next.includes(`font-family: '${name}'`)) {
-        const li = next.lastIndexOf('@font-face');
-        if (li === -1) return alert2(al, '❌ Could not find @font-face section in index.html!', 'err');
-        const at = next.indexOf('\n', li) + 1;
-        if (at === 0) return alert2(al, '❌ Malformed @font-face section in index.html!', 'err');
-        next = next.slice(0, at) + faceDecl + '\n' + next.slice(at);
+        const eol2 = next.includes('\r\n') ? '\r\n' : '\n';
+        const styleClose = next.indexOf('</style>');
+        if (styleClose === -1) return alert2(al, '❌ Could not find </style> in index.html!', 'err');
+        // Search for last @font-face ONLY within <style> block
+        const styleBlock = next.slice(0, styleClose);
+        const li = styleBlock.lastIndexOf('@font-face {');
+        if (li === -1) return alert2(al, '❌ Could not find @font-face inside <style>!', 'err');
+        const closingBrace = styleBlock.indexOf('}', li);
+        const at = closingBrace + 1 + eol2.length;
+        next = next.slice(0, at) + faceDecl + eol2 + next.slice(at);
     }
 
     // ② Insert entry at TOP of fonts array — only if not already present
