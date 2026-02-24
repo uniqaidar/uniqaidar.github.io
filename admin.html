@@ -1086,10 +1086,12 @@ async function saveCatName(idx) {
     // Replace button (handles both label and id change)
     let next = RAW.split(oldBtn).join(newBtn);
 
-    // If ID changed: replace all category references in fonts array using simple string replace
+    // If ID changed: replace all category references and onclick handlers
     if (idChanged) {
-        // Replace: "oldId" → "newId" (in category arrays and single strings)
+        // Replace in fonts array: category: "oldId" and category: ["oldId",...]
         next = next.split(`"${oldId}"`).join(`"${newId}"`);
+        // Also replace in onclick handlers: filterFonts('oldId', this)
+        next = next.split(`filterFonts('${oldId}',`).join(`filterFonts('${newId}',`);
     }
 
     alert2(al, 'Saving to GitHub...', 'inf');

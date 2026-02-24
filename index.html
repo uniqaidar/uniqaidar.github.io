@@ -1726,7 +1726,9 @@ function filterFonts(category, btn) {
 // ── Live font preview: typing updates card text ──────────
 input.addEventListener('input', function() {
     const activeBtn = document.querySelector('#desktop-panel .filter-btn.active, #mobile-panel .filter-btn.active');
-    const category  = activeBtn ? activeBtn.getAttribute('onclick').split("'")[1] : 'nwe';
+    const firstBtn2 = document.querySelector('#desktop-panel .filter-btn, #mobile-panel .filter-btn');
+    const fallback2  = firstBtn2 ? firstBtn2.getAttribute('onclick').split("'")[1] : 'Nwe';
+    const category  = activeBtn ? activeBtn.getAttribute('onclick').split("'")[1] : fallback2;
     const catLower  = category.toLowerCase();
     const filtered  = (catLower === 'all') ? fonts : fonts.filter(function(f) {
         if (Array.isArray(f.category)) return f.category.some(function(c) { return c.toLowerCase() === catLower; });
@@ -1740,7 +1742,9 @@ function doSearch() {
     const q = input.value.trim().toLowerCase();
     if (!q) {
         const activeBtn = document.querySelector('#desktop-panel .filter-btn.active, #mobile-panel .filter-btn.active');
-        const category  = activeBtn ? activeBtn.getAttribute('onclick').split("'")[1] : 'nwe';
+        const firstBtn  = document.querySelector('#desktop-panel .filter-btn, #mobile-panel .filter-btn');
+        const fallbackId = firstBtn ? firstBtn.getAttribute('onclick').split("'")[1] : 'Nwe';
+        const category  = activeBtn ? activeBtn.getAttribute('onclick').split("'")[1] : fallbackId;
         filterFonts(category, null);
         return;
     }
