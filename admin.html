@@ -631,20 +631,36 @@ async function addFont() {
     const path   = `UniQaidarFonts/${filename}`;
     const catVal = picked.length === 1 ? `"${picked[0]}"` : `["${picked.join('","')}"]`;
 
-    // ① Add @font-face after the last one
-    const face = `@font-face { font-family: '${name}'; src: url('${path}'); }\n`;
-    const li   = RAW.lastIndexOf('@font-face');
-    const at   = RAW.indexOf('\n', li) + 1;
-    let next   = RAW.slice(0, at) + face + RAW.slice(at);
+    // ── Safety checks on RAW before modifying ──────────────
+    if (!RAW || RAW.length < 1000) return alert2(al, '❌ index.html not loaded properly. Reconnect first!', 'err');
+    if (!RAW.includes('<!DOCTYPE html>')) return alert2(al, '❌ index.html content looks corrupt. Re-upload the file to GitHub first!', 'err');
 
-    // ② Insert at TOP of fonts array (newest fonts appear first)
-    const entry   = `    { name: "${name}", file: "${name}", path: "${path}", category: ${catVal}, preview: "${prev}" },\n`;
-    let arrOpen = next.indexOf('const fonts = [\n');
-    if (arrOpen === -1) arrOpen = next.indexOf('const fonts = [,\n'); // handle stray comma
-    if (arrOpen === -1) { return alert2(al, '❌ Could not find fonts array in index.html!', 'err'); }
-    // Find end of opening line and insert after it
-    const arrInsert = next.indexOf('\n', arrOpen) + 1;
-    next = next.slice(0, arrInsert) + entry + next.slice(arrInsert);
+    // ① Add @font-face — only if not already declared
+    const faceDecl = `@font-face { font-family: '${name}'; src: url('${path}'); }`;
+    let next = RAW;
+    if (!next.includes(`font-family: '${name}'`)) {
+        const li = next.lastIndexOf('@font-face');
+        if (li === -1) return alert2(al, '❌ Could not find @font-face section in index.html!', 'err');
+        const at = next.indexOf('\n', li) + 1;
+        if (at === 0) return alert2(al, '❌ Malformed @font-face section in index.html!', 'err');
+        next = next.slice(0, at) + faceDecl + '\n' + next.slice(at);
+    }
+
+    // ② Insert entry at TOP of fonts array — only if not already present
+    const entry = `    { name: "${name}", file: "${name}", path: "${path}", category: ${catVal}, preview: "${prev}" },\n`;
+    if (!next.includes(`"${name}"`)) {
+        let arrOpen = next.indexOf('const fonts = [\n');
+        if (arrOpen === -1) arrOpen = next.indexOf('const fonts = [,\n');
+        if (arrOpen === -1) return alert2(al, '❌ Could not find fonts array in index.html!', 'err');
+        const arrInsert = next.indexOf('\n', arrOpen) + 1;
+        if (arrInsert === 0) return alert2(al, '❌ Malformed fonts array in index.html!', 'err');
+        next = next.slice(0, arrInsert) + entry + next.slice(arrInsert);
+    }
+
+    // ③ Final sanity check — make sure output still looks like valid HTML
+    if (!next.includes('<!DOCTYPE html>') || !next.includes('const fonts = [') || !next.includes(`"${name}"`)) {
+        return alert2(al, '❌ Safety check failed — aborting to prevent corruption!', 'err');
+    }
 
     alert2(al, 'Pushing to GitHub...', 'inf');
     const ok = await ghPut(next, `Add font: ${name}`);
