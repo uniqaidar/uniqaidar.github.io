@@ -756,8 +756,9 @@ footer strong {
     border-radius: 25px;
     width: 92%;
     max-width: 800px;
-    max-height: 88vh;
+    max-height: 95vh;
     overflow-y: auto;
+    padding-bottom: 40px;
     text-align: center;
     position: relative;
     direction: rtl;
@@ -1059,15 +1060,22 @@ footer strong {
 </button>
 
 <div id="downloadModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="overflow-y:auto;max-height:95vh;padding-bottom:50px;">
         <span class="close-download">&times;</span>
         <h2 id="dm-title">داگرتنی تەواوی فۆنتەکان</h2>
-        <div class="download-box" style="text-align: center; padding: 12px 25px !important;">
-            <i class="fas fa-file-archive" style="font-size: 50px; color: #f1c40f; margin-bottom: 15px;"></i>
-            <p id="dm-desc" style="font-size: 1.2rem; margin-bottom: 20px;">فەرموو لەگەڵ داگرتنی دوایین ئەپدەیتی فۆنتەکانت یونی‌قەیدار بە شێوەی فایلی زیپ (ZIP) کە لە ئێستادا ژمارەی فۆنتەکان 420 فۆنتە</p>
-            <a id="dm-btn" href="https://drive.google.com/uc?export=download&id=1sXwTWo3D8_Z_ohppLHHu-YxALLUteiGe" target="_blank" class="header-btn" style="background: #ff5700; padding: 12px 30px; font-size: 1.0rem;">
+        <div class="download-box" style="text-align:center;padding:20px 25px 40px 25px;">
+            <i class="fas fa-file-archive" style="font-size:50px;color:#f1c40f;margin-bottom:15px;display:block;"></i>
+            <p id="dm-desc" style="font-size:1.2rem;margin-bottom:25px;">فەرموو لەگەڵ داگرتنی دوایین ئەپدەیتی فۆنتەکانت یونی‌قەیدار بە شێوەی فایلی زیپ (ZIP) کە لە ئێستادا ژمارەی فۆنتەکان 420 فۆنتە</p>
+            <a id="dm-btn" href="https://drive.google.com/uc?export=download&id=1sXwTWo3D8_Z_ohppLHHu-YxALLUteiGe" target="_blank" style="display:inline-block;background:#ff5700;color:white;text-decoration:none;padding:12px 30px;border-radius:20px;font-size:1.0rem;margin-bottom:15px;">
                 <i class="fas fa-cloud-download-alt"></i> <span id="dm-btn-label">كلیك بكه‌ بۆ داگرتنی تەواوی فۆنته‌كان</span>
             </a>
+            <br>
+            <button id="dm-direct-btn" onclick="downloadFontsDirectly()" style="display:inline-block;background:#27ae60;color:white;padding:12px 30px;border-radius:20px;font-size:1.0rem;border:none;cursor:pointer;margin-top:10px;">
+                <i class="fas fa-download"></i> داگرتنی ڕاستەوخۆ بەبێ گووگڵ درایڤ
+            </button>
+            <div id="zip-progress" style="display:none;margin-top:15px;font-size:0.95rem;color:#555;direction:rtl;">
+                <i class="fas fa-spinner fa-spin"></i> <span id="zip-progress-text">چاوەڕێ بکە...</span>
+            </div>
         </div>
     </div>
 </div>
@@ -1932,5 +1940,606 @@ window.addEventListener('click', function(e) {
     if (e.target === aboutModal) aboutModal.style.display = 'none';
 });
 </script>
+<script>
+const FONT_FILES = [
+        "UniQaidarFonts/QAIDAR_ISLAMIC00.ttf",
+        "UniQaidarFonts/QAIDAR_ISLAMIC01.ttf",
+        "UniQaidarFonts/QAIDAR_ISLAMIC02.ttf",
+        "UniQaidarFonts/QAIDAR_ISLAMIC03.ttf",
+        "UniQaidarFonts/QAIDAR_ISLAMIC04.ttf",
+        "UniQaidarFonts/UniQAIDAR_7EMZE.ttf",
+        "UniQaidarFonts/UniQAIDAR_A7MED.ttf",
+        "UniQaidarFonts/UniQAIDAR_ABDULLAH.ttf",
+        "UniQaidarFonts/UniQAIDAR_ABO%20DHABI.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKAlwand.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKArabesque.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKAzzam.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKHBARIA.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKHasan.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKJiddah.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKKhalid.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKKhanaqin.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKSahifa.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKSahifaB.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKSamik%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKSamik%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKSayid.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKSharif.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKSharifB.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKSulaimania.ttf",
+        "UniQaidarFonts/UniQAIDAR_AKTraditional.ttf",
+        "UniQaidarFonts/UniQAIDAR_ALI.ttf",
+        "UniQaidarFonts/UniQAIDAR_ASKANDAR.ttf",
+        "UniQaidarFonts/UniQAIDAR_Afarin_001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Afarin_002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Afarin_003.ttf",
+        "UniQaidarFonts/UniQAIDAR_Amez.ttf",
+        "UniQaidarFonts/UniQAIDAR_Amozhgary_001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Amozhgary_002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Amozhgary_003.ttf",
+        "UniQaidarFonts/UniQAIDAR_Arabyeh.ttf",
+        "UniQaidarFonts/UniQAIDAR_Aramco.ttf",
+        "UniQaidarFonts/UniQAIDAR_Asiacell%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Asiacell%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Aso.ttf",
+        "UniQaidarFonts/UniQAIDAR_Asya.ttf",
+        "UniQaidarFonts/UniQAIDAR_Azadi.ttf",
+        "UniQaidarFonts/UniQAIDAR_BEHMEN.ttf",
+        "UniQaidarFonts/UniQAIDAR_BEXUD.ttf",
+        "UniQaidarFonts/UniQAIDAR_Bahar%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Baxshin%20Hospital_001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Baxshin%20Hospital_002.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20000.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20003.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20004.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20005.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20006.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20007.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20008.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20009.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20010.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20011.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20012.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20013.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20014.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20015.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20016%20PY.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20016.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20017%20PY.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20017.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20018.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20019.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20020%20PY.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20020.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20021%20PY.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20021.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20022%20PY.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20022.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20023.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20024%20PYNH.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20024.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20025.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20026%20PY.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20026.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20027%20Trim.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20027.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20028.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20029.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20030.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20031.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20032%20PY.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20032.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20033.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20034.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20035.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20036%20PY.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20036.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20037.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20038%20PY.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20038.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20039.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20040.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20041.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20042%20PY.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20042.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20043.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20044%20PNLT%20.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20044.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20045.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20046%20PY.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20046.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20047.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20048.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20049%20PY.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20049.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20050.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20051.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20052.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20053.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20054.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20055.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20056.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20057.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20058.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20059.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20060%20PY.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20060.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20061.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20062.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20063%20PYNKG.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20063.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20064.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20065.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20066.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20067.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20068%20PTKNH.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20068.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20069.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20070%20PY.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20070.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20071.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20072.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20073.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20074.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20075%20PYKGNH.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20075.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20076.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20077.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20078.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20079.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20080.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20081.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20082.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20083.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20084.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20085.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20086.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20087.ttf",
+        "UniQaidarFonts/UniQAIDAR_BiLaL%20088.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20000.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20003.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20004%20Hollow.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20004.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20005.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20006.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20007.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20008.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20009.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20010%20book.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20011.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20012.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20013.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20014.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20015.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20016.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20017.ttf",
+        "UniQaidarFonts/UniQAIDAR_Blawkrawe%20018.ttf",
+        "UniQaidarFonts/UniQAIDAR_Bukra%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Bukra%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Bukra%20003.ttf",
+        "UniQaidarFonts/UniQAIDAR_Bukra%20004.ttf",
+        "UniQaidarFonts/UniQAIDAR_DARA.ttf",
+        "UniQaidarFonts/UniQAIDAR_DIGITAL.ttf",
+        "UniQaidarFonts/UniQAIDAR_DWANGE.ttf",
+        "UniQaidarFonts/UniQAIDAR_EDEB.ttf",
+        "UniQaidarFonts/UniQAIDAR_ESRA&MIERAJ.ttf",
+        "UniQaidarFonts/UniQAIDAR_Ebrahim.ttf",
+        "UniQaidarFonts/UniQAIDAR_Efriqa.ttf",
+        "UniQaidarFonts/UniQAIDAR_Efsun.ttf",
+        "UniQaidarFonts/UniQAIDAR_Fastlink%2001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Fastlink%2002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Fastlink%2003.ttf",
+        "UniQaidarFonts/UniQAIDAR_Fastlink%2004.ttf",
+        "UniQaidarFonts/UniQAIDAR_FnuNOKIA.ttf",
+        "UniQaidarFonts/UniQAIDAR_Free%20000.ttf",
+        "UniQaidarFonts/UniQAIDAR_Free%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Free%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Free%20003.ttf",
+        "UniQaidarFonts/UniQAIDAR_Free%20004.ttf",
+        "UniQaidarFonts/UniQAIDAR_Free%20005.ttf",
+        "UniQaidarFonts/UniQAIDAR_Free%20006.ttf",
+        "UniQaidarFonts/UniQAIDAR_Free%20007.ttf",
+        "UniQaidarFonts/UniQAIDAR_Free%20008.ttf",
+        "UniQaidarFonts/UniQAIDAR_Free%20009.ttf",
+        "UniQaidarFonts/UniQAIDAR_Free%20010.ttf",
+        "UniQaidarFonts/UniQAIDAR_Free%20011.ttf",
+        "UniQaidarFonts/UniQAIDAR_Free%20012.ttf",
+        "UniQaidarFonts/UniQAIDAR_Free%20013.ttf",
+        "UniQaidarFonts/UniQAIDAR_Free%20014.ttf",
+        "UniQaidarFonts/UniQAIDAR_Gate.ttf",
+        "UniQaidarFonts/UniQAIDAR_Harem%20Hospital%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Harem%20Hospital%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hemin.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20000.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20003.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20004.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20005.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20006.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20007.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20008.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20009.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20010.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20011.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20012.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20013.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20014.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20015.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20016.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20017.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20018.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20019.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20020.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20021.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20022.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20023.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20024.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20025.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20026.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20027.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20028.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20029.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20030.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20031.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20032.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20033.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20034.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20035.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20036.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20037.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20038.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20039.ttf",
+        "UniQaidarFonts/UniQAIDAR_Hewal%20040.ttf",
+        "UniQaidarFonts/UniQAIDAR_ISLAMIC00.ttf",
+        "UniQaidarFonts/UniQAIDAR_ISLAMIC01.ttf",
+        "UniQaidarFonts/UniQAIDAR_ISLAMIC02.ttf",
+        "UniQaidarFonts/UniQAIDAR_ISLAMIC03.ttf",
+        "UniQaidarFonts/UniQAIDAR_ISLAMIC04.ttf",
+        "UniQaidarFonts/UniQAIDAR_JWNEYD.ttf",
+        "UniQaidarFonts/UniQAIDAR_KAMARAN.ttf",
+        "UniQaidarFonts/UniQAIDAR_KARMEND.ttf",
+        "UniQaidarFonts/UniQAIDAR_KARWAN.ttf",
+        "UniQaidarFonts/UniQAIDAR_KHAMA.ttf",
+        "UniQaidarFonts/UniQAIDAR_KhwendKar%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_KhwendKar%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_KhwendKar%20003.ttf",
+        "UniQaidarFonts/UniQAIDAR_Kufi.ttf",
+        "UniQaidarFonts/UniQAIDAR_Kurdistan%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Kurdistan%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Kurdistan%20003.ttf",
+        "UniQaidarFonts/UniQAIDAR_Kurdistan%20004.ttf",
+        "UniQaidarFonts/UniQAIDAR_Kurdistan%20005.ttf",
+        "UniQaidarFonts/UniQAIDAR_Kurdistan%20006.ttf",
+        "UniQaidarFonts/UniQAIDAR_Kurdistan%20007.ttf",
+        "UniQaidarFonts/UniQAIDAR_Life.ttf",
+        "UniQaidarFonts/UniQAIDAR_MOBILE_TV.ttf",
+        "UniQaidarFonts/UniQAIDAR_MUHAMMAD%20Normal.ttf",
+        "UniQaidarFonts/UniQAIDAR_MUHAMMAD.ttf",
+        "UniQaidarFonts/UniQAIDAR_Meju%2000.ttf",
+        "UniQaidarFonts/UniQAIDAR_Meju.ttf",
+        "UniQaidarFonts/UniQAIDAR_Money%20Heist%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Money%20Heist%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_NASRIN.ttf",
+        "UniQaidarFonts/UniQAIDAR_NAWA.ttf",
+        "UniQaidarFonts/UniQAIDAR_Naskh_Bold.ttf",
+        "UniQaidarFonts/UniQAIDAR_Naskh_Regular.ttf",
+        "UniQaidarFonts/UniQAIDAR_Nastaliq%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Nastaliq%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Nastaliq%20003.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewPayam%2001.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewPayam%2002.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewPayam%2003.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewPayam%2004.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20003.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20004.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20004BOLD.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20005.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20006.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20007.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20008.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20009.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20010.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20011.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20012.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20013.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20014.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20015.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20016.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20017.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20018.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20019%20R.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20019.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20019_NV.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20020.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20021.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20022.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20023.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20024.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20025.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20026.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20027.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20028.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20029.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20030.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20031.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20032.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20033.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20034.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20035.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20036%20PY.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20036%20PYM.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20036.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20037.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20038.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20039.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20040.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20041.ttf",
+        "UniQaidarFonts/UniQAIDAR_NewsHeadLine%20042.ttf",
+        "UniQaidarFonts/UniQAIDAR_OMAR.ttf",
+        "UniQaidarFonts/UniQAIDAR_OSMAN.ttf",
+        "UniQaidarFonts/UniQAIDAR_Osama.ttf",
+        "UniQaidarFonts/UniQAIDAR_PAYAM.ttf",
+        "UniQaidarFonts/UniQAIDAR_PENJWEN.ttf",
+        "UniQaidarFonts/UniQAIDAR_POSTER.ttf",
+        "UniQaidarFonts/UniQAIDAR_Payam%20HD%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Payam%20HD%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Payam%20HD%20003.ttf",
+        "UniQaidarFonts/UniQAIDAR_Payam%20HD%20004.ttf",
+        "UniQaidarFonts/UniQAIDAR_PayamNews.ttf",
+        "UniQaidarFonts/UniQAIDAR_Peregraf%2001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Peregraf%2002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Pure%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Pure%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Pure%20003.ttf",
+        "UniQaidarFonts/UniQAIDAR_ROJNAME.ttf",
+        "UniQaidarFonts/UniQAIDAR_ROJNAMEb.ttf",
+        "UniQaidarFonts/UniQAIDAR_Remezan%20000.ttf",
+        "UniQaidarFonts/UniQAIDAR_Remezan%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_SAMAN.ttf",
+        "UniQaidarFonts/UniQAIDAR_SAMi.ttf",
+        "UniQaidarFonts/UniQAIDAR_Sahar.ttf",
+        "UniQaidarFonts/UniQAIDAR_Social%20Media%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Social%20Media%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Social%20Media%20003.ttf",
+        "UniQaidarFonts/UniQAIDAR_Social%20Media%20004.ttf",
+        "UniQaidarFonts/UniQAIDAR_Social%20Media%20005.ttf",
+        "UniQaidarFonts/UniQAIDAR_Social%20Media%20006.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20000.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20003.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20004.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20005.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20006.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20007.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20008.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20009.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20010%20Hollow.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20010.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20011.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20012.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20013.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20014.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20015.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20016.ttf",
+        "UniQaidarFonts/UniQAIDAR_Soz%20017.ttf",
+        "UniQaidarFonts/UniQAIDAR_Squid%20Game%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Squid%20Game%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Subtitle_000.ttf",
+        "UniQaidarFonts/UniQAIDAR_Subtitle_001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Subtitle_002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Subtitle_003.ttf",
+        "UniQaidarFonts/UniQAIDAR_Subtitle_004.ttf",
+        "UniQaidarFonts/UniQAIDAR_Subtitle_005.ttf",
+        "UniQaidarFonts/UniQAIDAR_Subtitle_006.ttf",
+        "UniQaidarFonts/UniQAIDAR_Subtitle_007.ttf",
+        "UniQaidarFonts/UniQAIDAR_Subtitle_008.ttf",
+        "UniQaidarFonts/UniQAIDAR_Subtitle_009.ttf",
+        "UniQaidarFonts/UniQAIDAR_Subtitle_010.ttf",
+        "UniQaidarFonts/UniQAIDAR_Subtitle_011.ttf",
+        "UniQaidarFonts/UniQAIDAR_Subtitle_012.ttf",
+        "UniQaidarFonts/UniQAIDAR_TRT%2001.ttf",
+        "UniQaidarFonts/UniQAIDAR_TRT%2002.ttf",
+        "UniQaidarFonts/UniQAIDAR_TRT%2003.ttf",
+        "UniQaidarFonts/UniQAIDAR_TRT%2004.ttf",
+        "UniQaidarFonts/UniQAIDAR_TWANA.ttf",
+        "UniQaidarFonts/UniQAIDAR_Taef.ttf",
+        "UniQaidarFonts/UniQAIDAR_Talabat%2001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Talabat%2002.ttf",
+        "UniQaidarFonts/UniQAIDAR_TeXtE.ttf",
+        "UniQaidarFonts/UniQAIDAR_Xal%2000.ttf",
+        "UniQaidarFonts/UniQAIDAR_Xal%2001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Xal%2002.ttf",
+        "UniQaidarFonts/UniQAIDAR_YELDA.ttf",
+        "UniQaidarFonts/UniQAIDAR_YUSUF.ttf",
+        "UniQaidarFonts/UniQAIDAR_ZANA.ttf",
+        "UniQaidarFonts/UniQAIDAR_Zhyan%20001.ttf",
+        "UniQaidarFonts/UniQAIDAR_Zhyan%20002.ttf",
+        "UniQaidarFonts/UniQAIDAR_Zhyan%20003.ttf"
+];
+
+async function downloadFontsDirectly() {
+    const btn = document.getElementById('dm-direct-btn');
+    const progressDiv = document.getElementById('zip-progress');
+    const progressText = document.getElementById('zip-progress-text');
+
+    btn.disabled = true;
+    progressDiv.style.display = 'block';
+
+    try {
+        const zip = new JSZip();
+        const folder = zip.folder("UniQaidarFonts");
+
+        const total = FONT_FILES.length;
+        let done = 0;
+
+        for (const url of FONT_FILES) {
+            const filename = decodeURIComponent(url.split('/').pop());
+            progressText.textContent = '(' + done + '/' + total + ') ' + filename;
+            try {
+                const resp = await fetch(url);
+                if (resp.ok) {
+                    const arrayBuf = await resp.arrayBuffer();
+                    folder.file(filename, arrayBuf);
+                }
+            } catch(e) { console.warn('Could not fetch', url, e); }
+            done++;
+        }
+
+        progressText.textContent = 'زیپ دروست دەکرێت...';
+        const zipBlob = await zip.generateAsync({ type: 'blob' }, (meta) => {
+            progressText.textContent = 'زیپ دروست دەکرێت... ' + Math.round(meta.percent) + '%';
+        });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(zipBlob);
+        a.download = 'UniQaidarFonts.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        progressText.textContent = '✅ داگرتن دەستپێکرد!';
+    } catch(e) {
+        progressText.textContent = '❌ هەڵەیەک ڕوویدا: ' + e.message;
+        console.error(e);
+    } finally {
+        btn.disabled = false;
+    }
+}
+</script>
+
+
+
+
+<script>
+async function downloadFontsDirectly() {
+    const btn = document.getElementById('dm-direct-btn');
+    const progressDiv = document.getElementById('zip-progress');
+    const progressText = document.getElementById('zip-progress-text');
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+    progressDiv.style.display = 'block';
+    progressText.textContent = 'فۆنتەکان کۆدەکرێنەوە...';
+    try {
+        const fontUrls = new Set();
+        for (const sheet of document.styleSheets) {
+            try {
+                for (const rule of sheet.cssRules || []) {
+                    if (rule.type === CSSRule.FONT_FACE_RULE) {
+                        const ms = rule.cssText.matchAll(/url\(["']?(UniQaidarFonts\/[^"')]+)["']?\)/g);
+                        for (const m of ms) fontUrls.add(decodeURIComponent(m[1]));
+                    }
+                }
+            } catch(e) {}
+        }
+        const files = [...fontUrls];
+        if (files.length === 0) { progressText.textContent = 'هیچ فۆنتێک نەدۆزرایەوە!'; return; }
+        const zip = new JSZip();
+        const folder = zip.folder("UniQaidarFonts");
+        const total = files.length;
+        let done = 0, failed = 0;
+        for (const url of files) {
+            progressText.textContent = '(' + done + '/' + total + ') ' + url.split('/').pop();
+            try {
+                const resp = await fetch(url);
+                if (resp.ok) folder.file(url.split('/').pop(), await resp.arrayBuffer());
+                else failed++;
+            } catch(e) { failed++; }
+            done++;
+        }
+        progressText.textContent = 'زیپ دروست دەکرێت...';
+        const zipBlob = await zip.generateAsync({type:'blob'}, m => {
+            progressText.textContent = 'زیپ دروست دەکرێت... ' + Math.round(m.percent) + '%';
+        });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(zipBlob);
+        a.download = 'UniQaidarFonts.zip';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        progressText.textContent = '✅ داگرتن دەستپێکرد! (' + (total-failed) + '/' + total + ' فۆنت)';
+    } catch(e) {
+        progressText.textContent = '❌ هەڵەیەک ڕوویدا: ' + e.message;
+    } finally {
+        btn.disabled = false; btn.style.opacity = '1';
+    }
+}
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+async function downloadFontsDirectly() {
+    const btn = document.getElementById('dm-direct-btn');
+    const progressDiv = document.getElementById('zip-progress');
+    const progressText = document.getElementById('zip-progress-text');
+
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+    progressDiv.style.display = 'block';
+    progressText.textContent = 'کۆکردنەوەی ناونیشانی فۆنتەکان...';
+
+    // Dynamically collect all font URLs from @font-face rules
+    const fontUrls = new Set();
+    for (const sheet of document.styleSheets) {
+        try {
+            for (const rule of sheet.cssRules || []) {
+                if (rule.type === CSSRule.FONT_FACE_RULE) {
+                    const src = rule.style.getPropertyValue('src');
+                    const matches = src.matchAll(/url\(['"](UniQaidarFonts\/[^'"]+)['"]/g);
+                    for (const m of matches) fontUrls.add(m[1]);
+                }
+            }
+        } catch(e) { /* cross-origin sheet, skip */ }
+    }
+
+    const files = [...fontUrls];
+    if (files.length === 0) {
+        progressText.textContent = '❌ هیچ فۆنتێک نەدۆزرایەوە';
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        return;
+    }
+
+    try {
+        const zip = new JSZip();
+        const folder = zip.folder("UniQaidarFonts");
+        let done = 0, failed = 0;
+        const total = files.length;
+
+        for (const url of files) {
+            const filename = decodeURIComponent(url.split('/').pop());
+            progressText.textContent = '(' + done + '/' + total + ') ' + filename;
+            try {
+                const resp = await fetch(url);
+                if (resp.ok) {
+                    folder.file(filename, await resp.arrayBuffer());
+                } else { failed++; }
+            } catch(e) { failed++; }
+            done++;
+        }
+
+        progressText.textContent = 'زیپ دروست دەکرێت...';
+        const zipBlob = await zip.generateAsync({ type: 'blob' }, (meta) => {
+            progressText.textContent = 'زیپ دروست دەکرێت... ' + Math.round(meta.percent) + '%';
+        });
+
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(zipBlob);
+        a.download = 'UniQaidarFonts.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        progressText.textContent = '✅ تەواو! ' + (total - failed) + ' فۆنت داگیرا';
+    } catch(e) {
+        progressText.textContent = '❌ هەڵەیەک ڕوویدا: ' + e.message;
+        console.error(e);
+    } finally {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    }
+}
+</script>
 </body>
-</html>
