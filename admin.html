@@ -639,9 +639,11 @@ async function addFont() {
 
     // ② Insert at TOP of fonts array (newest fonts appear first)
     const entry   = `    { name: "${name}", file: "${name}", path: "${path}", category: ${catVal}, preview: "${prev}" },\n`;
-    const arrOpen = next.indexOf('const fonts = [\n');
+    let arrOpen = next.indexOf('const fonts = [\n');
+    if (arrOpen === -1) arrOpen = next.indexOf('const fonts = [,\n'); // handle stray comma
     if (arrOpen === -1) { return alert2(al, '❌ Could not find fonts array in index.html!', 'err'); }
-    const arrInsert = arrOpen + 'const fonts = [\n'.length;
+    // Find end of opening line and insert after it
+    const arrInsert = next.indexOf('\n', arrOpen) + 1;
     next = next.slice(0, arrInsert) + entry + next.slice(arrInsert);
 
     alert2(al, 'Pushing to GitHub...', 'inf');
