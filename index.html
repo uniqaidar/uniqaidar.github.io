@@ -1164,8 +1164,7 @@ footer strong {
 <div class="font-grid" id="font-grid" style="flex:1"></div>
 <script>
 
-const fonts = [
-    { name: "UniQAIDAR_NewsHeadLine 043", file: "UniQAIDAR_NewsHeadLine 043", path: "UniQaidarFonts/UniQAIDAR_NewsHeadLine 043.ttf", category: ["Nwe","All","Kanal","Hawal"], preview: "فۆنتی کەناڵی ئێم بی سی" },
+const fonts = [,
     { name: "UniQAIDAR_Squid Game 002", file: "UniQAIDAR_Squid Game 002", path: "UniQaidarFonts/UniQAIDAR_Squid Game 002.ttf", category: ["Kanal","Taybat"], preview: "فۆنتی سکوید گەیم" },
     { name: "UniQAIDAR_Squid Game 001", file: "UniQAIDAR_Squid Game 001", path: "UniQaidarFonts/UniQAIDAR_Squid Game 001.ttf", category: ["Kanal","Taybat"], preview: "فۆنتی سکوید گەیم" },
     { name: "UniQAIDAR_Taef", file: "UniQAIDAR_Taef", path: "UniQaidarFonts/UniQAIDAR_Taef.ttf", category: ["Kteb","Samic"], preview: "فۆنتەکانی یونی‌قەیدار - فۆنتی کوردی" },
@@ -2483,8 +2482,6 @@ async function downloadFontsDirectly() {
     progressText.textContent = 'کۆکردنەوەی ناونیشانی فۆنتەکان...';
 
     // Dynamically collect all font URLs from @font-face rules
-@font-face { font-family: 'UniQAIDAR_NewsHeadLine 043'; src: url('UniQaidarFonts/UniQAIDAR_NewsHeadLine 043.ttf'); }
-@font-face { font-family: 'UniQAIDAR_NewsHeadLine 043'; src: url('UniQaidarFonts/UniQAIDAR_NewsHeadLine 043.ttf'); }
     const fontUrls = new Set();
     for (const sheet of document.styleSheets) {
         try {
