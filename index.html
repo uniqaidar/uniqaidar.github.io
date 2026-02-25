@@ -1797,7 +1797,7 @@ function applyUrlParams() {
     const fontParam = params.get('font');
     if (!catParam) return;
 
-    // Find and click the matching category button
+    // Find and click the matching category button in both panels
     const allBtns = document.querySelectorAll('#desktop-panel .filter-btn');
     let matched = null;
     allBtns.forEach(function(b) {
@@ -1806,7 +1806,16 @@ function applyUrlParams() {
         if (id && id.toLowerCase() === catParam.toLowerCase()) matched = b;
     });
     if (matched) {
-        filterFonts(matched.getAttribute('onclick').split("'")[1], matched);
+        const matchedCatId = matched.getAttribute('onclick').split("'")[1];
+        filterFonts(matchedCatId, matched);
+        // Also update mobile panel: activate button + update label
+        document.querySelectorAll('#mobile-panel .filter-btn').forEach(function(b) {
+            const id = (b.getAttribute('onclick') || '').split("'")[1];
+            if (id && id.toLowerCase() === catParam.toLowerCase()) {
+                b.classList.add('active');
+                document.getElementById('mobile-active-label').textContent = b.textContent.trim();
+            }
+        });
     }
 
     // Scroll to + highlight specific font card
