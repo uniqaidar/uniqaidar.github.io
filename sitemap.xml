@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Home Page -->
+  <url>
+    <loc>https://uniqaidar.pages.dev/</loc>
+    <lastmod>2025-02-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+
+  <!-- Main Category Pages -->
+  <url><loc>https://uniqaidar.pages.dev/?cat=Nwe</loc><changefreq>weekly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://uniqaidar.pages.dev/?cat=Kteb</loc><changefreq>weekly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://uniqaidar.pages.dev/?cat=Hawal</loc><changefreq>weekly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://uniqaidar.pages.dev/?cat=Kanal</loc><changefreq>weekly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://uniqaidar.pages.dev/?cat=Dastnus</loc><changefreq>weekly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://uniqaidar.pages.dev/?cat=Islami</loc><changefreq>weekly</changefreq><priority>0.70</priority></url>
+
+  <!-- Individual Font Pages (SEO Boost) -->
+  <url>
+    <loc>https://uniqaidar.pages.dev/?cat=Nwe&amp;font=UniQAIDAR_NewsHeadLine%20045</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://uniqaidar.pages.dev/?cat=Nwe&amp;font=UniQAIDAR_NewsHeadLine%20044</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://uniqaidar.pages.dev/?cat=Nwe&amp;font=UniQAIDAR_NewsHeadLine%20043</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://uniqaidar.pages.dev/?cat=Nwe&amp;font=UniQAIDAR_Bahar%20001</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://uniqaidar.pages.dev/?cat=Kanal&amp;font=UniQAIDAR_Squid%20Game%20002</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://uniqaidar.pages.dev/?cat=Hawal&amp;font=UniQAIDAR_Money%20Heist%20001</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://uniqaidar.pages.dev/?cat=Ali&amp;font=UniQAIDAR_AKSulaimania</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://uniqaidar.pages.dev/?cat=Kteb&amp;font=UniQAIDAR_A7MED</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://uniqaidar.pages.dev/?cat=Kteb&amp;font=UniQAIDAR_Soz%20017</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://uniqaidar.pages.dev/?cat=Hawal&amp;font=UniQAIDAR_Zhyan%20001</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://uniqaidar.pages.dev/?cat=Media&amp;font=UniQAIDAR_Social%20Media%20006</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://uniqaidar.pages.dev/?cat=Kanal&amp;font=UniQAIDAR_Asiacell%20001</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.60</priority>
+  </url>
+</urlset>
