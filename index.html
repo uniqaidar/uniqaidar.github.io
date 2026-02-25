@@ -12,7 +12,13 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فۆنته‌كانی یونی قه‌یدار</title>
+    <title>UniQaidar Fonts | فۆنتەکانی یونی قەیدار - داگرتنی فۆنتی کوردی</title>
+    <meta name="description" content="گەورەترین کۆکراوەی فۆنتی کوردی و عەرەبی بۆ داگرتن. تاقیکردنەوە و داگرتنی فۆنتەکانی یونی‌قەیدار بە خۆڕایی. Download 420+ free TTF fonts.">
+    <meta name="keywords" content="فۆنتەکانی یونی‌قەیدار, فۆنتەکانی یونی قەیدار, فۆنتی کوردی, فۆنتی عەرەبی, داگرتنی فۆنت, kurdish fonts, arabic fonts, uniqaidar fonts, typography">
+    <meta property="og:title" content="UniQaidar Fonts - داگرتنی فۆنتی کوردی بە خۆڕایی">
+    <meta property="og:description" content="Browse, test, and download over 420 free Kurdish and Arabic fonts instantly.">
+    <meta property="og:image" content="https://uniqaidar.pages.dev/Logo.png">
+    <meta property="og:url" content="https://uniqaidar.pages.dev/">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -1050,6 +1056,24 @@ footer strong {
 .card-copy-btn.copied { background: rgba(0,112,228,1); color: #ff5700; }
 .card-header { position: relative; }
 
+
+/* ── Category font count badge ── */
+.cat-count {
+    display: inline;
+    background: none;
+    color: rgba(255,255,255,0.75);
+    font-size: 0.75rem;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", Arial, sans-serif;
+    margin-right: 6px;
+    letter-spacing: 0;
+    pointer-events: none;
+    position: relative;
+    top: -3px;
+}
+.filter-btn.active .cat-count {
+    color: rgba(255,255,255,0.95);
+}
+
     </style>
 </head>
 <body style="min-height:100vh;display:flex;flex-direction:column;">
@@ -1094,7 +1118,7 @@ footer strong {
     </div>
 
     <div class="header-logo">
-        <a href="https://uniqaidar.pages.dev" onclick="location.reload(); return false;" title="UniQaidar Fonts" style="cursor:pointer;">
+        <a href="https://uniqaidar.pages.dev" onclick="window.location.href='https://uniqaidar.pages.dev'; return false;" title="UniQaidar Fonts" style="cursor:pointer;">
             <img src="Logo.png" alt="UniQaidar logo">
         </a>
     </div>
@@ -1862,7 +1886,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // Desktop: wrap btn + copy icon in a flex span
         const dWrap = document.createElement('span');
         dWrap.style.cssText = 'display:inline-flex;align-items:center;gap:2px;flex-shrink:0;';
+        // Count fonts for this category
+        const catCount = catId === 'All'
+            ? fonts.length
+            : fonts.filter(function(f) {
+                if (Array.isArray(f.category)) return f.category.some(function(cc){ return cc.toLowerCase() === catId.toLowerCase(); });
+                return (f.category || '').toLowerCase() === catId.toLowerCase();
+              }).length;
+
         const dBtn = btn.cloneNode(true);
+        const dCountBadge = document.createElement('span');
+        dCountBadge.className = 'cat-count';
+        dCountBadge.textContent = ' (' + catCount + ')';
+        dBtn.appendChild(dCountBadge);
         const dCopy = document.createElement('button');
         dCopy.className = 'copy-cat-btn';
         dCopy.title = 'Copy category link';
@@ -1876,6 +1912,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const mWrap = document.createElement('span');
         mWrap.style.cssText = 'display:inline-flex;align-items:center;gap:2px;flex-shrink:0;';
         const mBtn = btn.cloneNode(true);
+        const mCountBadge = document.createElement('span');
+        mCountBadge.className = 'cat-count';
+        mCountBadge.textContent = ' (' + catCount + ')';
+        mBtn.appendChild(mCountBadge);
         const mCopy = document.createElement('button');
         mCopy.className = 'copy-cat-btn';
         mCopy.title = 'Copy category link';
