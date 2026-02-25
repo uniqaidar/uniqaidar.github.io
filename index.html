@@ -737,7 +737,7 @@ footer strong {
     cursor: pointer;
     font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif;
 }
-.filter-mobile-toggle .toggle-label { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; white-space: nowrap; }
+.filter-mobile-toggle .toggle-label { display: flex; align-items: center; gap: 10px; flex: 1; overflow: visible; white-space: nowrap; min-width: 0; }
 .filter-mobile-toggle .toggle-arrow { transition: transform 0.25s; font-size: 0.8rem; }
 .filter-mobile-toggle.open .toggle-arrow { transform: rotate(180deg); }
 .filter-mobile-panel {
@@ -929,7 +929,8 @@ footer strong {
     }
 
     /* تۆگڵی کاتیگۆری — مۆبایل */
-    .filter-mobile-toggle { font-size: 0.88rem !important; }
+    .filter-mobile-toggle { font-size: 1.1rem !important; }
+    .filter-mobile-toggle .toggle-label span#mobile-active-label { font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif !important; font-weight: normal !important; white-space: nowrap !important; }
 
     /* بۆکسی تاقیکردنەوە */
     #test-input {
@@ -1176,7 +1177,7 @@ footer strong {
         <button class="filter-mobile-toggle" id="mobile-toggle" onclick="toggleMobileCats()">
             <span class="toggle-label">
                 <span>&#9776;</span>
-                <span id="mobile-active-label" style="white-space:nowrap;">نوێ</span>
+                <span id="mobile-active-label">نوێ</span>
             </span>
             <span class="toggle-arrow">&#9660;</span>
         </button>
@@ -1748,6 +1749,7 @@ function filterFonts(category, btn) {
     // ئەگەر دوگمەکە لە mobile-panel بوو: لیبلی نوێ بدە و دابخە
     if (btn && btn.closest('#mobile-panel')) {
         document.getElementById('mobile-active-label').textContent = btn.textContent.trim();
+        fitMobileLabel();
         document.getElementById('mobile-panel').classList.remove('open');
         document.getElementById('mobile-toggle').classList.remove('open');
     }
@@ -1852,6 +1854,7 @@ function applyUrlParams() {
             if (id && id.toLowerCase() === catParam.toLowerCase()) {
                 b.classList.add('active');
                 document.getElementById('mobile-active-label').textContent = b.textContent.trim();
+                fitMobileLabel();
             }
         });
     }
@@ -1875,6 +1878,48 @@ function applyUrlParams() {
         }, 400);
     }
 }
+
+// ── Auto-fit mobile category label font size ────────────
+function fitMobileLabel() {
+    if (window.innerWidth > 768) return; // mobile only
+    var toggle = document.getElementById('mobile-toggle');
+    var label  = document.getElementById('mobile-active-label');
+    if (!toggle || !label) return;
+
+    var text = label.textContent || '';
+    if (!text.trim()) return;
+
+    // Measure actual widths from DOM for accuracy
+    var arrow     = toggle.querySelector('.toggle-arrow');
+    var hamburger = toggle.querySelector('.toggle-label > span:first-child');
+    var toggleW   = toggle.getBoundingClientRect().width;
+    var arrowW    = arrow     ? arrow.getBoundingClientRect().width     : 20;
+    var hambW     = hamburger ? hamburger.getBoundingClientRect().width : 20;
+
+    // Subtract: both icons + gaps + padding + 20px safety buffer so text never touches arrow
+    var available = toggleW - arrowW - hambW - 10 - 32 - 20;
+    if (available <= 0) return;
+
+    var maxPx = 19;  // ~1.1rem — largest comfortable size
+    var minPx = 10;  // floor
+
+    // Use canvas to measure text width accurately (font-independent)
+    var canvas = fitMobileLabel._canvas || (fitMobileLabel._canvas = document.createElement('canvas'));
+    var ctx = canvas.getContext('2d');
+
+    // Binary search for the perfect size
+    var lo = minPx, hi = maxPx;
+    for (var i = 0; i < 20; i++) {
+        var mid = (lo + hi) / 2;
+        ctx.font = mid + 'px "UniQAIDAR_Peregraf 01", Tahoma, sans-serif';
+        var w = ctx.measureText(text).width;
+        if (w <= available) { lo = mid; } else { hi = mid; }
+    }
+    label.style.fontSize = Math.min(lo, maxPx) + 'px';
+}
+
+// Re-run fitMobileLabel after custom font is guaranteed loaded
+document.fonts.ready.then(function() { fitMobileLabel(); });
 
 document.addEventListener('DOMContentLoaded', function() {
     // Populate both dropdown panels from the hidden marquee-content (admin source of truth)
@@ -1941,6 +1986,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const activeLabel = firstDesktop ? firstDesktop.textContent.trim() : '';
     document.getElementById('desktop-active-label').textContent = activeLabel;
     document.getElementById('mobile-active-label').textContent  = activeLabel;
+    fitMobileLabel();
 
     // Use the actual ID from the first button (works even if admin renamed nwe → Nwe etc.)
     const firstBtnOnclick = firstDesktop ? firstDesktop.getAttribute('onclick') : null;
@@ -1965,6 +2011,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     setPlaceholder();
     window.addEventListener('resize', setPlaceholder);
+    window.addEventListener('resize', fitMobileLabel);
 })();
 
 // ── مۆدالی داگرتن ───────────────────────────────────────
