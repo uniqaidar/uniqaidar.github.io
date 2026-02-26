@@ -762,18 +762,31 @@ footer strong {
 .filter-mobile-toggle .toggle-arrow { transition: transform 0.25s; font-size: 0.8rem; }
 .filter-mobile-toggle.open .toggle-arrow { transform: rotate(180deg); }
 .filter-mobile-panel {
-    display: none;
+    display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    padding: 10px 14px 14px;
+    padding: 0 14px;
     background: #111;
     border-top: 1px solid rgba(255,255,255,0.08);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease, padding 0.3s ease;
+    pointer-events: none;
 }
-.filter-mobile-panel.open { display: flex; }
+.filter-mobile-panel.open {
+    max-height: 70vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    opacity: 1;
+    padding: 12px 14px 16px;
+    pointer-events: auto;
+}
 
 
 .modal {
-    display: none;
+    display: flex;
     position: fixed;
     z-index: 9999;
     left: 0;
@@ -782,11 +795,21 @@ footer strong {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(5px);
-    animation: fadeIn 0.3s ease;
     overflow-y: auto;
     overflow-x: hidden;
     padding: 0 0 20px;
     box-sizing: border-box;
+    align-items: flex-start;
+    justify-content: center;
+    /* hidden by default via opacity+pointer-events, NOT display:none */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
+    -webkit-overflow-scrolling: touch;
+}
+.modal.modal-open {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .modal-content {
@@ -804,9 +827,14 @@ footer strong {
     direction: rtl;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    transform: translateY(0);
-    animation: slideUp 0.4s ease-out;
+    transform: translateY(40px) scale(0.97);
+    transition: transform 0.35s cubic-bezier(0.34,1.3,0.64,1), opacity 0.3s ease;
+    opacity: 0;
     -webkit-overflow-scrolling: touch;
+}
+.modal.modal-open .modal-content {
+    transform: translateY(0) scale(1);
+    opacity: 1;
 }
 
 .close-btn {
@@ -847,15 +875,6 @@ footer strong {
 }
 
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideUp {
-    from { transform: translateY(50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
 
 
 .header-btn {
@@ -2090,14 +2109,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ── مۆدالی داگرتن ───────────────────────────────────────
 const downloadModal = document.getElementById('downloadModal');
+
+function openModal(m)  {
+    m.classList.add('modal-open');
+    document.body.style.overflow = 'hidden';
+}
+function closeModal(m) {
+    m.classList.remove('modal-open');
+    document.body.style.overflow = '';
+}
+
 document.getElementById('downloadModalBtn').onclick = function() {
-    downloadModal.style.display = 'block';
+    openModal(downloadModal);
 };
 document.querySelector('.close-download').onclick = function() {
-    downloadModal.style.display = 'none';
+    closeModal(downloadModal);
 };
 window.addEventListener('click', function(e) {
-    if (e.target === downloadModal) downloadModal.style.display = 'none';
+    if (e.target === downloadModal) closeModal(downloadModal);
 });
 
 </script>
@@ -2150,13 +2179,13 @@ window.addEventListener('click', function(e) {
 const aboutModal = document.getElementById('aboutModal');
 document.getElementById('aboutBtn').onclick = function(e) {
     e.preventDefault();
-    aboutModal.style.display = 'block';
+    openModal(aboutModal);
 };
 document.querySelector('.close-btn').onclick = function() {
-    aboutModal.style.display = 'none';
+    closeModal(aboutModal);
 };
 window.addEventListener('click', function(e) {
-    if (e.target === aboutModal) aboutModal.style.display = 'none';
+    if (e.target === aboutModal) closeModal(aboutModal);
 });
 </script>
 <script>
