@@ -161,15 +161,15 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
 <!-- سێتەپ -->
 <div id="setup-screen">
     <div class="setup-box">
-        <h2>🔐 پەیوەندی بە GitHub</h2>
-        <p class="sub">پانێل رووناست پەیوەندی بە ڕیپۆی GitHub دەکات و index.html بە خۆی دەدۆزێتەوە و نوێ دەکاتەوە.</p>
+        <h2>🔐 Connect to GitHub</h2>
+        <p class="sub">The admin panel connects to your GitHub repo and reads/writes index.html automatically.</p>
         <div class="setup-steps">
-            <strong>چۆن تۆکێن دروست بکەیت (یەک جار تەنها):</strong><br>
-            ١. بچۆ بۆ <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a><br>
-            ٢. ناوێکی بنووسە بۆ تۆکێنەکە<br>
-            ٣. تیک بدە لەسەر <strong>repo</strong> (تەواوی ڕیپۆ)<br>
-            ٤. کلیک بکە لەسەر <strong>Generate token</strong><br>
-            ٥. تۆکێنەکە کۆپی بکە و لێرەدا پەیست بکە
+            <strong>How to create a token (one time only):</strong><br>
+            1. Go to <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a><br>
+            2. Give it any name<br>
+            3. Check <strong>repo</strong> (full repository access)<br>
+            4. Click <strong>Generate token</strong><br>
+            5. Copy the token and paste it below
         </div>
         <div class="setup-field">
             <label>GitHub Token (ghp_...)</label>
@@ -185,7 +185,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
         </div>
         <div id="setup-alert" class="alert"></div>
         <div class="btn-row" style="margin-top:16px;">
-            <button class="btn btn-primary" onclick="doSetup()">🔌 پەیوەندی و بارکردن ✓</button>
+            <button class="btn btn-primary" onclick="doSetup()">🔌 Connect & Load ✓</button>
         </div>
     </div>
 </div>
@@ -203,13 +203,14 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
 <!-- ناوەڕۆک -->
 <main>
     <div class="tabs">
-        <button class="tab active" onclick="go('t-fonts',   this)">🔤 فۆنتەکان</button>
-        <button class="tab"        onclick="go('t-cats',    this)">🗂 کاتێگۆری</button>
-        <button class="tab"        onclick="go('t-header',  this)">🔗 هێدەر</button>
-        <button class="tab"        onclick="go('t-download',this)">⬇ داگرتن</button>
-        <button class="tab"        onclick="go('t-about',   this)">ℹ دەربارە</button>
+        <button class="tab active" onclick="go('t-fonts',   this)">🔤 Fonts</button>
+        <button class="tab"        onclick="go('t-cats',    this)">🗂 Categories</button>
+        <button class="tab"        onclick="go('t-header',  this)">🔗 Header</button>
+        <button class="tab"        onclick="go('t-download',this)">⬇ Download</button>
+        <button class="tab"        onclick="go('t-about',   this)">ℹ About</button>
         <button class="tab"        onclick="go('t-seo',     this)">🌐 SEO</button>
-        <button class="tab"        onclick="go('t-arc',     this)">📦 ئارشێف</button>
+        <button class="tab"        onclick="go('t-arc',     this)">📦 Archive</button>
+        <button class="tab"        onclick="go('t-ifont',   this)">🎨 Interface Font</button>
     </div>
 
     <!-- ══════════════════════════════════════════════════════ -->
@@ -248,12 +249,12 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                             color:#f0f0f0; text-align:center; overflow:hidden;
                             display:flex; align-items:center; justify-content:center;
                             font-family: Tahoma, sans-serif;">
-                            — دووستان فۆنتێک هەڵبژێرە —
+                            فۆنتێک هەڵبژێرە بۆ دەرکەوتنی پریڤیو
                         </div>
                     </div>
                     <div class="form-group">
                         <label>بەرواری زیادکردن (YYYY-MM-DD)</label>
-                        <input type="text" id="f-date" placeholder="2026-02-25">
+                        <input type="date" id="f-date" style="direction:ltr;color-scheme:dark;">
                     </div>
                     <div class="form-group">
                         <!-- spacer -->
@@ -646,6 +647,43 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
         </div>
     </div>
 
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB: Interface Font                                    -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="t-ifont" class="tab-content">
+        <div class="box">
+            <div class="box-header"><div class="dot" style="background:var(--purple)"></div> Website Interface Font</div>
+            <div class="box-body">
+                <p style="font-size:0.83rem;color:var(--muted);margin-bottom:16px;line-height:1.8;">
+                    This controls the font used for the entire website interface (header, buttons, search box, modals, footer, etc.).<br>
+                    The font must already exist in your <code style="color:var(--yellow);font-family:var(--mono)">UniQaidarFonts/</code> folder.
+                    Currently: <strong id="ifont-current" style="color:var(--green);font-family:var(--mono)">UniQAIDAR_Peregraf 01</strong>
+                </p>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Select from existing fonts in website</label>
+                        <select id="ifont-select" style="font-family:var(--mono);font-size:0.85rem;direction:ltr;" onchange="previewInterfaceFont()">
+                            <option value="">— loading... —</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <label>Live Preview (interface font applied below)</label>
+                        <div id="ifont-preview-box" style="
+                            background:#111;border:1px solid #333;border-radius:8px;
+                            padding:16px 20px;font-size:1.4rem;color:#f0f0f0;
+                            line-height:2;direction:rtl;">
+                            <span id="ifont-preview-text">فۆنتێک هەڵبژێرە بۆ دەرکەوتنی پریڤیو — UniQaidar Fonts | فۆنتی کوردی</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="ifont-alert" class="alert"></div>
+                <div class="btn-row">
+                    <button id="ifont-btn" class="btn btn-primary" onclick="saveInterfaceFont()" disabled>💾 Save Interface Font to GitHub</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </main>
 
 <!-- ئۆڤەرلەی سەیڤ کردن -->
@@ -659,34 +697,31 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
     <div class="modal-box">
         <h3>✏️ دەستکاریکردنی فۆنت</h3>
         <input type="hidden" id="edit-orig-name">
+        <input type="hidden" id="edit-path">
         <div class="form-grid">
-            <div class="form-group">
-                <label>ناوی فۆنت (name)</label>
-                <input type="text" id="edit-name">
+            <div class="form-group full">
+                <label>Font File Name (readonly — don't change)</label>
+                <input type="text" id="edit-name" dir="ltr" style="font-family:var(--mono);font-size:0.85rem;direction:ltr;" readonly>
             </div>
-            <div class="form-group">
-                <label>ناوی کارت (displayName) — ناوی نیشاندراو لەسەر کارتەکە</label>
-                <input type="text" id="edit-displayname" dir="ltr" style="font-family:var(--mono);font-size:0.85rem;direction:ltr;">
+            <div class="form-group full">
+                <label>Display Name on Card (what visitors see)</label>
+                <input type="text" id="edit-displayname" dir="ltr" style="font-family:var(--mono);font-size:0.85rem;direction:ltr;" placeholder="مەسەلەن: UniQAIDAR_MyFont 001">
             </div>
             <div class="form-group">
                 <label>ناوی فایل</label>
-                <input type="text" id="edit-file">
+                <input type="text" id="edit-file" dir="ltr" style="font-family:var(--mono);font-size:0.85rem;direction:ltr;" readonly>
             </div>
-            <div class="form-group full">
-                <label>ڕێگای فایل</label>
-                <input type="text" id="edit-path">
+            <div class="form-group">
+                <label>بەرواری زیادکردن (YYYY-MM-DD)</label>
+                <input type="date" id="edit-date" style="direction:ltr;color-scheme:dark;">
             </div>
             <div class="form-group full">
                 <label>دەقی پێشبینی</label>
                 <input type="text" id="edit-preview">
             </div>
-            <div class="form-group">
-                <label>بەرواری زیادکردن</label>
-                <input type="text" id="edit-date">
-            </div>
-            <div class="form-group">
-                <label>کاتێگۆریەکان</label>
-                <div id="edit-cat-pills" class="cat-pills" style="margin-top:4px;"></div>
+            <div class="form-group full">
+                <label>کاتێگۆریەکان — یەک یان زیاتر هەڵبژێرە</label>
+                <div id="edit-cat-pills" class="cat-pills" style="margin-top:6px;"></div>
                 <input type="hidden" id="edit-cats">
             </div>
         </div>
@@ -822,6 +857,7 @@ async function loadIndex() {
         buildArcSel();
         renderArc();
         renderArcFull();
+        buildInterfaceFontSelect();
         return true;
     } catch(e){ console.error(e); return false; }
 }
@@ -831,19 +867,39 @@ async function loadIndex() {
 // ══════════════════════════════════════════
 function parseFonts() {
     fnts = [];
-    const rx = /\{\s*name:\s*"([^"]+)"[^}]+file:\s*"([^"]+)"[^}]+path:\s*"([^"]+)"[^}]+category:\s*([\[\]"'\w,\s]+?)[^}]+preview:\s*"([^"]*)"(?:[^}]+dateAdded:\s*"([^"]*)")?\s*\}/g;
+    // Match any font object in the array — capture the entire object content
+    const rx = /\{\s*name:\s*"([^"]+)"([\s\S]*?)\}/g;
     let m;
     while ((m = rx.exec(RAW)) !== null) {
-        const cats_raw = m[4].trim();
-        let cats_arr;
-        if (cats_raw.startsWith('[')) {
-            cats_arr = cats_raw.replace(/[\[\]"'\s]/g,'').split(',').filter(Boolean);
-        } else {
-            cats_arr = [cats_raw.replace(/["']/g,'').trim()];
+        const body = m[0];
+        // Only process if it looks like a font entry (has 'file:' or 'path:')
+        if (!body.includes('file:') && !body.includes('path:')) continue;
+        const nameM    = body.match(/name:\s*"([^"]*)"/);
+        const fileM    = body.match(/file:\s*"([^"]*)"/);
+        const pathM    = body.match(/path:\s*"([^"]*)"/);
+        const prevM    = body.match(/preview:\s*"([^"]*)"/);
+        const dateM    = body.match(/dateAdded:\s*"([^"]*)"/);
+        const dnM      = body.match(/displayName:\s*"([^"]*)"/);
+        const catM     = body.match(/category:\s*(\[[^\]]*\]|"[^"]*")/);
+        if (!nameM || !fileM) continue;
+        let cats_arr = [];
+        if (catM) {
+            const cats_raw = catM[1].trim();
+            if (cats_raw.startsWith('[')) {
+                cats_arr = cats_raw.replace(/[\[\]"'\s]/g,'').split(',').filter(Boolean);
+            } else {
+                cats_arr = [cats_raw.replace(/["']/g,'').trim()];
+            }
         }
-        // Extract displayName if present
-        const dn = m[0].match(/displayName:\s*"([^"]*)"/);
-        fnts.push({ name:m[1], file:m[2], path:m[3], category:cats_arr, preview:m[5], dateAdded:m[6]||'', displayName:dn?dn[1]:'' });
+        fnts.push({
+            name:        nameM ? nameM[1] : '',
+            file:        fileM ? fileM[1] : '',
+            path:        pathM ? pathM[1] : (fileM ? `UniQaidarFonts/${fileM[1]}.ttf` : ''),
+            category:    cats_arr,
+            preview:     prevM ? prevM[1] : '',
+            dateAdded:   dateM ? dateM[1] : '',
+            displayName: dnM   ? dnM[1]   : ''
+        });
     }
 }
 
@@ -1114,13 +1170,17 @@ function renderArcFull() {
         return;
     }
     filtered.forEach(f => {
-        const fc = Array.isArray(f.category) ? f.category.join(', ') : f.category;
+        const fc = Array.isArray(f.category) ? f.category : [f.category];
+        const badgesHtml = fc.map(cid => {
+            const catObj = cats.find(c => c.id === cid);
+            return `<span class="badge" style="margin-left:3px;">${cid}</span>`;
+        }).join('');
         const div = document.createElement('div');
         div.className = 'arc-item';
         div.innerHTML = `
             <span class="arc-name">${f.name}</span>
             <span class="arc-prev">${f.preview||''}</span>
-            <span class="badge">${fc}</span>
+            <span style="display:flex;gap:3px;flex-wrap:wrap;">${badgesHtml}</span>
             <button class="btn btn-ghost" style="padding:5px 10px;font-size:0.75rem;" onclick="openEdit(${fnts.indexOf(f)})">✏️</button>
             <button class="btn btn-red"   style="padding:5px 10px;font-size:0.75rem;" onclick="deleteFont(${fnts.indexOf(f)})">🗑</button>`;
         fullEl.appendChild(div);
@@ -1200,7 +1260,7 @@ function onFontSelect() {
     const box = document.getElementById('live-preview-box');
     const dnInput = document.getElementById('f-displayname');
     if (!filename) {
-        if (box) { box.textContent = '— دووستان فۆنتێک هەڵبژێرە —'; box.style.fontFamily = 'Tahoma, sans-serif'; }
+        if (box) { box.textContent = 'فۆنتێک هەڵبژێرە بۆ دەرکەوتنی پریڤیو'; box.style.fontFamily = 'Tahoma, sans-serif'; }
         if (dnInput) dnInput.value = '';
         return;
     }
@@ -1238,7 +1298,7 @@ function clearFont() {
     const status = document.getElementById('scan-status');
     if (status) status.textContent = '';
     const box = document.getElementById('live-preview-box');
-    if (box) { box.textContent = '— دووستان فۆنتێک هەڵبژێرە —'; box.style.fontFamily = 'Tahoma, sans-serif'; }
+    if (box) { box.textContent = 'فۆنتێک هەڵبژێرە بۆ دەرکەوتنی پریڤیو'; box.style.fontFamily = 'Tahoma, sans-serif'; }
     document.querySelectorAll('#f-cat-pills .cat-pill').forEach(b => b.classList.remove('on'));
     set('f-cats', '');
 }
@@ -1290,7 +1350,19 @@ async function addFont() {
     const arrInsert = next.indexOf('\n', arrOpen) + 1;
     next = next.slice(0, arrInsert) + entry + next.slice(arrInsert);
 
-    // ③ Safety check
+    // ③ Also insert into FONT_FILES so zip download stays in sync
+    const ffAnchor = 'const FONT_FILES = [';
+    const ffPos = next.indexOf(ffAnchor);
+    if (ffPos !== -1) {
+        const encodedPath = `UniQaidarFonts/${filename.replace(/ /g,'%20')}`;
+        const ffEntry = `\n        "${encodedPath}",`;
+        const ffInsert = next.indexOf('\n', ffPos) + 1;
+        if (!next.includes(`"${encodedPath}"`)) {
+            next = next.slice(0, ffInsert) + ffEntry + next.slice(ffInsert);
+        }
+    }
+
+    // ④ Safety check
     if (!next.includes('<!DOCTYPE html>') || !next.includes(`"${name}"`)) {
         return alert2(al, '❌ Safety check سەرنەکەوت — بۆ پاراستنی فایلەکەت هەڵوەشاندرایەوە!', 'err');
     }
@@ -1313,13 +1385,30 @@ function openEdit(i) {
     const f = fnts[i];
     set('edit-orig-name', f.name);
     set('edit-name', f.name);
-    set('edit-displayname', f.displayName || '');
-    set('edit-file', f.file);
+    set('edit-displayname', f.displayName || f.name || '');
+    set('edit-file', f.file || f.name);
     set('edit-path', f.path);
     set('edit-preview', f.preview);
-    set('edit-date', f.dateAdded||'');
-    buildCatPills();
-    setPills('edit-cat-pills', Array.isArray(f.category)?f.category:[f.category]);
+    const dateVal = (f.dateAdded || '').trim();
+    set('edit-date', dateVal);
+
+    // Build pills with correct ON state for ALL pre-selected categories
+    const catArr = Array.isArray(f.category) ? f.category : (f.category ? [f.category] : []);
+    const container = document.getElementById('edit-cat-pills');
+    if (container) {
+        container.innerHTML = '';
+        cats.forEach(c => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'cat-pill' + (catArr.includes(c.id) ? ' on' : '');
+            btn.textContent = c.label;
+            btn.dataset.id = c.id;
+            btn.onclick = () => { btn.classList.toggle('on'); syncCatInput('edit-cat-pills'); };
+            container.appendChild(btn);
+        });
+        syncCatInput('edit-cat-pills');
+    }
+
     document.getElementById('edit-alert').className='alert';
     document.getElementById('edit-modal').classList.add('show');
 }
@@ -1372,8 +1461,15 @@ async function deleteFont(i) {
     if (!confirm(`فۆنتی "${f.name}" بسڕێتەوە لە وێبسایت؟\n\nتێبینی: تەنها لە index.html دەسڕێتەوە. فایلی .ttf لە UniQaidarFonts/ لە GitHub دەمێنێتەوە.`)) return;
     const escapedName = f.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
     const rx = new RegExp(`[ \\t]*\\{\\s*name:\\s*"${escapedName}"[^}]+\\},?\\r?\\n?`, '');
-    const next = RAW.replace(rx, '');
+    let next = RAW.replace(rx, '');
     if (next===RAW) return alert('❌ تۆمارەکەی فۆنت نەدۆزرایەوە!');
+
+    // Also remove from FONT_FILES (keep zip download in sync)
+    const filename = (f.file || f.name) + '.ttf';
+    const encodedPath = `UniQaidarFonts/${filename.replace(/ /g,'%20')}`;
+    const ffRx = new RegExp(`[ \\t]*"${encodedPath.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}",?\\r?\\n?`, '');
+    next = next.replace(ffRx, '');
+
     showOverlay(`سڕینەوەی ${f.name}...`);
     const ok = await ghPut(next, `Delete font: ${f.name}`);
     hideOverlay();
@@ -1709,6 +1805,86 @@ async function saveSEO() {
 }
 
 // ══════════════════════════════════════════
+// Interface Font Tab
+// ══════════════════════════════════════════
+function buildInterfaceFontSelect() {
+    const sel = document.getElementById('ifont-select');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">— Select a font —</option>';
+    // Get current interface font from index.html
+    const currentM = RAW ? RAW.match(/font-family:\s*'([^']+)',\s*Tahoma,\s*Arial,\s*sans-serif\s*!important/) : null;
+    const currentFont = currentM ? currentM[1] : 'UniQAIDAR_Peregraf 01';
+    const el = document.getElementById('ifont-current');
+    if (el) el.textContent = currentFont;
+
+    // Sort fonts alphabetically
+    const sorted = [...fnts].sort((a,b) => a.name.localeCompare(b.name));
+    sorted.forEach(f => {
+        const opt = document.createElement('option');
+        const displayN = f.displayName || f.name;
+        opt.value = f.name;
+        opt.textContent = displayN;
+        if (f.name === currentFont) opt.selected = true;
+        sel.appendChild(opt);
+    });
+    // Enable button
+    const btn = document.getElementById('ifont-btn');
+    if (btn) btn.disabled = false;
+    // Show preview of current font
+    previewInterfaceFont();
+}
+
+function previewInterfaceFont() {
+    const sel = document.getElementById('ifont-select');
+    if (!sel || !sel.value) return;
+    const name = sel.value;
+    const box  = document.getElementById('ifont-preview-text');
+    if (!box) return;
+    // Load font if needed
+    const styleId = 'ifont-dyn-' + name.replace(/[^a-zA-Z0-9]/g, '_');
+    if (!document.getElementById(styleId)) {
+        const s = document.createElement('style');
+        s.id = styleId;
+        s.textContent = `@font-face { font-family: '${name}'; src: url('UniQaidarFonts/${name}.ttf') format('truetype'); }`;
+        document.head.appendChild(s);
+    }
+    box.style.fontFamily = `'${name}', Tahoma, sans-serif`;
+}
+
+async function saveInterfaceFont() {
+    const sel = document.getElementById('ifont-select');
+    const al  = document.getElementById('ifont-alert');
+    if (!sel || !sel.value) return alert2(al, '❌ تکایە فۆنتێک هەڵبژێرە!', 'err');
+    const newFont = sel.value;
+
+    // Replace the interface font in the CSS rule
+    // Pattern: font-family: 'OldFont', Tahoma, Arial, sans-serif !important;
+    let next = RAW;
+    const replaced = next.replace(
+        /(font-family:\s*')[^']+(',\s*Tahoma,\s*Arial,\s*sans-serif\s*!important)/g,
+        `$1${newFont}$2`
+    );
+    if (replaced === RAW) {
+        return alert2(al, '❌ Interface font pattern not found in index.html! Make sure your index.html has the standard font-family rule.', 'err');
+    }
+    // Also update the monospace fallback line if present
+    const replaced2 = replaced.replace(
+        /(font-family:\s*')[^']+(',\s*Tahoma,\s*monospace)/g,
+        `$1${newFont}$2`
+    );
+
+    alert2(al, 'Saving to GitHub...', 'inf');
+    const ok = await ghPut(replaced2, `Update interface font: ${newFont}`);
+    if (ok) {
+        alert2(al, `✅ Interface font updated to "${newFont}"!`, 'ok');
+        const el = document.getElementById('ifont-current');
+        if (el) el.textContent = newFont;
+    } else {
+        alert2(al, '❌ Save failed. Check your token!', 'err');
+    }
+}
+
+// ══════════════════════════════════════════
 // Helpers
 // ══════════════════════════════════════════
 function setReady(val) {
@@ -1726,6 +1902,7 @@ function go(id, btn) {
     document.getElementById(id).classList.add('active');
     btn.classList.add('active');
     if (id==='t-arc') renderArcFull();
+    if (id==='t-ifont') buildInterfaceFontSelect();
 }
 
 function showOverlay(msg) { document.getElementById('overlay-msg').textContent = msg||'...'; document.getElementById('overlay').classList.add('show'); }
