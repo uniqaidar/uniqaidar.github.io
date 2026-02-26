@@ -106,7 +106,8 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .social-icon:hover {
+        .social-icon:hover,
+        .social-icon:active {
             background: #ff5700;
             transform: scale(1.1);
         }
@@ -148,33 +149,41 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
 .font-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 30px;
-    padding: 40px;
+    gap: 28px;
+    padding: 36px 40px;
     align-items: start;
 }
 
 .card {
-    background: white;
-    border-radius: 12px;
+    background: #ffffff;
+    border-radius: 16px;
     padding: 0;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     display: flex;
     flex-direction: column;
-    border: 1px solid #dde1e7;
-    transition: 0.3s;
+    border: 1px solid #eaecf0;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
     box-sizing: border-box;
     min-height: 0;
     overflow: hidden;
     align-self: start;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+.card:hover,
+.card:active {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+    transform: translateY(-2px);
 }
 .card-header {
-    background: #dde1e7;
-    padding: 10px 16px 10px;
+    background: #dde3ea;
+    padding: 12px 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 3px;
     text-align: center;
+    border-bottom: 1px solid #c8d0da;
 }
 .card-eng-name {
     font-size: 0.95rem;
@@ -197,7 +206,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
     text-align: center;
 }
 .card-body {
-    padding: 12px 18px 16px;
+    padding: 18px 22px 22px;
     display: flex;
     flex-direction: column;
 }
@@ -209,14 +218,21 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
         }
 
         .download-btn {
-            background: #0070e4;
+            background: #0066cc;
             color: white;
             text-decoration: none;
             text-align: center;
-            padding: 14px;
-            border-radius: 12px;
+            padding: 13px;
+            border-radius: 10px;
             font-weight: bold;
-            margin-top: 8px;
+            margin-top: 10px;
+            transition: background 0.2s ease;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .download-btn:hover,
+        .download-btn:active {
+            background: #0052a3;
         }
 
 /* CSS Fonts */
@@ -705,7 +721,8 @@ footer strong {
     align-items: center;
     touch-action: manipulation;
 }
-.filter-btn:hover {
+.filter-btn:hover,
+.filter-btn:active {
     background: rgba(0,112,228,0.35);
     border-color: #0070e4;
     color: #fff;
@@ -763,6 +780,7 @@ footer strong {
     backdrop-filter: blur(5px);
     animation: fadeIn 0.3s ease;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 0 0 20px;
     box-sizing: border-box;
 }
@@ -802,7 +820,8 @@ footer strong {
     transition: 0.3s;
 }
 
-.close-btn:hover {
+.close-btn:hover,
+.close-btn:active {
     background: #ff4d4d;
     color: white;
     transform: rotate(90deg);
@@ -850,7 +869,8 @@ footer strong {
     transition: all 0.3s ease;
 }
 
-.header-btn:hover {
+.header-btn:hover,
+.header-btn:active {
     background: #ff5700; 
     border-color: #ff5700;
     transform: translateY(-2px);
@@ -877,7 +897,8 @@ footer strong {
     cursor: pointer;
 }
 
-.close-download:hover {
+.close-download:hover,
+.close-download:active {
     color: #e74c3c;
 }
 
@@ -885,6 +906,23 @@ footer strong {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 15px;
     margin-top: 15px;
+}
+
+/* ── Touch-friendly hover states for download modal buttons ── */
+.dm-drive-btn:hover,
+.dm-drive-btn:active {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255,87,0,0.45) !important;
+}
+.dm-direct-btn-el:hover,
+.dm-direct-btn-el:active {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(39,174,96,0.4) !important;
+}
+
+/* ── Global touch :active fallback for all clickable elements ── */
+a:active, button:active {
+    opacity: 0.82;
 }
 
 /* ── مۆبایل: کەمتر لە 768px ─────────────────────────── */
@@ -973,11 +1011,22 @@ footer strong {
     /* مۆدال */
     .modal-content {
         margin: 4vh auto;
-        width: 94%;
-        padding: 24px 16px;
+        width: 94% !important;
+        max-width: 94vw !important;
+        padding: 24px 14px !important;
         max-height: 90vh;
         overflow-y: auto;
+        overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
+        box-sizing: border-box;
+    }
+    .modal-content * {
+        max-width: 100%;
+        box-sizing: border-box;
+        word-break: break-word;
+    }
+    .download-box {
+        padding: 16px 10px 24px !important;
     }
 }
 
@@ -1030,7 +1079,7 @@ footer strong {
     vertical-align: middle;
 }
 .copy-cat-btn span { display:flex; align-items:center; justify-content:center; width:100%; height:100%; }
-.copy-cat-btn:hover { background: rgba(0,112,228,1); }
+.copy-cat-btn:hover, .copy-cat-btn:active { background: rgba(0,112,228,1); }
 .copy-cat-btn.copied { background: rgba(0,112,228,1); }
 .card-copy-btn {
     position: absolute;
@@ -1056,7 +1105,7 @@ footer strong {
     font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif !important;
 }
 .card-copy-btn span { display:flex; align-items:center; justify-content:center; width:100%; height:100%; }
-.card-copy-btn:hover { background: rgba(0,112,228,1); }
+.card-copy-btn:hover, .card-copy-btn:active { background: rgba(0,112,228,1); }
 .card-copy-btn.copied { background: rgba(0,112,228,1); color: #ff5700; }
 .card-header { position: relative; }
 
@@ -1084,10 +1133,10 @@ footer strong {
 
 <div class="header">
     <div class="social-links">
-        <a href="https://web.facebook.com/UniQaiidarFonts?_rdc=1&_rdr#" target="_blank" class="social-icon">
+        <a id="social-facebook" href="https://web.facebook.com/UniQaiidarFonts?_rdc=1&_rdr#" target="_blank" class="social-icon">
             <i class="fab fa-facebook-f"></i>
         </a>
-        <a href="https://t.me/UniQaidar_Fonts" target="_blank" class="social-icon">
+        <a id="social-telegram" href="https://t.me/UniQaidar_Fonts" target="_blank" class="social-icon">
             <i class="fab fa-telegram-plane"></i>
         </a>
 <a href="#" id="aboutBtn" class="social-icon">
@@ -1100,20 +1149,41 @@ footer strong {
 </button>
 
 <div id="downloadModal" class="modal">
-    <div class="modal-content" style="overflow-y:auto;max-height:95vh;padding-bottom:50px;">
+    <div class="modal-content" style="overflow-y:auto;max-height:95vh;padding-bottom:50px;max-width:560px;">
         <span class="close-download">&times;</span>
-        <h2 id="dm-title">داگرتنی تەواوی فۆنتەکان</h2>
-        <div class="download-box" style="text-align:center;padding:20px 25px 40px 25px;">
-            <i class="fas fa-file-archive" style="font-size:50px;color:#f1c40f;margin-bottom:15px;display:block;"></i>
-            <p id="dm-desc" style="font-size: 1.2rem; margin-bottom: 20px;">فەرموو لەگەڵ داگرتنی دوایین ئەپدەیتی فۆنتەکانت یونی‌قەیدار بە شێوەی فایلی زیپ (ZIP) کە لە ئێستادا ژمارەی فۆنتەکان 424 فۆنتە</p>
-            <a id="dm-btn" href="https://drive.google.com/uc?export=download&id=1sXwTWo3D8_Z_ohppLHHu-YxALLUteiGe" target="_blank" style="display:inline-block;background:#ff5700;color:white;text-decoration:none;padding:12px 30px;border-radius:20px;font-size:1.0rem;margin-bottom:15px;">
-                <i class="fas fa-cloud-download-alt"></i> <span id="dm-btn-label">كلیك بكه‌ بۆ داگرتنی تەواوی فۆنته‌كان</span>
+        <h2 id="dm-title" style="font-size:1.5rem;letter-spacing:0.01em;">داگرتنی تەواوی فۆنتەکان</h2>
+        <div class="download-box" style="text-align:center;padding:24px 20px 32px;">
+            <!-- Icon -->
+            <div style="width:80px;height:80px;background:linear-gradient(135deg,#fff3cd,#ffe082);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:0 4px 15px rgba(241,196,15,0.3);">
+                <i class="fas fa-file-archive" style="font-size:38px;color:#e6a800;"></i>
+            </div>
+
+            <!-- Description -->
+            <p id="dm-desc" style="font-size:1.05rem;margin-bottom:24px;color:#444;line-height:1.8;background:#f4f7ff;border-radius:12px;padding:14px 18px;border:1px solid #d8e3ff;">فەرموو لەگەڵ داگرتنی دوایین ئەپدەیتی فۆنتەکانت یونی‌قەیدار بە شێوەی فایلی زیپ (ZIP) کە لە ئێستادا ژمارەی فۆنتەکان 424 فۆنتە</p>
+
+            <!-- Google Drive Button -->
+            <a id="dm-btn" href="https://drive.google.com/uc?export=download&id=1sXwTWo3D8_Z_ohppLHHu-YxALLUteiGe" target="_blank" class="dm-drive-btn"
+               style="display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#ff6a1a,#ff5700);color:white;text-decoration:none;padding:14px 28px;border-radius:14px;font-size:1.05rem;margin-bottom:12px;box-shadow:0 4px 14px rgba(255,87,0,0.35);transition:all 0.2s;">
+                <i class="fas fa-cloud-download-alt" style="font-size:1.2rem;"></i>
+                <span id="dm-btn-label">كلیك بكه‌ بۆ داگرتنی تەواوی فۆنته‌كان</span>
             </a>
-            <br>
-            <button id="dm-direct-btn" onclick="downloadFontsDirectly()" style="display:inline-block;background:#27ae60;color:white;padding:12px 30px;border-radius:20px;font-size:1.0rem;border:none;cursor:pointer;margin-top:10px;">
-                <i class="fas fa-download"></i> داگرتنی ڕاستەوخۆ بەبێ گووگڵ درایڤ
+
+            <!-- Divider -->
+            <div style="display:flex;align-items:center;gap:10px;margin:14px 0;color:#aaa;font-size:0.85rem;">
+                <div style="flex:1;height:1px;background:#e0e0e0;"></div>
+                <span>یان</span>
+                <div style="flex:1;height:1px;background:#e0e0e0;"></div>
+            </div>
+
+            <!-- Direct Download Button -->
+            <button id="dm-direct-btn" onclick="downloadFontsDirectly()" class="dm-direct-btn-el"
+                    style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:linear-gradient(135deg,#2ecc71,#27ae60);color:white;padding:14px 28px;border-radius:14px;font-size:1.05rem;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(39,174,96,0.3);transition:all 0.2s;">
+                <i class="fas fa-download" style="font-size:1.2rem;"></i>
+                <span id="dm-direct-label">داگرتنی ڕاستەوخۆ بەبێ گووگڵ درایڤ</span>
             </button>
-            <div id="zip-progress" style="display:none;margin-top:15px;font-size:0.95rem;color:#555;direction:rtl;">
+
+            <!-- Progress -->
+            <div id="zip-progress" style="display:none;margin-top:16px;font-size:0.95rem;color:#555;direction:rtl;background:#f8f9fa;border-radius:10px;padding:12px 16px;">
                 <i class="fas fa-spinner fa-spin"></i> <span id="zip-progress-text">چاوەڕێ بکە...</span>
             </div>
         </div>
@@ -1122,7 +1192,7 @@ footer strong {
     </div>
 
     <div class="header-logo">
-        <a href="https://uniqaidar.pages.dev" onclick="window.location.href='https://uniqaidar.pages.dev'; return false;" title="UniQaidar Fonts" style="cursor:pointer;">
+        <a id="logo-link" href="https://uniqaidar.pages.dev" onclick="window.location.href='https://uniqaidar.pages.dev'; return false;" title="UniQaidar Fonts" style="cursor:pointer;">
             <img src="Logo.png" alt="UniQaidar logo">
         </a>
     </div>
@@ -2029,21 +2099,46 @@ window.addEventListener('click', function(e) {
 </script>
 
 <footer>
-    <p dir="ltr">Designed and Developed by <strong>Qaidar Rahim</strong> | © 2026 All Rights Reserved.</p>
+    <p id="footer-text" dir="ltr">Designed and Developed by <strong>Qaidar Rahim</strong> | © 2026 All Rights Reserved.</p>
 </footer>
 
 <div id="aboutModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width:620px;">
         <span class="close-btn">&times;</span>
-        <h2>دەربارەی پڕۆژە</h2>
-        <p id="about-content">فۆنتەکانی یونی‌قەیدار (UniQaidar Fonts) کۆمەڵێک فۆنتی کوردی و عەرەبی بەکوالیتی بەرزن کە بۆ دیزاین، نوسین و بوارە جیاوازەکانی تری وەک ماڵپەڕ و بەڵگەنامەکان گونجاون. ئەم فۆنتانە بە تایبەتمەندی ڕێکی و ڕەوانی لە دیزایندا ناسراون.<br>
-تایبەتمەندییە سەرەکییەکانی فۆنتەکانی یونی قەیدار:<br>
-گونجاو بۆ گشت بوارەکان: لە دیزاینی گرافیکەوە تا نووسینی دەقی درێژ.<br>
-سەرنجڕاکێش و ڕێک: دیزاینێکی مۆدێرن و سەرنجڕاکێشیان هەیە.<br>
-پشتیوانی زمانی کوردی: بە تەواوی کوردی و عەرەبی پشتیوانی دەکەن.<br>
-ئەم فۆنتانە یارمەتیدەرن بۆ ئەوەی بەرهەمەکانت زیاتر پرۆفیشناڵ و جوان دەربکەون.<br>
-یەکەم گورزەی فۆنتەکانی یونی‌قەیدار لە مانگی ئابی ساڵی ٢٠٠٩ بڵاوکراوەتەوە</p>
-        <p>گەشەپێدەر: قه‌یدار ڕه‌حیم</p>
+        <h2 id="about-title" style="font-size:1.6rem;letter-spacing:0.02em;">دەربارەی پڕۆژە</h2>
+
+        <p id="about-content" style="font-size:1.05rem;color:#333;text-align:justify;line-height:2;">
+            فۆنتەکانی یونی‌قەیدار (UniQaidar Fonts) کۆمەڵێک فۆنتی کوردی و عەرەبی بەکوالیتی بەرزن کە بۆ دیزاین، نوسین و بوارە جیاوازەکانی تری وەک ماڵپەڕ و بەڵگەنامەکان گونجاون. ئەم فۆنتانە بە تایبەتمەندی ڕێکی و ڕەوانی لە دیزایندا ناسراون.
+        </p>
+
+        <div style="background:linear-gradient(135deg,#f0f6ff,#e8f0fe);border-radius:16px;padding:20px 24px;margin:18px 0;text-align:right;">
+            <div id="about-features-title" style="font-size:1rem;font-weight:bold;color:#1a56db;margin-bottom:14px;border-bottom:2px solid #c7d9ff;padding-bottom:8px;">
+                ✦ تایبەتمەندییە سەرەکییەکان
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;align-items:flex-start;gap:10px;color:#2d3748;">
+                    <span id="about-feat1-icon" style="color:#1a56db;font-size:1.1rem;flex-shrink:0;">🎨</span>
+                    <span id="about-feat1-text"><strong>گونجاو بۆ گشت بوارەکان:</strong> لە دیزاینی گرافیکەوە تا نووسینی دەقی درێژ.</span>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:10px;color:#2d3748;">
+                    <span id="about-feat2-icon" style="color:#1a56db;font-size:1.1rem;flex-shrink:0;">✒️</span>
+                    <span id="about-feat2-text"><strong>سەرنجڕاکێش و ڕێک:</strong> دیزاینێکی مۆدێرن و سەرنجڕاکێشیان هەیە.</span>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:10px;color:#2d3748;">
+                    <span id="about-feat3-icon" style="color:#1a56db;font-size:1.1rem;flex-shrink:0;">🌐</span>
+                    <span id="about-feat3-text"><strong>پشتیوانی زمانی کوردی:</strong> بە تەواوی کوردی و عەرەبی پشتیوانی دەکەن.</span>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:10px;color:#2d3748;">
+                    <span id="about-feat4-icon" style="color:#1a56db;font-size:1.1rem;flex-shrink:0;">🏆</span>
+                    <span id="about-feat4-text">ئەم فۆنتانە یارمەتیدەرن بۆ ئەوەی بەرهەمەکانت زیاتر پرۆفیشناڵ و جوان دەربکەون.</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="background:#f8fafc;border-radius:12px;padding:14px 18px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border:1px solid #e2e8f0;">
+            <span id="about-launch-date" style="color:#555;font-size:0.9rem;">🗓 یەکەم گورزە: مانگی ئابی ساڵی ٢٠٠٩</span>
+            <span id="about-developer" style="color:#ff5700;font-weight:bold;font-size:0.9rem;">گەشەپێدەر: قەیدار ڕەحیم</span>
+        </div>
     </div>
 </div>
 

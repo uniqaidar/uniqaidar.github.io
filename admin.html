@@ -57,17 +57,17 @@ header h1 { font-size: 0.95rem; font-weight: bold; color: var(--accent); }
 .status-dot.on { background: var(--green); box-shadow: 0 0 6px var(--green); }
 
 /* ناوەڕۆک */
-main { max-width: 940px; margin: 0 auto; padding: 22px 16px; display: flex; flex-direction: column; gap: 20px; }
+main { max-width: 980px; margin: 0 auto; padding: 22px 16px; display: flex; flex-direction: column; gap: 20px; }
 
 /* تابەکان */
-.tabs { display: flex; gap: 3px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px; }
-.tab { flex: 1; padding: 9px 6px; text-align: center; border-radius: 7px; cursor: pointer; font-size: 0.86rem; font-weight: bold; transition: all 0.2s; color: var(--muted); border: none; background: transparent; font-family: Tahoma, Arial, sans-serif; }
+.tabs { display: flex; gap: 3px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px; flex-wrap: wrap; }
+.tab { flex: 1; min-width: 80px; padding: 9px 6px; text-align: center; border-radius: 7px; cursor: pointer; font-size: 0.82rem; font-weight: bold; transition: all 0.2s; color: var(--muted); border: none; background: transparent; font-family: Tahoma, Arial, sans-serif; white-space: nowrap; }
 .tab.active { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
 /* بۆکس */
-.box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
 .box-header { padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: bold; }
 .box-header .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .box-body { padding: 18px; }
@@ -77,16 +77,15 @@ main { max-width: 940px; margin: 0 auto; padding: 22px 16px; display: flex; flex
 .form-group { display: flex; flex-direction: column; gap: 5px; }
 .form-group.full { grid-column: 1 / -1; }
 label { font-size: 0.75rem; color: var(--muted); font-family: var(--mono); }
-input, select { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 7px; padding: 9px 12px; font-size: 0.88rem; font-family: Tahoma, Arial, sans-serif; width: 100%; transition: border-color 0.2s; direction: rtl; }
-input:focus, select:focus { outline: none; border-color: var(--accent); }
+input, select, textarea { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 7px; padding: 9px 12px; font-size: 0.88rem; font-family: Tahoma, Arial, sans-serif; width: 100%; transition: border-color 0.2s; direction: rtl; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
 input[readonly] { color: var(--muted); }
-input::placeholder, select::placeholder { color: var(--muted); }
-select option { background: var(--surface2); }
+textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
 
 /* پیلەکانی کاتێگۆری */
 .cat-pills { display: flex; flex-wrap: wrap; gap: 7px; }
-.cat-pill { display: inline-flex; align-items: center; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; cursor: pointer; font-size: 0.84rem; transition: all 0.18s; user-select: none; }
-.cat-pill:hover { border-color: var(--accent); }
+.cat-pill { display: inline-flex; align-items: center; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; cursor: pointer; font-size: 0.84rem; transition: all 0.18s; user-select: none; color: var(--text); font-family: Tahoma, Arial, sans-serif; }
+.cat-pill:hover { border-color: var(--accent); color: #fff; background: rgba(9,132,227,0.2); }
 .cat-pill.on { background: var(--accent); border-color: var(--accent); color: #fff; }
 
 /* دوگمەکان */
@@ -96,6 +95,8 @@ select option { background: var(--surface2); }
 .btn-primary:hover:not(:disabled) { background: #0773c5; }
 .btn-green { background: var(--green); color: #fff; }
 .btn-green:hover:not(:disabled) { background: #009e7d; }
+.btn-red { background: var(--red); color: #fff; }
+.btn-red:hover:not(:disabled) { background: #c0392b; }
 .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
 .btn-ghost:hover { color: var(--text); border-color: var(--text); }
 .btn-row { display: flex; gap: 9px; justify-content: flex-end; margin-top: 14px; flex-wrap: wrap; }
@@ -108,13 +109,13 @@ select option { background: var(--surface2); }
 .alert.inf  { background: #0984e318; border-color: var(--accent); color: var(--accent); }
 
 /* کاتێگۆری لیست */
-.cat-row { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 11px 15px; }
+.cat-row { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 11px 15px; margin-bottom: 8px; }
 .cat-row .lbl { flex: 1; }
 .badge { font-family: var(--mono); font-size: 0.68rem; background: var(--border); padding: 3px 8px; border-radius: 4px; color: var(--yellow); }
 .cnt   { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
 
 /* ئارشێف */
-.arc-item { display: flex; align-items: center; background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 9px 13px; gap: 10px; flex-wrap: wrap; }
+.arc-item { display: flex; align-items: center; background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 9px 13px; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
 .arc-name { font-family: var(--mono); font-size: 0.76rem; color: var(--yellow); min-width: 200px; }
 .arc-prev { font-size: 0.8rem; color: var(--muted); flex: 1; }
 
@@ -123,7 +124,7 @@ select option { background: var(--surface2); }
 .overlay.show { display: flex; }
 .overlay p { color: var(--text); font-size: 0.95rem; }
 
-/* ── مۆدالی دەستکاریکردنی فۆنت ── */
+/* مۆدالی دەستکاریکردنی فۆنت */
 .modal-backdrop {
     display: none; position: fixed; inset: 0;
     background: rgba(0,0,0,0.8); z-index: 4000;
@@ -138,11 +139,14 @@ select option { background: var(--surface2); }
 .modal-box h3 { font-size: 1rem; margin-bottom: 16px; color: var(--accent); }
 .modal-footer { display: flex; gap: 9px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
 
+/* section divider */
+.section-label { font-size: 0.7rem; color: var(--muted); font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+
 @media (max-width: 580px) {
     .form-grid { grid-template-columns: 1fr; }
     .form-group.full { grid-column: 1; }
     .tabs { gap: 2px; }
-    .tab { font-size: 0.78rem; padding: 8px 3px; }
+    .tab { font-size: 0.72rem; padding: 8px 3px; min-width: 60px; }
 }
 </style>
 </head>
@@ -158,68 +162,62 @@ select option { background: var(--surface2); }
 <div id="setup-screen">
     <div class="setup-box">
         <h2>🔐 پەیوەندی بە GitHub</h2>
-        <p class="sub">پانێل رووناست پەیوەندی بە ڕیپۆی GitHub دەکات و index.html بە خۆی نوێ دەکاتەوە بێ ئەوەی دەستت پێوه بگات.</p>
-
+        <p class="sub">پانێل رووناست پەیوەندی بە ڕیپۆی GitHub دەکات و index.html بە خۆی دەدۆزێتەوە و نوێ دەکاتەوە.</p>
         <div class="setup-steps">
             <strong>چۆن تۆکێن دروست بکەیت (یەک جار تەنها):</strong><br>
-            ١. بڕۆ بۆ <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a><br>
-            ٢. ناوێکی بنووسە: <strong>UniQaidar Admin</strong><br>
-            ٣. لە بەشی <strong>Scopes</strong> تیکمارکی <strong>repo</strong> بکە<br>
-            ٤. کلیک بکە <strong>Generate token</strong><br>
-            ٥. تۆکێنەکە کۆپی بکە و لێرە بخرە
-        </div>
-
-        <div class="setup-field">
-            <label>ناوی GitHub (username)</label>
-            <input id="s-user" type="text" placeholder="uniqaidar">
+            ١. بچۆ بۆ <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a><br>
+            ٢. ناوێکی بنووسە بۆ تۆکێنەکە<br>
+            ٣. تیک بدە لەسەر <strong>repo</strong> (تەواوی ڕیپۆ)<br>
+            ٤. کلیک بکە لەسەر <strong>Generate token</strong><br>
+            ٥. تۆکێنەکە کۆپی بکە و لێرەدا پەیست بکە
         </div>
         <div class="setup-field">
-            <label>ناوی ڕیپۆ (repository name)</label>
-            <input id="s-repo" type="text" placeholder="uniqaidar.github.io">
+            <label>GitHub Token (ghp_...)</label>
+            <input type="password" id="setup-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
         </div>
         <div class="setup-field">
-            <label>GitHub Token</label>
-            <input id="s-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxx">
+            <label>GitHub Username</label>
+            <input type="text" id="setup-user" placeholder="uniqaidar">
         </div>
-
+        <div class="setup-field">
+            <label>Repository Name</label>
+            <input type="text" id="setup-repo" placeholder="uniqaidar.github.io">
+        </div>
         <div id="setup-alert" class="alert"></div>
-
-        <div class="btn-row" style="margin-top:16px">
-            <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px" onclick="connect()">
-                🔌 پەیوەندی کردن و بارکردن
-            </button>
+        <div class="btn-row" style="margin-top:16px;">
+            <button class="btn btn-primary" onclick="doSetup()">🔌 پەیوەندی و بارکردن ✓</button>
         </div>
     </div>
-</div>
-
-<!-- سەیڤ ئۆڤەرلەی -->
-<div class="overlay" id="overlay">
-    <div class="spinner"></div>
-    <p id="overlay-msg">تێپەڕاندن بۆ GitHub...</p>
 </div>
 
 <!-- هێدەر -->
 <header>
     <h1>⚙️ پانێلی UniQaidar</h1>
     <div class="header-right">
-        <span class="status-dot" id="sdot"></span>
-        <span class="repo-badge" id="rbadge">پەیوەند نەکراوە</span>
-        <button class="btn btn-ghost" style="font-size:0.76rem;padding:5px 10px" onclick="showSetup()">گۆڕین</button>
+        <span id="rbadge" class="repo-badge">پەیوەند نەکراوە</span>
+        <div id="sdot" class="status-dot"></div>
+        <button class="btn btn-ghost" onclick="showSetup()" style="font-size:0.78rem;padding:6px 12px;">⚙ گۆڕین</button>
     </div>
 </header>
 
+<!-- ناوەڕۆک -->
 <main>
     <div class="tabs">
-        <button class="tab active" onclick="go('t-font',this)">➕ Font</button>
-        <button class="tab" onclick="go('t-cat',this)">🗂️ Categories</button>
-        <button class="tab" onclick="go('t-arc',this)">📋 Archive</button>
-        <button class="tab" onclick="go('t-settings',this)">⚙️ Settings</button>
+        <button class="tab active" onclick="go('t-fonts',   this)">🔤 فۆنتەکان</button>
+        <button class="tab"        onclick="go('t-cats',    this)">🗂 کاتێگۆری</button>
+        <button class="tab"        onclick="go('t-header',  this)">🔗 هێدەر</button>
+        <button class="tab"        onclick="go('t-download',this)">⬇ داگرتن</button>
+        <button class="tab"        onclick="go('t-about',   this)">ℹ دەربارە</button>
+        <button class="tab"        onclick="go('t-seo',     this)">🌐 SEO</button>
+        <button class="tab"        onclick="go('t-arc',     this)">📦 ئارشێف</button>
     </div>
 
-    <!-- Font Tab -->
-    <div id="t-font" class="tab-content active">
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB: فۆنتەکان                                         -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="t-fonts" class="tab-content active">
         <div class="box">
-            <div class="box-header"><span class="dot" style="background:var(--accent)"></span>Add New Font from UniQaidarFonts/</div>
+            <div class="box-header"><div class="dot" style="background:var(--accent)"></div> زیادکردنی فۆنتی نوێ لە UniQaidarFonts/</div>
             <div class="box-body">
 
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap">
@@ -229,601 +227,735 @@ select option { background: var(--surface2); }
 
                 <div class="form-grid">
                     <div class="form-group full">
-                        <label>Select .ttf file — only new fonts not yet on the website are shown</label>
+                        <label>هەڵبژێرنی فایلی .ttf — تەنها فۆنتی نوێ کە لە وێبسایت نییە نیشان دەدرێت</label>
                         <select id="f-select" onchange="onFontSelect()" style="font-family:var(--mono);font-size:0.85rem">
-                            <option value="">— click Scan first —</option>
+                            <option value="">— یەکەم Scan بکە —</option>
                         </select>
                     </div>
                     <div class="form-group full">
-                        <label>Preview text — دەقی پیشاندان</label>
+                        <label>ناوی کارتی فۆنت (ئینگلیزی) — ئەمە ناوێکە کە لەسەر کارتەکە دەردەکەوێت، دەتوانرێت جیاواز بێت لە ناوی فایل</label>
+                        <input id="f-displayname" type="text" dir="ltr" placeholder="مەسەلەن: UniQAIDAR_MyFont 001" style="font-family:var(--mono);font-size:0.85rem;direction:ltr;">
+                    </div>
+                    <div class="form-group full">
+                        <label>دەقی پیشاندان</label>
                         <input id="f-prev" type="text" placeholder="فۆنتەکانی یونی‌قەیدار - فۆنتی کوردی" oninput="updateFontPreview()">
                     </div>
                     <div class="form-group full">
-                        <label>Live Preview — پیشاندانی ڕاستەقینە</label>
+                        <label>پیشاندانی ڕاستەقینە</label>
                         <div id="live-preview-box" dir="rtl" style="
                             min-height:80px; background:#111; border:1px solid #333;
                             border-radius:8px; padding:14px 18px; font-size:2.2rem;
                             color:#f0f0f0; text-align:center; overflow:hidden;
                             display:flex; align-items:center; justify-content:center;
-                            font-family: Tahoma, sans-serif;
-                        ">— دووستان فۆنتێک هەڵبژێرە —</div>
+                            font-family: Tahoma, sans-serif;">
+                            — دووستان فۆنتێک هەڵبژێرە —
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>بەرواری زیادکردن (YYYY-MM-DD)</label>
+                        <input type="text" id="f-date" placeholder="2026-02-25">
+                    </div>
+                    <div class="form-group">
+                        <!-- spacer -->
                     </div>
                     <div class="form-group full">
-                        <label>Categories — select one or more</label>
-                        <div class="cat-pills" id="fpills"></div>
+                        <label>کاتێگۆریەکان — یەک یان زیاتر هەڵبژێرە</label>
+                        <div id="f-cat-pills" class="cat-pills" style="margin-top:6px;"></div>
+                        <input type="hidden" id="f-cats">
                     </div>
                 </div>
-                <div id="fa" class="alert"></div>
+
+                <div id="fadd-alert" class="alert"></div>
                 <div class="btn-row">
-                    <button class="btn btn-ghost" onclick="clearFont()">Clear</button>
-                    <button class="btn btn-primary" id="fbtn" onclick="addFont()" disabled>💾 Add & Push to GitHub</button>
+                    <button class="btn btn-ghost" onclick="clearFont()">پاکردنەوە</button>
+                    <button id="fbtn" class="btn btn-primary" onclick="addFont()" disabled>💾 زیادکردن و پۆشکردن بۆ GitHub</button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Categories Tab -->
-    <div id="t-cat" class="tab-content">
         <div class="box">
-            <div class="box-header"><span class="dot" style="background:var(--green)"></span>کاتێگۆریە هەیەکان</div>
+            <div class="box-header"><div class="dot" style="background:var(--yellow)"></div> گەڕان بەدوای فۆنت بۆ دەستکاری / سڕینەوە</div>
             <div class="box-body">
-                <div id="catlist" style="display:flex;flex-direction:column;gap:9px;margin-bottom:18px"></div>
-
-                <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px">
-                    <p style="font-size:0.85rem;font-weight:bold;color:var(--green);margin-bottom:12px">➕ کاتێگۆری نوێ</p>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>ناوی کوردی</label>
-                            <input id="nc-lbl" type="text" placeholder="سپۆرت">
-                        </div>
-                        <div class="form-group">
-                            <label>ID بە ئینگلیزی — بێ بۆشایی</label>
-                            <input id="nc-id" type="text" placeholder="sport">
-                        </div>
-                    </div>
-                    <div id="ca" class="alert"></div>
-                    <div class="btn-row">
-                        <button class="btn btn-green" id="cbtn" onclick="addCat()" disabled>💾 زیادکردن و تێپەڕاندن</button>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>گەڕان بەدوای ناوی فۆنت</label>
+                        <input type="text" id="arc-search" placeholder="UniQAIDAR_..." oninput="renderArc()">
                     </div>
                 </div>
+                <div id="arc-list" style="margin-top:12px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;"></div>
             </div>
         </div>
     </div>
 
-    <!-- تابی ئارشێف -->
-    <div id="t-arc" class="tab-content">
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB: کاتێگۆری                                         -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="t-cats" class="tab-content">
         <div class="box">
-            <div class="box-header"><span class="dot" style="background:var(--purple)"></span>هەموو فۆنتەکان</div>
+            <div class="box-header"><div class="dot" style="background:var(--green)"></div> زیادکردنی کاتێگۆری نوێ</div>
             <div class="box-body">
-                <div style="display:flex;gap:10px;margin-bottom:13px;flex-wrap:wrap">
-                    <input id="aq" type="text" placeholder="گەڕان..." oninput="renderArc()" style="max-width:240px">
-                    <select id="acat" onchange="renderArc()" style="max-width:170px">
-                        <option value="all">هەموو کاتێگۆریەکان</option>
-                    </select>
-                    <span id="acnt" style="color:var(--muted);font-size:0.78rem;font-family:var(--mono);align-self:center"></span>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>ناوی کاتێگۆری (کوردی/عەرەبی)</label>
+                        <input type="text" id="new-cat-label" placeholder="فۆنتی نوێ">
+                    </div>
+                    <div class="form-group">
+                        <label>ID (ئینگلیزی، بێ بۆشایی)</label>
+                        <input type="text" id="new-cat-id" placeholder="Nwe">
+                    </div>
                 </div>
-                <div id="arclist" style="display:flex;flex-direction:column;gap:7px;max-height:540px;overflow-y:auto"></div>
+                <div id="cadd-alert" class="alert"></div>
+                <div class="btn-row">
+                    <button id="cbtn" class="btn btn-primary" onclick="addCat()" disabled>➕ زیادکردن و سەیڤ</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="box-header"><div class="dot" style="background:var(--yellow)"></div> کاتێگۆریەکانی ئێستا</div>
+            <div class="box-body">
+                <div id="cat-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+                <div style="margin-top:12px;display:flex;gap:10px;align-items:center;">
+                    <button class="btn btn-primary" onclick="saveReorder()" style="background:var(--accent)">
+                        💾 سەیڤی ڕیزبەندی نوێ بۆ GitHub
+                    </button>
+                    <div id="reorder-alert" class="alert" style="flex:1;margin-top:0;"></div>
+                </div>
             </div>
         </div>
     </div>
-    <!-- Settings Tab -->
-    <div id="t-settings" class="tab-content">
-        <div class="box" style="margin-bottom:16px">
-            <div class="box-header"><span class="dot" style="background:var(--yellow)"></span>📥 داگرتنی فۆنتەکان — Download Modal Editor</div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB: هێدەر                                            -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="t-header" class="tab-content">
+
+        <div class="box">
+            <div class="box-header"><div class="dot" style="background:var(--accent)"></div> لینکەکانی سۆشیال میدیا</div>
+            <div class="box-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>لینکی فەیسبووک</label>
+                        <input type="text" id="h-facebook" placeholder="https://web.facebook.com/...">
+                    </div>
+                    <div class="form-group">
+                        <label>لینکی تێلێگرام</label>
+                        <input type="text" id="h-telegram" placeholder="https://t.me/...">
+                    </div>
+                </div>
+                <div id="header-social-alert" class="alert"></div>
+                <div class="btn-row">
+                    <button id="header-social-btn" class="btn btn-primary" onclick="saveHeaderSocial()" disabled>💾 سەیڤ</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="box-header"><div class="dot" style="background:var(--green)"></div> لۆگۆ و لینکی سەرەکی</div>
+            <div class="box-body">
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>لینکی لۆگۆ (کلیک لەسەر لۆگۆ دەبات بۆ کوێ)</label>
+                        <input type="text" id="h-logo-url" placeholder="https://uniqaidar.pages.dev">
+                    </div>
+                </div>
+                <div id="header-logo-alert" class="alert"></div>
+                <div class="btn-row">
+                    <button id="header-logo-btn" class="btn btn-primary" onclick="saveHeaderLogo()" disabled>💾 سەیڤ</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="box-header"><div class="dot" style="background:var(--yellow)"></div> باکسی گەڕان (Search Box)</div>
+            <div class="box-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>placeholder — دێسکتۆپ</label>
+                        <input type="text" id="h-search-desktop" placeholder="لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنتەکان...">
+                    </div>
+                    <div class="form-group">
+                        <label>placeholder — مۆبایل</label>
+                        <input type="text" id="h-search-mobile" placeholder="لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنت...">
+                    </div>
+                </div>
+                <div id="header-search-alert" class="alert"></div>
+                <div class="btn-row">
+                    <button id="header-search-btn" class="btn btn-primary" onclick="saveHeaderSearch()" disabled>💾 سەیڤ</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="box-header"><div class="dot" style="background:var(--purple)"></div> بارەی قەبارەی فۆنت</div>
+            <div class="box-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>دەقی لەیبڵ</label>
+                        <input type="text" id="h-sizebar-label" placeholder="قەبارەی فۆنت:">
+                    </div>
+                    <div class="form-group">
+                        <label>دەقی دوگمەی ڕیسێت</label>
+                        <input type="text" id="h-sizebar-reset" placeholder="ڕیسێت">
+                    </div>
+                    <div class="form-group">
+                        <label>کەمترین قەبارە (min)</label>
+                        <input type="number" id="h-sizebar-min" placeholder="14">
+                    </div>
+                    <div class="form-group">
+                        <label>زۆرترین قەبارە (max)</label>
+                        <input type="number" id="h-sizebar-max" placeholder="80">
+                    </div>
+                    <div class="form-group">
+                        <label>قەبارەی پێشگرتوو (default)</label>
+                        <input type="number" id="h-sizebar-default" placeholder="32">
+                    </div>
+                </div>
+                <div id="header-sizebar-alert" class="alert"></div>
+                <div class="btn-row">
+                    <button id="header-sizebar-btn" class="btn btn-primary" onclick="saveHeaderSizebar()" disabled>💾 سەیڤ</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="box-header"><div class="dot" style="background:var(--red)"></div> فووتەر</div>
             <div class="box-body">
                 <div class="form-group">
-                    <label>Modal Title — ناونیشانی مۆدال (e.g. داگرتنی فۆنتەکان)</label>
-                    <input id="dm-title-inp" type="text" placeholder="داگرتنی فۆنتەکان" dir="rtl">
+                    <label>دەقی فووتەر (HTML پشتیوانی دەکات)</label>
+                    <input type="text" id="h-footer" placeholder="Designed and Developed by <strong>Qaidar Rahim</strong> | © 2026 All Rights Reserved.">
                 </div>
-                <div class="form-group" style="margin-top:10px">
-                    <label>Description Text — دەقی ناو مۆدال</label>
-                    <input id="dm-desc-inp" type="text" placeholder="فەرموو لەگەڵ داگرتنی 420 فۆنتی..." dir="rtl">
+                <div id="header-footer-alert" class="alert"></div>
+                <div class="btn-row">
+                    <button id="header-footer-btn" class="btn btn-primary" onclick="saveFooter()" disabled>💾 سەیڤ</button>
                 </div>
-                <div class="form-group" style="margin-top:10px">
-                    <label>Button Label — دەقی دوگمەی داگرتن</label>
-                    <input id="dm-btn-inp" type="text" placeholder="كلیك بكه‌ بۆ داگرتنی فۆنته‌كان" dir="rtl">
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB: داگرتن                                           -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="t-download" class="tab-content">
+        <div class="box">
+            <div class="box-header"><div class="dot" style="background:var(--accent)"></div> مۆدالی داگرتن</div>
+            <div class="box-body">
+                <div class="section-label">دوگمەی هێدەر</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>دەقی دوگمەی هێدەر (داگرتنی تەواوی فۆنتەکان)</label>
+                        <input type="text" id="dm-header-btn-inp" placeholder="داگرتنی تەواوی فۆنتەکان">
+                    </div>
                 </div>
-                <div class="form-group" style="margin-top:10px">
-                    <label>Download URL — لینکی داگرتن</label>
-                    <input id="dl-url" type="text" placeholder="https://drive.google.com/..." dir="ltr">
+
+                <div class="section-label" style="margin-top:18px;">ناوەڕۆکی مۆدال</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>سەردێڕی مۆدال</label>
+                        <input type="text" id="dm-title-inp" placeholder="داگرتنی تەواوی فۆنتەکان">
+                    </div>
+                    <div class="form-group full">
+                        <label>دەقی وەسف</label>
+                        <input type="text" id="dm-desc-inp" placeholder="فەرموو لەگەڵ داگرتنی...">
+                    </div>
                 </div>
+
+                <div class="section-label" style="margin-top:18px;">دوگمەی Google Drive</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>لینکی داگرتن (Google Drive)</label>
+                        <input type="text" id="dl-url" placeholder="https://drive.google.com/uc?export=download&id=...">
+                    </div>
+                    <div class="form-group full">
+                        <label>دەقی دوگمەی داگرتن (Google Drive)</label>
+                        <input type="text" id="dm-btn-inp" placeholder="كلیك بكه‌ بۆ داگرتنی تەواوی فۆنته‌كان">
+                    </div>
+                </div>
+
+                <div class="section-label" style="margin-top:18px;">دوگمەی داگرتنی ڕاستەوخۆ</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>دەقی دوگمەی داگرتنی ڕاستەوخۆ (بێ گووگڵ درایڤ)</label>
+                        <input type="text" id="dm-direct-inp" placeholder="داگرتنی ڕاستەوخۆ بەبێ گووگڵ درایڤ">
+                    </div>
+                </div>
+
                 <div id="dl-alert" class="alert"></div>
                 <div class="btn-row">
-                    <button class="btn btn-primary" id="dl-btn" onclick="saveDownloadModal()" disabled>💾 Save & Push</button>
+                    <button id="dl-btn" class="btn btn-primary" onclick="saveDownloadModal()" disabled>💾 سەیڤ</button>
                 </div>
             </div>
         </div>
+    </div>
 
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB: دەربارە                                          -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="t-about" class="tab-content">
         <div class="box">
-            <div class="box-header"><span class="dot" style="background:var(--purple)"></span>About Section Text</div>
+            <div class="box-header"><div class="dot" style="background:var(--accent)"></div> مۆدالی دەربارەی پڕۆژە</div>
             <div class="box-body">
-                <div class="form-group">
-                    <label>About text (shown in the ℹ️ modal on the website)</label>
-                    <textarea id="about-text" rows="8"
-                        style="background:var(--bg);border:1px solid var(--border);color:var(--text);
-                        border-radius:7px;padding:10px 12px;font-size:0.88rem;font-family:Tahoma,Arial,sans-serif;
-                        width:100%;resize:vertical;direction:rtl"></textarea>
+
+                <div class="section-label">سەردێڕ و دەقی سەرەکی</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>سەردێڕی مۆدال</label>
+                        <input type="text" id="about-title-inp" placeholder="دەربارەی پڕۆژە">
+                    </div>
+                    <div class="form-group full">
+                        <label>دەقی سەرەکی (دیاریکردنی پڕۆژە)</label>
+                        <textarea id="about-text" rows="4" placeholder="فۆنتەکانی یونی‌قەیدار..."></textarea>
+                    </div>
                 </div>
+
+                <div class="section-label" style="margin-top:18px;">بەشی تایبەتمەندییەکان</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>سەردێڕی بەشی تایبەتمەندییەکان</label>
+                        <input type="text" id="about-features-title-inp" placeholder="✦ تایبەتمەندییە سەرەکییەکان">
+                    </div>
+                    <div class="form-group">
+                        <label>ئایکۆنی تایبەتمەندی ١</label>
+                        <input type="text" id="about-feat1-icon-inp" placeholder="🎨">
+                    </div>
+                    <div class="form-group">
+                        <label>دەقی تایبەتمەندی ١</label>
+                        <input type="text" id="about-feat1-text-inp" placeholder="گونجاو بۆ گشت بوارەکان:...">
+                    </div>
+                    <div class="form-group">
+                        <label>ئایکۆنی تایبەتمەندی ٢</label>
+                        <input type="text" id="about-feat2-icon-inp" placeholder="✒️">
+                    </div>
+                    <div class="form-group">
+                        <label>دەقی تایبەتمەندی ٢</label>
+                        <input type="text" id="about-feat2-text-inp" placeholder="سەرنجڕاکێش و ڕێک:...">
+                    </div>
+                    <div class="form-group">
+                        <label>ئایکۆنی تایبەتمەندی ٣</label>
+                        <input type="text" id="about-feat3-icon-inp" placeholder="🌐">
+                    </div>
+                    <div class="form-group">
+                        <label>دەقی تایبەتمەندی ٣</label>
+                        <input type="text" id="about-feat3-text-inp" placeholder="پشتیوانی زمانی کوردی:...">
+                    </div>
+                    <div class="form-group">
+                        <label>ئایکۆنی تایبەتمەندی ٤</label>
+                        <input type="text" id="about-feat4-icon-inp" placeholder="🏆">
+                    </div>
+                    <div class="form-group">
+                        <label>دەقی تایبەتمەندی ٤</label>
+                        <input type="text" id="about-feat4-text-inp" placeholder="ئەم فۆنتانە یارمەتیدەرن...">
+                    </div>
+                </div>
+
+                <div class="section-label" style="margin-top:18px;">بەشی دووەم (فووتەری مۆدال)</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>دەقی بەرواری دەستپێکردن</label>
+                        <input type="text" id="about-launch-inp" placeholder="🗓 یەکەم گورزە: مانگی ئابی ساڵی ٢٠٠٩">
+                    </div>
+                    <div class="form-group">
+                        <label>دەقی گەشەپێدەر</label>
+                        <input type="text" id="about-dev-inp" placeholder="گەشەپێدەر: قەیدار ڕەحیم">
+                    </div>
+                </div>
+
                 <div id="about-alert" class="alert"></div>
                 <div class="btn-row">
-                    <button class="btn btn-primary" id="about-btn" onclick="saveAbout()" disabled>💾 Save & Push</button>
+                    <button id="about-btn" class="btn btn-primary" onclick="saveAbout()" disabled>💾 سەیڤ</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB: SEO                                              -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="t-seo" class="tab-content">
+        <div class="box">
+            <div class="box-header"><div class="dot" style="background:var(--green)"></div> SEO و مێتا</div>
+            <div class="box-body">
+                <div class="section-label">سەردێڕ و وەسفی پەڕە</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Title (title tag)</label>
+                        <input type="text" id="seo-title" placeholder="UniQaidar Fonts | فۆنتەکانی یونی قەیدار">
+                    </div>
+                    <div class="form-group full">
+                        <label>Meta Description</label>
+                        <textarea id="seo-desc" rows="2" placeholder="گەورەترین کۆکراوەی فۆنتی کوردی..."></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>Meta Keywords</label>
+                        <textarea id="seo-keywords" rows="2" placeholder="فۆنتی کوردی, kurdish fonts, ..."></textarea>
+                    </div>
+                </div>
+
+                <div class="section-label" style="margin-top:18px;">Open Graph (سۆشیال میدیا شێر)</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>OG Title</label>
+                        <input type="text" id="seo-og-title" placeholder="UniQaidar Fonts - داگرتنی فۆنتی کوردی بە خۆڕایی">
+                    </div>
+                    <div class="form-group full">
+                        <label>OG Description</label>
+                        <input type="text" id="seo-og-desc" placeholder="Browse, test, and download over 420 free Kurdish and Arabic fonts instantly.">
+                    </div>
+                    <div class="form-group">
+                        <label>OG Image URL</label>
+                        <input type="text" id="seo-og-image" placeholder="https://uniqaidar.pages.dev/Logo.png">
+                    </div>
+                    <div class="form-group">
+                        <label>OG URL</label>
+                        <input type="text" id="seo-og-url" placeholder="https://uniqaidar.pages.dev/">
+                    </div>
+                </div>
+
+                <div class="section-label" style="margin-top:18px;">Google Analytics</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Google Analytics ID (G-XXXXXXXXXX)</label>
+                        <input type="text" id="seo-ga-id" placeholder="G-44N8KGCV21">
+                    </div>
+                </div>
+
+                <div id="seo-alert" class="alert"></div>
+                <div class="btn-row">
+                    <button id="seo-btn" class="btn btn-primary" onclick="saveSEO()" disabled>💾 سەیڤ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB: ئارشێف                                           -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="t-arc" class="tab-content">
+        <div class="box">
+            <div class="box-header"><div class="dot" style="background:var(--yellow)"></div> هەموو فۆنتەکان (<span id="arc-count">0</span>)</div>
+            <div class="box-body">
+                <div style="display:flex;gap:10px;margin-bottom:13px;flex-wrap:wrap;align-items:center;">
+                    <input id="arc-full-search" type="text" placeholder="گەڕان بەدوای ناوی فۆنت..." oninput="renderArcFull()" style="max-width:260px;">
+                    <select id="arc-full-cat" onchange="renderArcFull()" style="max-width:200px;">
+                        <option value="all">هەموو کاتێگۆریەکان</option>
+                    </select>
+                    <span id="arc-filtered-count" style="color:var(--muted);font-size:0.78rem;font-family:var(--mono);"></span>
+                </div>
+                <div id="arc-full-list" style="max-height:500px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;"></div>
             </div>
         </div>
     </div>
 
 </main>
 
-<!-- مۆدالی دەستکاریکردنی فۆنت -->
-<div class="modal-backdrop" id="edit-modal">
+<!-- ئۆڤەرلەی سەیڤ کردن -->
+<div id="overlay" class="overlay">
+    <div class="spinner"></div>
+    <p id="overlay-msg">سەیڤ دەکرێت...</p>
+</div>
+
+<!-- مۆدالی دەستکاریکردن -->
+<div id="edit-modal" class="modal-backdrop">
     <div class="modal-box">
-        <h3>✏️ Edit Font</h3>
+        <h3>✏️ دەستکاریکردنی فۆنت</h3>
+        <input type="hidden" id="edit-orig-name">
         <div class="form-grid">
-            <div class="form-group full">
-                <label>Font File Name (readonly — don't change)</label>
-                <input id="e-name" readonly style="color:var(--muted)">
+            <div class="form-group">
+                <label>ناوی فۆنت (name)</label>
+                <input type="text" id="edit-name">
+            </div>
+            <div class="form-group">
+                <label>ناوی کارت (displayName) — ناوی نیشاندراو لەسەر کارتەکە</label>
+                <input type="text" id="edit-displayname" dir="ltr" style="font-family:var(--mono);font-size:0.85rem;direction:ltr;">
+            </div>
+            <div class="form-group">
+                <label>ناوی فایل</label>
+                <input type="text" id="edit-file">
             </div>
             <div class="form-group full">
-                <label>Display Name on Card (what visitors see)</label>
-                <input id="e-display" type="text" placeholder="e.g. UniQAIDAR Bahar 001">
+                <label>ڕێگای فایل</label>
+                <input type="text" id="edit-path">
             </div>
             <div class="form-group full">
-                <label>Preview Text</label>
-                <input id="e-prev" type="text" placeholder="فۆنتەکانی یونی‌قەیدار - فۆنتی کوردی">
+                <label>دەقی پێشبینی</label>
+                <input type="text" id="edit-preview">
             </div>
-            <div class="form-group full">
-                <label>Date Added on Card (YYYY-MM-DD) — shown on card header</label>
-                <input id="e-date" type="date" style="direction:ltr">
+            <div class="form-group">
+                <label>بەرواری زیادکردن</label>
+                <input type="text" id="edit-date">
             </div>
-            <div class="form-group full">
-                <label>Categories — select one or more</label>
-                <div class="cat-pills" id="e-pills"></div>
+            <div class="form-group">
+                <label>کاتێگۆریەکان</label>
+                <div id="edit-cat-pills" class="cat-pills" style="margin-top:4px;"></div>
+                <input type="hidden" id="edit-cats">
             </div>
         </div>
         <div id="edit-alert" class="alert"></div>
         <div class="modal-footer">
-            <button class="btn btn-red" onclick="deleteFont()" style="margin-left:auto">🗑️ Delete Font</button>
-            <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
-            <button class="btn btn-primary" id="edit-save-btn" onclick="saveEditFont()">💾 Save Changes</button>
+            <button class="btn btn-ghost" onclick="closeEditModal()">کانسڵ</button>
+            <button class="btn btn-primary" onclick="saveEditFont()">💾 سەیڤ</button>
         </div>
     </div>
 </div>
 
 <script>
 // ══════════════════════════════════════════
-// داتای گلۆبال
+// Config & State
 // ══════════════════════════════════════════
-let USER='', REPO='', TOKEN='';
-let SHA='', RAW='';
-let cats=[], fnts=[];
-let ready=false;
+let TOKEN='', USER='', REPO='', BRANCH='main', FILE='index.html';
+let SHA='', RAW='', fnts=[], cats=[], ready=false;
+
+const LS_KEY = 'uqadmin_cfg';
 
 // ══════════════════════════════════════════
-// دەستپێکردن
+// Init
 // ══════════════════════════════════════════
-window.onload = function() {
-    USER  = localStorage.getItem('u') || '';
-    REPO  = localStorage.getItem('r') || '';
-    TOKEN = localStorage.getItem('t') || '';
-    if (USER && REPO && TOKEN) load();
-    else { hide('loading-screen'); showSetup(); }
-};
+window.addEventListener('DOMContentLoaded', async () => {
+    const saved = localStorage.getItem(LS_KEY);
+    if (saved) {
+        try {
+            const c = JSON.parse(saved);
+            TOKEN=c.token; USER=c.user; REPO=c.repo;
+            BRANCH=c.branch||'main'; FILE=c.file||'index.html';
+        } catch(e){}
+    }
+    if (TOKEN && USER && REPO) {
+        const ok = await loadIndex();
+        if (ok) { setReady(true); hideLoading(); }
+        else     { hideLoading(); showSetup(); }
+    } else {
+        hideLoading(); showSetup();
+    }
+});
+
+function hideLoading() { document.getElementById('loading-screen').style.display='none'; }
+function showSetup()   { document.getElementById('setup-screen').style.display='flex'; }
+
+// ══════════════════════════════════════════
+// Auto-detect branch and index.html path
+// ══════════════════════════════════════════
+async function autoDetect(token, user, repo) {
+    const headers = { Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json' };
+
+    // Step 1: get default branch from repo info
+    let branch = 'main';
+    try {
+        const r = await fetch(`https://api.github.com/repos/${user}/${repo}`, { headers });
+        if (r.ok) {
+            const d = await r.json();
+            branch = d.default_branch || 'main';
+        }
+    } catch(e) {}
+
+    // Step 2: scan the repo tree for index.html
+    let file = 'index.html'; // fallback
+    try {
+        const r = await fetch(`https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`, { headers });
+        if (r.ok) {
+            const d = await r.json();
+            const found = (d.tree || []).find(item =>
+                item.type === 'blob' && item.path.toLowerCase().endsWith('index.html')
+            );
+            if (found) file = found.path;
+        }
+    } catch(e) {}
+
+    return { branch, file };
+}
+
+async function doSetup() {
+    TOKEN = document.getElementById('setup-token').value.trim();
+    USER  = document.getElementById('setup-user').value.trim();
+    REPO  = document.getElementById('setup-repo').value.trim();
+    const al = document.getElementById('setup-alert');
+    if (!TOKEN||!USER||!REPO) return alert2(al,'تکایە هەموو خانەکان پڕ بکەرەوە!','err');
+
+    alert2(al,'🔍 دۆزینەوەی ئۆتۆماتیکی فایل لە GitHub...','inf');
+
+    const detected = await autoDetect(TOKEN, USER, REPO);
+    BRANCH = detected.branch;
+    FILE   = detected.file;
+
+    alert2(al,`📂 دۆزرایەوە: ${FILE} (branch: ${BRANCH}) — پەیوەندیکردن...`,'inf');
+
+    const ok = await loadIndex();
+    if (ok) {
+        localStorage.setItem(LS_KEY, JSON.stringify({token:TOKEN,user:USER,repo:REPO,branch:BRANCH,file:FILE}));
+        document.getElementById('setup-screen').style.display='none';
+        setReady(true);
+    } else {
+        alert2(al,`❌ پەیوەندی سەرنەکەوت. تۆکێن یان ناوی ڕیپۆ بپشکنەوە! (${FILE} / ${BRANCH})`,'err');
+    }
+}
 
 // ══════════════════════════════════════════
 // GitHub API
 // ══════════════════════════════════════════
-async function load(fromSetup) {
-    show('loading-screen');
+async function ghGet() {
+    const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${FILE}?ref=${BRANCH}`,
+        { headers:{ Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json' }});
+    if (!r.ok) return null;
+    return r.json();
+}
+
+async function ghPut(content, message) {
+    const body = JSON.stringify({ message, content: btoa(unescape(encodeURIComponent(content))), sha: SHA, branch: BRANCH });
+    const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${FILE}`,
+        { method:'PUT', headers:{ Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' }, body });
+    if (!r.ok) return false;
+    const d = await r.json();
+    SHA = d.content.sha;
+    RAW = content;
+    return true;
+}
+
+async function loadIndex() {
     try {
-        const res  = await ghGet();
-        if (!res.ok) throw 0;
-        const data = await res.json();
-        SHA = data.sha;
-        RAW = decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))));
-        parse();
-        buildAll();
-        setReady(true);
-        hide('loading-screen');
-        return true;
-    } catch(e) {
-        hide('loading-screen');
-        if (!fromSetup) showSetup();
-        return false;
-    }
-}
-
-function ghGet() {
-    return fetch(ghUrl(), { headers: hdrs() });
-}
-
-async function ghPut(content, msg) {
-    showOverlay(msg);
-    try {
-        const encoded = btoa(unescape(encodeURIComponent(content)));
-        const res = await fetch(ghUrl(), {
-            method:'PUT', headers:{...hdrs(),'Content-Type':'application/json'},
-            body: JSON.stringify({ message: msg, content: encoded, sha: SHA })
-        });
-        if (!res.ok) throw 0;
-        const data = await res.json();
-        SHA = data.content.sha;
-        RAW = content;
-        hideOverlay();
-        return true;
-    } catch(e) { hideOverlay(); return false; }
-}
-
-function ghUrl() { return `https://api.github.com/repos/${USER}/${REPO}/contents/index.html`; }
-function hdrs()  { return { 'Authorization': `token ${TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }; }
-
-// ══════════════════════════════════════════
-// خوێندنی داتا لە فایل
-// ══════════════════════════════════════════
-function parse() {
-    cats = []; fnts = [];
-
-    // کاتێگۆریەکان — دوو شێواز پشتیوانی دەکات
-    // شێوازی ئێستا: onclick="filterFonts('id', this)">
-    const br = /onclick="filterFonts\('([^']+)',\s*this\)">([^<]+)<\/button>/g;
-    let m;
-    while ((m = br.exec(RAW)) !== null)
-        cats.push({ id: m[1], label: m[2].trim() });
-
-    // فۆنتەکان
-    // فۆنتەکان — supports both old (with zip) and new (no zip) format
-    const fr = /\{\s*name:\s*"([^"]+)"[^}]*file:\s*"([^"]+)"[^}]*path:\s*"([^"]+)"(?:[^}]*zip:\s*"([^"]+)")?[^}]*category:\s*(\[[^\]]+\]|"[^"]+")\s*,\s*preview:\s*"([^"]*)"(?:[^}]*displayName:\s*"([^"]*)")?(?:[^}]*dateAdded:\s*"([^"]*)")?[^}]*\}/g;
-        while ((m = fr.exec(RAW)) !== null) {
-        let cat = m[5].trim();
-        cat = cat.startsWith('[')
-            ? cat.replace(/[\[\]"\s]/g,'').split(',')
-            : cat.replace(/"/g,'');
-        fnts.push({ name:m[1], file:m[2], path:m[3], zip:m[4]||m[3], category:cat, preview:m[6], displayName: m[7] || undefined, dateAdded: m[8] || undefined });
-    }
-}
-
-// ══════════════════════════════════════════
-// پەیوەندی
-// ══════════════════════════════════════════
-function showSetup() {
-    document.getElementById('s-user').value  = USER;
-    document.getElementById('s-repo').value  = REPO;
-    document.getElementById('s-token').value = TOKEN;
-    document.getElementById('setup-screen').style.display = 'flex';
-}
-
-async function connect() {
-    const u = v('s-user'), r = v('s-repo'), t = v('s-token');
-    const al = document.getElementById('setup-alert');
-    if (!u||!r||!t) return alert2(al,'هەموو خانەکان پڕ بکەرەوە!','err');
-    alert2(al,'پەیوەندی...','inf');
-    USER=u; REPO=r; TOKEN=t;
-    const ok = await load(true);
-    if (ok) {
-        localStorage.setItem('u',u); localStorage.setItem('r',r); localStorage.setItem('t',t);
-        hide('setup-screen');
-    } else {
-        USER=REPO=TOKEN='';
-        alert2(al,'❌ نەتوانرا پەیوەندی بکرێت. تۆکێن یان ناوی ڕیپۆ پشکنە!','err');
-    }
-}
-
-// ══════════════════════════════════════════
-// زیادکردنی فۆنت
-// ══════════════════════════════════════════
-// ══════════════════════════════════════════
-// Folder Scanner — reads .ttf files from GitHub
-// ══════════════════════════════════════════
-
-// Known folders — built from categories at load time
-// ══════════════════════════════════════════
-// Scan UniQaidarFonts/ folder on GitHub
-// ══════════════════════════════════════════
-async function scanFonts() {
-    if (!ready) return;
-    const status  = document.getElementById('scan-status');
-    const fontSel = document.getElementById('f-select');
-    const btn     = document.getElementById('scan-btn');
-
-    btn.disabled = true;
-    status.style.color = 'var(--muted)';
-    status.textContent = 'Scanning...';
-    fontSel.innerHTML  = '<option value="">Loading...</option>';
-
-    try {
-        const res = await fetch(
-            `https://api.github.com/repos/${USER}/${REPO}/contents/UniQaidarFonts`,
-            { headers: hdrs() }
-        );
-        if (!res.ok) throw new Error(`Folder not found (${res.status}). Make sure the folder is named exactly "UniQaidarFonts" on GitHub.`);
-        const files = await res.json();
-
-        // Only .ttf files, sorted alphabetically
-        const ttfFiles = files
-            .filter(f => f.type === 'file' && f.name.toLowerCase().endsWith('.ttf'))
-            .sort((a, b) => a.name.localeCompare(b.name));
-
-        // Split into new vs already added
-        const existingPaths = new Set(fnts.map(f => f.path));
-        const newFiles  = ttfFiles.filter(f => !existingPaths.has(`UniQaidarFonts/${f.name}`));
-        const doneFiles = ttfFiles.filter(f =>  existingPaths.has(`UniQaidarFonts/${f.name}`));
-
-        fontSel.innerHTML = `<option value="">— ${newFiles.length} new fonts available —</option>`;
-
-        if (newFiles.length > 0) {
-            const grp = document.createElement('optgroup');
-            grp.label = `✅ New — not yet on website (${newFiles.length})`;
-            newFiles.forEach(f => {
-                const o = document.createElement('option');
-                o.value = f.name; // full filename e.g. UniQAIDAR_AKIwand.ttf
-                o.textContent = f.name.replace('.ttf', '');
-                grp.appendChild(o);
-            });
-            fontSel.appendChild(grp);
-        }
-
-        if (doneFiles.length > 0) {
-            const grp = document.createElement('optgroup');
-            grp.label = `☑️ Already on website (${doneFiles.length})`;
-            doneFiles.forEach(f => {
-                const o = document.createElement('option');
-                o.value = '';  // disabled — already added
-                o.textContent = f.name.replace('.ttf', '') + ' ✓';
-                o.disabled = true;
-                o.style.color = '#444';
-                grp.appendChild(o);
-            });
-            fontSel.appendChild(grp);
-        }
-
-        status.textContent = `✅ ${ttfFiles.length} .ttf files — ${newFiles.length} new`;
-        status.style.color = 'var(--green)';
-
-    } catch(e) {
-        fontSel.innerHTML = '<option value="">❌ Could not scan folder</option>';
-        status.textContent = `❌ ${e.message}`;
-        status.style.color = 'var(--red)';
-    }
-    btn.disabled = false;
-}
-
-function onFontSelect() {
-    const filename = document.getElementById('f-select').value;
-    const box = document.getElementById('live-preview-box');
-    if (!filename) {
-        if (box) { box.textContent = '— دووستان فۆنتێک هەڵبژێرە —'; box.style.fontFamily = 'Tahoma, sans-serif'; }
-        return;
-    }
-    updateFontPreview();
-}
-
-function updateFontPreview() {
-    const filename = document.getElementById('f-select').value;
-    if (!filename) return;
-    const name = filename.replace(/\.ttf$/i, '');
-    const prev = document.getElementById('f-prev').value.trim() || 'فۆنتەکانی یونی‌قەیدار - فۆنتی کوردی';
-    const box  = document.getElementById('live-preview-box');
-    if (!box) return;
-    // Inject @font-face dynamically so the real font loads
-    const styleId = 'dyn-' + name.replace(/[^a-zA-Z0-9]/g, '_');
-    if (!document.getElementById(styleId)) {
-        const s = document.createElement('style');
-        s.id = styleId;
-        s.textContent = `@font-face { font-family: '${name}'; src: url('UniQaidarFonts/${filename}') format('truetype'); }`;
-        document.head.appendChild(s);
-    }
-    box.style.fontFamily = `'${name}', Tahoma, sans-serif`;
-    box.textContent = prev;
-}
-
-
-async function addFont() {
-    const filename = document.getElementById('f-select').value; // e.g. UniQAIDAR_AKIwand.ttf
-    const name     = filename.replace(/\.ttf$/i, ''); // derived from selected file
-    const prev     = document.getElementById('f-prev').value.trim() || 'کوردستانی جوان';
-    const al       = document.getElementById('fa');
-    const picked   = [...document.querySelectorAll('#fpills .cat-pill.on')].map(p => p.dataset.id);
-
-    if (!name || !filename)  return alert2(al, '❌ Please select a font from the dropdown first!', 'err');
-    if (!picked.length)      return alert2(al, '❌ Select at least one category!', 'err');
-    if (fnts.find(f => f.path === `UniQaidarFonts/${filename}`))
-        return alert2(al, `❌ "${name}" is already on the website!`, 'err');
-
-    const path   = `UniQaidarFonts/${filename}`;
-    const catVal = picked.length === 1 ? `"${picked[0]}"` : `["${picked.join('","')}"]`;
-
-    // ── Safety checks on RAW before modifying ──────────────
-    if (!RAW || RAW.length < 1000) return alert2(al, '❌ index.html not loaded properly. Reconnect first!', 'err');
-    if (!RAW.includes('<!DOCTYPE html>')) return alert2(al, '❌ index.html content looks corrupt. Re-upload the file to GitHub first!', 'err');
-
-    // ① Add @font-face — only if not already declared
-    // Insert inside <style> block ONLY — never inside <script>
-    const faceDecl = `@font-face { font-family: '${name}'; src: url('${path}'); }`;
-    let next = RAW;
-    if (!next.includes(`font-family: '${name}'`)) {
-        const eol2 = next.includes('\r\n') ? '\r\n' : '\n';
-        const styleClose = next.indexOf('</style>');
-        if (styleClose === -1) return alert2(al, '❌ Could not find </style> in index.html!', 'err');
-        // Search for last @font-face ONLY within <style> block
-        const styleBlock = next.slice(0, styleClose);
-        const li = styleBlock.lastIndexOf('@font-face {');
-        if (li === -1) return alert2(al, '❌ Could not find @font-face inside <style>!', 'err');
-        const closingBrace = styleBlock.indexOf('}', li);
-        const at = closingBrace + 1 + eol2.length;
-        next = next.slice(0, at) + faceDecl + eol2 + next.slice(at);
-    }
-
-    // ② Insert entry at TOP of fonts array — only if not already present
-    const entry = `    { name: "${name}", file: "${name}", path: "${path}", category: ${catVal}, preview: "${prev}" },\n`;
-    if (!next.includes(`"${name}"`)) {
-        let arrOpen = next.indexOf('const fonts = [\n');
-        if (arrOpen === -1) arrOpen = next.indexOf('const fonts = [,\n');
-        if (arrOpen === -1) return alert2(al, '❌ Could not find fonts array in index.html!', 'err');
-        const arrInsert = next.indexOf('\n', arrOpen) + 1;
-        if (arrInsert === 0) return alert2(al, '❌ Malformed fonts array in index.html!', 'err');
-        next = next.slice(0, arrInsert) + entry + next.slice(arrInsert);
-    }
-
-    // ③ Final sanity check — make sure output still looks like valid HTML
-    if (!next.includes('<!DOCTYPE html>') || !next.includes('const fonts = [') || !next.includes(`"${name}"`)) {
-        return alert2(al, '❌ Safety check failed — aborting to prevent corruption!', 'err');
-    }
-
-    alert2(al, 'Pushing to GitHub...', 'inf');
-    const ok = await ghPut(next, `Add font: ${name}`);
-
-    if (ok) {
-        fnts.unshift({ name, file: name, path, category: picked.length === 1 ? picked[0] : picked, preview: prev });
-        alert2(al, `✅ "${name}" added successfully!`, 'ok');
-        clearFont();
+        const d = await ghGet();
+        if (!d) return false;
+        SHA = d.sha;
+        RAW = decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))));
+        parseFonts();
+        parseCats();
+        buildCatPills();
         buildCatList();
+        buildArcSel();
         renderArc();
-    } else {
-        alert2(al, '❌ Push failed. Check your token!', 'err');
+        renderArcFull();
+        return true;
+    } catch(e){ console.error(e); return false; }
+}
+
+// ══════════════════════════════════════════
+// Parse
+// ══════════════════════════════════════════
+function parseFonts() {
+    fnts = [];
+    const rx = /\{\s*name:\s*"([^"]+)"[^}]+file:\s*"([^"]+)"[^}]+path:\s*"([^"]+)"[^}]+category:\s*([\[\]"'\w,\s]+?)[^}]+preview:\s*"([^"]*)"(?:[^}]+dateAdded:\s*"([^"]*)")?\s*\}/g;
+    let m;
+    while ((m = rx.exec(RAW)) !== null) {
+        const cats_raw = m[4].trim();
+        let cats_arr;
+        if (cats_raw.startsWith('[')) {
+            cats_arr = cats_raw.replace(/[\[\]"'\s]/g,'').split(',').filter(Boolean);
+        } else {
+            cats_arr = [cats_raw.replace(/["']/g,'').trim()];
+        }
+        // Extract displayName if present
+        const dn = m[0].match(/displayName:\s*"([^"]*)"/);
+        fnts.push({ name:m[1], file:m[2], path:m[3], category:cats_arr, preview:m[5], dateAdded:m[6]||'', displayName:dn?dn[1]:'' });
     }
 }
 
-function clearFont() {
-    set('f-prev', '');
-    document.getElementById('f-select').selectedIndex = 0;
-    document.getElementById('scan-status').textContent = '';
-    const box = document.getElementById('live-preview-box');
-    if (box) { box.textContent = '— دووستان فۆنتێک هەڵبژێرە —'; box.style.fontFamily = 'Tahoma, sans-serif'; }
-    document.querySelectorAll('#fpills .cat-pill').forEach(p => p.classList.remove('on'));
-}
-
-// ══════════════════════════════════════════
-// زیادکردنی کاتێگۆری
-// ══════════════════════════════════════════
-async function addCat() {
-    const lbl = v('nc-lbl'), id = v('nc-id');
-    const al  = document.getElementById('ca');
-
-    if (!lbl || !id)                  return alert2(al, 'Both fields required!', 'err');
-    if (/\s/.test(id))               return alert2(al, 'ID cannot contain spaces!', 'err');
-    if (cats.find(c => c.id === id))  return alert2(al, 'This category already exists!', 'err');
-
-    // Find the marquee-content div and insert after the last </button> inside it
-    const mcStart = RAW.indexOf('<div class="marquee-content">');
-    if (mcStart === -1) return alert2(al, '❌ Cannot find filter bar in index.html!', 'err');
-    // Find end of the marquee-content closing </div>
-    const mcEnd = RAW.indexOf('</div>', mcStart + 100);
-    // Find last </button> inside that region
-    const lastBtn = RAW.lastIndexOf('</button>', mcEnd);
-    if (lastBtn === -1) return alert2(al, '❌ No filter buttons found!', 'err');
-    const insertAt = lastBtn + '</button>'.length;
-
-    const btnHtml = `\n            <button class="filter-btn" onclick="filterFonts('${id}', this)">${lbl}</button>`;
-    const next = RAW.slice(0, insertAt) + btnHtml + RAW.slice(insertAt);
-
-    alert2(al, 'Saving...', 'inf');
-    const ok = await ghPut(next, `Add category: ${lbl}`);
-    if (ok) {
-        cats.push({ id, label: lbl });
-        set('nc-lbl', ''); set('nc-id', '');
-        buildCatPills(); buildCatList(); buildArcSel();
-        alert2(al, `✅ Category "${lbl}" added!`, 'ok');
-    } else {
-        alert2(al, '❌ Save failed. Check your token!', 'err');
+function parseCats() {
+    cats = [];
+    const rx = /<button class="filter-btn" onclick="filterFonts\('([^']+)',\s*this\)">([^<]+)<\/button>/g;
+    let m;
+    while ((m = rx.exec(RAW)) !== null) {
+        cats.push({ id: m[1], label: m[2].trim() });
     }
 }
 
 // ══════════════════════════════════════════
-// دروستکردنی UI
+// Category Pills (for font add/edit forms)
 // ══════════════════════════════════════════
-function buildAll() { buildCatPills(); buildCatList(); buildArcSel(); renderArc(); }
-
 function buildCatPills() {
-    const w = document.getElementById('fpills');
-    w.innerHTML = '';
-    cats.filter(c=>c.id!=='all').forEach(c => {
-        const p = document.createElement('span');
-        p.className = 'cat-pill';
-        p.dataset.id = c.id;
-        p.textContent = c.label;
-        p.onclick = function() { this.classList.toggle('on'); };
-        w.appendChild(p);
+    ['f-cat-pills','edit-cat-pills'].forEach(containerId => {
+        const el = document.getElementById(containerId);
+        if (!el) return;
+        el.innerHTML = '';
+        cats.forEach(c => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'cat-pill';
+            btn.textContent = c.label;
+            btn.dataset.id = c.id;
+            btn.onclick = () => {
+                btn.classList.toggle('on');
+                syncCatInput(containerId);
+            };
+            el.appendChild(btn);
+        });
     });
 }
 
+function syncCatInput(pillsId) {
+    const container = document.getElementById(pillsId);
+    const selected = [...container.querySelectorAll('.cat-pill.on')].map(b=>b.dataset.id);
+    const inputId = pillsId === 'f-cat-pills' ? 'f-cats' : 'edit-cats';
+    document.getElementById(inputId).value = selected.join(',');
+}
+
+function setPills(pillsId, catArr) {
+    const container = document.getElementById(pillsId);
+    container.querySelectorAll('.cat-pill').forEach(b => {
+        b.classList.toggle('on', catArr.includes(b.dataset.id));
+    });
+    syncCatInput(pillsId);
+}
+
+// ══════════════════════════════════════════
+// Category List
+// ══════════════════════════════════════════
 function buildCatList() {
-    const l = document.getElementById('catlist');
-    l.innerHTML = '';
-    cats.forEach((c, idx) => {
-        const n = fnts.filter(f => {
-            const fc = Array.isArray(f.category) ? f.category : [f.category];
-            return fc.includes(c.id);
-        }).length;
-        const isFirst = idx === 0;
-        const isLast  = idx === cats.length - 1;
+    const el = document.getElementById('cat-list');
+    if (!el) return;
+    el.innerHTML = '';
+    cats.forEach((c,i) => {
+        const count = fnts.filter(f => (Array.isArray(f.category)?f.category:[f.category]).includes(c.id)).length;
+        const isFirst = i === 0;
+        const isLast  = i === cats.length - 1;
         const row = document.createElement('div');
         row.className = 'cat-row';
-        row.style.cssText = 'flex-wrap:wrap;gap:8px';
+        row.style.cssText = 'flex-wrap:wrap;gap:8px;';
         row.innerHTML = `
-            <div style="display:flex;flex-direction:column;gap:2px;margin-left:2px">
-                <button class="btn btn-ghost" style="padding:1px 7px;font-size:0.7rem;min-width:28px;opacity:${isFirst?'0.25':'1'}" ${isFirst?'disabled':''} onclick="moveCat(${idx},-1)" title="Move Up">▲</button>
-                <button class="btn btn-ghost" style="padding:1px 7px;font-size:0.7rem;min-width:28px;opacity:${isLast?'0.25':'1'}" ${isLast?'disabled':''} onclick="moveCat(${idx},1)" title="Move Down">▼</button>
+            <div style="display:flex;flex-direction:column;gap:2px;">
+                <button class="btn btn-ghost" style="padding:1px 7px;font-size:0.7rem;min-width:28px;opacity:${isFirst?'0.25':'1'}" ${isFirst?'disabled':''} onclick="moveCat(${i},-1)" title="بردن بۆ سەرەوە">▲</button>
+                <button class="btn btn-ghost" style="padding:1px 7px;font-size:0.7rem;min-width:28px;opacity:${isLast?'0.25':'1'}" ${isLast?'disabled':''} onclick="moveCat(${i},1)" title="بردن بۆ خوارەوە">▼</button>
             </div>
-            <span class="lbl" id="lbl-${idx}">${c.label}</span>
-            <input id="inp-${idx}" value="${c.label}" style="display:none;flex:1;min-width:120px;max-width:180px" placeholder="Kurdish name">
-            <span class="badge" id="badge-${idx}">${c.id}</span>
-            <input id="inp-id-${idx}" value="${c.id}" style="display:none;width:90px;font-family:var(--mono);font-size:0.75rem;background:var(--bg);border:1px solid var(--yellow);color:var(--yellow);border-radius:5px;padding:4px 8px" placeholder="english-id">
-            <span class="cnt">${n} fonts</span>
-            <button class="btn btn-ghost" style="padding:4px 10px;font-size:0.75rem" onclick="startEdit(${idx})">✏️ Rename</button>
-            <button class="btn btn-red" style="padding:4px 10px;font-size:0.75rem" onclick="deleteCat(${idx})">🗑️</button>
-            <button class="btn btn-primary" id="savebtn-${idx}" style="display:none;padding:4px 10px;font-size:0.75rem" onclick="saveCatName(${idx})">💾 Save</button>
-            <button class="btn btn-ghost" id="cancelbtn-${idx}" style="display:none;padding:4px 10px;font-size:0.75rem" onclick="cancelEdit(${idx})">Cancel</button>
-        `;
-        l.appendChild(row);
+            <span class="lbl" id="lbl-${i}">${c.label}</span>
+            <input id="inp-${i}" value="${c.label}" style="display:none;flex:1;min-width:120px;max-width:180px" placeholder="ناوی کاتێگۆری">
+            <span class="badge" id="badge-${i}">${c.id}</span>
+            <input id="inp-id-${i}" value="${c.id}" style="display:none;width:90px;font-family:var(--mono);font-size:0.75rem;background:var(--bg);border:1px solid var(--yellow);color:var(--yellow);border-radius:5px;padding:4px 8px" placeholder="ئینگلیزی-ID">
+            <span class="cnt">${count} فۆنت</span>
+            <button class="btn btn-ghost" style="padding:5px 10px;font-size:0.75rem;" onclick="startCatEdit(${i})">✏️ گۆڕینی ناو</button>
+            <button id="savebtn-${i}" class="btn btn-primary" style="display:none;padding:5px 10px;font-size:0.75rem;" onclick="saveCatName(${i})">💾 سەیڤ</button>
+            <button id="cancelbtn-${i}" class="btn btn-ghost" style="display:none;padding:5px 10px;font-size:0.75rem;" onclick="cancelCatEdit(${i})">کانسڵ</button>
+            <button class="btn btn-red" style="padding:5px 10px;font-size:0.75rem;" onclick="deleteCat(${i})">🗑</button>`;
+        el.appendChild(row);
     });
-    // Reorder save button
-    if (!document.getElementById('reorder-btn-row')) {
-        const btnRow = document.createElement('div');
-        btnRow.id = 'reorder-btn-row';
-        btnRow.style.cssText = 'margin-top:12px;display:flex;gap:10px;align-items:center';
-        btnRow.innerHTML = `
-            <button class="btn btn-primary" onclick="saveReorder()" style="background:var(--accent)">
-                💾 Save New Order to GitHub
-            </button>
-            <div id="reorder-alert" class="alert" style="flex:1"></div>
-        `;
-        l.after(btnRow);
-    }
+    // Rename alert
     if (!document.getElementById('rename-alert')) {
         const al = document.createElement('div');
         al.id = 'rename-alert'; al.className = 'alert';
-        document.getElementById('reorder-btn-row').after(al);
+        el.after(al);
     }
 }
 
 function moveCat(idx, dir) {
     const newIdx = idx + dir;
     if (newIdx < 0 || newIdx >= cats.length) return;
-    // Swap
     [cats[idx], cats[newIdx]] = [cats[newIdx], cats[idx]];
     buildCatList();
 }
 
 async function saveReorder() {
     const al = document.getElementById('reorder-alert');
-    alert2(al, 'Saving new order...', 'inf');
+    alert2(al, 'سەیڤ کردنی ڕیزبەندی نوێ...', 'inf');
 
-    // Build new button HTML in the new order
     let btnHtml = '';
     cats.forEach(c => {
-        const isActive = c.id === 'nwe' ? ' active' : '';
+        const isActive = (c.id === 'nwe' || c.id === 'Nwe') ? ' active' : '';
         btnHtml += `\n            <button class="filter-btn${isActive}" onclick="filterFonts('${c.id}', this)">${c.label}</button>`;
     });
     btnHtml += '\n        ';
 
-    // Find marquee-content open tag
     const openTag  = '<div class="marquee-content">';
-    const closeTag = '</div>';
     const mcStart  = RAW.indexOf(openTag);
     if (mcStart === -1) {
-        return alert2(al, '❌ Could not find marquee-content — re-upload latest index.html!', 'err');
+        return alert2(al, '❌ marquee-content نەدۆزرایەوە — دووبارە index.html بەرکەوتە!', 'err');
     }
 
-    // Find matching closing </div> by counting depth
     let depth = 0, pos = mcStart;
     while (pos < RAW.length) {
         if (RAW.startsWith('<div', pos))       depth++;
@@ -834,219 +966,20 @@ async function saveReorder() {
         pos++;
     }
 
-    // Replace content between open+close tags
     const before = RAW.slice(0, mcStart + openTag.length);
-    const after  = RAW.slice(pos - 6); // keep closing </div>
+    const after  = RAW.slice(pos - 6);
     const next   = before + btnHtml + after;
 
     if (next === RAW) {
-        return alert2(al, '❌ No change detected — order may already be saved', 'inf');
+        return alert2(al, '❌ هیچ گۆڕانکارییەک نەدۆزرایەوە — ئەگەر ڕیزبەندی پێشتر ذخیرەکراوە', 'inf');
     }
 
     const ok = await ghPut(next, 'Reorder categories');
-    if (ok) alert2(al, '✅ Category order saved!', 'ok');
-    else    alert2(al, '❌ Save failed. Check your token!', 'err');
+    if (ok) alert2(al, '✅ ڕیزبەندی کاتێگۆریەکان ذخیرەکرا!', 'ok');
+    else    alert2(al, '❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!', 'err');
 }
 
-function buildArcSel() {
-    const s = document.getElementById('acat');
-    s.innerHTML = '<option value="all">هەموو کاتێگۆریەکان</option>';
-    cats.filter(c=>c.id!=='all').forEach(c => {
-        const o = document.createElement('option');
-        o.value=c.id; o.textContent=c.label; s.appendChild(o);
-    });
-}
-
-function renderArc() {
-    const q   = v('aq').toLowerCase();
-    const cat = document.getElementById('acat').value;
-    const l   = document.getElementById('arclist');
-    const res = fnts.filter(f => {
-        const fc = Array.isArray(f.category) ? f.category : [f.category];
-        return (cat==='all' || fc.includes(cat)) && f.name.toLowerCase().includes(q);
-    });
-    document.getElementById('acnt').textContent = `${res.length} fonts`;
-    l.innerHTML = '';
-    if (!res.length) {
-        l.innerHTML = '<div style="color:var(--muted);text-align:center;padding:24px;font-size:0.83rem">No fonts found</div>';
-        return;
-    }
-    res.forEach(f => {
-        const fc  = Array.isArray(f.category) ? f.category.join(', ') : f.category;
-        const idx = fnts.indexOf(f);
-        const d   = document.createElement('div');
-        d.className = 'arc-item';
-        d.innerHTML = `
-            <span class="arc-name">${f.name}</span>
-            ${f.displayName ? `<span style="color:var(--accent);font-size:0.78rem">${f.displayName}</span>` : ''}
-            <span class="arc-prev">${f.preview || ''}</span>
-            <span class="badge">${fc}</span>
-            <button class="btn btn-ghost" style="padding:4px 10px;font-size:0.75rem;margin-right:auto"
-                onclick="openEditModal(${idx})">✏️ Edit</button>
-        `;
-        l.appendChild(d);
-    });
-}
-
-// ══════════════════════════════════════════
-// دەستکاریکردنی فۆنتی هەبوو
-// ══════════════════════════════════════════
-let editIdx = -1;
-
-function openEditModal(idx) {
-    editIdx = idx;
-    const f = fnts[idx];
-    const curCats = Array.isArray(f.category) ? f.category : [f.category];
-
-    set('e-name', f.name);
-    set('e-display', f.displayName || '');
-    set('e-prev', f.preview || '');
-    set('e-date', f.dateAdded || '');
-
-    // دروستکردنی پیلەکانی کاتێگۆری بۆ مۆدال
-    const pills = document.getElementById('e-pills');
-    pills.innerHTML = '';
-    cats.filter(c => c.id !== 'all').forEach(c => {
-        const p = document.createElement('span');
-        p.className = 'cat-pill' + (curCats.includes(c.id) ? ' on' : '');
-        p.dataset.id = c.id;
-        p.textContent = c.label;
-        p.onclick = function() { this.classList.toggle('on'); };
-        pills.appendChild(p);
-    });
-
-    document.getElementById('edit-alert').className = 'alert';
-    document.getElementById('edit-modal').classList.add('show');
-}
-
-function closeEditModal() {
-    document.getElementById('edit-modal').classList.remove('show');
-    editIdx = -1;
-}
-
-async function saveEditFont() {
-    if (editIdx < 0) return;
-    const f          = fnts[editIdx];
-    const newPrev    = v('e-prev') || 'کوردستانی جوان';
-    const newDisplay = v('e-display').trim();
-    const newDate    = v('e-date').trim();
-    const picked     = [...document.querySelectorAll('#e-pills .cat-pill.on')].map(p => p.dataset.id);
-    const al         = document.getElementById('edit-alert');
-
-    if (!picked.length) return alert2(al, 'Select at least one category!', 'err');
-
-    const newCatVal = picked.length === 1
-        ? `"${picked[0]}"`
-        : `["${picked.join('","')}"]`;
-
-    const escaped = f.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const entryRx = new RegExp(`\\{\\s*name:\\s*"${escaped}"[^}]*preview:\\s*"[^"]*"[^}]*\\}`, '');
-    const oldEntry = RAW.match(entryRx);
-    if (!oldEntry) return alert2(al, `❌ Could not find font "${f.name}" in index.html!`, 'err');
-
-    let newEntry = oldEntry[0]
-        .replace(/category:\s*(\[[^\]]+\]|"[^"]+")/, `category: ${newCatVal}`)
-        .replace(/preview:\s*"[^"]*"/, `preview: "${newPrev}"`);
-
-    // displayName: زیادکردن یان نوێکردنەوە
-    if (newDisplay) {
-        if (/displayName:\s*"[^"]*"/.test(newEntry)) {
-            newEntry = newEntry.replace(/displayName:\s*"[^"]*"/, `displayName: "${newDisplay}"`);
-        } else {
-            newEntry = newEntry.replace(/\s*\}$/, `, displayName: "${newDisplay}" }`);
-        }
-    } else {
-        newEntry = newEntry.replace(/,?\s*displayName:\s*"[^"]*"/, '');
-    }
-
-    // dateAdded: زیادکردن یان نوێکردنەوە
-    if (newDate) {
-        if (/dateAdded:\s*"[^"]*"/.test(newEntry)) {
-            newEntry = newEntry.replace(/dateAdded:\s*"[^"]*"/, `dateAdded: "${newDate}"`);
-        } else {
-            newEntry = newEntry.replace(/\s*\}$/, `, dateAdded: "${newDate}" }`);
-        }
-    } else {
-        newEntry = newEntry.replace(/,?\s*dateAdded:\s*"[^"]*"/, '');
-    }
-
-    const next = RAW.replace(oldEntry[0], newEntry);
-    alert2(al, 'Saving to GitHub...', 'inf');
-    const ok = await ghPut(next, `Edit font: ${f.name}`);
-
-    if (ok) {
-        fnts[editIdx].preview     = newPrev;
-        fnts[editIdx].displayName = newDisplay || undefined;
-        fnts[editIdx].dateAdded   = newDate || undefined;
-        fnts[editIdx].category    = picked.length === 1 ? picked[0] : picked;
-        alert2(al, `✅ "${f.name}" updated!`, 'ok');
-        buildCatList(); renderArc();
-        setTimeout(closeEditModal, 1200);
-    } else {
-        alert2(al, '❌ Save failed. Check your token!', 'err');
-    }
-}
-
-async function deleteFont() {
-    if (editIdx < 0) return;
-    const f  = fnts[editIdx];
-    const al = document.getElementById('edit-alert');
-    if (!confirm(`Delete "${f.name}" from the website?\n\nNote: Only removes it from index.html. The .ttf file in UniQaidarFonts/ stays on GitHub.`)) return;
-
-    alert2(al, 'Deleting from GitHub...', 'inf');
-
-    const escaped = f.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-    // ① Remove @font-face — search by file name in src URL (may not exist for old fonts)
-    const fileEscaped = (f.file || f.name).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const faceRx = new RegExp(`\\n?[ \\t]*@font-face \\{ font-family: '[^']*'; src: url\\('[^']*${fileEscaped}[^']*'\\)[^}]*\\}`, 'g');
-    let next = RAW.replace(faceRx, '');
-
-    // ② Remove fonts array entry — multiline safe: match { ... name: "X" ... }
-    // Removes the entry plus its leading comma/whitespace
-    const entryRx = new RegExp(`,?\\s*\\{[^{}]*name:\\s*"${escaped}"[\\s\\S]*?\\}(?=\\s*[,\\n])`, 'g');
-    next = next.replace(entryRx, '');
-
-    // ③ Fallback: if entry still exists, try removing just the line-by-line block
-    if (next.includes(`name: "${f.name}"`)) {
-        // Find the entry start and end manually
-        const startMarker = `name: "${f.name}"`;
-        const idx = next.indexOf(startMarker);
-        if (idx !== -1) {
-            // Walk back to find opening {
-            let open = idx;
-            while (open > 0 && next[open] !== '{') open--;
-            // Walk forward to find closing }
-            let close = idx;
-            while (close < next.length && next[close] !== '}') close++;
-            // Remove from before { (including comma/whitespace) to after }
-            let removeStart = open;
-            while (removeStart > 0 && /[\s,]/.test(next[removeStart - 1])) removeStart--;
-            let removeEnd = close + 1;
-            if (next[removeEnd] === ',') removeEnd++;
-            next = next.slice(0, removeStart) + next.slice(removeEnd);
-        }
-    }
-
-    const ok = await ghPut(next, `Delete font: ${f.name}`);
-    if (ok) {
-        fnts.splice(editIdx, 1);
-        alert2(al, `✅ "${f.name}" deleted!`, 'ok');
-        buildCatList(); renderArc();
-        setTimeout(closeEditModal, 1000);
-    } else {
-        alert2(al, '❌ Delete failed. Check your token!', 'err');
-    }
-}
-
-// داخستنی مۆدال بە کلیکی دەرەوە
-document.getElementById('edit-modal').addEventListener('click', function(e) {
-    if (e.target === this) closeEditModal();
-});
-
-// ══════════════════════════════════════════
-
-function startEdit(idx) {
+function startCatEdit(idx) {
     document.getElementById('lbl-'+idx).style.display = 'none';
     document.getElementById('badge-'+idx).style.display = 'none';
     document.getElementById('inp-'+idx).style.display = 'inline-block';
@@ -1056,7 +989,7 @@ function startEdit(idx) {
     document.getElementById('inp-'+idx).focus();
 }
 
-function cancelEdit(idx) {
+function cancelCatEdit(idx) {
     document.getElementById('inp-'+idx).value = cats[idx].label;
     document.getElementById('inp-id-'+idx).value = cats[idx].id;
     document.getElementById('lbl-'+idx).style.display = '';
@@ -1070,37 +1003,32 @@ function cancelEdit(idx) {
 async function saveCatName(idx) {
     const newLabel = document.getElementById('inp-'+idx).value.trim();
     const newId    = document.getElementById('inp-id-'+idx).value.trim().replace(/\s+/g, '');
-    const al = document.getElementById('rename-alert');
+    const al = document.getElementById('rename-alert') || document.getElementById('cadd-alert');
     const oldLabel = cats[idx].label;
     const oldId    = cats[idx].id;
 
-    if (!newLabel) return alert2(al, 'Name cannot be empty!', 'err');
-    if (!newId)    return alert2(al, 'ID cannot be empty!', 'err');
-    if (/\s/.test(newId)) return alert2(al, 'ID cannot contain spaces!', 'err');
+    if (!newLabel) return alert2(al, 'ناو نابێت بەتاڵ بێت!', 'err');
+    if (!newId)    return alert2(al, 'ID نابێت بەتاڵ بێت!', 'err');
+    if (/\s/.test(newId)) return alert2(al, 'ID نابێت بۆشایی تێدا بێت!', 'err');
     const labelChanged = newLabel !== oldLabel;
     const idChanged    = newId !== oldId;
-    if (!labelChanged && !idChanged) { cancelEdit(idx); return; }
+    if (!labelChanged && !idChanged) { cancelCatEdit(idx); return; }
 
-    // Update button: onclick="filterFonts('ID', this)">LABEL</button>
     const oldBtn = `onclick="filterFonts('${oldId}', this)">${oldLabel}</button>`;
     const newBtn = `onclick="filterFonts('${newId}', this)">${newLabel}</button>`;
 
     if (!RAW.includes(oldBtn)) {
-        return alert2(al, `❌ Could not find the button for "${oldId}" in index.html.`, 'err');
+        return alert2(al, `❌ دوگمەی "${oldId}" لە index.html نەدۆزرایەوە.`, 'err');
     }
 
-    // Replace button (handles both label and id change)
     let next = RAW.split(oldBtn).join(newBtn);
 
-    // If ID changed: replace all category references and onclick handlers
     if (idChanged) {
-        // Replace in fonts array: category: "oldId" and category: ["oldId",...]
         next = next.split(`"${oldId}"`).join(`"${newId}"`);
-        // Also replace in onclick handlers: filterFonts('oldId', this)
         next = next.split(`filterFonts('${oldId}',`).join(`filterFonts('${newId}',`);
     }
 
-    alert2(al, 'Saving to GitHub...', 'inf');
+    alert2(al, 'سەیڤ دەکرێت بۆ GitHub...', 'inf');
     const ok = await ghPut(next, `Rename: ${oldLabel}(${oldId}) → ${newLabel}(${newId})`);
 
     if (ok) {
@@ -1109,32 +1037,375 @@ async function saveCatName(idx) {
         buildCatPills();
         buildCatList();
         buildArcSel();
-        alert2(document.getElementById('rename-alert'), `✅ "${oldLabel}" → "${newLabel}" / ID: "${oldId}" → "${newId}"`, 'ok');
+        alert2(al, `✅ "${oldLabel}" → "${newLabel}" گۆڕدرا!`, 'ok');
     } else {
-        alert2(document.getElementById('rename-alert'), '❌ Save failed. Check your token!', 'err');
+        alert2(al, '❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!', 'err');
+    }
+}
+
+function buildArcSel() {
+    // Populate archive category dropdown
+    const sel = document.getElementById('arc-full-cat');
+    if (sel) {
+        const cur = sel.value;
+        sel.innerHTML = '<option value="all">هەموو کاتێگۆریەکان</option>';
+        cats.forEach(c => {
+            const o = document.createElement('option');
+            o.value = c.id; o.textContent = `${c.label} (${c.id})`;
+            sel.appendChild(o);
+        });
+        if (cur) sel.value = cur;
     }
 }
 
 // ══════════════════════════════════════════
+// Arc (font search list — Fonts tab)
+// ══════════════════════════════════════════
+function renderArc() {
+    const q = (document.getElementById('arc-search')?.value || '').toLowerCase();
+    const el = document.getElementById('arc-list');
+    const countEl = document.getElementById('arc-count');
 
-function setReady(val) {
-    ready = val;
-    const dot = document.getElementById('sdot');
-    dot.className = 'status-dot' + (val ? ' on' : '');
-    document.getElementById('rbadge').textContent = val ? `${USER}/${REPO}` : 'Not connected';
-    document.getElementById('fbtn').disabled  = !val;
-    document.getElementById('cbtn').disabled  = !val;
-    document.getElementById('dl-btn').disabled    = true;
-    document.getElementById('about-btn').disabled = true;
+    const filtered = q ? fnts.filter(f => f.name.toLowerCase().includes(q)) : fnts;
+    if (countEl) countEl.textContent = fnts.length;
+
+    const makeItem = (f) => {
+        const div = document.createElement('div');
+        div.className = 'arc-item';
+        div.innerHTML = `
+            <span class="arc-name">${f.name}</span>
+            <span class="arc-prev">${f.preview||''}</span>
+            <button class="btn btn-ghost" style="padding:5px 10px;font-size:0.75rem;" onclick="openEdit(${fnts.indexOf(f)})">✏️</button>
+            <button class="btn btn-red"   style="padding:5px 10px;font-size:0.75rem;" onclick="deleteFont(${fnts.indexOf(f)})">🗑</button>`;
+        return div;
+    };
+
+    if (el) {
+        el.innerHTML = '';
+        filtered.forEach(f => el.appendChild(makeItem(f)));
+    }
 }
 
-function go(id, btn) {
-    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    btn.classList.add('active');
-    if (id==='t-arc') renderArc();
-    if (id==='t-settings') loadSettings();
+// ══════════════════════════════════════════
+// Arc Full (Archive tab — search + category)
+// ══════════════════════════════════════════
+function renderArcFull() {
+    const q   = (document.getElementById('arc-full-search')?.value || '').toLowerCase();
+    const cat = document.getElementById('arc-full-cat')?.value || 'all';
+    const fullEl = document.getElementById('arc-full-list');
+    const countEl = document.getElementById('arc-count');
+    const filteredCountEl = document.getElementById('arc-filtered-count');
+
+    if (countEl) countEl.textContent = fnts.length;
+
+    const filtered = fnts.filter(f => {
+        const fc = Array.isArray(f.category) ? f.category : [f.category];
+        const matchCat = cat === 'all' || fc.includes(cat);
+        const matchQ   = !q || f.name.toLowerCase().includes(q) || (f.preview||'').toLowerCase().includes(q);
+        return matchCat && matchQ;
+    });
+
+    if (filteredCountEl) filteredCountEl.textContent = filtered.length !== fnts.length ? `${filtered.length} فۆنت` : '';
+
+    if (!fullEl) return;
+    fullEl.innerHTML = '';
+    if (!filtered.length) {
+        fullEl.innerHTML = '<div style="color:var(--muted);text-align:center;padding:24px;font-size:0.83rem">هیچ فۆنتێک نەدۆزرایەوە</div>';
+        return;
+    }
+    filtered.forEach(f => {
+        const fc = Array.isArray(f.category) ? f.category.join(', ') : f.category;
+        const div = document.createElement('div');
+        div.className = 'arc-item';
+        div.innerHTML = `
+            <span class="arc-name">${f.name}</span>
+            <span class="arc-prev">${f.preview||''}</span>
+            <span class="badge">${fc}</span>
+            <button class="btn btn-ghost" style="padding:5px 10px;font-size:0.75rem;" onclick="openEdit(${fnts.indexOf(f)})">✏️</button>
+            <button class="btn btn-red"   style="padding:5px 10px;font-size:0.75rem;" onclick="deleteFont(${fnts.indexOf(f)})">🗑</button>`;
+        fullEl.appendChild(div);
+    });
+}
+
+// ══════════════════════════════════════════
+// Scan Folder & Add Font
+// ══════════════════════════════════════════
+async function scanFonts() {
+    if (!ready) return;
+    const status  = document.getElementById('scan-status');
+    const fontSel = document.getElementById('f-select');
+    const btn     = document.getElementById('scan-btn');
+
+    btn.disabled = true;
+    status.style.color = 'var(--muted)';
+    status.textContent = 'بەدواداگەڕان...';
+    fontSel.innerHTML  = '<option value="">بارکردن...</option>';
+
+    try {
+        const res = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/UniQaidarFonts`,
+            { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+        );
+        if (!res.ok) throw new Error(`فۆڵدەر نەدۆزرایەوە (${res.status}). دڵنیابە کە ناوی فۆڵدەرەکە ڕاستەقینە "UniQaidarFonts" بێت لە GitHub.`);
+        const files = await res.json();
+
+        const ttfFiles = files
+            .filter(f => f.type === 'file' && f.name.toLowerCase().endsWith('.ttf'))
+            .sort((a, b) => a.name.localeCompare(b.name));
+
+        const existingPaths = new Set(fnts.map(f => f.path));
+        const newFiles  = ttfFiles.filter(f => !existingPaths.has(`UniQaidarFonts/${f.name}`));
+        const doneFiles = ttfFiles.filter(f =>  existingPaths.has(`UniQaidarFonts/${f.name}`));
+
+        fontSel.innerHTML = `<option value="">— ${newFiles.length} فۆنتی نوێ بەردەستە —</option>`;
+
+        if (newFiles.length > 0) {
+            const grp = document.createElement('optgroup');
+            grp.label = `✅ نوێ — لە وێبسایت نییە (${newFiles.length})`;
+            newFiles.forEach(f => {
+                const o = document.createElement('option');
+                o.value = f.name;
+                o.textContent = f.name.replace('.ttf', '');
+                grp.appendChild(o);
+            });
+            fontSel.appendChild(grp);
+        }
+
+        if (doneFiles.length > 0) {
+            const grp = document.createElement('optgroup');
+            grp.label = `☑️ پێشتر زیادکراوە (${doneFiles.length})`;
+            doneFiles.forEach(f => {
+                const o = document.createElement('option');
+                o.value = '';
+                o.textContent = f.name.replace('.ttf', '') + ' ✓';
+                o.disabled = true;
+                o.style.color = '#444';
+                grp.appendChild(o);
+            });
+            fontSel.appendChild(grp);
+        }
+
+        status.textContent = `✅ ${ttfFiles.length} فایلی .ttf — ${newFiles.length} نوێ`;
+        status.style.color = 'var(--green)';
+    } catch(e) {
+        fontSel.innerHTML = '<option value="">❌ نەتوانرا فۆڵدەر بخوێنرێتەوە</option>';
+        status.textContent = `❌ ${e.message}`;
+        status.style.color = 'var(--red)';
+    }
+    btn.disabled = false;
+}
+
+function onFontSelect() {
+    const filename = document.getElementById('f-select').value;
+    const box = document.getElementById('live-preview-box');
+    const dnInput = document.getElementById('f-displayname');
+    if (!filename) {
+        if (box) { box.textContent = '— دووستان فۆنتێک هەڵبژێرە —'; box.style.fontFamily = 'Tahoma, sans-serif'; }
+        if (dnInput) dnInput.value = '';
+        return;
+    }
+    // Auto-fill displayName with filename (without .ttf) if empty
+    if (dnInput && !dnInput.value.trim()) {
+        dnInput.value = filename.replace(/\.ttf$/i, '');
+    }
+    updateFontPreview();
+}
+
+function updateFontPreview() {
+    const filename = document.getElementById('f-select').value;
+    if (!filename) return;
+    const name = filename.replace(/\.ttf$/i, '');
+    const prev = document.getElementById('f-prev').value.trim() || 'فۆنتەکانی یونی‌قەیدار - فۆنتی کوردی';
+    const box  = document.getElementById('live-preview-box');
+    if (!box) return;
+    const styleId = 'dyn-' + name.replace(/[^a-zA-Z0-9]/g, '_');
+    if (!document.getElementById(styleId)) {
+        const s = document.createElement('style');
+        s.id = styleId;
+        s.textContent = `@font-face { font-family: '${name}'; src: url('UniQaidarFonts/${filename}') format('truetype'); }`;
+        document.head.appendChild(s);
+    }
+    box.style.fontFamily = `'${name}', Tahoma, sans-serif`;
+    box.textContent = prev;
+}
+
+function clearFont() {
+    const sel = document.getElementById('f-select');
+    if (sel) sel.selectedIndex = 0;
+    set('f-prev', '');
+    set('f-date', '');
+    set('f-displayname', '');
+    const status = document.getElementById('scan-status');
+    if (status) status.textContent = '';
+    const box = document.getElementById('live-preview-box');
+    if (box) { box.textContent = '— دووستان فۆنتێک هەڵبژێرە —'; box.style.fontFamily = 'Tahoma, sans-serif'; }
+    document.querySelectorAll('#f-cat-pills .cat-pill').forEach(b => b.classList.remove('on'));
+    set('f-cats', '');
+}
+
+async function addFont() {
+    const filename = document.getElementById('f-select').value;
+    const name     = filename ? filename.replace(/\.ttf$/i, '') : '';
+    const prev     = document.getElementById('f-prev').value.trim() || 'فۆنتەکانی یونی‌قەیدار - فۆنتی کوردی';
+    const date     = v('f-date').trim();
+    const cats_v   = v('f-cats').trim();
+    const displayName = v('f-displayname').trim();
+    const al       = document.getElementById('fadd-alert');
+
+    if (!filename || !name) return alert2(al, '❌ تکایە فۆنتێک لە لیستەکە هەڵبژێرە!', 'err');
+
+    const catsArr = cats_v ? cats_v.split(',').filter(Boolean) : [];
+    if (!catsArr.length) return alert2(al, '❌ کەمترین یەک کاتێگۆری هەڵبژێرە!', 'err');
+
+    const path   = `UniQaidarFonts/${filename}`;
+    if (fnts.find(f => f.path === path)) return alert2(al, `❌ "${name}" پێشتر زیادکراوە!`, 'err');
+
+    if (!RAW || RAW.length < 1000) return alert2(al, '❌ index.html بە ڕاستی بارنەکراوە. دووبارە پەیوەندی بکە!', 'err');
+
+    const catStr  = catsArr.length === 1 ? `"${catsArr[0]}"` : `["${catsArr.join('","')}"]`;
+    const dateStr = date ? `, dateAdded: "${date}"` : '';
+    // Only write displayName if it differs from name (avoid redundancy)
+    const dnStr   = (displayName && displayName !== name) ? `, displayName: "${displayName}"` : '';
+
+    // ① Add @font-face inside <style> block
+    let next = RAW;
+    if (!next.includes(`font-family: '${name}'`)) {
+        const styleClose = next.indexOf('</style>');
+        if (styleClose === -1) return alert2(al, '❌ </style> نەدۆزرایەوە!', 'err');
+        const styleBlock = next.slice(0, styleClose);
+        const li = styleBlock.lastIndexOf('@font-face {');
+        if (li === -1) return alert2(al, '❌ @font-face لە <style> نەدۆزرایەوە!', 'err');
+        const closingBrace = styleBlock.indexOf('}', li);
+        const eol = next.includes('\r\n') ? '\r\n' : '\n';
+        const at = closingBrace + 1 + eol.length;
+        const faceDecl = `@font-face { font-family: '${name}'; src: url('${path}'); }`;
+        next = next.slice(0, at) + faceDecl + eol + next.slice(at);
+    }
+
+    // ② Insert font entry at top of fonts array
+    const entry = `\n    { name: "${name}", file: "${name}", path: "${path}", category: ${catStr}, preview: "${prev}"${dateStr}${dnStr} },`;
+    let arrOpen = next.indexOf('const fonts = [\n');
+    if (arrOpen === -1) arrOpen = next.indexOf('const fonts = [,\n');
+    if (arrOpen === -1) return alert2(al, '❌ fonts array نەدۆزرایەوە!', 'err');
+    const arrInsert = next.indexOf('\n', arrOpen) + 1;
+    next = next.slice(0, arrInsert) + entry + next.slice(arrInsert);
+
+    // ③ Safety check
+    if (!next.includes('<!DOCTYPE html>') || !next.includes(`"${name}"`)) {
+        return alert2(al, '❌ Safety check سەرنەکەوت — بۆ پاراستنی فایلەکەت هەڵوەشاندرایەوە!', 'err');
+    }
+
+    alert2(al, 'پۆش دەکرێت بۆ GitHub...', 'inf');
+    const ok = await ghPut(next, `Add font: ${name}`);
+    if (ok) {
+        parseFonts(); buildCatPills(); renderArc(); renderArcFull();
+        alert2(al, `✅ "${name}" زیادکرا!`, 'ok');
+        clearFont();
+    } else {
+        alert2(al, '❌ پۆش سەرنەکەوت. تۆکێنەکەت بپشکنەوە!', 'err');
+    }
+}
+
+// ══════════════════════════════════════════
+// Edit Font Modal
+// ══════════════════════════════════════════
+function openEdit(i) {
+    const f = fnts[i];
+    set('edit-orig-name', f.name);
+    set('edit-name', f.name);
+    set('edit-displayname', f.displayName || '');
+    set('edit-file', f.file);
+    set('edit-path', f.path);
+    set('edit-preview', f.preview);
+    set('edit-date', f.dateAdded||'');
+    buildCatPills();
+    setPills('edit-cat-pills', Array.isArray(f.category)?f.category:[f.category]);
+    document.getElementById('edit-alert').className='alert';
+    document.getElementById('edit-modal').classList.add('show');
+}
+
+function closeEditModal() {
+    document.getElementById('edit-modal').classList.remove('show');
+}
+
+async function saveEditFont() {
+    const origName    = v('edit-orig-name');
+    const name        = v('edit-name');
+    const displayName = v('edit-displayname').trim();
+    const file        = v('edit-file');
+    const path        = v('edit-path');
+    const preview     = v('edit-preview');
+    const date        = v('edit-date');
+    const cats_v      = v('edit-cats');
+    const al          = document.getElementById('edit-alert');
+
+    const origFont = fnts.find(f=>f.name===origName);
+    if (!origFont) return alert2(al,'❌ فۆنت نەدۆزرایەوە!','err');
+
+    const catsArr = cats_v ? cats_v.split(',').filter(Boolean) : (Array.isArray(origFont.category)?origFont.category:[origFont.category]);
+    const catStr  = catsArr.length===1 ? `"${catsArr[0]}"` : `[${catsArr.map(c=>`"${c}"`).join(',')}]`;
+    const dateStr = date ? `, dateAdded: "${date}"` : '';
+    const dnStr   = (displayName && displayName !== name) ? `, displayName: "${displayName}"` : '';
+    const newEntry = `{ name: "${name}", file: "${file}", path: "${path}", category: ${catStr}, preview: "${preview}"${dateStr}${dnStr} }`;
+
+    const escapedName = origFont.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    const rx = new RegExp(`\\{\\s*name:\\s*"${escapedName}"[^}]+\\}`, '');
+    const next = RAW.replace(rx, newEntry);
+    if (next===RAW) return alert2(al,'❌ تۆمارەکەی فۆنت لە index.html نەدۆزرایەوە!','err');
+
+    alert2(al,'سەیڤ دەکرێت...','inf');
+    const ok = await ghPut(next, `Edit font: ${name}`);
+    if (ok) {
+        parseFonts(); buildCatPills(); renderArc(); renderArcFull();
+        alert2(al,`✅ "${name}" نوێکرایەوە!`,'ok');
+        setTimeout(closeEditModal, 1200);
+    } else {
+        alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
+    }
+}
+
+// ══════════════════════════════════════════
+// Delete Font
+// ══════════════════════════════════════════
+async function deleteFont(i) {
+    const f = fnts[i];
+    if (!confirm(`فۆنتی "${f.name}" بسڕێتەوە لە وێبسایت؟\n\nتێبینی: تەنها لە index.html دەسڕێتەوە. فایلی .ttf لە UniQaidarFonts/ لە GitHub دەمێنێتەوە.`)) return;
+    const escapedName = f.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    const rx = new RegExp(`[ \\t]*\\{\\s*name:\\s*"${escapedName}"[^}]+\\},?\\r?\\n?`, '');
+    const next = RAW.replace(rx, '');
+    if (next===RAW) return alert('❌ تۆمارەکەی فۆنت نەدۆزرایەوە!');
+    showOverlay(`سڕینەوەی ${f.name}...`);
+    const ok = await ghPut(next, `Delete font: ${f.name}`);
+    hideOverlay();
+    if (ok) { parseFonts(); renderArc(); renderArcFull(); }
+    else alert('❌ سڕینەوە سەرنەکەوت. تۆکێنەکەت بپشکنەوە!');
+}
+
+// ══════════════════════════════════════════
+// Add Category
+// ══════════════════════════════════════════
+async function addCat() {
+    const label = v('new-cat-label');
+    const id    = v('new-cat-id');
+    const al    = document.getElementById('cadd-alert');
+    if (!label||!id) return alert2(al,'تکایە هەردووکیان پڕ بکەرەوە!','err');
+    if (cats.find(c=>c.id===id)) return alert2(al,`ID "${id}" پێشتر هەیە!`,'err');
+
+    const anchor = '<div class="marquee-content">';
+    const newBtn = `\n            <button class="filter-btn" onclick="filterFonts('${id}', this)">${label}</button>`;
+    if (!RAW.includes(anchor)) return alert2(al,'❌ anchor لە index.html نەدۆزرایەوە!','err');
+
+    const next = RAW.replace(anchor, anchor + newBtn);
+    alert2(al,'سەیڤ دەکرێت...','inf');
+    const ok = await ghPut(next, `Add category: ${label}`);
+    if (ok) {
+        cats.push({id,label});
+        buildCatPills(); buildCatList(); buildArcSel();
+        alert2(al,`✅ "${label}" زیادکرا!`,'ok');
+        set('new-cat-label',''); set('new-cat-id','');
+    } else {
+        alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
+    }
 }
 
 // ══════════════════════════════════════════
@@ -1142,119 +1413,326 @@ function go(id, btn) {
 // ══════════════════════════════════════════
 async function deleteCat(idx) {
     const c = cats[idx];
-    if (c.id === 'all') return alert('Cannot delete the "All" category.');
-    const n = fnts.filter(f => {
-        const fc = Array.isArray(f.category) ? f.category : [f.category];
-        return fc.includes(c.id);
-    }).length;
-    const msg = n > 0
-        ? `Delete category "${c.label}"?\n\n⚠️ ${n} font(s) are in this category. They will still exist but won't appear under this category.`
-        : `Delete category "${c.label}"?`;
+    if (c.id==='All') return alert('نەتوانرێت کاتێگۆری "All" بسڕێتەوە.');
+    const n = fnts.filter(f=>(Array.isArray(f.category)?f.category:[f.category]).includes(c.id)).length;
+    const msg = n>0
+        ? `کاتێگۆری "${c.label}" بسڕێتەوە؟\n\n⚠️ ${n} فۆنت لەم کاتێگۆریەدان. هێشتا دەمێننەوە بەڵام لەم کاتێگۆریەدا نایەن.`
+        : `کاتێگۆری "${c.label}" بسڕێتەوە؟`;
     if (!confirm(msg)) return;
-
-    const lineRx = new RegExp(`[ \\t]*<button[^>]*filterFonts\\('${c.id.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}'[^>]*>[^<]*<\\/button>\\r?\\n?`, '');
-    const next   = RAW.replace(lineRx, '');
-    if (next === RAW) return alert(`❌ Could not find button for "${c.id}" in index.html.`);
-
-    showOverlay(`Deleting category: ${c.label}...`);
+    const lineRx = new RegExp(`[ \\t]*<button[^>]*filterFonts\\('${c.id.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}'[^>]*>[^<]*<\\/button>\\r?\\n?`,'');
+    const next = RAW.replace(lineRx,'');
+    if (next===RAW) return alert(`❌ دوگمەی "${c.id}" لە index.html نەدۆزرایەوە.`);
+    showOverlay(`سڕینەوەی کاتێگۆری: ${c.label}...`);
     const ok = await ghPut(next, `Delete category: ${c.label}`);
-    if (ok) {
-        cats.splice(idx, 1);
-        buildCatPills(); buildCatList(); buildArcSel();
-    } else {
-        alert('❌ Delete failed. Check your token!');
-    }
+    hideOverlay();
+    if (ok) { cats.splice(idx,1); buildCatPills(); buildCatList(); buildArcSel(); }
+    else alert('❌ سڕینەوە سەرنەکەوت. تۆکێنەکەت بپشکنەوە!');
 }
 
 // ══════════════════════════════════════════
-// Settings: Download Link + About Text
+// Settings: Load all fields
 // ══════════════════════════════════════════
-function loadSettings() {
-    // ── Download Modal fields ──────────────────────────────
-    const dmTitle = RAW.match(/<h2 id="dm-title">([^<]*)<\/h2>/);
-    if (dmTitle) set('dm-title-inp', dmTitle[1]);
+function loadAllSettings() {
+    // ── Header Social ──
+    const fbMatch = RAW.match(/id="social-facebook" href="([^"]*)"/);
+    if (fbMatch) set('h-facebook', fbMatch[1]);
+    const tgMatch = RAW.match(/id="social-telegram" href="([^"]*)"/);
+    if (tgMatch) set('h-telegram', tgMatch[1]);
 
+    // ── Logo URL ──
+    const logoMatch = RAW.match(/id="logo-link" href="([^"]*)"/);
+    if (logoMatch) set('h-logo-url', logoMatch[1]);
+
+    // ── Search placeholders ──
+    const desktopPH = RAW.match(/var DESKTOP = '([^']*)'/);
+    if (desktopPH) set('h-search-desktop', desktopPH[1]);
+    const mobilePH = RAW.match(/var MOBILE = '([^']*)'/);
+    if (mobilePH) set('h-search-mobile', mobilePH[1]);
+
+    // ── Size bar ──
+    const sizeLabel = RAW.match(/<span style="color:#aaa;font-size:0\.82rem;white-space:nowrap">([^<]*)<\/span>/);
+    if (sizeLabel) set('h-sizebar-label', sizeLabel[1]);
+    const sizeReset = RAW.match(/changeFontSize\(\d+\)[^>]*>[^<]*>(.*?)<\/button>/);
+    if (sizeReset) set('h-sizebar-reset', sizeReset[1].trim());
+    const sizeMin = RAW.match(/id="font-size-slider" min="(\d+)"/);
+    if (sizeMin) set('h-sizebar-min', sizeMin[1]);
+    const sizeMax = RAW.match(/id="font-size-slider" min="\d+" max="(\d+)"/);
+    if (sizeMax) set('h-sizebar-max', sizeMax[1]);
+    const sizeDef = RAW.match(/id="font-size-slider" min="\d+" max="\d+" value="(\d+)"/);
+    if (sizeDef) set('h-sizebar-default', sizeDef[1]);
+
+    // ── Footer ──
+    const footerMatch = RAW.match(/<p id="footer-text"[^>]*>([\s\S]*?)<\/p>/);
+    if (footerMatch) set('h-footer', footerMatch[1].trim());
+
+    // ── Download Modal ──
+    const dmHeaderBtn = RAW.match(/<span id="header-btn-label">([^<]*)<\/span>/);
+    if (dmHeaderBtn) set('dm-header-btn-inp', dmHeaderBtn[1]);
+    const dmTitle = RAW.match(/<h2 id="dm-title"[^>]*>([^<]*)<\/h2>/);
+    if (dmTitle) set('dm-title-inp', dmTitle[1]);
     const dmDesc = RAW.match(/<p id="dm-desc"[^>]*>([^<]*)<\/p>/);
     if (dmDesc) set('dm-desc-inp', dmDesc[1]);
-
     const dmBtnLabel = RAW.match(/<span id="dm-btn-label">([^<]*)<\/span>/);
     if (dmBtnLabel) set('dm-btn-inp', dmBtnLabel[1]);
-
     const dmHref = RAW.match(/<a id="dm-btn" href="([^"]*)"/);
     if (dmHref) set('dl-url', dmHref[1]);
+    const dmDirectLabel = RAW.match(/<span id="dm-direct-label">([^<]*)<\/span>/);
+    if (dmDirectLabel) set('dm-direct-inp', dmDirectLabel[1]);
 
-    // ── About text ────────────────────────────────────────
-    const amId = RAW.match(/<p id="about-content">([\s\S]*?)<\/p>/);
-    if (amId) {
-        document.getElementById('about-text').value = amId[1].replace(/<br\s*\/?>/g, '\n').trim();
-    } else {
-        const amFb = RAW.match(/<p>([\u0600-\u06ff][^<]{30,})<\/p>/);
-        if (amFb) document.getElementById('about-text').value = amFb[1].replace(/<br\s*\/?>/g, '\n').trim();
+    // ── About Modal ──
+    const aboutTitle = RAW.match(/<h2 id="about-title"[^>]*>([^<]*)<\/h2>/);
+    if (aboutTitle) set('about-title-inp', aboutTitle[1]);
+    const aboutContent = RAW.match(/<p id="about-content"[^>]*>([\s\S]*?)<\/p>/);
+    if (aboutContent) set('about-text', aboutContent[1].replace(/<br\s*\/?>/g,'\n').trim());
+    const aboutFeatTitle = RAW.match(/<div id="about-features-title"[^>]*>\s*([^<]*)\s*<\/div>/);
+    if (aboutFeatTitle) set('about-features-title-inp', aboutFeatTitle[1].trim());
+    for (let i=1;i<=4;i++) {
+        const iconM = RAW.match(new RegExp(`<span id="about-feat${i}-icon"[^>]*>([^<]*)<\\/span>`));
+        if (iconM) set(`about-feat${i}-icon-inp`, iconM[1]);
+        const textM = RAW.match(new RegExp(`<span id="about-feat${i}-text">([\\s\\S]*?)<\\/span>`));
+        if (textM) set(`about-feat${i}-text-inp`, textM[1].replace(/<[^>]+>/g,'').trim());
     }
-    // enable buttons
-    document.getElementById('dl-btn').disabled    = false;
-    document.getElementById('about-btn').disabled = false;
+    const launchM = RAW.match(/<span id="about-launch-date"[^>]*>([^<]*)<\/span>/);
+    if (launchM) set('about-launch-inp', launchM[1]);
+    const devM = RAW.match(/<span id="about-developer"[^>]*>([^<]*)<\/span>/);
+    if (devM) set('about-dev-inp', devM[1]);
+
+    // ── SEO ──
+    const titleM = RAW.match(/<title>([^<]*)<\/title>/);
+    if (titleM) set('seo-title', titleM[1]);
+    const descM = RAW.match(/<meta name="description" content="([^"]*)"/);
+    if (descM) set('seo-desc', descM[1]);
+    const kwM = RAW.match(/<meta name="keywords" content="([^"]*)"/);
+    if (kwM) set('seo-keywords', kwM[1]);
+    const ogTitleM = RAW.match(/<meta property="og:title" content="([^"]*)"/);
+    if (ogTitleM) set('seo-og-title', ogTitleM[1]);
+    const ogDescM = RAW.match(/<meta property="og:description" content="([^"]*)"/);
+    if (ogDescM) set('seo-og-desc', ogDescM[1]);
+    const ogImgM = RAW.match(/<meta property="og:image" content="([^"]*)"/);
+    if (ogImgM) set('seo-og-image', ogImgM[1]);
+    const ogUrlM = RAW.match(/<meta property="og:url" content="([^"]*)"/);
+    if (ogUrlM) set('seo-og-url', ogUrlM[1]);
+    const gaM = RAW.match(/gtag\('config',\s*'([^']*)'\)/);
+    if (gaM) set('seo-ga-id', gaM[1]);
+
+    // enable all save buttons
+    ['header-social-btn','header-logo-btn','header-search-btn','header-sizebar-btn',
+     'header-footer-btn','dl-btn','about-btn','seo-btn'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = false;
+    });
 }
 
+// ══════════════════════════════════════════
+// Save: Header Social
+// ══════════════════════════════════════════
+async function saveHeaderSocial() {
+    const fb = v('h-facebook');
+    const tg = v('h-telegram');
+    const al = document.getElementById('header-social-alert');
+    let next = RAW;
+    if (fb) next = next.replace(/(<a id="social-facebook" href=")[^"]*"/, `$1${fb}"`);
+    if (tg) next = next.replace(/(<a id="social-telegram" href=")[^"]*"/, `$1${tg}"`);
+    if (next===RAW) return alert2(al,'❌ نەتوانرا دۆزرایەوە!','err');
+    alert2(al,'سەیڤ دەکرێت...','inf');
+    const ok = await ghPut(next,'Update: social links');
+    ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
+}
+
+// ══════════════════════════════════════════
+// Save: Logo URL
+// ══════════════════════════════════════════
+async function saveHeaderLogo() {
+    const url = v('h-logo-url');
+    const al  = document.getElementById('header-logo-alert');
+    if (!url) return alert2(al,'لینک پڕ بکەرەوە!','err');
+    let next = RAW;
+    next = next.replace(/(<a id="logo-link" href=")[^"]*"/, `$1${url}"`);
+    next = next.replace(/(id="logo-link"[^>]*onclick="window\.location\.href=')[^']*'/, `$1${url}'`);
+    alert2(al,'سەیڤ دەکرێت...','inf');
+    const ok = await ghPut(next,'Update: logo link');
+    ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
+}
+
+// ══════════════════════════════════════════
+// Save: Search Placeholders
+// ══════════════════════════════════════════
+async function saveHeaderSearch() {
+    const desktop = v('h-search-desktop');
+    const mobile  = v('h-search-mobile');
+    const al = document.getElementById('header-search-alert');
+    let next = RAW;
+    if (desktop) next = next.replace(/(var DESKTOP = ')[^']*'/, `$1${desktop}'`);
+    if (mobile)  next = next.replace(/(var MOBILE = ')[^']*'/, `$1${mobile}'`);
+    alert2(al,'سەیڤ دەکرێت...','inf');
+    const ok = await ghPut(next,'Update: search placeholders');
+    ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
+}
+
+// ══════════════════════════════════════════
+// Save: Size Bar
+// ══════════════════════════════════════════
+async function saveHeaderSizebar() {
+    const label   = v('h-sizebar-label');
+    const reset   = v('h-sizebar-reset');
+    const min     = v('h-sizebar-min');
+    const max     = v('h-sizebar-max');
+    const def     = v('h-sizebar-default');
+    const al = document.getElementById('header-sizebar-alert');
+    let next = RAW;
+    if (label) next = next.replace(/(<span style="color:#aaa;font-size:0\.82rem;white-space:nowrap">)[^<]*(<\/span>)/, `$1${label}$2`);
+    if (min)   next = next.replace(/(id="font-size-slider" min=")[^"]*"/, `$1${min}"`);
+    if (max)   next = next.replace(/(id="font-size-slider" min="\d+" max=")[^"]*"/, `$1${max}"`);
+    if (def) {
+        next = next.replace(/(id="font-size-slider" min="\d+" max="\d+" value=")[^"]*"/, `$1${def}"`);
+        next = next.replace(/(changeFontSize\()\d+(\);[^>]*>[^>]*>)[^<]*(px<\/span>)/, (m,a,b,c) => `${a}${def}${b}${def}px${c}`);
+        next = next.replace(/(onclick="changeFontSize\()\d+(\); document\.getElementById\('font-size-slider'\)\.value=)\d+(;")/, `$1${def}$2${def}$3`);
+    }
+    // reset button label
+    if (reset) next = next.replace(/(onclick="changeFontSize\(\d+\); document\.getElementById\('font-size-slider'\)\.value=\d+;"[^>]*>)[^<]*(<\/button>)/, `$1${reset}$2`);
+    alert2(al,'سەیڤ دەکرێت...','inf');
+    const ok = await ghPut(next,'Update: size bar');
+    ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
+}
+
+// ══════════════════════════════════════════
+// Save: Footer
+// ══════════════════════════════════════════
+async function saveFooter() {
+    const text = v('h-footer');
+    const al   = document.getElementById('header-footer-alert');
+    if (!text) return alert2(al,'دەق نابێت بەتاڵ بێت!','err');
+    const next = RAW.replace(/<p id="footer-text"[^>]*>[\s\S]*?<\/p>/, `<p id="footer-text" dir="ltr">${text}</p>`);
+    if (next===RAW) return alert2(al,'❌ footer-text نەدۆزرایەوە!','err');
+    alert2(al,'سەیڤ دەکرێت...','inf');
+    const ok = await ghPut(next,'Update: footer');
+    ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
+}
+
+// ══════════════════════════════════════════
+// Save: Download Modal
+// ══════════════════════════════════════════
 async function saveDownloadModal() {
-    const url       = v('dl-url');
+    const headerBtn = v('dm-header-btn-inp');
     const title     = v('dm-title-inp');
     const desc      = v('dm-desc-inp');
     const btnLabel  = v('dm-btn-inp');
+    const url       = v('dl-url');
+    const directLbl = v('dm-direct-inp');
     const al        = document.getElementById('dl-alert');
-    if (!url) return alert2(al, 'Enter the download URL!', 'err');
+    if (!url) return alert2(al,'لینکی داگرتن پڕ بکەرەوە!','err');
 
     let next = RAW;
-
-    // Update modal title
-    if (title) next = next.replace(/<h2 id="dm-title">[^<]*<\/h2>/, `<h2 id="dm-title">${title}<\/h2>`);
-
-    // Update description text
-    if (desc) next = next.replace(/<p id="dm-desc"[^>]*>[^<]*<\/p>/, `<p id="dm-desc" style="font-size: 1.2rem; margin-bottom: 20px;">${desc}<\/p>`);
-
-    // Update button label (modal trigger inside modal)
-    if (btnLabel) next = next.replace(/<span id="dm-btn-label">[^<]*<\/span>/, `<span id="dm-btn-label">${btnLabel}<\/span>`);
-
-    // Update header button label (the visible button beside social icons)
-    if (title) next = next.replace(/<span id="header-btn-label">[^<]*<\/span>/, `<span id="header-btn-label">${title}<\/span>`);
-
-    // Update download href
+    if (headerBtn) next = next.replace(/<span id="header-btn-label">[^<]*<\/span>/, `<span id="header-btn-label">${headerBtn}</span>`);
+    if (title) {
+        next = next.replace(/<h2 id="dm-title"[^>]*>[^<]*<\/h2>/, `<h2 id="dm-title" style="font-size:1.5rem;letter-spacing:0.01em;">${title}</h2>`);
+    }
+    if (desc)      next = next.replace(/<p id="dm-desc"[^>]*>[^<]*<\/p>/, `<p id="dm-desc" style="font-size:1.05rem;margin-bottom:24px;color:#444;line-height:1.8;background:#f4f7ff;border-radius:12px;padding:14px 18px;border:1px solid #d8e3ff;">${desc}</p>`);
+    if (btnLabel)  next = next.replace(/<span id="dm-btn-label">[^<]*<\/span>/, `<span id="dm-btn-label">${btnLabel}</span>`);
+    if (directLbl) next = next.replace(/<span id="dm-direct-label">[^<]*<\/span>/, `<span id="dm-direct-label">${directLbl}</span>`);
     next = next.replace(/(<a id="dm-btn" href=")[^"]*"/, `$1${url}"`);
 
-    if (next === RAW) return alert2(al, '❌ Could not find modal elements. Re-upload latest index.html!', 'err');
-
-    alert2(al, 'Saving...', 'inf');
-    const ok = await ghPut(next, 'Update: download modal');
-    if (ok) alert2(al, '✅ Download modal updated!', 'ok');
-    else    alert2(al, '❌ Save failed. Check your token!', 'err');
+    alert2(al,'سەیڤ دەکرێت...','inf');
+    const ok = await ghPut(next,'Update: download modal');
+    ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
 }
 
+// ══════════════════════════════════════════
+// Save: About Modal
+// ══════════════════════════════════════════
 async function saveAbout() {
-    const text = document.getElementById('about-text').value.trim();
-    const al   = document.getElementById('about-alert');
-    if (!text) return alert2(al, 'About text cannot be empty!', 'err');
+    const al = document.getElementById('about-alert');
+    let next = RAW;
 
-    const htmlText = text.replace(/\n/g, '<br>\n');
-    // Target precisely using id="about-content"
-    const next = RAW.replace(
-        /<p id="about-content">[\s\S]*?<\/p>/,
-        `<p id="about-content">${htmlText}</p>`
-    );
-    if (next === RAW) return alert2(al, '❌ about-content not found. Re-upload index.html first!', 'err');
-    alert2(al, 'Saving...', 'inf');
-    const ok = await ghPut(next, 'Update: about section');
-    if (ok) alert2(al, '✅ About text updated!', 'ok');
-    else    alert2(al, '❌ Save failed. Check your token!', 'err');
+    const title = v('about-title-inp');
+    if (title) next = next.replace(/<h2 id="about-title"[^>]*>[^<]*<\/h2>/, `<h2 id="about-title" style="font-size:1.6rem;letter-spacing:0.02em;">${title}</h2>`);
+
+    const text = document.getElementById('about-text').value.trim();
+    if (text) {
+        const htmlText = text.replace(/\n/g,'<br>\n');
+        next = next.replace(/<p id="about-content"[\s\S]*?<\/p>/, `<p id="about-content" style="font-size:1.05rem;color:#333;text-align:justify;line-height:2;">\n            ${htmlText}\n        </p>`);
+    }
+
+    const featTitle = v('about-features-title-inp');
+    if (featTitle) next = next.replace(/(<div id="about-features-title"[^>]*>)[^<]*(<\/div>)/, `$1\n                ${featTitle}\n            $2`);
+
+    for (let i=1;i<=4;i++) {
+        const icon = v(`about-feat${i}-icon-inp`);
+        const txt  = v(`about-feat${i}-text-inp`);
+        if (icon) next = next.replace(new RegExp(`(<span id="about-feat${i}-icon"[^>]*>)[^<]*(<\\/span>)`), `$1${icon}$2`);
+        if (txt)  next = next.replace(new RegExp(`<span id="about-feat${i}-text">[\\s\\S]*?<\\/span>`), `<span id="about-feat${i}-text">${txt}</span>`);
+    }
+
+    const launch = v('about-launch-inp');
+    if (launch) next = next.replace(/(<span id="about-launch-date"[^>]*>)[^<]*(<\/span>)/, `$1${launch}$2`);
+    const dev = v('about-dev-inp');
+    if (dev)    next = next.replace(/(<span id="about-developer"[^>]*>)[^<]*(<\/span>)/, `$1${dev}$2`);
+
+    if (next===RAW) return alert2(al,'❌ هیچ گۆڕانکارییەک نەدۆزرایەوە یان ئێلیمێنتەکان نەدۆزرایەوە!','err');
+    alert2(al,'سەیڤ دەکرێت...','inf');
+    const ok = await ghPut(next,'Update: about modal');
+    ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
 }
 
-function showOverlay(msg) { document.getElementById('overlay-msg').textContent = msg || '...'; document.getElementById('overlay').classList.add('show'); }
+// ══════════════════════════════════════════
+// Save: SEO
+// ══════════════════════════════════════════
+async function saveSEO() {
+    const al = document.getElementById('seo-alert');
+    let next = RAW;
+
+    const title    = v('seo-title');
+    const desc     = v('seo-desc');
+    const kw       = v('seo-keywords');
+    const ogTitle  = v('seo-og-title');
+    const ogDesc   = v('seo-og-desc');
+    const ogImg    = v('seo-og-image');
+    const ogUrl    = v('seo-og-url');
+    const gaId     = v('seo-ga-id');
+
+    if (title)   next = next.replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`);
+    if (desc)    next = next.replace(/(<meta name="description" content=")[^"]*"/, `$1${desc}"`);
+    if (kw)      next = next.replace(/(<meta name="keywords" content=")[^"]*"/, `$1${kw}"`);
+    if (ogTitle) next = next.replace(/(<meta property="og:title" content=")[^"]*"/, `$1${ogTitle}"`);
+    if (ogDesc)  next = next.replace(/(<meta property="og:description" content=")[^"]*"/, `$1${ogDesc}"`);
+    if (ogImg)   next = next.replace(/(<meta property="og:image" content=")[^"]*"/, `$1${ogImg}"`);
+    if (ogUrl)   next = next.replace(/(<meta property="og:url" content=")[^"]*"/, `$1${ogUrl}"`);
+    if (gaId) {
+        next = next.replace(/(gtag\.js\?id=)[^"&]+/, `$1${gaId}`);
+        next = next.replace(/(gtag\('config',\s*')[^']*'/, `$1${gaId}'`);
+    }
+
+    if (next===RAW) return alert2(al,'❌ هیچ گۆڕانکارییەک نەکراوە!','err');
+    alert2(al,'سەیڤ دەکرێت...','inf');
+    const ok = await ghPut(next,'Update: SEO meta');
+    ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
+}
+
+// ══════════════════════════════════════════
+// Helpers
+// ══════════════════════════════════════════
+function setReady(val) {
+    ready = val;
+    document.getElementById('sdot').className = 'status-dot' + (val ? ' on' : '');
+    document.getElementById('rbadge').textContent = val ? `${USER}/${REPO}` : 'پەیوەند نەکراوە';
+    document.getElementById('fbtn').disabled = !val;
+    document.getElementById('cbtn').disabled = !val;
+    if (val) loadAllSettings();
+}
+
+function go(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+    if (id==='t-arc') renderArcFull();
+}
+
+function showOverlay(msg) { document.getElementById('overlay-msg').textContent = msg||'...'; document.getElementById('overlay').classList.add('show'); }
 function hideOverlay()    { document.getElementById('overlay').classList.remove('show'); }
-function show(id) { document.getElementById(id).style.display = 'flex'; }
-function hide(id) { document.getElementById(id).style.display = 'none'; }
-function v(id)    { return document.getElementById(id).value.trim(); }
-function set(id,val) { document.getElementById(id).value = val; }
+function v(id)   { return document.getElementById(id)?.value?.trim()||''; }
+function set(id,val) { const el=document.getElementById(id); if(el) el.value=val; }
 function alert2(el, msg, type) { el.textContent=msg; el.className=`alert ${type} show`; }
 </script>
 </body>
 </html>
-
