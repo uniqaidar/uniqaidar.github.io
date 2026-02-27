@@ -1127,7 +1127,7 @@ a:active, button:active {
 }
 .copy-cat-btn span { display:flex; align-items:center; justify-content:center; width:100%; height:100%; }
 .copy-cat-btn:hover, .copy-cat-btn:active { background: rgba(0,112,228,1); }
-.copy-cat-btn.copied { background: rgba(0,112,228,1); }
+.copy-cat-btn.copied { background: #cc4400; }
 .card-copy-btn {
     position: static;
     background: #ff5700;
@@ -1801,7 +1801,7 @@ function renderFonts(data, text) {
         const copyBtn = document.createElement('button');
         copyBtn.className = 'card-copy-btn';
         copyBtn.title = 'Copy font link';
-        copyBtn.innerHTML = '<span style="position:relative;top:0px;font-style:normal;">🔗</span>';
+        copyBtn.innerHTML = '<span style="position:relative;top:0px;font-style:normal;display:flex;align-items:center;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>';
         copyBtn.setAttribute('data-font', font.name);
         copyBtn.addEventListener('click', function() {
             const activeBtn = document.querySelector('#desktop-panel .filter-btn.active, #mobile-panel .filter-btn.active');
@@ -1942,15 +1942,44 @@ input.addEventListener('keydown', function(e) {
 
 // ── Copy Link feature ──────────────────────────────────
 function copyLink(url, btn, emoji) {
-    navigator.clipboard.writeText(url).then(function() {
-        const orig = btn.textContent;
-        btn.textContent = '✅';
+    const origHTML = btn.innerHTML;
+
+    function showTick() {
+        btn.innerHTML = '<span style="display:flex;align-items:center;justify-content:center;font-size:16px;">✅</span>';
         btn.classList.add('copied');
         setTimeout(function() {
-            btn.textContent = '🔗';
+            btn.innerHTML = origHTML;
             btn.classList.remove('copied');
         }, 1500);
-    });
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(showTick).catch(function() {
+            // Fallback for mobile/permission issues
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = url;
+                ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+                document.body.appendChild(ta);
+                ta.focus(); ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+            } catch(e) {}
+            showTick();
+        });
+    } else {
+        // Fallback for browsers without clipboard API
+        try {
+            const ta = document.createElement('textarea');
+            ta.value = url;
+            ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+            document.body.appendChild(ta);
+            ta.focus(); ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+        } catch(e) {}
+        showTick();
+    }
 }
 
 function copyCatLink(catId, btn) {
@@ -2085,7 +2114,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const dCopy = document.createElement('button');
         dCopy.className = 'copy-cat-btn';
         dCopy.title = 'Copy category link';
-        dCopy.textContent = '🔗';
+        dCopy.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
         dCopy.onclick = function(e) { e.stopPropagation(); copyCatLink(catId, dCopy); };
         dWrap.appendChild(dBtn);
         dWrap.appendChild(dCopy);
@@ -2102,7 +2131,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const mCopy = document.createElement('button');
         mCopy.className = 'copy-cat-btn';
         mCopy.title = 'Copy category link';
-        mCopy.textContent = '🔗';
+        mCopy.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
         mCopy.onclick = function(e) { e.stopPropagation(); copyCatLink(catId, mCopy); };
         mWrap.appendChild(mBtn);
         mWrap.appendChild(mCopy);
