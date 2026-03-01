@@ -1194,6 +1194,91 @@ a:active, button:active {
 </head>
 <body style="min-height:100vh;display:flex;flex-direction:column;">
 
+<!-- ══════════════════════════════════════════ -->
+<!-- SPLASH SCREEN                             -->
+<!-- ══════════════════════════════════════════ -->
+<style>
+#splash {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 50%, #1a1a1a 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+    gap: 28px;
+}
+#splash.hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+#splash-logo {
+    width: 280px;
+    max-width: 72vw;
+    height: auto;
+    animation: splashIn 0.7s ease-out forwards, splashFloat 3s ease-in-out 0.7s infinite;
+    opacity: 0;
+}
+@keyframes splashIn {
+    0%   { opacity: 0; transform: scale(0.82); }
+    100% { opacity: 1; transform: scale(1); }
+}
+@keyframes splashFloat {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50%       { transform: translateY(-7px) scale(1.02); }
+}
+#splash-bar {
+    width: 160px;
+    height: 3px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 99px;
+    overflow: hidden;
+}
+#splash-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #ff5700, #ff8c42);
+    border-radius: 99px;
+    animation: splashLoad 1.8s ease-out forwards;
+    animation-delay: 0.3s;
+}
+@keyframes splashLoad {
+    0%   { width: 0%; }
+    60%  { width: 75%; }
+    100% { width: 100%; }
+}
+</style>
+
+<div id="splash">
+    <img id="splash-logo" src="Logo.png" alt="UniQaidar">
+    <div id="splash-bar"><div id="splash-bar-fill"></div></div>
+</div>
+
+<script>
+(function() {
+    function hideSplash() {
+        var splash = document.getElementById('splash');
+        if (!splash || splash._hiding) return;
+        splash._hiding = true;
+        splash.classList.add('hide');
+        setTimeout(function() {
+            if (splash.parentNode) splash.parentNode.removeChild(splash);
+        }, 850);
+    }
+    if (document.readyState === 'complete') {
+        setTimeout(hideSplash, 2000);
+    } else {
+        window.addEventListener('load', function() {
+            setTimeout(hideSplash, 2000);
+        });
+    }
+    setTimeout(hideSplash, 5000);
+})();
+</script>
+
 <div class="header">
     <div class="social-links">
         <a id="social-facebook" href="https://web.facebook.com/UniQaiidarFonts?_rdc=1&_rdr#" target="_blank" class="social-icon">
