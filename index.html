@@ -1874,50 +1874,27 @@ function changeFontSize(val) {
 const grid  = document.getElementById('font-grid');
 const input = document.getElementById('test-input');
 
-// ── ئەستێنەری داگرتن: تۆمارکردنی داگرتن بۆ downloads.json لە GitHub ──
+// ── ئەستێنەری داگرتن: تۆمارکردنی داگرتن بۆ Google Analytics ──
 function trackFontDownload(fontName, type) {
     try {
-        var cfg = null;
-        try { cfg = JSON.parse(localStorage.getItem('uqadmin_cfg') || 'null'); } catch(e) {}
-        if (!cfg || !cfg.token || !cfg.user || !cfg.repo) return; // no admin config, skip silently
-
-        var now = new Date();
-        var event = {
-            font: fontName,
-            type: type || 'single',
-            date: now.toISOString().slice(0,10),
-            time: now.toTimeString().slice(0,8),
-            ts: now.toISOString()
-        };
-
-        var dlFile = 'downloads.json';
-        var branch = cfg.branch || 'main';
-        var headers = { 'Authorization': 'token ' + cfg.token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
-        var apiBase = 'https://api.github.com/repos/' + cfg.user + '/' + cfg.repo + '/contents/' + dlFile;
-
-        fetch(apiBase + '?ref=' + branch, { headers: headers })
-            .then(function(r) { return r.ok ? r.json() : null; })
-            .then(function(d) {
-                var existing = [];
-                var sha = '';
-                if (d && d.content) {
-                    try {
-                        existing = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
-                        if (!Array.isArray(existing)) existing = [];
-                    } catch(e) { existing = []; }
-                    sha = d.sha || '';
-                }
-                existing.push(event);
-                // Keep last 5000 events max
-                if (existing.length > 5000) existing = existing.slice(existing.length - 5000);
-                var newContent = btoa(unescape(encodeURIComponent(JSON.stringify(existing, null, 2))));
-                var body = { message: 'Track download: ' + fontName, content: newContent, branch: branch };
-                if (sha) body.sha = sha;
-                return fetch(apiBase, { method: 'PUT', headers: headers, body: JSON.stringify(body) });
-            })
-            .catch(function() {}); // silent fail — never break the download
+        fetch('/api/track', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ font: fontName, type: type || 'single' })
+        }).catch(function(){});
     } catch(e) {}
 }
+
+// ── تۆمارکردنی سەردانی پەڕە ──
+(function() {
+    try {
+        fetch('/api/visit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ts: new Date().toISOString() })
+        }).catch(function(){});
+    } catch(e) {}
+})();
 
 // ── نیشاندانی کارتەکان ──────────────────────────────────
 // data: لیستی فۆنتەکان بۆ نیشاندان
