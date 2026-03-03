@@ -2026,74 +2026,82 @@ function set(id,val) { const el=document.getElementById(id); if(el) el.value=val
 // ══════════════════════════════════════════
 // Downloads & Visits Statistics Tab
 // ══════════════════════════════════════════
-let DL_DATA = [], DL_SHA = '', DL_SORT = 'count', DL_SORT_DIR = -1, DL_TIMER = null;
-let VT_DATA = [], VT_SHA = '', VT_TIMER = null;
+// ══════════════════════════════════════════
+// Downloads & Visits Statistics Tab — Cloudflare KV
+// ══════════════════════════════════════════
+let DL_DATA = [], DL_SORT = 'count', DL_SORT_DIR = -1, DL_TIMER = null;
+let VT_DATA = [], VT_TIMER = null;
+let STATS_LOADED = false;
 
-// ── VISITS ──────────────────────────────
-async function loadVisitStats(force) {
-    const al = document.getElementById('v-alert');
-    if (!ready) { alert2(al,'❌ یەکەم پەیوەندی بکە بە GitHub','err'); return; }
-    if (!force && VT_DATA.length > 0) { renderVisitStats(); return; }
+// Load both downloads + visits in one request from /api/stats
+async function loadAllStats(force) {
+    if (!force && STATS_LOADED) {
+        updateDlSummary(); renderDlTable(); renderVisitStats(); return;
+    }
+    const alDl = document.getElementById('dl-alert');
+    const alVt = document.getElementById('v-alert');
+
+    const days = 90; // fetch last 90 days
     try {
-        const hdrs = { Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json' };
-        const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/visits.json?ref=${BRANCH}`, { headers: hdrs });
-        if (r.status === 404) { VT_DATA = []; VT_SHA = ''; }
-        else if (r.ok) {
-            const d = await r.json(); VT_SHA = d.sha||'';
-            try { VT_DATA = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))))); if(!Array.isArray(VT_DATA)) VT_DATA=[]; } catch(e){VT_DATA=[];}
-        } else { alert2(al,'❌ هەڵە لە بارکردنی سەردانەکان','err'); return; }
-    } catch(e) { alert2(al,'❌ '+e.message,'err'); return; }
-    const now = new Date();
-    document.getElementById('visit-last-refresh').textContent = 'دوایین نوێکردنەوە: '+now.toLocaleDateString('ku')+' — '+now.toTimeString().slice(0,5);
-    renderVisitStats();
-    if (VT_TIMER) clearInterval(VT_TIMER);
-    VT_TIMER = setInterval(()=>loadVisitStats(true), 10*60*1000);
+        const r = await fetch(`/api/stats?days=${days}&type=both`);
+        if (!r.ok) { const e = await r.json(); alert2(alDl, '❌ ' + (e.error||r.status), 'err'); return; }
+        const data = await r.json();
+        if (!data.ok) { alert2(alDl, '❌ ' + data.error, 'err'); return; }
+
+        DL_DATA = Array.isArray(data.downloads) ? data.downloads : [];
+        VT_DATA = Array.isArray(data.visits)    ? data.visits    : [];
+        STATS_LOADED = true;
+
+        const now = new Date();
+        const ts  = 'دوایین نوێکردنەوە: ' + now.toLocaleDateString('ku') + ' — ' + now.toTimeString().slice(0,5);
+        document.getElementById('dl-last-refresh').textContent    = ts;
+        document.getElementById('visit-last-refresh').textContent = ts;
+
+        updateDlSummary(); renderDlTable(); renderVisitStats();
+
+        if (DL_TIMER)  clearInterval(DL_TIMER);
+        if (VT_TIMER)  clearInterval(VT_TIMER);
+        DL_TIMER = VT_TIMER = setInterval(() => loadAllStats(true), 10*60*1000);
+
+    } catch(e) { alert2(alDl, '❌ ' + e.message, 'err'); }
 }
 
+function loadDlStats(force)    { loadAllStats(force); }
+function loadVisitStats(force) { loadAllStats(force); }
+
+// ── VISITS ──────────────────────────────
 function renderVisitStats() {
     const today = new Date().toISOString().slice(0,10);
     const month = today.slice(0,7);
     document.getElementById('v-total').textContent    = VT_DATA.length;
     document.getElementById('v-today').textContent    = VT_DATA.filter(e=>e.date===today).length;
     document.getElementById('v-month').textContent    = VT_DATA.filter(e=>(e.date||'').startsWith(month)).length;
+
     const countryMap = {};
-    VT_DATA.forEach(e => { const c=e.country||'?'; if(!countryMap[c]) countryMap[c]={count:0,last:''}; countryMap[c].count++; if(e.date>countryMap[c].last) countryMap[c].last=e.date; });
+    VT_DATA.forEach(e => {
+        const c = e.country || '?';
+        if (!countryMap[c]) countryMap[c] = { count:0, last:'' };
+        countryMap[c].count++;
+        if (e.date > countryMap[c].last) countryMap[c].last = e.date;
+    });
     document.getElementById('v-countries').textContent = Object.keys(countryMap).length;
+
     const tbody = document.getElementById('v-country-tbody');
-    const arr = Object.entries(countryMap).sort((a,b)=>b[1].count-a[1].count).slice(0,20);
-    tbody.innerHTML = arr.map(([country,info],i)=>`
+    const arr   = Object.entries(countryMap).sort((a,b)=>b[1].count-a[1].count).slice(0,30);
+    tbody.innerHTML = arr.length ? arr.map(([country,info],i)=>`
         <tr style="border-bottom:1px solid var(--border);" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
             <td style="padding:7px 10px;color:var(--muted);font-family:var(--mono);font-size:0.75rem;">${i+1}</td>
             <td style="padding:7px 10px;font-family:var(--mono);font-size:0.82rem;color:var(--green);">${country}</td>
             <td style="padding:7px 10px;text-align:center;"><span style="background:var(--border);padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${info.count}</span></td>
             <td style="padding:7px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${info.last||'—'}</td>
-        </tr>`).join('');
-    if (!arr.length) tbody.innerHTML='<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ داتایەک نییە</td></tr>';
+        </tr>`).join('')
+    : '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ داتایەک نییە</td></tr>';
 }
 
 // ── DOWNLOADS ──────────────────────────
-async function loadDlStats(force) {
-    const al = document.getElementById('dl-alert');
-    if (!ready) { alert2(al,'❌ یەکەم پەیوەندی بکە بە GitHub','err'); return; }
-    if (!force && DL_DATA.length > 0) { updateDlSummary(); renderDlTable(); return; }
-    try {
-        const hdrs = { Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json' };
-        const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/downloads.json?ref=${BRANCH}`, { headers: hdrs });
-        if (r.status === 404) { DL_DATA=[]; DL_SHA=''; }
-        else if (r.ok) {
-            const d = await r.json(); DL_SHA=d.sha||'';
-            try { DL_DATA=JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))))); if(!Array.isArray(DL_DATA)) DL_DATA=[]; } catch(e){DL_DATA=[];}
-        } else { alert2(al,'❌ هەڵەیەک ڕوویدا','err'); return; }
-    } catch(e) { alert2(al,'❌ '+e.message,'err'); return; }
-    const now = new Date();
-    document.getElementById('dl-last-refresh').textContent = 'دوایین نوێکردنەوە: '+now.toLocaleDateString('ku')+' — '+now.toTimeString().slice(0,5);
-    updateDlSummary(); renderDlTable();
-    if (DL_TIMER) clearInterval(DL_TIMER);
-    DL_TIMER = setInterval(()=>loadDlStats(true), 10*60*1000);
-}
-
 function updateDlSummary() {
-    const today = new Date().toISOString().slice(0,10), month=today.slice(0,7);
+    const today = new Date().toISOString().slice(0,10);
+    const month = today.slice(0,7);
     document.getElementById('dl-total-count').textContent  = DL_DATA.length;
     document.getElementById('dl-single-count').textContent = DL_DATA.filter(e=>e.type==='single').length;
     document.getElementById('dl-bulk-count').textContent   = DL_DATA.filter(e=>e.type==='bulk').length;
@@ -2103,84 +2111,108 @@ function updateDlSummary() {
 }
 
 function getFilteredEvents() {
-    const q=((document.getElementById('dl-search')?.value)||'').trim().toLowerCase();
-    const typeF=document.getElementById('dl-type-filter')?.value||'all';
-    const df=document.getElementById('dl-date-from')?.value||'';
-    const dt=document.getElementById('dl-date-to')?.value||'';
-    return DL_DATA.filter(ev=>{
-        if(q&&!(ev.font||'').toLowerCase().includes(q)) return false;
-        if(typeF!=='all'&&ev.type!==typeF) return false;
-        if(df&&(ev.date||'')<df) return false;
-        if(dt&&(ev.date||'')>dt) return false;
+    const q    = (document.getElementById('dl-search')?.value||'').trim().toLowerCase();
+    const typeF = document.getElementById('dl-type-filter')?.value||'all';
+    const df   = document.getElementById('dl-date-from')?.value||'';
+    const dt   = document.getElementById('dl-date-to')?.value||'';
+    return DL_DATA.filter(ev => {
+        if (q    && !(ev.font||'').toLowerCase().includes(q)) return false;
+        if (typeF !== 'all' && ev.type !== typeF)             return false;
+        if (df   && (ev.date||'') < df)                       return false;
+        if (dt   && (ev.date||'') > dt)                       return false;
         return true;
     });
 }
 
-function sortDlBy(col){if(DL_SORT===col)DL_SORT_DIR*=-1;else{DL_SORT=col;DL_SORT_DIR=-1;}renderDlTable();}
+function sortDlBy(col) { if(DL_SORT===col) DL_SORT_DIR*=-1; else { DL_SORT=col; DL_SORT_DIR=-1; } renderDlTable(); }
 
 function renderDlTable() {
     const filtered = getFilteredEvents();
+
+    // Per-font summary
     const fontMap = {};
-    filtered.forEach(ev=>{const k=ev.font||'?';if(!fontMap[k])fontMap[k]={font:k,count:0,last:''};fontMap[k].count++;if((ev.ts||ev.date||'')>fontMap[k].last)fontMap[k].last=ev.ts||ev.date||'';});
-    let arr = Object.values(fontMap).sort((a,b)=>{let va=a[DL_SORT]||'',vb=b[DL_SORT]||'';if(DL_SORT==='count'){va=a.count;vb=b.count;}return va<vb?DL_SORT_DIR:va>vb?-DL_SORT_DIR:0;});
-    const ftbody=document.getElementById('dl-font-tbody');
-    ftbody.innerHTML=arr.length?'':'<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ داگرتنێک نییە</td></tr>';
-    arr.forEach((item,i)=>{
-        const tr=document.createElement('tr'); tr.style.cssText='border-bottom:1px solid var(--border);transition:background 0.15s;';
-        tr.onmouseover=()=>tr.style.background='var(--surface2)'; tr.onmouseout=()=>tr.style.background='';
-        tr.innerHTML=`<td style="padding:8px 12px;color:var(--muted);font-family:var(--mono);font-size:0.75rem;">${i+1}</td>
-            <td style="padding:8px 12px;font-family:var(--mono);font-size:0.8rem;direction:ltr;color:var(--yellow);">${item.font}</td>
-            <td style="padding:8px 12px;text-align:center;"><span style="background:${item.count>=5?'var(--green)':'var(--border)'};color:${item.count>=5?'#000':'var(--text)'};padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${item.count}</span></td>
-            <td style="padding:8px 12px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${item.last?item.last.slice(0,10):'—'}</td>`;
-        ftbody.appendChild(tr);
+    filtered.forEach(ev => {
+        const k = ev.font||'?';
+        if (!fontMap[k]) fontMap[k] = { font:k, count:0, last:'' };
+        fontMap[k].count++;
+        if ((ev.ts||ev.date||'') > fontMap[k].last) fontMap[k].last = ev.ts||ev.date||'';
     });
-    const shown=[...filtered].sort((a,b)=>(b.ts||b.date||'')>(a.ts||a.date||'')?1:-1).slice(0,200);
-    const ltbody=document.getElementById('dl-log-tbody');
-    ltbody.innerHTML=shown.length?'':'<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
-    shown.forEach((ev,i)=>{
-        const tr=document.createElement('tr'); tr.style.cssText='border-bottom:1px solid var(--border);';
-        const lbl=ev.type==='bulk'?'<span style="background:var(--green);color:#000;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تەواوی</span>':'<span style="background:var(--accent);color:#fff;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تاکە</span>';
-        tr.innerHTML=`<td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${i+1}</td>
-            <td style="padding:6px 10px;font-family:var(--mono);font-size:0.78rem;direction:ltr;">${ev.font||'?'}</td>
-            <td style="padding:6px 10px;text-align:center;">${lbl}</td>
-            <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);">${ev.country||'—'}</td>
-            <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${ev.date||'—'}</td>
-            <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${ev.time||'—'}</td>`;
-        ltbody.appendChild(tr);
+    const arr = Object.values(fontMap).sort((a,b)=>{
+        let va=a[DL_SORT]||'', vb=b[DL_SORT]||'';
+        if (DL_SORT==='count'){va=a.count;vb=b.count;}
+        return va<vb?DL_SORT_DIR:va>vb?-DL_SORT_DIR:0;
     });
-    const footer=document.getElementById('dl-log-footer');
-    if(footer) footer.textContent=filtered.length>200?`نیشاندانی ٢٠٠ لە ${filtered.length} تۆمارەوە`:`کۆی ${filtered.length} تۆمار`;
+
+    const ftbody = document.getElementById('dl-font-tbody');
+    ftbody.innerHTML = '';
+    if (!arr.length) {
+        ftbody.innerHTML = '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ داگرتنێک نییە</td></tr>';
+    } else {
+        arr.forEach((item,i) => {
+            const tr = document.createElement('tr');
+            tr.style.cssText = 'border-bottom:1px solid var(--border);transition:background 0.15s;';
+            tr.onmouseover = ()=>tr.style.background='var(--surface2)';
+            tr.onmouseout  = ()=>tr.style.background='';
+            tr.innerHTML = `
+                <td style="padding:8px 12px;color:var(--muted);font-family:var(--mono);font-size:0.75rem;">${i+1}</td>
+                <td style="padding:8px 12px;font-family:var(--mono);font-size:0.8rem;direction:ltr;color:var(--yellow);">${item.font}</td>
+                <td style="padding:8px 12px;text-align:center;"><span style="background:${item.count>=5?'var(--green)':'var(--border)'};color:${item.count>=5?'#000':'var(--text)'};padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${item.count}</span></td>
+                <td style="padding:8px 12px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${item.last?item.last.slice(0,10):'—'}</td>`;
+            ftbody.appendChild(tr);
+        });
+    }
+
+    // Full event log
+    const shown  = [...filtered].sort((a,b)=>(b.ts||b.date||'')>(a.ts||a.date||'')?1:-1).slice(0,200);
+    const ltbody = document.getElementById('dl-log-tbody');
+    ltbody.innerHTML = '';
+    if (!shown.length) {
+        ltbody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
+    } else {
+        shown.forEach((ev,i) => {
+            const tr  = document.createElement('tr');
+            tr.style.cssText = 'border-bottom:1px solid var(--border);';
+            const lbl = ev.type==='bulk'
+                ? '<span style="background:var(--green);color:#000;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تەواوی</span>'
+                : '<span style="background:var(--accent);color:#fff;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تاکە</span>';
+            tr.innerHTML = `
+                <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${i+1}</td>
+                <td style="padding:6px 10px;font-family:var(--mono);font-size:0.78rem;direction:ltr;">${ev.font||'?'}</td>
+                <td style="padding:6px 10px;text-align:center;">${lbl}</td>
+                <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);">${ev.country||'—'}</td>
+                <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${ev.date||'—'}</td>
+                <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${ev.time||'—'}</td>`;
+            ltbody.appendChild(tr);
+        });
+    }
+    const footer = document.getElementById('dl-log-footer');
+    if (footer) footer.textContent = filtered.length>200 ? `نیشاندانی ٢٠٠ لە ${filtered.length} تۆمارەوە` : `کۆی ${filtered.length} تۆمار`;
 }
 
-function clearDlFilters(){
-    ['dl-search','dl-type-filter','dl-date-from','dl-date-to'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=el.tagName==='SELECT'?'all':'';});
+function clearDlFilters() {
+    ['dl-search','dl-type-filter','dl-date-from','dl-date-to'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = el.tagName==='SELECT' ? 'all' : '';
+    });
     renderDlTable();
 }
 
-async function clearDlStats(){
-    if(!confirm('دڵنیایت؟ هەموو ئامارەکانی داگرتن سڕدرێنەوە!')) return;
-    const al=document.getElementById('dl-alert'); alert2(al,'سڕدرێنێتەوە...','inf');
-    try {
-        const hdrs={Authorization:`token ${TOKEN}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'};
-        const body={message:'Clear download stats',content:btoa('[]'),branch:BRANCH};
-        if(DL_SHA) body.sha=DL_SHA;
-        const r=await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/downloads.json`,{method:'PUT',headers:hdrs,body:JSON.stringify(body)});
-        if(r.ok){const d=await r.json();DL_SHA=d.content?.sha||'';DL_DATA=[];updateDlSummary();renderDlTable();alert2(al,'✅ سڕدرایەوە!','ok');}
-        else alert2(al,'❌ سەرنەکەوت','err');
-    } catch(e){alert2(al,'❌ '+e.message,'err');}
+function clearDlStats() {
+    alert('ئامارەکان لە Cloudflare KV پاراستراون.\nبۆ سڕینەوە بڕۆ بۆ Cloudflare Dashboard → KV → UQDATA namespace → سڕینەوەی کلیلەکان.');
 }
 
-function exportDlCsv(){
-    const filtered=getFilteredEvents();
-    if(!filtered.length){alert('هیچ داتایەک نییە');return;}
-    const rows=[['#','ناوی فۆنت','جۆر','وڵات','بەروار','کات']];
-    filtered.forEach((ev,i)=>rows.push([i+1,ev.font||'',ev.type||'',ev.country||'',ev.date||'',ev.time||'']));
-    const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));
-    a.download='UniQaidar_Downloads_'+new Date().toISOString().slice(0,10)+'.csv';
-    document.body.appendChild(a);a.click();document.body.removeChild(a);
+function exportDlCsv() {
+    const filtered = getFilteredEvents();
+    if (!filtered.length) { alert('هیچ داتایەک نییە'); return; }
+    const rows = [['#','ناوی فۆنت','جۆر','وڵات','بەروار','کات']];
+    filtered.forEach((ev,i) => rows.push([i+1, ev.font||'', ev.type||'', ev.country||'', ev.date||'', ev.time||'']));
+    const csv = rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+    const a   = document.createElement('a');
+    a.href    = URL.createObjectURL(new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8;'}));
+    a.download = 'UniQaidar_Downloads_'+new Date().toISOString().slice(0,10)+'.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
+
 function alert2(el, msg, type) { el.textContent=msg; el.className=`alert ${type} show`; }
 </script>
 </body>
