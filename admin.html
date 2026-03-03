@@ -211,6 +211,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
         <button class="tab"        onclick="go('t-seo',     this)">🌐 SEO</button>
         <button class="tab"        onclick="go('t-arc',     this)">📦 Archive</button>
         <button class="tab"        onclick="go('t-ifont',   this)">🎨 Interface Font</button>
+        <button class="tab"        onclick="go('t-dlstats', this)">📊 داگرتنەکان</button>
     </div>
 
     <!-- ══════════════════════════════════════════════════════ -->
@@ -683,6 +684,106 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             </div>
         </div>
     </div>
+
+</main>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- TAB: داگرتنەکان (Downloads Statistics)               -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="t-dlstats" class="tab-content" style="display:none;max-width:980px;margin:0 auto;padding:22px 16px;">
+    <div class="box">
+        <div class="box-header" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div class="dot" style="background:var(--yellow)"></div>
+                <span>📊 ئامارەکانی داگرتنی فۆنت</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span id="dl-last-refresh" style="font-size:0.72rem;color:var(--muted);font-family:var(--mono);">نەنوێکراوەتەوە</span>
+                <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadDlStats(true)">🔄 نوێکردنەوە</button>
+                <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="exportDlCsv()">📥 Export CSV</button>
+                <button class="btn btn-red" style="font-size:0.78rem;padding:5px 12px;" onclick="clearDlStats()">🗑 سڕینەوەی هەموو ئامارەکان</button>
+            </div>
+        </div>
+        <div class="box-body">
+            <!-- Summary cards -->
+            <div id="dl-summary" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px;">
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:1.6rem;font-weight:bold;color:var(--yellow);" id="dl-total-count">—</div>
+                    <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">کۆی داگرتنەکان</div>
+                </div>
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:1.6rem;font-weight:bold;color:var(--accent);" id="dl-single-count">—</div>
+                    <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">داگرتنی تاکەکە</div>
+                </div>
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:1.6rem;font-weight:bold;color:var(--green);" id="dl-bulk-count">—</div>
+                    <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">داگرتنی تەواوی فۆنتەکان</div>
+                </div>
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:1.6rem;font-weight:bold;color:var(--purple);" id="dl-unique-fonts">—</div>
+                    <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">فۆنتی جیاواز داگیرا</div>
+                </div>
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:1.1rem;font-weight:bold;color:var(--red);font-family:var(--mono);" id="dl-today-count">—</div>
+                    <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">داگرتنی ئەمڕۆ</div>
+                </div>
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:1.1rem;font-weight:bold;color:var(--accent);font-family:var(--mono);" id="dl-this-month">—</div>
+                    <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">داگرتنی ئەم مانگە</div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">
+                <input type="text" id="dl-search" placeholder="گەڕان بەدوای ناوی فۆنت..." oninput="renderDlTable()" style="max-width:280px;direction:rtl;">
+                <select id="dl-type-filter" onchange="renderDlTable()" style="max-width:160px;">
+                    <option value="all">هەموو جۆرەکان</option>
+                    <option value="single">تاکە فۆنت</option>
+                    <option value="bulk">تەواوی فۆنتەکان</option>
+                </select>
+                <input type="date" id="dl-date-from" onchange="renderDlTable()" style="direction:ltr;color-scheme:dark;max-width:150px;" title="لە بەرواری">
+                <input type="date" id="dl-date-to" onchange="renderDlTable()" style="direction:ltr;color-scheme:dark;max-width:150px;" title="بۆ بەروار">
+                <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 10px;" onclick="clearDlFilters()">پاکردنەوەی فلتەر</button>
+            </div>
+
+            <div id="dl-alert" class="alert"></div>
+
+            <!-- Per-font summary table -->
+            <div class="section-label" style="margin-bottom:10px;">داگرتنەکان بەپێی فۆنت</div>
+            <div style="overflow-x:auto;margin-bottom:24px;">
+                <table id="dl-font-table" style="width:100%;border-collapse:collapse;font-size:0.82rem;min-width:500px;">
+                    <thead>
+                        <tr style="border-bottom:1px solid var(--border);color:var(--muted);">
+                            <th style="padding:8px 12px;text-align:right;font-weight:normal;font-family:var(--mono);">#</th>
+                            <th style="padding:8px 12px;text-align:right;font-weight:normal;" onclick="sortDlBy('font')" title="ڕیزبەندی" style="cursor:pointer;">ناوی فۆنت ▼</th>
+                            <th style="padding:8px 12px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlBy('count')">ژمارەی داگرتن</th>
+                            <th style="padding:8px 12px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlBy('last')">دوایین داگرتن</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dl-font-tbody"></tbody>
+                </table>
+            </div>
+
+            <!-- Full events log -->
+            <div class="section-label" style="margin-bottom:10px;">تەواوی ئەرشیفی داگرتنەکان</div>
+            <div style="overflow-x:auto;">
+                <table id="dl-log-table" style="width:100%;border-collapse:collapse;font-size:0.8rem;min-width:520px;">
+                    <thead>
+                        <tr style="border-bottom:1px solid var(--border);color:var(--muted);">
+                            <th style="padding:7px 10px;text-align:right;font-weight:normal;font-family:var(--mono);">#</th>
+                            <th style="padding:7px 10px;text-align:right;font-weight:normal;">ناوی فۆنت</th>
+                            <th style="padding:7px 10px;text-align:center;font-weight:normal;">جۆر</th>
+                            <th style="padding:7px 10px;text-align:center;font-weight:normal;">بەروار</th>
+                            <th style="padding:7px 10px;text-align:center;font-weight:normal;">کات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dl-log-tbody"></tbody>
+                </table>
+                <div id="dl-log-footer" style="margin-top:8px;font-size:0.75rem;color:var(--muted);text-align:center;"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
 </main>
 
@@ -1897,18 +1998,233 @@ function setReady(val) {
 }
 
 function go(id, btn) {
-    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    // Hide all regular tab-contents inside main
+    document.querySelectorAll('main .tab-content').forEach(t=>{ t.classList.remove('active'); });
+    // Also hide/show the downloads tab (outside main)
+    const dlTab = document.getElementById('t-dlstats');
+    if (dlTab) dlTab.style.display = (id === 't-dlstats') ? 'block' : 'none';
+    // Show the selected tab (if inside main)
+    const sel = document.getElementById(id);
+    if (sel && sel.closest('main')) sel.classList.add('active');
+    // Update tab button states
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
     btn.classList.add('active');
+    // Trigger per-tab loaders
     if (id==='t-arc') renderArcFull();
     if (id==='t-ifont') buildInterfaceFontSelect();
+    if (id==='t-dlstats') loadDlStats(false);
 }
 
 function showOverlay(msg) { document.getElementById('overlay-msg').textContent = msg||'...'; document.getElementById('overlay').classList.add('show'); }
 function hideOverlay()    { document.getElementById('overlay').classList.remove('show'); }
 function v(id)   { return document.getElementById(id)?.value?.trim()||''; }
 function set(id,val) { const el=document.getElementById(id); if(el) el.value=val; }
+// ══════════════════════════════════════════
+// Downloads Statistics Tab
+// ══════════════════════════════════════════
+let DL_DATA = [];       // all events loaded from downloads.json
+let DL_SHA  = '';       // sha of downloads.json for updates
+let DL_SORT = 'count';  // current sort: 'count' | 'font' | 'last'
+let DL_SORT_DIR = -1;   // -1 = desc, 1 = asc
+let DL_REFRESH_TIMER = null;
+
+async function loadDlStats(force) {
+    const al = document.getElementById('dl-alert');
+    if (!ready) { alert2(al, '❌ یەکەم پەیوەندی بکە بە GitHub', 'err'); return; }
+
+    // Load downloads.json from repo
+    try {
+        const headers = { Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json' };
+        const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/downloads.json?ref=${BRANCH}`, { headers });
+        if (r.status === 404) {
+            DL_DATA = [];
+            DL_SHA = '';
+        } else if (r.ok) {
+            const d = await r.json();
+            DL_SHA = d.sha || '';
+            try {
+                DL_DATA = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
+                if (!Array.isArray(DL_DATA)) DL_DATA = [];
+            } catch(e) { DL_DATA = []; }
+        } else {
+            alert2(al, '❌ هەڵەیەک ڕوویدا لە بارکردنی داگرتنەکان', 'err');
+            return;
+        }
+    } catch(e) {
+        alert2(al, '❌ پەیوەندی سەرنەکەوت: ' + e.message, 'err');
+        return;
+    }
+
+    // Update last refresh time
+    const now = new Date();
+    document.getElementById('dl-last-refresh').textContent =
+        'دوایین نوێکردنەوە: ' + now.toLocaleDateString('ku') + ' — ' + now.toTimeString().slice(0,5);
+
+    updateDlSummary();
+    renderDlTable();
+
+    // Auto-refresh every 10 minutes
+    if (DL_REFRESH_TIMER) clearInterval(DL_REFRESH_TIMER);
+    DL_REFRESH_TIMER = setInterval(() => loadDlStats(true), 10 * 60 * 1000);
+}
+
+function getFilteredEvents() {
+    const q       = (document.getElementById('dl-search')?.value || '').trim().toLowerCase();
+    const typeF   = document.getElementById('dl-type-filter')?.value || 'all';
+    const dateFrom = document.getElementById('dl-date-from')?.value || '';
+    const dateTo   = document.getElementById('dl-date-to')?.value || '';
+
+    return DL_DATA.filter(ev => {
+        if (q && !(ev.font||'').toLowerCase().includes(q)) return false;
+        if (typeF !== 'all' && ev.type !== typeF) return false;
+        if (dateFrom && (ev.date||'') < dateFrom) return false;
+        if (dateTo   && (ev.date||'') > dateTo)   return false;
+        return true;
+    });
+}
+
+function updateDlSummary() {
+    const today = new Date().toISOString().slice(0,10);
+    const thisMonth = today.slice(0,7);
+    const total = DL_DATA.length;
+    const single = DL_DATA.filter(e=>e.type==='single').length;
+    const bulk   = DL_DATA.filter(e=>e.type==='bulk').length;
+    const fonts  = new Set(DL_DATA.filter(e=>e.type==='single').map(e=>e.font)).size;
+    const todayCt = DL_DATA.filter(e=>e.date===today).length;
+    const monthCt = DL_DATA.filter(e=>(e.date||'').startsWith(thisMonth)).length;
+
+    document.getElementById('dl-total-count').textContent = total;
+    document.getElementById('dl-single-count').textContent = single;
+    document.getElementById('dl-bulk-count').textContent = bulk;
+    document.getElementById('dl-unique-fonts').textContent = fonts;
+    document.getElementById('dl-today-count').textContent = todayCt;
+    document.getElementById('dl-this-month').textContent = monthCt;
+}
+
+function sortDlBy(col) {
+    if (DL_SORT === col) DL_SORT_DIR *= -1;
+    else { DL_SORT = col; DL_SORT_DIR = -1; }
+    renderDlTable();
+}
+
+function renderDlTable() {
+    const filtered = getFilteredEvents();
+
+    // Build per-font summary
+    const fontMap = {};
+    filtered.forEach(ev => {
+        const k = ev.font || '?';
+        if (!fontMap[k]) fontMap[k] = { font: k, count: 0, last: '' };
+        fontMap[k].count++;
+        if (!fontMap[k].last || ev.ts > fontMap[k].last) fontMap[k].last = ev.ts || ev.date || '';
+    });
+
+    let fontArr = Object.values(fontMap);
+    fontArr.sort((a,b) => {
+        let va = a[DL_SORT] || '', vb = b[DL_SORT] || '';
+        if (DL_SORT === 'count') { va = a.count; vb = b.count; }
+        if (va < vb) return DL_SORT_DIR;
+        if (va > vb) return -DL_SORT_DIR;
+        return 0;
+    });
+
+    const ftbody = document.getElementById('dl-font-tbody');
+    ftbody.innerHTML = '';
+    if (fontArr.length === 0) {
+        ftbody.innerHTML = '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ داگرتنێک نییە</td></tr>';
+    } else {
+        fontArr.forEach((item, i) => {
+            const lastStr = item.last ? (item.last.slice(0,10) + ' ' + (item.last.slice(11,16)||'')) : '—';
+            const isNew = item.count >= 5;
+            const tr = document.createElement('tr');
+            tr.style.cssText = 'border-bottom:1px solid var(--border);transition:background 0.15s;';
+            tr.onmouseover = ()=> tr.style.background='var(--surface2)';
+            tr.onmouseout  = ()=> tr.style.background='';
+            tr.innerHTML = `
+                <td style="padding:8px 12px;color:var(--muted);font-family:var(--mono);font-size:0.75rem;">${i+1}</td>
+                <td style="padding:8px 12px;font-family:var(--mono);font-size:0.8rem;direction:ltr;color:var(--yellow);">${item.font}</td>
+                <td style="padding:8px 12px;text-align:center;">
+                    <span style="background:${isNew?'var(--green)':'var(--border)'};color:${isNew?'#000':'var(--text)'};padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${item.count}</span>
+                </td>
+                <td style="padding:8px 12px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${lastStr}</td>
+            `;
+            ftbody.appendChild(tr);
+        });
+    }
+
+    // Full events log (most recent first, max 200 rows shown)
+    const sorted = [...filtered].sort((a,b)=> (b.ts||b.date||'') > (a.ts||a.date||'') ? 1 : -1);
+    const shown  = sorted.slice(0, 200);
+    const ltbody = document.getElementById('dl-log-tbody');
+    ltbody.innerHTML = '';
+    if (shown.length === 0) {
+        ltbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
+    } else {
+        shown.forEach((ev, i) => {
+            const typeLabel = ev.type === 'bulk'
+                ? '<span style="background:var(--green);color:#000;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تەواوی فۆنتەکان</span>'
+                : '<span style="background:var(--accent);color:#fff;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تاکە فۆنت</span>';
+            const tr = document.createElement('tr');
+            tr.style.cssText = 'border-bottom:1px solid var(--border);';
+            tr.innerHTML = `
+                <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${i+1}</td>
+                <td style="padding:6px 10px;font-family:var(--mono);font-size:0.78rem;direction:ltr;color:var(--text);">${ev.font||'?'}</td>
+                <td style="padding:6px 10px;text-align:center;">${typeLabel}</td>
+                <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${ev.date||'—'}</td>
+                <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${ev.time||'—'}</td>
+            `;
+            ltbody.appendChild(tr);
+        });
+    }
+    const footer = document.getElementById('dl-log-footer');
+    if (footer) footer.textContent = filtered.length > 200 ? `نیشاندانی ٢٠٠ لە ${filtered.length} تۆمارەوە` : `کۆی ${filtered.length} تۆمار`;
+}
+
+function clearDlFilters() {
+    document.getElementById('dl-search').value = '';
+    document.getElementById('dl-type-filter').value = 'all';
+    document.getElementById('dl-date-from').value = '';
+    document.getElementById('dl-date-to').value = '';
+    renderDlTable();
+}
+
+async function clearDlStats() {
+    if (!confirm('دڵنیایت؟ هەموو ئامارەکانی داگرتن سڕدرێنەوە — ئەم کردارە گەڕانەوەی نییە!')) return;
+    const al = document.getElementById('dl-alert');
+    alert2(al, 'سڕدرێنێتەوە...', 'inf');
+    try {
+        const headers = { Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' };
+        const newContent = btoa(unescape(encodeURIComponent('[]')));
+        const body = { message: 'Clear download stats', content: newContent, branch: BRANCH };
+        if (DL_SHA) body.sha = DL_SHA;
+        const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/downloads.json`,
+            { method:'PUT', headers, body: JSON.stringify(body) });
+        if (r.ok) {
+            const d = await r.json();
+            DL_SHA = d.content?.sha || '';
+            DL_DATA = [];
+            updateDlSummary();
+            renderDlTable();
+            alert2(al, '✅ هەموو ئامارەکان سڕدرانەوە!', 'ok');
+        } else {
+            alert2(al, '❌ سڕینەوە سەرنەکەوت', 'err');
+        }
+    } catch(e) { alert2(al, '❌ ' + e.message, 'err'); }
+}
+
+function exportDlCsv() {
+    const filtered = getFilteredEvents();
+    if (filtered.length === 0) { alert('هیچ داتایەک نییە بۆ Export کردن'); return; }
+    const rows = [['#','ناوی فۆنت','جۆر','بەروار','کات']];
+    filtered.forEach((ev,i) => rows.push([i+1, ev.font||'', ev.type||'', ev.date||'', ev.time||'']));
+    const csv = rows.map(r => r.map(v => '"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+    const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8;'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'UniQaidar_Downloads_' + new Date().toISOString().slice(0,10) + '.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
 function alert2(el, msg, type) { el.textContent=msg; el.className=`alert ${type} show`; }
 </script>
 </body>
