@@ -2107,9 +2107,8 @@ function applyUrlParams() {
     const params = new URLSearchParams(location.search);
     const catParam  = params.get('cat');
     const fontParam = params.get('font');
-    if (!catParam) return;
-
-    // Find and click the matching category button in both panels
+    // Find and click the matching category button in both panels (only if catParam present)
+    if (catParam) {
     const allBtns = document.querySelectorAll('#desktop-panel .filter-btn');
     let matched = null;
     allBtns.forEach(function(b) {
@@ -2130,6 +2129,8 @@ function applyUrlParams() {
             }
         });
     }
+
+    } // end if(catParam)
 
     // Scroll to + highlight specific font card
     if (fontParam) {
