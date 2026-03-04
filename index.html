@@ -2107,38 +2107,50 @@ function applyUrlParams() {
     const params = new URLSearchParams(location.search);
     const catParam  = params.get('cat');
     const fontParam = params.get('font');
-    // Find and click the matching category button in both panels (only if catParam present)
-    if (catParam) {
-    const allBtns = document.querySelectorAll('#desktop-panel .filter-btn');
-    let matched = null;
-    allBtns.forEach(function(b) {
-        const onclick = b.getAttribute('onclick') || '';
-        const id = onclick.split("'")[1];
-        if (id && id.toLowerCase() === catParam.toLowerCase()) matched = b;
-    });
-    if (matched) {
-        const matchedCatId = matched.getAttribute('onclick').split("'")[1];
-        filterFonts(matchedCatId, matched);
-        // Also update mobile panel: activate button + update label
-        document.querySelectorAll('#mobile-panel .filter-btn').forEach(function(b) {
+
+    // If only font param (from admin link), show ALL fonts first so the card exists in DOM
+    if (fontParam && !catParam) {
+        renderFonts(fonts, '');
+        // Clear active state on all cat buttons, activate 'All' if present
+        document.querySelectorAll('#desktop-panel .filter-btn, #mobile-panel .filter-btn').forEach(function(b) {
+            b.classList.remove('active');
             const id = (b.getAttribute('onclick') || '').split("'")[1];
-            if (id && id.toLowerCase() === catParam.toLowerCase()) {
-                b.classList.add('active');
-                document.getElementById('mobile-active-label').textContent = b.textContent.trim();
-                fitMobileLabel();
-            }
+            if (id && id.toLowerCase() === 'all') b.classList.add('active');
         });
     }
 
-    } // end if(catParam)
+    // If catParam present, filter by category first
+    if (catParam) {
+        const allBtns = document.querySelectorAll('#desktop-panel .filter-btn');
+        let matched = null;
+        allBtns.forEach(function(b) {
+            const onclick = b.getAttribute('onclick') || '';
+            const id = onclick.split("'")[1];
+            if (id && id.toLowerCase() === catParam.toLowerCase()) matched = b;
+        });
+        if (matched) {
+            const matchedCatId = matched.getAttribute('onclick').split("'")[1];
+            filterFonts(matchedCatId, matched);
+            document.querySelectorAll('#mobile-panel .filter-btn').forEach(function(b) {
+                const id = (b.getAttribute('onclick') || '').split("'")[1];
+                if (id && id.toLowerCase() === catParam.toLowerCase()) {
+                    b.classList.add('active');
+                    document.getElementById('mobile-active-label').textContent = b.textContent.trim();
+                    fitMobileLabel();
+                }
+            });
+        }
+    }
 
     // Scroll to + highlight specific font card
     if (fontParam) {
         setTimeout(function() {
+            var found = false;
             const cards = document.querySelectorAll('.card');
             cards.forEach(function(card) {
                 const nameEl = card.querySelector('.card-eng-name');
                 if (nameEl && nameEl.textContent.trim() === fontParam) {
+                    found = true;
                     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     card.style.outline = '3px solid #0070e4';
                     card.style.outlineOffset = '3px';
@@ -2148,7 +2160,7 @@ function applyUrlParams() {
                     }, 3000);
                 }
             });
-        }, 400);
+        }, 600);
     }
 }
 
