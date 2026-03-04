@@ -211,7 +211,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
         <button class="tab"        onclick="go('t-about',   this)">ℹ About</button>
         <button class="tab"        onclick="go('t-seo',     this)">🌐 SEO</button>
         <button class="tab"        onclick="go('t-arc',     this)">📦 Archive</button>
-        <button class="tab"        onclick="go('t-ifont',   this)">🎨 Interface Font</button>
+        <button class="tab"        onclick="go('t-ifont',   this)">🎨 Interface</button>
         <button class="tab"        onclick="go('t-dlstats', this)">📊 Downloads</button>
     </div>
 
@@ -775,8 +775,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;">ناوی فۆنت</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;">جۆر</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;">وڵات</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">بەروار</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">کات</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;">بەروار — کات (سلێمانی)</th>
               </tr></thead>
               <tbody id="dl-log-tbody"></tbody>
             </table>
@@ -2053,7 +2052,8 @@ async function loadAllStats(force) {
         STATS_LOADED = true;
 
         const now = new Date();
-        const ts  = 'دوایین نوێکردنەوە: ' + now.toLocaleDateString('ku') + ' — ' + now.toTimeString().slice(0,5);
+        const sulNow = nowSUL();
+        const ts  = 'دوایین نوێکردنەوە: ' + sulNow.toLocaleDateString('ku') + ' — ' + sulNow.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
         document.getElementById('dl-last-refresh').textContent    = ts;
         document.getElementById('visit-last-refresh').textContent = ts;
 
@@ -2071,18 +2071,18 @@ function loadVisitStats(force) { loadAllStats(force); }
 
 // ── VISITS ──────────────────────────────
 function renderVisitStats() {
-    const today = new Date().toISOString().slice(0,10);
-    const month = today.slice(0,7);
+    const today = todaySUL();
+    const month = thisMonthSUL();
     document.getElementById('v-total').textContent    = VT_DATA.length;
-    document.getElementById('v-today').textContent    = VT_DATA.filter(e=>e.date===today).length;
-    document.getElementById('v-month').textContent    = VT_DATA.filter(e=>(e.date||'').startsWith(month)).length;
+    document.getElementById('v-today').textContent    = VT_DATA.filter(e=>{ const d=e.ts?new Date(e.ts).toLocaleDateString('en-CA',{timeZone:'Asia/Baghdad'}):e.date; return d===today; }).length;
+    document.getElementById('v-month').textContent    = VT_DATA.filter(e=>{ const d=e.ts?new Date(e.ts).toLocaleDateString('en-CA',{timeZone:'Asia/Baghdad'}):e.date; return d.startsWith(month); }).length;
 
     const countryMap = {};
     VT_DATA.forEach(e => {
         const c = e.country || '?';
         if (!countryMap[c]) countryMap[c] = { count:0, last:'' };
         countryMap[c].count++;
-        if (e.date > countryMap[c].last) countryMap[c].last = e.date;
+        if ((e.ts||e.date||'') > countryMap[c].last) countryMap[c].last = e.ts||e.date||'';
     });
     document.getElementById('v-countries').textContent = Object.keys(countryMap).length;
 
@@ -2093,15 +2093,15 @@ function renderVisitStats() {
             <td style="padding:7px 10px;color:var(--muted);font-family:var(--mono);font-size:0.75rem;">${i+1}</td>
             <td style="padding:7px 10px;font-family:var(--mono);font-size:0.82rem;color:var(--green);">${country}</td>
             <td style="padding:7px 10px;text-align:center;"><span style="background:var(--border);padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${info.count}</span></td>
-            <td style="padding:7px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${info.last||'—'}</td>
+            <td style="padding:7px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${fmtSUL(info.last)}</td>
         </tr>`).join('')
     : '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ داتایەک نییە</td></tr>';
 }
 
 // ── DOWNLOADS ──────────────────────────
 function updateDlSummary() {
-    const today = new Date().toISOString().slice(0,10);
-    const month = today.slice(0,7);
+    const today = todaySUL();
+    const month = thisMonthSUL();
     document.getElementById('dl-total-count').textContent  = DL_DATA.length;
     document.getElementById('dl-single-count').textContent = DL_DATA.filter(e=>e.type==='single').length;
     document.getElementById('dl-bulk-count').textContent   = DL_DATA.filter(e=>e.type==='bulk').length;
@@ -2153,17 +2153,18 @@ function renderDlTable() {
             tr.style.cssText = 'border-bottom:1px solid var(--border);transition:background 0.15s;';
             tr.onmouseover = ()=>tr.style.background='var(--surface2)';
             tr.onmouseout  = ()=>tr.style.background='';
+            const lastSUL = item.last ? fmtSUL(item.last) : '—';
             tr.innerHTML = `
                 <td style="padding:8px 12px;color:var(--muted);font-family:var(--mono);font-size:0.75rem;">${i+1}</td>
-                <td style="padding:8px 12px;font-family:var(--mono);font-size:0.8rem;direction:ltr;color:var(--yellow);">${item.font}</td>
+                <td style="padding:8px 12px;font-family:var(--mono);font-size:0.8rem;direction:ltr;"><a href="https://uniqaidar.pages.dev/?font=${encodeURIComponent(item.font)}" target="_blank" style="color:var(--yellow);text-decoration:none;" title="کۆپیکردنی لینکی فۆنت">${item.font} 🔗</a></td>
                 <td style="padding:8px 12px;text-align:center;"><span style="background:${item.count>=5?'var(--green)':'var(--border)'};color:${item.count>=5?'#000':'var(--text)'};padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${item.count}</span></td>
-                <td style="padding:8px 12px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${item.last?item.last.slice(0,10):'—'}</td>`;
+                <td style="padding:8px 12px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${lastSUL}</td>`;
             ftbody.appendChild(tr);
         });
     }
 
     // Full event log
-    const shown  = [...filtered].sort((a,b)=>(b.ts||b.date||'')>(a.ts||a.date||'')?1:-1).slice(0,200);
+    const shown  = [...filtered].sort((a,b)=>{ const ta=a.ts||a.date||''; const tb=b.ts||b.date||''; return tb>ta?1:tb<ta?-1:0; }).slice(0,200);
     const ltbody = document.getElementById('dl-log-tbody');
     ltbody.innerHTML = '';
     if (!shown.length) {
@@ -2175,13 +2176,13 @@ function renderDlTable() {
             const lbl = ev.type==='bulk'
                 ? '<span style="background:var(--green);color:#000;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تەواوی</span>'
                 : '<span style="background:var(--accent);color:#fff;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تاکە</span>';
+            const evSUL = fmtSUL(ev.ts);
             tr.innerHTML = `
                 <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${i+1}</td>
-                <td style="padding:6px 10px;font-family:var(--mono);font-size:0.78rem;direction:ltr;">${ev.font||'?'}</td>
+                <td style="padding:6px 10px;font-family:var(--mono);font-size:0.78rem;direction:ltr;"><a href="https://uniqaidar.pages.dev/?font=${encodeURIComponent(ev.font||'')}" target="_blank" style="color:var(--accent);text-decoration:none;">${ev.font||'?'} 🔗</a></td>
                 <td style="padding:6px 10px;text-align:center;">${lbl}</td>
                 <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);">${ev.country||'—'}</td>
-                <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${ev.date||'—'}</td>
-                <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${ev.time||'—'}</td>`;
+                <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${evSUL}</td>`;
             ltbody.appendChild(tr);
         });
     }
@@ -2212,6 +2213,28 @@ function exportDlCsv() {
     a.download = 'UniQaidar_Downloads_'+new Date().toISOString().slice(0,10)+'.csv';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
+
+// ── Sulaymaniyah timezone helper (Asia/Baghdad = UTC+3) ──
+function nowSUL() {
+    return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Baghdad' }));
+}
+function fmtSUL(tsStr) {
+    // Format any ISO timestamp to Sulaymaniyah local date+time
+    if (!tsStr) return '—';
+    try {
+        const d = new Date(tsStr);
+        const date = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' }); // YYYY-MM-DD
+        const time = d.toLocaleTimeString('en-GB', { timeZone: 'Asia/Baghdad', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+        return date + ' ' + time;
+    } catch(e) { return tsStr.slice(0,19); }
+}
+function todaySUL() {
+    return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });
+}
+function thisMonthSUL() {
+    return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' }).slice(0,7);
+}
+
 
 function alert2(el, msg, type) { el.textContent=msg; el.className=`alert ${type} show`; }
 </script>

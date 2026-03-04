@@ -17,12 +17,13 @@ export async function onRequestPost(context) {
         const font    = (body.font || '').slice(0, 200);
         const type    = body.type === 'bulk' ? 'bulk' : 'single';
         const now     = new Date();
-        const today   = now.toISOString().slice(0, 10);
+        const sulDate = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });  // YYYY-MM-DD SUL
+        const sulTime = now.toLocaleTimeString('en-GB', { timeZone: 'Asia/Baghdad', hour:'2-digit', minute:'2-digit', second:'2-digit' });
         const country = context.request.cf?.country || '';
-        const event   = { font, type, date: today, time: now.toTimeString().slice(0,8), ts: now.toISOString(), country };
+        const event   = { font, type, date: sulDate, time: sulTime, ts: now.toISOString(), country };
 
         // Store in daily bucket: key "dl:YYYY-MM-DD"
-        const key      = `dl:${today}`;
+        const key      = `dl:${sulDate}`;
         const existing = await UQDATA.get(key, { type: 'json' }) || [];
         existing.push(event);
         if (existing.length > 5000) existing.splice(0, existing.length - 5000);

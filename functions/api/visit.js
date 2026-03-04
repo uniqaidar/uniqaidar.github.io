@@ -14,13 +14,14 @@ export async function onRequestPost(context) {
         if (!UQDATA) return new Response(JSON.stringify({ ok:false, error:'KV not bound' }), { status:500, headers:cors });
 
         const now     = new Date();
-        const today   = now.toISOString().slice(0, 10);
+        const sulDate = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });
+        const sulTime = now.toLocaleTimeString('en-GB', { timeZone: 'Asia/Baghdad', hour:'2-digit', minute:'2-digit', second:'2-digit' });
         const country = context.request.cf?.country || '';
         const city    = context.request.cf?.city    || '';
-        const event   = { date: today, time: now.toTimeString().slice(0,8), ts: now.toISOString(), country, city };
+        const event   = { date: sulDate, time: sulTime, ts: now.toISOString(), country, city };
 
         // Store in daily bucket: key "vt:YYYY-MM-DD"
-        const key      = `vt:${today}`;
+        const key      = `vt:${sulDate}`;
         const existing = await UQDATA.get(key, { type: 'json' }) || [];
         existing.push(event);
         if (existing.length > 10000) existing.splice(0, existing.length - 10000);
