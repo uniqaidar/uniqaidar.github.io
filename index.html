@@ -2110,13 +2110,20 @@ function applyUrlParams() {
 
     // If only font param (from admin link), show ALL fonts first so the card exists in DOM
     if (fontParam && !catParam) {
-        renderFonts(fonts, '');
-        // Clear active state on all cat buttons, activate 'All' if present
+        // Always use 'All' category — future-proof: works even if font categories change
+        var allBtn = null;
+        document.querySelectorAll('#desktop-panel .filter-btn').forEach(function(b) {
+            const id = (b.getAttribute('onclick') || '').split("'")[1] || '';
+            if (id.toLowerCase() === 'all') allBtn = b;
+        });
+        filterFonts('All', allBtn);
         document.querySelectorAll('#desktop-panel .filter-btn, #mobile-panel .filter-btn').forEach(function(b) {
             b.classList.remove('active');
-            const id = (b.getAttribute('onclick') || '').split("'")[1];
-            if (id && id.toLowerCase() === 'all') b.classList.add('active');
+            const id = (b.getAttribute('onclick') || '').split("'")[1] || '';
+            if (id.toLowerCase() === 'all') b.classList.add('active');
         });
+        var mobileLabel = document.getElementById('mobile-active-label');
+        if (mobileLabel) { mobileLabel.textContent = 'هەموو فۆنتەکان'; fitMobileLabel(); }
     }
 
     // If catParam present, filter by category first
