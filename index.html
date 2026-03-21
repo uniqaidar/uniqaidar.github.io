@@ -1172,6 +1172,64 @@ a:active, button:active {
     justify-content: center;
 }
 
+/* ── Category Download Button (desktop toggle row) ── */
+/* ── Category Download Button (toggle row, desktop + mobile) ── */
+#cat-dl-btn, #cat-dl-btn-mobile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    background: linear-gradient(135deg, #ff6a1a, #ff5700);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-size: 0.88rem;
+    cursor: pointer;
+    font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif;
+    white-space: nowrap;
+    box-shadow: 0 3px 10px rgba(255,87,0,0.3);
+    transition: opacity 0.2s;
+}
+#cat-dl-btn-mobile {
+    width: 100%;
+    font-size: 1rem;
+    padding: 10px 16px;
+    border-radius: 10px;
+}
+#cat-dl-btn:disabled, #cat-dl-btn-mobile:disabled { opacity: 0.6; cursor: not-allowed; }
+#cat-dl-btn:hover:not(:disabled), #cat-dl-btn-mobile:hover:not(:disabled) { opacity: 0.88; }
+
+/* ── Pagination Bar ── */
+#pagination-bar {
+    display: none;
+    direction: rtl;
+    padding: 14px 16px;
+    background: #111;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    border-top: 1px solid #222;
+}
+#pagination-bar.visible { display: flex; }
+.pg-btn {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #ccc;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+    min-width: 36px;
+}
+.pg-btn:hover { background: rgba(255,87,0,0.18); border-color: #ff5700; color: #fff; }
+.pg-btn.active { background: #ff5700; border-color: #ff5700; color: #fff; font-weight: bold; }
+.pg-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+#pg-info { color: #888; font-size: 0.8rem; padding: 0 6px; }
+
 
 /* ── Category font count badge ── */
 .cat-count {
@@ -1381,13 +1439,18 @@ a:active, button:active {
 
     <!-- Desktop: collapsible dropdown — populated dynamically from marquee-content -->
     <div class="filter-desktop" id="filter-desktop">
-        <button class="filter-mobile-toggle" id="desktop-toggle" onclick="toggleDesktopCats()">
-            <span class="toggle-label">
-                <span>&#9776;</span>
-                <span id="desktop-active-label"></span>
+        <div id="desktop-toggle" onclick="toggleDesktopCats()" style="width:100%;background:#1a1a1a;border:none;border-top:2px solid rgba(255,255,255,0.2);margin-top:4px;border-bottom:1px solid rgba(255,255,255,0.15);color:#fff;padding:12px 20px;font-size:1.1rem;font-weight:normal;display:flex;align-items:center;direction:rtl;cursor:pointer;font-family:'UniQAIDAR_Peregraf 01',Tahoma,sans-serif;gap:10px;box-sizing:border-box;">
+            <span style="font-size:1rem;">&#9776;</span>
+            <span id="desktop-active-label" style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></span>
+            <span id="cat-dl-inline-wrap" style="display:none;align-items:center;gap:8px;flex-shrink:0;" onclick="event.stopPropagation()">
+                <button id="cat-dl-btn" onclick="event.stopPropagation();downloadCategoryFonts()">
+                    <i class="fas fa-download"></i>
+                    <span id="cat-dl-btn-text">داگرتنی تەواوی فۆنتەکانی ئەم بەشە</span>
+                </button>
+                <span id="cat-dl-progress-inline" style="display:none;font-size:0.78rem;color:#ccc;background:#16213e;border-radius:7px;padding:4px 10px;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis;"></span>
             </span>
-            <span class="toggle-arrow">&#9660;</span>
-        </button>
+            <span class="toggle-arrow" style="transition:transform 0.25s;font-size:0.8rem;flex-shrink:0;">&#9660;</span>
+        </div>
         <div class="filter-mobile-panel" id="desktop-panel"></div>
     </div>
 
@@ -1400,6 +1463,14 @@ a:active, button:active {
             </span>
             <span class="toggle-arrow">&#9660;</span>
         </button>
+        <!-- Mobile cat-download bar: full-width, below toggle row -->
+        <div id="cat-dl-mobile-wrap" style="display:none;direction:rtl;background:#1a1a2e;padding:8px 14px;flex-direction:column;gap:6px;border-bottom:1px solid rgba(255,255,255,0.08);">
+            <button id="cat-dl-btn-mobile" onclick="downloadCategoryFonts()" style="width:100%;">
+                <i class="fas fa-download"></i>
+                <span id="cat-dl-btn-text-mobile">داگرتنی تەواوی فۆنتەکانی ئەم بەشە</span>
+            </button>
+            <div id="cat-dl-progress-mobile" style="display:none;font-size:0.8rem;color:#ccc;background:#16213e;border-radius:7px;padding:5px 10px;text-align:center;width:100%;box-sizing:border-box;"></div>
+        </div>
         <div class="filter-mobile-panel" id="mobile-panel"></div>
     </div>
 
@@ -1422,7 +1493,13 @@ a:active, button:active {
         border-radius:12px;padding:3px 10px;cursor:pointer;font-size:0.75rem;">ڕیسێت</button>
 </div>
 
+<!-- Hidden marker for admin panel to read/write category download button label -->
+<span id="cat-download-btn-label" style="display:none">داگرتنی تەواوی فۆنتەکانی ئەم بەشە</span>
+
 <div class="font-grid" id="font-grid" style="flex:1"></div>
+
+<!-- Pagination bar -->
+<div id="pagination-bar"></div>
 <script>
 
 const fonts = [
@@ -1874,6 +1951,13 @@ function changeFontSize(val) {
 const grid  = document.getElementById('font-grid');
 const input = document.getElementById('test-input');
 
+// ── Pagination & category state ─────────────────────────
+// FONTS_PER_PAGE: editable from admin panel — do not rename this comment marker
+var FONTS_PER_PAGE = 50; // admin:perpage
+var _currentPage   = 1;
+var _filteredFonts = [];   // full filtered list for current category
+var _currentCatId  = '';   // current active category ID
+
 // ── ئەستێنەری داگرتن: تۆمارکردنی داگرتن بۆ Google Analytics ──
 function trackFontDownload(fontName, type) {
     try {
@@ -1897,11 +1981,23 @@ function trackFontDownload(fontName, type) {
 })();
 
 // ── نیشاندانی کارتەکان ──────────────────────────────────
-// data: لیستی فۆنتەکان بۆ نیشاندان
-// text: دەقی تاقیکردنەوە (ئەگەر بەتاڵ بوو، preview ی فۆنت بەکاردێت)
-function renderFonts(data, text) {
+// data: لیستی فۆنتەکان بۆ نیشاندان (تەواو، پەیجینگ لێرە دەکرێت)
+// text: دەقی تاقیکردنەوە
+// resetPage: ئەگەر true بوو، پەیجەکە دووبارە دەگەڕێتەوە بۆ ١
+function renderFonts(data, text, resetPage) {
+    if (resetPage) _currentPage = 1;
+    _filteredFonts = data;
+
+    var perPage = FONTS_PER_PAGE > 0 ? FONTS_PER_PAGE : 100;
+    var totalPages = Math.ceil(data.length / perPage);
+    if (_currentPage > totalPages && totalPages > 0) _currentPage = totalPages;
+    if (_currentPage < 1) _currentPage = 1;
+
+    var start = (_currentPage - 1) * perPage;
+    var pageData = data.slice(start, start + perPage);
+
     grid.innerHTML = '';
-    data.forEach(function(font) {
+    pageData.forEach(function(font) {
         const card = document.createElement('div');
         card.className = 'card';
         const engName = font.displayName || font.name;
@@ -1933,6 +2029,69 @@ function renderFonts(data, text) {
         card.querySelector('.download-btn-wrap').append(copyBtn);
         grid.appendChild(card);
     });
+
+    renderPagination(data.length, perPage);
+}
+
+// ── Pagination bar ───────────────────────────────────────
+function renderPagination(total, perPage) {
+    var bar = document.getElementById('pagination-bar');
+    if (!bar) return;
+    var totalPages = Math.ceil(total / perPage);
+    if (totalPages <= 1) {
+        bar.innerHTML = '';
+        bar.classList.remove('visible');
+        return;
+    }
+    bar.classList.add('visible');
+    bar.innerHTML = '';
+
+    // Prev button
+    var prev = document.createElement('button');
+    prev.className = 'pg-btn';
+    prev.textContent = '‹ پێشوو';
+    prev.disabled = (_currentPage <= 1);
+    prev.onclick = function() { _currentPage--; renderFonts(_filteredFonts, input.value); window.scrollTo({top:0,behavior:'smooth'}); };
+    bar.appendChild(prev);
+
+    // Page number buttons (show max 7 around current)
+    var lo = Math.max(1, _currentPage - 3);
+    var hi = Math.min(totalPages, _currentPage + 3);
+    if (lo > 1) {
+        var b1 = document.createElement('button'); b1.className='pg-btn'; b1.textContent='1';
+        b1.onclick=(function(p){return function(){_currentPage=p;renderFonts(_filteredFonts,input.value);window.scrollTo({top:0,behavior:'smooth'});};})(1);
+        bar.appendChild(b1);
+        if (lo > 2) { var sp=document.createElement('span'); sp.id='pg-info'; sp.textContent='…'; bar.appendChild(sp); }
+    }
+    for (var p = lo; p <= hi; p++) {
+        var btn = document.createElement('button');
+        btn.className = 'pg-btn' + (p === _currentPage ? ' active' : '');
+        btn.textContent = p;
+        (function(pg){ btn.onclick = function(){ _currentPage=pg; renderFonts(_filteredFonts,input.value); window.scrollTo({top:0,behavior:'smooth'}); }; })(p);
+        bar.appendChild(btn);
+    }
+    if (hi < totalPages) {
+        if (hi < totalPages - 1) { var sp2=document.createElement('span'); sp2.id='pg-info'; sp2.textContent='…'; bar.appendChild(sp2); }
+        var bLast=document.createElement('button'); bLast.className='pg-btn'; bLast.textContent=totalPages;
+        bLast.onclick=(function(p){return function(){_currentPage=p;renderFonts(_filteredFonts,input.value);window.scrollTo({top:0,behavior:'smooth'});};})(totalPages);
+        bar.appendChild(bLast);
+    }
+
+    // Next button
+    var next = document.createElement('button');
+    next.className = 'pg-btn';
+    next.textContent = 'دواتر ›';
+    next.disabled = (_currentPage >= totalPages);
+    next.onclick = function() { _currentPage++; renderFonts(_filteredFonts, input.value); window.scrollTo({top:0,behavior:'smooth'}); };
+    bar.appendChild(next);
+
+    // Info
+    var info = document.createElement('span');
+    info.id = 'pg-info';
+    var perP = FONTS_PER_PAGE > 0 ? FONTS_PER_PAGE : 100;
+    var from = (_currentPage-1)*perP+1, to = Math.min(_currentPage*perP, total);
+    info.textContent = from + '–' + to + ' لە ' + total;
+    bar.appendChild(info);
 }
 
 // ── Arrow scroll for desktop ────────────────────────────
@@ -1960,9 +2119,11 @@ function updateArrows() {
 function toggleDesktopCats() {
     const panel  = document.getElementById('desktop-panel');
     const toggle = document.getElementById('desktop-toggle');
+    const arrow  = toggle ? toggle.querySelector('.toggle-arrow') : null;
     const isOpen = panel.classList.contains('open');
     panel.classList.toggle('open', !isOpen);
     toggle.classList.toggle('open', !isOpen);
+    if (arrow) arrow.style.transform = !isOpen ? 'rotate(180deg)' : '';
 }
 
 // ── Mobile dropdown ──────────────────────────────────────
@@ -1987,7 +2148,12 @@ function filterFonts(category, btn) {
     if (btn && btn.closest('#desktop-panel')) {
         document.getElementById('desktop-active-label').textContent = btn.textContent.trim();
         document.getElementById('desktop-panel').classList.remove('open');
-        document.getElementById('desktop-toggle').classList.remove('open');
+        const dt = document.getElementById('desktop-toggle');
+        if (dt) {
+            dt.classList.remove('open');
+            const arr = dt.querySelector('.toggle-arrow');
+            if (arr) arr.style.transform = '';
+        }
     }
     // ئەگەر دوگمەکە لە mobile-panel بوو: لیبلی نوێ بدە و دابخە
     if (btn && btn.closest('#mobile-panel')) {
@@ -2004,7 +2170,13 @@ function filterFonts(category, btn) {
         return f.category.toLowerCase() === catLower;
     });
 
-    renderFonts(filtered, input.value);
+    // Update category state for pagination and cat-download
+    _currentCatId = category;
+
+    // Update category download bar
+    updateCatDownloadBar(filtered, category);
+
+    renderFonts(filtered, input.value, true);
 }
 
 // ── بۆکسی تاقیکردنەوە ──────────────────────────────────
@@ -2020,6 +2192,7 @@ input.addEventListener('input', function() {
         if (Array.isArray(f.category)) return f.category.some(function(c) { return c.toLowerCase() === catLower; });
         return f.category.toLowerCase() === catLower;
     });
+    // Live preview only updates card text, not the filtered font list — no page reset needed
     renderFonts(filtered, input.value);
 });
 
@@ -2034,19 +2207,120 @@ function doSearch() {
         filterFonts(category, null);
         return;
     }
+    // Search across all fonts — hide cat download button during search results
+    var wrap = document.getElementById('cat-dl-inline-wrap');
+    if (wrap) wrap.style.display = 'none';
+    var mwrap = document.getElementById('cat-dl-mobile-wrap');
+    if (mwrap) mwrap.style.display = 'none';
     const results = fonts.filter(function(f) {
         const nameMatch    = f.name.toLowerCase().includes(q);
         const displayMatch = f.displayName ? f.displayName.toLowerCase().includes(q) : false;
         const previewMatch = f.preview ? f.preview.toLowerCase().includes(q) : false;
         return nameMatch || displayMatch || previewMatch;
     });
-    renderFonts(results, '');
+    renderFonts(results, '', true);
 }
 input.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') doSearch();
 });
 
 // ── کردنەوەی پەیج: سەکشنی "نوێ" بنیشانبدە ──────────────
+
+// ── Category download bar: show/hide & label sync ───────
+function updateCatDownloadBar(filtered, catId) {
+    var wrap       = document.getElementById('cat-dl-inline-wrap');
+    var mobileWrap = document.getElementById('cat-dl-mobile-wrap');
+    var prog       = document.getElementById('cat-dl-progress-inline');
+    var progM      = document.getElementById('cat-dl-progress-mobile');
+
+    // Sync button labels from hidden marker (admin-editable)
+    var labelEl = document.getElementById('cat-download-btn-label');
+    var labelTxt = (labelEl ? labelEl.textContent.trim() : '') || 'داگرتنی تەواوی فۆنتەکانی ئەم بەشە';
+    var textEl  = document.getElementById('cat-dl-btn-text');
+    var textElM = document.getElementById('cat-dl-btn-text-mobile');
+    if (textEl)  textEl.textContent  = labelTxt;
+    if (textElM) textElM.textContent = labelTxt;
+
+    if (filtered.length === 0) {
+        if (wrap)       wrap.style.display = 'none';
+        if (mobileWrap) mobileWrap.style.display = 'none';
+        return;
+    }
+    if (prog)  { prog.textContent  = ''; prog.style.display  = 'none'; }
+    if (progM) { progM.textContent = ''; progM.style.display = 'none'; }
+    if (wrap)       wrap.style.display = 'flex';
+    if (mobileWrap) mobileWrap.style.display = 'flex';
+}
+
+// ── Download all fonts of current category ───────────────
+async function downloadCategoryFonts() {
+    var btn   = document.getElementById('cat-dl-btn');
+    var btnM  = document.getElementById('cat-dl-btn-mobile');
+    var prog  = document.getElementById('cat-dl-progress-inline');
+    var progM = document.getElementById('cat-dl-progress-mobile');
+
+    // Use full filtered list (all pages), not just current page
+    var files = _filteredFonts.map(function(f) { return f.path; });
+    if (!files.length) return;
+
+    function setDisabled(v) {
+        if (btn)  btn.disabled  = v;
+        if (btnM) btnM.disabled = v;
+    }
+    function setProgress(html) {
+        if (prog)  { prog.innerHTML  = html; prog.style.display  = html ? 'inline-block' : 'none'; }
+        if (progM) { progM.innerHTML = html; progM.style.display = html ? 'block' : 'none'; }
+    }
+
+    setDisabled(true);
+    setProgress('<i class="fas fa-spinner fa-spin"></i> چاوەڕێ بکە...');
+
+    // Get active category label for zip filename
+    var activeBtn = document.querySelector('#desktop-panel .filter-btn.active, #mobile-panel .filter-btn.active');
+    var catLabel  = activeBtn ? activeBtn.textContent.replace(/\s*\(\d+\)\s*$/, '').trim() : 'Category';
+    var zipName   = 'UniQaidar_' + (_currentCatId || catLabel) + '.zip';
+
+    try {
+        var zip = new JSZip();
+        var folder = zip.folder('UniQaidarFonts');
+        var done = 0, failed = 0, total = files.length;
+
+        for (var i = 0; i < files.length; i++) {
+            var url = files[i];
+            var filename = decodeURIComponent(url.split('/').pop());
+            setProgress('<i class="fas fa-spinner fa-spin"></i> (' + done + '/' + total + ') ' + filename);
+            try {
+                var resp = await fetch(url);
+                if (resp.ok) {
+                    folder.file(filename, await resp.arrayBuffer());
+                } else { failed++; }
+            } catch(e) { failed++; }
+            done++;
+        }
+
+        setProgress('<i class="fas fa-spinner fa-spin"></i> زیپ دروست دەکرێت...');
+        var zipBlob = await zip.generateAsync({ type: 'blob' }, function(meta) {
+            setProgress('<i class="fas fa-spinner fa-spin"></i> ' + Math.round(meta.percent) + '%');
+        });
+
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(zipBlob);
+        a.download = zipName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setProgress('✅ ' + (total - failed) + ' فۆنت داگیرا');
+        setTimeout(function(){ setProgress(''); }, 3000);
+
+        trackFontDownload('داگرتنی کاتێگۆری: ' + catLabel, 'cat-bulk');
+    } catch(e) {
+        setProgress('❌ هەڵەیەک: ' + e.message);
+        setTimeout(function(){ setProgress(''); }, 4000);
+        console.error(e);
+    } finally {
+        setDisabled(false);
+    }
+}
 
 // ── Copy Link feature ──────────────────────────────────
 function copyLink(url, btn, emoji) {
@@ -2283,6 +2557,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Use the actual ID from the first button (works even if admin renamed nwe → Nwe etc.)
     const firstBtnOnclick = firstDesktop ? firstDesktop.getAttribute('onclick') : null;
     const firstCatId = firstBtnOnclick ? firstBtnOnclick.split("'")[1] : 'nwe';
+    _currentCatId = firstCatId;
+    var firstFiltered = firstCatId.toLowerCase() === 'all' ? fonts : fonts.filter(function(f) {
+        if (Array.isArray(f.category)) return f.category.some(function(c){ return c.toLowerCase() === firstCatId.toLowerCase(); });
+        return (f.category||'').toLowerCase() === firstCatId.toLowerCase();
+    });
+    updateCatDownloadBar(firstFiltered, firstCatId);
     filterFonts(firstCatId, null);
 
     // Arrow scroll init (kept for compatibility)

@@ -483,6 +483,22 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                     </div>
                 </div>
 
+                <div class="section-label" style="margin-top:18px;">دوگمەی داگرتنی کاتێگۆری</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>دەقی دوگمەی داگرتنی فۆنتەکانی کاتێگۆری (نیشاندەدرێت کاتێک سەردانکار کاتێگۆریێک دەکاتەوە)</label>
+                        <input type="text" id="dm-cat-dl-inp" placeholder="داگرتنی تەواوی فۆنتەکانی ئەم بەشە">
+                    </div>
+                </div>
+
+                <div class="section-label" style="margin-top:18px;">ژمارەی فۆنت بۆ هەر پەڕەیەک (Pagination)</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>ژمارەی فۆنتەکان بۆ هەر پەڕەیەک (پێشگرتوو: 100)</label>
+                        <input type="number" id="dm-perpage-inp" placeholder="50" min="10" max="500">
+                    </div>
+                </div>
+
                 <div id="dl-alert" class="alert"></div>
                 <div class="btn-row">
                     <button id="dl-btn" class="btn btn-primary" onclick="saveDownloadModal()" disabled>💾 سەیڤ</button>
@@ -764,6 +780,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
               <option value="all">هەموو جۆرەکان</option>
               <option value="single">تاکە فۆنت</option>
               <option value="bulk">تەواوی فۆنتەکان</option>
+              <option value="cat-bulk">داگرتنی کاتێگۆری</option>
             </select>
             <input type="date" id="dl-date-from" onchange="renderDlTable()" style="direction:ltr;color-scheme:dark;max-width:150px;">
             <input type="date" id="dl-date-to" onchange="renderDlTable()" style="direction:ltr;color-scheme:dark;max-width:150px;">
@@ -1691,6 +1708,14 @@ function loadAllSettings() {
     const dmDirectLabel = RAW.match(/<span id="dm-direct-label">([^<]*)<\/span>/);
     if (dmDirectLabel) set('dm-direct-inp', dmDirectLabel[1]);
 
+    // ── Category download button label ──
+    const catDlLabel = RAW.match(/<span id="cat-download-btn-label"[^>]*>([^<]*)<\/span>/);
+    if (catDlLabel) set('dm-cat-dl-inp', catDlLabel[1].trim());
+
+    // ── Fonts per page ──
+    const perPageMatch = RAW.match(/var FONTS_PER_PAGE\s*=\s*(\d+);\s*\/\/ admin:perpage/);
+    if (perPageMatch) set('dm-perpage-inp', perPageMatch[1]);
+
     // ── About Modal ──
     const aboutTitle = RAW.match(/<h2 id="about-title"[^>]*>([^<]*)<\/h2>/);
     if (aboutTitle) set('about-title-inp', aboutTitle[1]);
@@ -1831,6 +1856,8 @@ async function saveDownloadModal() {
     const btnLabel  = v('dm-btn-inp');
     const url       = v('dl-url');
     const directLbl = v('dm-direct-inp');
+    const catDlLbl  = v('dm-cat-dl-inp');
+    const perPage   = v('dm-perpage-inp');
     const al        = document.getElementById('dl-alert');
     if (!url) return alert2(al,'لینکی داگرتن پڕ بکەرەوە!','err');
 
@@ -1843,6 +1870,15 @@ async function saveDownloadModal() {
     if (btnLabel)  next = next.replace(/<span id="dm-btn-label">[^<]*<\/span>/, `<span id="dm-btn-label">${btnLabel}</span>`);
     if (directLbl) next = next.replace(/<span id="dm-direct-label">[^<]*<\/span>/, `<span id="dm-direct-label">${directLbl}</span>`);
     next = next.replace(/(<a id="dm-btn" href=")[^"]*"/, `$1${url}"`);
+
+    // Category download button label
+    if (catDlLbl) next = next.replace(/<span id="cat-download-btn-label"[^>]*>[^<]*<\/span>/, `<span id="cat-download-btn-label" style="display:none">${catDlLbl}</span>`);
+
+    // Per-page count
+    const perPageNum = parseInt(perPage, 10);
+    if (perPage && !isNaN(perPageNum) && perPageNum >= 10) {
+        next = next.replace(/var FONTS_PER_PAGE\s*=\s*\d+;\s*\/\/ admin:perpage/, `var FONTS_PER_PAGE = ${perPageNum}; // admin:perpage`);
+    }
 
     alert2(al,'سەیڤ دەکرێت...','inf');
     const ok = await ghPut(next,'Update: download modal');
@@ -2119,7 +2155,7 @@ function updateDlSummary() {
     const month = thisMonthSUL();
     document.getElementById('dl-total-count').textContent  = DL_DATA.length;
     document.getElementById('dl-single-count').textContent = DL_DATA.filter(e=>e.type==='single').length;
-    document.getElementById('dl-bulk-count').textContent   = DL_DATA.filter(e=>e.type==='bulk').length;
+    document.getElementById('dl-bulk-count').textContent   = DL_DATA.filter(e=>e.type==='bulk'||e.type==='cat-bulk').length;
     document.getElementById('dl-unique-fonts').textContent = new Set(DL_DATA.filter(e=>e.type==='single').map(e=>e.font)).size;
     document.getElementById('dl-today-count').textContent  = DL_DATA.filter(e=>e.date===today).length;
     document.getElementById('dl-this-month').textContent   = DL_DATA.filter(e=>(e.date||'').startsWith(month)).length;
@@ -2190,6 +2226,8 @@ function renderDlTable() {
             tr.style.cssText = 'border-bottom:1px solid var(--border);';
             const lbl = ev.type==='bulk'
                 ? '<span style="background:var(--green);color:#000;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تەواوی</span>'
+                : ev.type==='cat-bulk'
+                ? '<span style="background:var(--purple);color:#fff;padding:1px 7px;border-radius:10px;font-size:0.72rem;">کاتێگۆری</span>'
                 : '<span style="background:var(--accent);color:#fff;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تاکە</span>';
             const evSUL = fmtSUL(ev.ts);
             tr.innerHTML = `
