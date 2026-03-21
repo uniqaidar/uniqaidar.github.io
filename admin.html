@@ -2155,7 +2155,7 @@ function updateDlSummary() {
     const month = thisMonthSUL();
     document.getElementById('dl-total-count').textContent  = DL_DATA.length;
     document.getElementById('dl-single-count').textContent = DL_DATA.filter(e=>e.type==='single').length;
-    document.getElementById('dl-bulk-count').textContent   = DL_DATA.filter(e=>e.type==='bulk'||e.type==='cat-bulk').length;
+    document.getElementById('dl-bulk-count').textContent   = DL_DATA.filter(e=>e.type==='bulk'||e.type==='cat-bulk'||(e.font||'').includes('داگرتنی کاتێگۆری')).length;
     document.getElementById('dl-unique-fonts').textContent = new Set(DL_DATA.filter(e=>e.type==='single').map(e=>e.font)).size;
     document.getElementById('dl-today-count').textContent  = DL_DATA.filter(e=>e.date===today).length;
     document.getElementById('dl-this-month').textContent   = DL_DATA.filter(e=>(e.date||'').startsWith(month)).length;
@@ -2168,9 +2168,26 @@ function getFilteredEvents() {
     const dt   = document.getElementById('dl-date-to')?.value||'';
     return DL_DATA.filter(ev => {
         if (q    && !(ev.font||'').toLowerCase().includes(q)) return false;
-        if (typeF !== 'all' && ev.type !== typeF)             return false;
-        if (df   && (ev.date||'') < df)                       return false;
-        if (dt   && (ev.date||'') > dt)                       return false;
+        if (typeF !== 'all') {
+            if (typeF === 'cat-bulk') {
+                // cat-bulk: type is cat-bulk OR font name starts with داگرتنی کاتێگۆری
+                const isCatBulk = ev.type === 'cat-bulk' || (ev.font||'').includes('داگرتنی کاتێگۆری');
+                if (!isCatBulk) return false;
+            } else if (typeF === 'bulk') {
+                // bulk: type is bulk AND font name is NOT a cat-bulk entry
+                const isBulkOnly = (ev.type === 'bulk' || ev.type === 'cat-bulk') && !(ev.font||'').includes('داگرتنی کاتێگۆری');
+                const isCatBulk  = ev.type === 'cat-bulk' || (ev.font||'').includes('داگرتنی کاتێگۆری');
+                if (!isBulkOnly && !isCatBulk) return false;
+                if (isCatBulk) return false; // exclude cat-bulk from bulk filter
+                // include only real bulk (zip all fonts)
+                const isRealBulk = (ev.type === 'bulk') && !(ev.font||'').includes('داگرتنی کاتێگۆری');
+                if (!isRealBulk) return false;
+            } else {
+                if (ev.type !== typeF) return false;
+            }
+        }
+        if (df   && (ev.date||'') < df) return false;
+        if (dt   && (ev.date||'') > dt) return false;
         return true;
     });
 }
@@ -2224,10 +2241,11 @@ function renderDlTable() {
         shown.forEach((ev,i) => {
             const tr  = document.createElement('tr');
             tr.style.cssText = 'border-bottom:1px solid var(--border);';
-            const lbl = ev.type==='bulk'
-                ? '<span style="background:var(--green);color:#000;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تەواوی</span>'
-                : ev.type==='cat-bulk'
+            const isCatBulk = ev.type==='cat-bulk' || (ev.font||'').includes('داگرتنی کاتێگۆری');
+            const lbl = isCatBulk
                 ? '<span style="background:var(--purple);color:#fff;padding:1px 7px;border-radius:10px;font-size:0.72rem;">کاتێگۆری</span>'
+                : ev.type==='bulk'
+                ? '<span style="background:var(--green);color:#000;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تەواوی</span>'
                 : '<span style="background:var(--accent);color:#fff;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تاکە</span>';
             const evSUL = fmtSUL(ev.ts);
             tr.innerHTML = `
