@@ -2310,9 +2310,15 @@ function renderDlTable() {
                 fontLink  = 'https://uniqaidar.pages.dev/?dm=1';
                 linkLabel = item.font + ' ⬇';
             } else if (isCatBulkEntry) {
-                // Category bulk: extract category ID from font name like "داگرتنی کاتێگۆری: Nwe"
+                // Category bulk: extract value after colon (may be ID like "Ali" or old label like "فۆنتەکانی عەلی")
                 const catMatch = item.font.match(/:\s*(.+?)\s*$/);
-                const catId    = catMatch ? catMatch[1].trim() : '';
+                let catId = catMatch ? catMatch[1].trim() : '';
+                // If catId looks like a Kurdish label (not a short ASCII ID), try to resolve it via cats[]
+                if (catId && cats && cats.length) {
+                    const byId    = cats.find(c => c.id.toLowerCase() === catId.toLowerCase());
+                    const byLabel = cats.find(c => c.label.toLowerCase() === catId.toLowerCase());
+                    catId = byId ? byId.id : (byLabel ? byLabel.id : catId);
+                }
                 fontLink  = catId ? `https://uniqaidar.pages.dev/?cat=${encodeURIComponent(catId)}` : 'https://uniqaidar.pages.dev/';
                 linkLabel = item.font + ' 📂';
             } else {
@@ -2356,8 +2362,14 @@ function renderDlTable() {
                 evLinkIcon  = '⬇';
             } else if (isCatBulk) {
                 const catMatch = (ev.font||'').match(/:\s*(.+?)\s*$/);
-                const catId    = catMatch ? catMatch[1].trim() : '';
-                evFontLink  = catId ? `https://uniqaidar.pages.dev/?cat=${encodeURIComponent(catId)}` : 'https://uniqaidar.pages.dev/';
+                let evCatId = catMatch ? catMatch[1].trim() : '';
+                // Resolve Kurdish label → category ID via cats[] if needed
+                if (evCatId && cats && cats.length) {
+                    const byId    = cats.find(c => c.id.toLowerCase() === evCatId.toLowerCase());
+                    const byLabel = cats.find(c => c.label.toLowerCase() === evCatId.toLowerCase());
+                    evCatId = byId ? byId.id : (byLabel ? byLabel.id : evCatId);
+                }
+                evFontLink  = evCatId ? `https://uniqaidar.pages.dev/?cat=${encodeURIComponent(evCatId)}` : 'https://uniqaidar.pages.dev/';
                 evLinkIcon  = '📂';
             } else {
                 evFontLink  = `https://uniqaidar.pages.dev/?cat=All&font=${encodeURIComponent(ev.font||'')}`;

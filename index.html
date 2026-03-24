@@ -2681,17 +2681,27 @@ function applyUrlParams() {
     if (catParam) {
         const allBtns = document.querySelectorAll('#desktop-panel .filter-btn');
         let matched = null;
+        // First try: match by category ID (exact, case-insensitive)
         allBtns.forEach(function(b) {
             const onclick = b.getAttribute('onclick') || '';
             const id = onclick.split("'")[1];
             if (id && id.toLowerCase() === catParam.toLowerCase()) matched = b;
         });
+        // Fallback: match by button label text (for old KV entries that stored the Kurdish label)
+        if (!matched) {
+            const catParamLower = catParam.toLowerCase();
+            allBtns.forEach(function(b) {
+                var labelText = b.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim().toLowerCase();
+                if (labelText === catParamLower) matched = b;
+            });
+        }
         if (matched) {
             const matchedCatId = matched.getAttribute('onclick').split("'")[1];
             filterFonts(matchedCatId, matched);
             document.querySelectorAll('#mobile-panel .filter-btn').forEach(function(b) {
                 const id = (b.getAttribute('onclick') || '').split("'")[1];
-                if (id && id.toLowerCase() === catParam.toLowerCase()) {
+                var bLabel = b.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim().toLowerCase();
+                if ((id && id.toLowerCase() === matchedCatId.toLowerCase()) || bLabel === catParam.toLowerCase()) {
                     b.classList.add('active');
                     var urlCatLabelText = b.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim();
                     var urlCatCount     = b.querySelector('.cat-count');
