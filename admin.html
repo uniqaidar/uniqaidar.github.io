@@ -2173,9 +2173,8 @@ async function loadAllStats(force) {
     const alDl = document.getElementById('dl-stats-alert');
     const alVt = document.getElementById('v-alert');
 
-    const days = 36500; // no practical limit — fetch all available data
     try {
-        const r = await fetch(`${STATS_API_BASE}/api/stats?days=${days}&type=both`);
+        const r = await fetch(`${STATS_API_BASE}/api/stats?type=both`);
         if (!r.ok) {
             let errMsg = r.status;
             try { const e = await r.json(); errMsg = e.error || errMsg; } catch(_) {}
