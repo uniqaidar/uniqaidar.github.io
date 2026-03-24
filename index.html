@@ -230,6 +230,13 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
     box-shadow: 0 6px 20px rgba(0,0,0,0.10);
     transform: translateY(-2px);
 }
+@keyframes cardFadeIn {
+    from { opacity: 0; transform: translateY(18px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+.card.animate-in {
+    animation: cardFadeIn 0.35s ease both;
+}
 .card-header {
     background: #dde3ea;
     padding: 12px 16px;
@@ -2247,6 +2254,9 @@ function renderFonts(data, text, resetPage) {
                 '</div>' +
             '</div>';
         card.querySelector('.download-btn-wrap').append(copyBtn);
+        // Staggered entry animation
+        card.classList.add('animate-in');
+        card.style.animationDelay = (pageData.indexOf(font) * 35) + 'ms';
         grid.appendChild(card);
     });
 
@@ -2462,6 +2472,14 @@ function doSearch() {
         const previewMatch = f.preview ? f.preview.toLowerCase().includes(q) : false;
         return nameMatch || displayMatch || previewMatch;
     });
+
+    // Update the active-label to show search results heading with count
+    var searchLabelHTML = 'ئەنجامی گەڕان <span style="font-size:0.72em;opacity:0.75;font-family:inherit;vertical-align:middle;line-height:1;position:relative;top:0.18em;">(' + results.length + ')</span>';
+    var dLabel = document.getElementById('desktop-active-label');
+    var mLabel = document.getElementById('mobile-active-label');
+    if (dLabel) dLabel.innerHTML = searchLabelHTML;
+    if (mLabel) { mLabel.innerHTML = searchLabelHTML; fitMobileLabel(); }
+
     renderFonts(results, '', true);
 }
 input.addEventListener('keydown', function(e) {
@@ -2678,29 +2696,55 @@ function applyUrlParams() {
     // Scroll to + highlight specific font card
     if (fontParam) {
         setTimeout(function() {
+            // First check if font is in the current page DOM
             var found = false;
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(function(card) {
-                const nameEl = card.querySelector('.card-eng-name');
-                // Match against text content (which may include "نوێ" badge text — strip it)
-                var cardText = nameEl ? nameEl.textContent.replace('نوێ','').trim() : '';
-                if (nameEl && (cardText === fontParam || nameEl.textContent.trim() === fontParam)) {
-                    found = true;
-                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    card.style.outline = '3px solid #0070e4';
-                    card.style.outlineOffset = '3px';
-                    setTimeout(function() {
-                        card.style.outline = '';
-                        card.style.outlineOffset = '';
-                    }, 3000);
-                }
-            });
-            // Font not found: show friendly message
+            var tryHighlight = function() {
+                var cards = document.querySelectorAll('.card');
+                cards.forEach(function(card) {
+                    var nameEl = card.querySelector('.card-eng-name');
+                    var cardText = nameEl ? nameEl.textContent.replace('نوێ','').trim() : '';
+                    if (nameEl && (cardText === fontParam || nameEl.textContent.trim() === fontParam)) {
+                        found = true;
+                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        card.style.outline = '3px solid #0070e4';
+                        card.style.outlineOffset = '3px';
+                        setTimeout(function() {
+                            card.style.outline = '';
+                            card.style.outlineOffset = '';
+                        }, 3000);
+                    }
+                });
+            };
+
+            tryHighlight();
+
             if (!found) {
-                var noMsg = document.getElementById('no-results-msg');
-                if (noMsg) {
-                    noMsg.querySelector('div:nth-child(2)').textContent = 'فۆنتی "' + fontParam + '" نەدۆزرایەوە — ئەگەر سڕاوەتەوە یان ناوەکەی گۆڕاوە.';
-                    noMsg.style.display = 'block';
+                // Font not in current page — search _filteredFonts to find the right page
+                var fontIndex = -1;
+                for (var fi = 0; fi < _filteredFonts.length; fi++) {
+                    var fname = _filteredFonts[fi].displayName || _filteredFonts[fi].name;
+                    if (fname === fontParam || _filteredFonts[fi].name === fontParam) {
+                        fontIndex = fi;
+                        break;
+                    }
+                }
+                if (fontIndex >= 0) {
+                    var perPage = FONTS_PER_PAGE > 0 ? FONTS_PER_PAGE : 100;
+                    var targetPage = Math.floor(fontIndex / perPage) + 1;
+                    if (targetPage !== _currentPage) {
+                        _currentPage = targetPage;
+                        renderFonts(_filteredFonts, '', false);
+                        setTimeout(function() {
+                            tryHighlight();
+                        }, 300);
+                    }
+                } else {
+                    // Truly not found
+                    var noMsg = document.getElementById('no-results-msg');
+                    if (noMsg) {
+                        noMsg.querySelector('div:nth-child(2)').textContent = 'فۆنتی "' + fontParam + '" نەدۆزرایەوە — ئەگەر سڕاوەتەوە یان ناوەکەی گۆڕاوە.';
+                        noMsg.style.display = 'block';
+                    }
                 }
             }
         }, 600);
