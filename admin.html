@@ -787,7 +787,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             <input type="date" id="dl-date-to" onchange="renderDlTable()" style="direction:ltr;color-scheme:dark;max-width:150px;">
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 10px;" onclick="clearDlFilters()">پاکردنەوەی فلتەر</button>
           </div>
-          <div id="dl-alert" class="alert"></div>
+          <div id="dl-stats-alert" class="alert"></div>
           <div class="section-label" style="margin-bottom:10px;">داگرتنەکان بەپێی فۆنت</div>
           <div style="overflow-x:auto;margin-bottom:24px;">
             <table style="width:100%;border-collapse:collapse;font-size:0.82rem;min-width:500px;">
@@ -2162,38 +2162,54 @@ let DL_DATA = [], DL_SORT = 'count', DL_SORT_DIR = -1, DL_TIMER = null;
 let VT_DATA = [], VT_TIMER = null;
 let STATS_LOADED = false;
 
+// Always use the Cloudflare Pages URL for the API — admin.html may be served from GitHub Pages
+const STATS_API_BASE = 'https://uniqaidar.pages.dev';
+
 // Load both downloads + visits in one request from /api/stats
 async function loadAllStats(force) {
     if (!force && STATS_LOADED) {
         updateDlSummary(); renderDlTable(); renderVisitStats(); return;
     }
-    const alDl = document.getElementById('dl-alert');
+    const alDl = document.getElementById('dl-stats-alert');
     const alVt = document.getElementById('v-alert');
 
-    const days = 90; // fetch last 90 days
+    const days = 36500; // no practical limit — fetch all available data
     try {
-        const r = await fetch(`/api/stats?days=${days}&type=both`);
-        if (!r.ok) { const e = await r.json(); alert2(alDl, '❌ ' + (e.error||r.status), 'err'); return; }
+        const r = await fetch(`${STATS_API_BASE}/api/stats?days=${days}&type=both`);
+        if (!r.ok) {
+            let errMsg = r.status;
+            try { const e = await r.json(); errMsg = e.error || errMsg; } catch(_) {}
+            alert2(alDl, '❌ ' + errMsg, 'err');
+            alert2(alVt, '❌ ' + errMsg, 'err');
+            return;
+        }
         const data = await r.json();
-        if (!data.ok) { alert2(alDl, '❌ ' + data.error, 'err'); return; }
+        if (!data.ok) {
+            alert2(alDl, '❌ ' + data.error, 'err');
+            alert2(alVt, '❌ ' + data.error, 'err');
+            return;
+        }
 
         DL_DATA = Array.isArray(data.downloads) ? data.downloads : [];
         VT_DATA = Array.isArray(data.visits)    ? data.visits    : [];
         STATS_LOADED = true;
 
-        const now = new Date();
         const sulNow = nowSUL();
-        const ts  = 'دوایین نوێکردنەوە: ' + sulNow.toLocaleDateString('ku') + ' — ' + sulNow.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
+        const ts  = 'دوایین نوێکردنەوە: ' + sulNow.toLocaleDateString('en-CA') + ' — ' + sulNow.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
         document.getElementById('dl-last-refresh').textContent    = ts;
         document.getElementById('visit-last-refresh').textContent = ts;
 
         updateDlSummary(); renderDlTable(); renderVisitStats();
 
-        if (DL_TIMER)  clearInterval(DL_TIMER);
-        if (VT_TIMER)  clearInterval(VT_TIMER);
-        DL_TIMER = VT_TIMER = setInterval(() => loadAllStats(true), 10*60*1000);
+        if (DL_TIMER) clearInterval(DL_TIMER);
+        if (VT_TIMER) clearInterval(VT_TIMER);
+        DL_TIMER = setInterval(() => loadAllStats(true), 10*60*1000);
+        VT_TIMER = DL_TIMER; // same interval, tracked separately for clarity
 
-    } catch(e) { alert2(alDl, '❌ ' + e.message, 'err'); }
+    } catch(e) {
+        alert2(alDl, '❌ ' + e.message, 'err');
+        alert2(alVt, '❌ ' + e.message, 'err');
+    }
 }
 
 function loadDlStats(force)    { loadAllStats(force); }
@@ -2226,6 +2242,29 @@ function renderVisitStats() {
             <td style="padding:7px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${fmtSUL(info.last)}</td>
         </tr>`).join('')
     : '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ داتایەک نییە</td></tr>';
+
+    // Full visit log — most recent first, capped at 200
+    const vtSorted = [...VT_DATA].sort((a,b)=>{ const ta=a.ts||a.date||''; const tb=b.ts||b.date||''; return tb>ta?1:tb<ta?-1:0; }).slice(0,200);
+    const ltbody = document.getElementById('v-log-tbody');
+    if (ltbody) {
+        ltbody.innerHTML = '';
+        if (!vtSorted.length) {
+            ltbody.innerHTML = '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
+        } else {
+            vtSorted.forEach((ev,i) => {
+                const tr = document.createElement('tr');
+                tr.style.cssText = 'border-bottom:1px solid var(--border);';
+                tr.innerHTML = `
+                    <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${i+1}</td>
+                    <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--green);">${ev.country||'—'}</td>
+                    <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);">${ev.city||'—'}</td>
+                    <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
+                ltbody.appendChild(tr);
+            });
+        }
+    }
+    const vtFooter = document.getElementById('v-log-footer');
+    if (vtFooter) vtFooter.textContent = VT_DATA.length > 200 ? `نیشاندانی ٢٠٠ لە ${VT_DATA.length} تۆمارەوە` : `کۆی ${VT_DATA.length} تۆمار`;
 }
 
 // ── DOWNLOADS ──────────────────────────

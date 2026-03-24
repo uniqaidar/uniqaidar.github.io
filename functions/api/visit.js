@@ -27,7 +27,7 @@ export async function onRequestPost(context) {
         existing.push(event);
         // Safety cap per hour bucket: 2000 events max
         if (existing.length > 2000) existing.splice(0, existing.length - 2000);
-        await UQDATA.put(key, JSON.stringify(existing), { expirationTtl: 60*60*24*400 });
+        await UQDATA.put(key, JSON.stringify(existing));
 
         return new Response(JSON.stringify({ ok:true }), { headers:cors });
     } catch(e) {
