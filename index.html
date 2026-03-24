@@ -1372,6 +1372,9 @@ body.dark-mode .modal-content {
 }
 body.dark-mode .modal-content p { color: #bbb !important; }
 body.dark-mode .modal-content h2 { color: #5ba3ff !important; }
+body.dark-mode #dm-desc { color: #000 !important; }
+body.dark-mode #about-content { color: #fff !important; }
+body.dark-mode #about-launch-date { color: #000 !important; }
 body.dark-mode #pagination-bar { background: #0d0d0d !important; }
 
 #theme-toggle-btn {
@@ -2364,7 +2367,7 @@ function filterFonts(category, btn) {
         var desktopCountSpan = btn.querySelector('.cat-count');
         var desktopCount     = desktopCountSpan ? desktopCountSpan.textContent.trim() : '';
         var desktopLabelEl   = document.getElementById('desktop-active-label');
-        desktopLabelEl.innerHTML = desktopLabelText + (desktopCount ? ' <span style="font-size:0.9em;opacity:0.8;font-family:inherit;vertical-align:middle;">' + desktopCount + '</span>' : '');
+        desktopLabelEl.innerHTML = desktopLabelText + (desktopCount ? ' <span style="font-size:0.72em;opacity:0.75;font-family:inherit;vertical-align:middle;line-height:1;position:relative;top:0.18em;">' + desktopCount + '</span>' : '');
         document.getElementById('desktop-panel').classList.remove('open');
         const dt = document.getElementById('desktop-toggle');
         if (dt) {
@@ -2379,7 +2382,7 @@ function filterFonts(category, btn) {
         var mobileCountSpan = btn.querySelector('.cat-count');
         var mobileCount     = mobileCountSpan ? mobileCountSpan.textContent.trim() : '';
         var mobileLabelEl   = document.getElementById('mobile-active-label');
-        mobileLabelEl.innerHTML = mobileLabelText + (mobileCount ? ' <span style="font-size:0.9em;opacity:0.8;font-family:inherit;vertical-align:middle;">' + mobileCount + '</span>' : '');
+        mobileLabelEl.innerHTML = mobileLabelText + (mobileCount ? ' <span style="font-size:0.72em;opacity:0.75;font-family:inherit;vertical-align:middle;line-height:1;position:relative;top:0.18em;">' + mobileCount + '</span>' : '');
         fitMobileLabel();
         document.getElementById('mobile-panel').classList.remove('open');
         document.getElementById('mobile-toggle').classList.remove('open');
@@ -2638,7 +2641,7 @@ function applyUrlParams() {
             var allMobileBtn = document.querySelector('#mobile-panel .filter-btn.active');
             var allCount = allMobileBtn ? allMobileBtn.querySelector('.cat-count') : null;
             var allCountTxt = allCount ? allCount.textContent.trim() : '';
-            mobileLabel.innerHTML = 'هەموو فۆنتەکان' + (allCountTxt ? ' <span style="font-size:0.9em;opacity:0.8;font-family:inherit;vertical-align:middle;">' + allCountTxt + '</span>' : '');
+            mobileLabel.innerHTML = 'هەموو فۆنتەکان' + (allCountTxt ? ' <span style="font-size:0.72em;opacity:0.75;font-family:inherit;vertical-align:middle;line-height:1;position:relative;top:0.18em;">' + allCountTxt + '</span>' : '');
             fitMobileLabel();
         }
     }
@@ -2662,7 +2665,7 @@ function applyUrlParams() {
                     var urlCatLabelText = b.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim();
                     var urlCatCount     = b.querySelector('.cat-count');
                     var urlCatCountTxt  = urlCatCount ? urlCatCount.textContent.trim() : '';
-                    document.getElementById('mobile-active-label').innerHTML = urlCatLabelText + (urlCatCountTxt ? ' <span style="font-size:0.9em;opacity:0.8;font-family:inherit;vertical-align:middle;">' + urlCatCountTxt + '</span>' : '');
+                    document.getElementById('mobile-active-label').innerHTML = urlCatLabelText + (urlCatCountTxt ? ' <span style="font-size:0.72em;opacity:0.75;font-family:inherit;vertical-align:middle;line-height:1;position:relative;top:0.18em;">' + urlCatCountTxt + '</span>' : '');
                     fitMobileLabel();
                 }
             });
@@ -2810,7 +2813,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var firstLabelText = firstDesktop ? firstDesktop.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim() : '';
     var firstCountSpan = firstDesktop ? firstDesktop.querySelector('.cat-count') : null;
     var firstCount     = firstCountSpan ? firstCountSpan.textContent.trim() : '';
-    var firstLabelHTML = firstLabelText + (firstCount ? ' <span style="font-size:0.9em;opacity:0.8;font-family:inherit;vertical-align:middle;">' + firstCount + '</span>' : '');
+    var firstLabelHTML = firstLabelText + (firstCount ? ' <span style="font-size:0.72em;opacity:0.75;font-family:inherit;vertical-align:middle;line-height:1;position:relative;top:0.18em;">' + firstCount + '</span>' : '');
     document.getElementById('desktop-active-label').innerHTML = firstLabelHTML;
     document.getElementById('mobile-active-label').innerHTML  = firstLabelHTML;
     fitMobileLabel();
