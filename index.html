@@ -232,11 +232,19 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
     transform: translateY(-2px);
 }
 @keyframes cardFadeIn {
-    from { opacity: 0; transform: translateY(18px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0)   scale(1);    }
+    from { opacity: 0; transform: translateY(22px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+@-webkit-keyframes cardFadeIn {
+    from { opacity: 0; -webkit-transform: translateY(22px) scale(0.96); }
+    to   { opacity: 1; -webkit-transform: translateY(0)    scale(1);    }
 }
 .card.animate-in {
-    animation: cardFadeIn 0.35s ease both;
+    opacity: 0;
+    -webkit-animation: cardFadeIn 0.4s ease both;
+    animation: cardFadeIn 0.4s ease both;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
 }
 .card-header {
     background: #dde3ea;
@@ -1068,11 +1076,11 @@ a:active, button:active {
         width: 95%;
         padding: 12px 15px 12px 50px;
         font-size: 0.85rem;
-        text-align: right;
+        text-align: center;
         direction: rtl;
     }
     #test-input::placeholder {
-        text-align: right;
+        text-align: center;
         direction: rtl;
     }
 
@@ -1325,7 +1333,7 @@ a:active, button:active {
     background: linear-gradient(135deg, #ff5700, #ff8c42);
     color: #fff;
     font-size: 0.58rem;
-    font-weight: bold;
+    font-weight: normal;
     padding: 2px 6px;
     border-radius: 6px;
     margin-right: 5px;
@@ -2216,7 +2224,7 @@ function renderFonts(data, text, resetPage) {
     // Get current font size from slider
     var currentSize = document.getElementById('font-size-slider') ? document.getElementById('font-size-slider').value : '32';
 
-    pageData.forEach(function(font) {
+    pageData.forEach(function(font, cardIndex) {
         const card = document.createElement('div');
         card.className = 'card';
         const engName = font.displayName || font.name;
@@ -2257,9 +2265,13 @@ function renderFonts(data, text, resetPage) {
                 '</div>' +
             '</div>';
         card.querySelector('.download-btn-wrap').append(copyBtn);
-        // Staggered entry animation
+        // Staggered entry animation — one card at a time (RTL: right→left, row by row)
+        // Mobile: 60ms stagger (1 col, so truly one-by-one but not too slow)
+        // Desktop: 90ms stagger (multi-col, fills right→left per row)
+        var stagger = window.innerWidth <= 768 ? 60 : 90;
         card.classList.add('animate-in');
-        card.style.animationDelay = (pageData.indexOf(font) * 35) + 'ms';
+        card.style.animationDelay = (cardIndex * stagger) + 'ms';
+        card.style.webkitAnimationDelay = (cardIndex * stagger) + 'ms';
         grid.appendChild(card);
     });
 
@@ -2945,17 +2957,51 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2000);
 });
 
-// ── placeholder: desktop vs mobile ─────────────────────
+// ── placeholder: typewriter effect ─────────────────────
 (function() {
     var inp = document.getElementById('test-input');
-    var MOBILE = 'لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنت..';
+    var MOBILE  = 'لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنت..';
     var DESKTOP = 'لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنتەکان و گەڕان بەدوای فۆنتدا...';
-    function setPlaceholder() {
-        inp.placeholder = window.innerWidth <= 768 ? MOBILE : DESKTOP;
+
+    function getText() {
+        return window.innerWidth <= 768 ? MOBILE : DESKTOP;
     }
-    setPlaceholder();
-    window.addEventListener('resize', setPlaceholder);
-    window.addEventListener('resize', fitMobileLabel);
+
+    var typeTimer = null;
+    var pauseTimer = null;
+    var currentIndex = 0;
+    var isTyping = false;
+
+    function type() {
+        if (inp.value.length > 0) { scheduleNext(); return; } // user is typing — skip
+        var text = getText();
+        if (currentIndex <= text.length) {
+            inp.placeholder = text.slice(0, currentIndex);
+            currentIndex++;
+            typeTimer = setTimeout(type, 55);
+        } else {
+            // Finished typing — wait 15 seconds then restart
+            currentIndex = 0;
+            pauseTimer = setTimeout(type, 15000);
+        }
+    }
+
+    function startTypewriter() {
+        clearTimeout(typeTimer);
+        clearTimeout(pauseTimer);
+        currentIndex = 0;
+        inp.placeholder = '';
+        type();
+    }
+
+    // Start immediately
+    startTypewriter();
+
+    // On resize, restart with the correct text
+    window.addEventListener('resize', function() {
+        startTypewriter();
+        fitMobileLabel();
+    });
 })();
 
 // ── Theme toggle ──────────────────────────────────────
