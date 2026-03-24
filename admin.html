@@ -2306,13 +2306,13 @@ function renderDlTable() {
             const isCatBulkEntry = item.type==='cat-bulk' || item.font.includes('داگرتنی کاتێگۆری');
             let fontLink, linkLabel;
             if (isBulkEntry) {
-                // Bulk = link to main page (opens download modal)
-                fontLink  = 'https://uniqaidar.pages.dev/';
+                // Bulk = link to main page with ?dm=1 to auto-open download modal
+                fontLink  = 'https://uniqaidar.pages.dev/?dm=1';
                 linkLabel = item.font + ' ⬇';
             } else if (isCatBulkEntry) {
                 // Category bulk: extract category ID from font name like "داگرتنی کاتێگۆری: Nwe"
-                const catMatch = item.font.match(/:\s*(\S+)\s*$/);
-                const catId    = catMatch ? catMatch[1] : '';
+                const catMatch = item.font.match(/:\s*(.+?)\s*$/);
+                const catId    = catMatch ? catMatch[1].trim() : '';
                 fontLink  = catId ? `https://uniqaidar.pages.dev/?cat=${encodeURIComponent(catId)}` : 'https://uniqaidar.pages.dev/';
                 linkLabel = item.font + ' 📂';
             } else {
@@ -2352,11 +2352,11 @@ function renderDlTable() {
             // Generate correct link per event type
             let evFontLink, evLinkIcon;
             if (isBulk) {
-                evFontLink  = 'https://uniqaidar.pages.dev/';
+                evFontLink  = 'https://uniqaidar.pages.dev/?dm=1';
                 evLinkIcon  = '⬇';
             } else if (isCatBulk) {
-                const catMatch = (ev.font||'').match(/:\s*(\S+)\s*$/);
-                const catId    = catMatch ? catMatch[1] : '';
+                const catMatch = (ev.font||'').match(/:\s*(.+?)\s*$/);
+                const catId    = catMatch ? catMatch[1].trim() : '';
                 evFontLink  = catId ? `https://uniqaidar.pages.dev/?cat=${encodeURIComponent(catId)}` : 'https://uniqaidar.pages.dev/';
                 evLinkIcon  = '📂';
             } else {

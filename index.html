@@ -129,6 +129,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
             left: 15px;
             display: flex;
             gap: 10px;
+            align-items: center;
         }
 
         .header-logo {
@@ -944,13 +945,15 @@ footer strong {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 15px;
+    height: 35px;
+    padding: 0 13px;
+    box-sizing: border-box;
     background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: white;
     text-decoration: none;
-    border-radius: 20px;
-    font-size: 0.9rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
     cursor: pointer;
     transition: all 0.3s ease;
     white-space: nowrap;
@@ -2574,7 +2577,7 @@ async function downloadCategoryFonts() {
         setProgress('✅ ' + (total - failed) + ' فۆنت داگیرا');
         setTimeout(function(){ setProgress(''); }, 3000);
 
-        trackFontDownload('داگرتنی کاتێگۆری: ' + catLabel, 'cat-bulk');
+        trackFontDownload('داگرتنی کاتێگۆری: ' + (_currentCatId || catLabel), 'cat-bulk');
     } catch(e) {
         setProgress('❌ هەڵەیەک: ' + e.message);
         setTimeout(function(){ setProgress(''); }, 4000);
@@ -2643,6 +2646,13 @@ function applyUrlParams() {
     const params = new URLSearchParams(location.search);
     const catParam  = params.get('cat');
     const fontParam = params.get('font');
+    const dmParam   = params.get('dm');
+
+    // If ?dm=1 is present, auto-open the download modal
+    if (dmParam === '1') {
+        var dlModal = document.getElementById('downloadModal');
+        if (dlModal) openModal(dlModal);
+    }
 
     // If only font param (from admin link), show ALL fonts first so the card exists in DOM
     if (fontParam && !catParam) {
@@ -2711,7 +2721,7 @@ function applyUrlParams() {
                         setTimeout(function() {
                             card.style.outline = '';
                             card.style.outlineOffset = '';
-                        }, 3000);
+                        }, 300000);
                     }
                 });
             };
