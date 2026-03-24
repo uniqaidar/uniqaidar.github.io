@@ -2960,29 +2960,51 @@ document.addEventListener('DOMContentLoaded', function() {
 // ── placeholder: typewriter effect ─────────────────────
 (function() {
     var inp = document.getElementById('test-input');
-    var MOBILE  = 'لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنت..';
+    var MOBILE = 'لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنت..';
     var DESKTOP = 'لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنتەکان و گەڕان بەدوای فۆنتدا...';
 
     function getText() {
         return window.innerWidth <= 768 ? MOBILE : DESKTOP;
     }
 
-    var typeTimer = null;
+    var typeTimer  = null;
     var pauseTimer = null;
+    var cursorTimer = null;
     var currentIndex = 0;
-    var isTyping = false;
+    var currentText  = '';   // typed portion without cursor
+    var cursorOn     = true; // cursor blink state
+
+    // Blink the cursor independently of typing
+    function startCursorBlink() {
+        clearInterval(cursorTimer);
+        cursorTimer = setInterval(function() {
+            if (inp.value.length > 0) { inp.placeholder = ''; return; }
+            cursorOn = !cursorOn;
+            inp.placeholder = currentText + (cursorOn ? '|' : '');
+        }, 500);
+    }
 
     function type() {
-        if (inp.value.length > 0) { scheduleNext(); return; } // user is typing — skip
+        if (inp.value.length > 0) {
+            // User is typing — pause and retry after 2s
+            pauseTimer = setTimeout(type, 2000);
+            return;
+        }
         var text = getText();
         if (currentIndex <= text.length) {
-            inp.placeholder = text.slice(0, currentIndex);
+            currentText = text.slice(0, currentIndex);
+            inp.placeholder = currentText + '|';
+            cursorOn = true;
             currentIndex++;
             typeTimer = setTimeout(type, 55);
         } else {
-            // Finished typing — wait 15 seconds then restart
-            currentIndex = 0;
-            pauseTimer = setTimeout(type, 15000);
+            // Finished typing — blink cursor for 10 seconds then restart
+            currentText = text;
+            pauseTimer = setTimeout(function() {
+                currentIndex = 0;
+                currentText  = '';
+                type();
+            }, 10000);
         }
     }
 
@@ -2990,11 +3012,14 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(typeTimer);
         clearTimeout(pauseTimer);
         currentIndex = 0;
+        currentText  = '';
+        cursorOn     = true;
         inp.placeholder = '';
         type();
     }
 
-    // Start immediately
+    // Start cursor blink loop and typewriter
+    startCursorBlink();
     startTypewriter();
 
     // On resize, restart with the correct text

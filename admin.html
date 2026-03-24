@@ -1713,9 +1713,9 @@ function loadAllSettings() {
     if (logoMatch) set('h-logo-url', logoMatch[1]);
 
     // ── Search placeholders ──
-    const desktopPH = RAW.match(/var DESKTOP = '([^']*)'/);
+    const desktopPH = RAW.match(/var DESKTOP\s*=\s*'([^']*)'/);
     if (desktopPH) set('h-search-desktop', desktopPH[1]);
-    const mobilePH = RAW.match(/var MOBILE = '([^']*)'/);
+    const mobilePH = RAW.match(/var MOBILE\s*=\s*'([^']*)'/);
     if (mobilePH) set('h-search-mobile', mobilePH[1]);
 
     // ── Size bar ──
@@ -1839,8 +1839,8 @@ async function saveHeaderSearch() {
     const mobile  = v('h-search-mobile');
     const al = document.getElementById('header-search-alert');
     let next = RAW;
-    if (desktop) next = next.replace(/(var DESKTOP = ')[^']*'/, `$1${desktop}'`);
-    if (mobile)  next = next.replace(/(var MOBILE = ')[^']*'/, `$1${mobile}'`);
+    if (desktop) next = next.replace(/(var DESKTOP\s*=\s*')[^']*'/, `$1${desktop}'`);
+    if (mobile)  next = next.replace(/(var MOBILE\s*=\s*')[^']*'/, `$1${mobile}'`);
     alert2(al,'سەیڤ دەکرێت...','inf');
     const ok = await ghPut(next,'Update: search placeholders');
     ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
