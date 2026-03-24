@@ -2360,9 +2360,11 @@ function filterFonts(category, btn) {
 
     // ئەگەر دوگمەکە لە desktop-panel بوو: لیبلی نوێ بدە و دابخە
     if (btn && btn.closest('#desktop-panel')) {
-        // Strip the count badge "(N)" from the toggle header label
-        var desktopLabel = btn.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim();
-        document.getElementById('desktop-active-label').textContent = desktopLabel;
+        var desktopLabelText = btn.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim();
+        var desktopCountSpan = btn.querySelector('.cat-count');
+        var desktopCount     = desktopCountSpan ? desktopCountSpan.textContent.trim() : '';
+        var desktopLabelEl   = document.getElementById('desktop-active-label');
+        desktopLabelEl.innerHTML = desktopLabelText + (desktopCount ? ' <span style="font-size:0.9em;opacity:0.8;font-family:inherit;vertical-align:middle;">' + desktopCount + '</span>' : '');
         document.getElementById('desktop-panel').classList.remove('open');
         const dt = document.getElementById('desktop-toggle');
         if (dt) {
@@ -2373,8 +2375,11 @@ function filterFonts(category, btn) {
     }
     // ئەگەر دوگمەکە لە mobile-panel بوو: لیبلی نوێ بدە و دابخە
     if (btn && btn.closest('#mobile-panel')) {
-        var mobileLabel = btn.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim();
-        document.getElementById('mobile-active-label').textContent = mobileLabel;
+        var mobileLabelText = btn.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim();
+        var mobileCountSpan = btn.querySelector('.cat-count');
+        var mobileCount     = mobileCountSpan ? mobileCountSpan.textContent.trim() : '';
+        var mobileLabelEl   = document.getElementById('mobile-active-label');
+        mobileLabelEl.innerHTML = mobileLabelText + (mobileCount ? ' <span style="font-size:0.9em;opacity:0.8;font-family:inherit;vertical-align:middle;">' + mobileCount + '</span>' : '');
         fitMobileLabel();
         document.getElementById('mobile-panel').classList.remove('open');
         document.getElementById('mobile-toggle').classList.remove('open');
@@ -2629,7 +2634,13 @@ function applyUrlParams() {
             if (id.toLowerCase() === 'all') b.classList.add('active');
         });
         var mobileLabel = document.getElementById('mobile-active-label');
-        if (mobileLabel) { mobileLabel.textContent = 'هەموو فۆنتەکان'; fitMobileLabel(); }
+        if (mobileLabel) {
+            var allMobileBtn = document.querySelector('#mobile-panel .filter-btn.active');
+            var allCount = allMobileBtn ? allMobileBtn.querySelector('.cat-count') : null;
+            var allCountTxt = allCount ? allCount.textContent.trim() : '';
+            mobileLabel.innerHTML = 'هەموو فۆنتەکان' + (allCountTxt ? ' <span style="font-size:0.9em;opacity:0.8;font-family:inherit;vertical-align:middle;">' + allCountTxt + '</span>' : '');
+            fitMobileLabel();
+        }
     }
 
     // If catParam present, filter by category first
@@ -2648,7 +2659,10 @@ function applyUrlParams() {
                 const id = (b.getAttribute('onclick') || '').split("'")[1];
                 if (id && id.toLowerCase() === catParam.toLowerCase()) {
                     b.classList.add('active');
-                    document.getElementById('mobile-active-label').textContent = b.textContent.trim();
+                    var urlCatLabelText = b.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim();
+                    var urlCatCount     = b.querySelector('.cat-count');
+                    var urlCatCountTxt  = urlCatCount ? urlCatCount.textContent.trim() : '';
+                    document.getElementById('mobile-active-label').innerHTML = urlCatLabelText + (urlCatCountTxt ? ' <span style="font-size:0.9em;opacity:0.8;font-family:inherit;vertical-align:middle;">' + urlCatCountTxt + '</span>' : '');
                     fitMobileLabel();
                 }
             });
@@ -2792,10 +2806,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (firstDesktop) firstDesktop.classList.add('active');
     if (firstMobile)  firstMobile.classList.add('active');
 
-    // Read the actual label from the button (respects admin renames)
-    const activeLabel = firstDesktop ? firstDesktop.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim() : '';
-    document.getElementById('desktop-active-label').textContent = activeLabel;
-    document.getElementById('mobile-active-label').textContent  = activeLabel;
+    // Read the actual label from the button (respects admin renames), including count badge
+    var firstLabelText = firstDesktop ? firstDesktop.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim() : '';
+    var firstCountSpan = firstDesktop ? firstDesktop.querySelector('.cat-count') : null;
+    var firstCount     = firstCountSpan ? firstCountSpan.textContent.trim() : '';
+    var firstLabelHTML = firstLabelText + (firstCount ? ' <span style="font-size:0.9em;opacity:0.8;font-family:inherit;vertical-align:middle;">' + firstCount + '</span>' : '');
+    document.getElementById('desktop-active-label').innerHTML = firstLabelHTML;
+    document.getElementById('mobile-active-label').innerHTML  = firstLabelHTML;
     fitMobileLabel();
 
     // Use the actual ID from the first button — no hardcoding of 'nwe'
