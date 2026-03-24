@@ -1,6 +1,6 @@
 // functions/api/track.js
-// Tracks font downloads from ALL visitors instantly using Cloudflare KV
-// KV binding: UQDATA  (Cloudflare Pages → Settings → Functions → KV namespace bindings)
+// Tracks font downloads using Cloudflare KV — hourly buckets to stay under 25MB limit
+// KV binding: UQDATA
 
 export async function onRequestPost(context) {
     const cors = {
@@ -15,18 +15,23 @@ export async function onRequestPost(context) {
 
         const body    = await context.request.json();
         const font    = (body.font || '').slice(0, 200);
-        const type    = body.type === 'bulk' ? 'bulk' : 'single';
+        // Fix: preserve all type values — 'single', 'bulk', 'cat-bulk'
+        const rawType = (body.type || 'single').toString().trim();
+        const type    = ['single','bulk','cat-bulk'].includes(rawType) ? rawType : 'single';
+
         const now     = new Date();
-        const sulDate = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });  // YYYY-MM-DD SUL
+        const sulDate = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });
+        const sulHour = now.toLocaleString('en-GB',    { timeZone: 'Asia/Baghdad', hour: '2-digit', hour12: false }).replace(/,.*/, '').padStart(2,'0');
         const sulTime = now.toLocaleTimeString('en-GB', { timeZone: 'Asia/Baghdad', hour:'2-digit', minute:'2-digit', second:'2-digit' });
         const country = context.request.cf?.country || '';
         const event   = { font, type, date: sulDate, time: sulTime, ts: now.toISOString(), country };
 
-        // Store in daily bucket: key "dl:YYYY-MM-DD"
-        const key      = `dl:${sulDate}`;
+        // Use hourly buckets: "dl:YYYY-MM-DD:HH" — keeps each value small
+        const key      = `dl:${sulDate}:${sulHour}`;
         const existing = await UQDATA.get(key, { type: 'json' }) || [];
         existing.push(event);
-        if (existing.length > 5000) existing.splice(0, existing.length - 5000);
+        // Safety cap per hour bucket: 2000 events max
+        if (existing.length > 2000) existing.splice(0, existing.length - 2000);
         await UQDATA.put(key, JSON.stringify(existing), { expirationTtl: 60*60*24*400 });
 
         return new Response(JSON.stringify({ ok:true }), { headers:cors });
