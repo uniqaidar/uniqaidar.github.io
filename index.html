@@ -73,6 +73,18 @@ Unicode">
             --bg: #f4f7f6;
         }
 
+/* Fix 3: Light mode — remove white/light border that appears around the top.
+   The body background is made dark (#1a1a1a) to match the header, footer, and
+   filter-bar. The grid area gets a wrapper with the light background. */
+body {
+    margin: 0;
+    padding: 0;
+    background: #1a1a1a;
+}
+.font-grid {
+    background: #f4f7f6;
+}
+
 
 body, 
 .header, .header *, 
@@ -272,6 +284,10 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
             transition: background 0.2s ease;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: clamp(0.72rem, 2.5vw, 1rem);
         }
         .download-btn:hover,
         .download-btn:active {
@@ -762,6 +778,7 @@ footer strong {
     transition: background 0.2s, border-color 0.2s;
     display: inline-flex;
     align-items: center;
+    gap: 4px;
     touch-action: manipulation;
 }
 .filter-btn:hover,
@@ -1252,12 +1269,13 @@ a:active, button:active {
     display: inline;
     background: none;
     color: rgba(255,255,255,0.7);
-    font-size: 0.72rem;
+    font-size: 0.85rem;
     font-family: monospace, Arial, sans-serif !important;
     letter-spacing: 0;
     pointer-events: none;
     position: static;
     vertical-align: middle;
+    line-height: 1;
 }
 .filter-btn.active .cat-count {
     color: rgba(255,255,255,0.95);
@@ -1299,7 +1317,7 @@ a:active, button:active {
     margin-right: 5px;
     vertical-align: middle;
     letter-spacing: 0.04em;
-    font-family: monospace;
+    font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif !important;
 }
 
 /* ── No results found message ── */
@@ -1367,9 +1385,12 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     border-radius: 8px;
     border: 1px solid rgba(255,255,255,0.1);
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.1rem;
+    line-height: 1;
     transition: 0.3s;
     text-decoration: none;
+    padding: 0;
+    vertical-align: middle;
 }
 #theme-toggle-btn:hover, #theme-toggle-btn:active { background: #ff5700; transform: scale(1.1); }
 
@@ -2339,8 +2360,9 @@ function filterFonts(category, btn) {
 
     // ئەگەر دوگمەکە لە desktop-panel بوو: لیبلی نوێ بدە و دابخە
     if (btn && btn.closest('#desktop-panel')) {
-        // Strip the count badge "(4)" from the toggle header label
-        document.getElementById('desktop-active-label').textContent = btn.textContent.trim();
+        // Strip the count badge "(N)" from the toggle header label
+        var desktopLabel = btn.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim();
+        document.getElementById('desktop-active-label').textContent = desktopLabel;
         document.getElementById('desktop-panel').classList.remove('open');
         const dt = document.getElementById('desktop-toggle');
         if (dt) {
@@ -2351,7 +2373,8 @@ function filterFonts(category, btn) {
     }
     // ئەگەر دوگمەکە لە mobile-panel بوو: لیبلی نوێ بدە و دابخە
     if (btn && btn.closest('#mobile-panel')) {
-        document.getElementById('mobile-active-label').textContent = btn.textContent.trim();
+        var mobileLabel = btn.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim();
+        document.getElementById('mobile-active-label').textContent = mobileLabel;
         fitMobileLabel();
         document.getElementById('mobile-panel').classList.remove('open');
         document.getElementById('mobile-toggle').classList.remove('open');
@@ -2374,42 +2397,24 @@ function filterFonts(category, btn) {
 }
 
 // ── بۆکسی تاقیکردنەوە ──────────────────────────────────
-// کاتێک بەکارهێنەر دەنووسێت، هەموو کارتەکان نوێ دەبنەوە
-// ── Live font preview: typing updates card text ──────────
-var _searchDebounceTimer = null;
+// کاتێک بەکارهێنەر دەنووسێت، تەنها پریڤیوی کارتەکان نوێ دەبێتەوە (فلتەر ناکات)
+// ── Live font preview: typing updates card preview text only (no filtering) ──────────
 input.addEventListener('input', function() {
-    clearTimeout(_searchDebounceTimer);
-    _searchDebounceTimer = setTimeout(function() {
-        var q = input.value.trim();
-        if (q) {
-            // Search across ALL fonts when text is present
-            var qLower = q.toLowerCase();
-            var results = fonts.filter(function(f) {
-                var nameMatch    = f.name.toLowerCase().includes(qLower);
-                var displayMatch = f.displayName ? f.displayName.toLowerCase().includes(qLower) : false;
-                var previewMatch = f.preview ? f.preview.toLowerCase().includes(qLower) : false;
-                return nameMatch || displayMatch || previewMatch;
-            });
-            var wrap = document.getElementById('cat-dl-inline-wrap');
-            if (wrap) wrap.style.display = 'none';
-            var mwrap = document.getElementById('cat-dl-mobile-wrap');
-            if (mwrap) mwrap.style.display = 'none';
-            renderFonts(results, q, true);
-        } else {
-            // Empty input: restore current category view
-            var activeBtn = document.querySelector('#desktop-panel .filter-btn.active, #mobile-panel .filter-btn.active');
-            var firstBtn2 = document.querySelector('#desktop-panel .filter-btn, #mobile-panel .filter-btn');
-            var fallback2  = firstBtn2 ? firstBtn2.getAttribute('onclick').split("'")[1] : 'Nwe';
-            var category  = activeBtn ? activeBtn.getAttribute('onclick').split("'")[1] : fallback2;
-            var catLower  = category.toLowerCase();
-            var filtered  = (catLower === 'all') ? fonts : fonts.filter(function(f) {
-                if (Array.isArray(f.category)) return f.category.some(function(c) { return c.toLowerCase() === catLower; });
-                return f.category.toLowerCase() === catLower;
-            });
-            updateCatDownloadBar(filtered, category);
-            renderFonts(filtered, '', true);
-        }
-    }, 150);
+    // Only update the preview text shown in each visible card — do NOT filter fonts
+    var q = input.value;
+    var previews = document.querySelectorAll('#font-grid .preview');
+    previews.forEach(function(p) {
+        var fontFamily = p.style.fontFamily;
+        var fontSize   = p.style.fontSize;
+        // Find the font entry for this card to get its default preview text
+        var card = p.closest('.card');
+        var fontName = card ? (card.querySelector('.card-eng-name') ? card.querySelector('.card-eng-name').textContent.replace(/^نوێ\s*/,'').trim() : '') : '';
+        var fontObj = fonts.find(function(f){ return (f.displayName||f.name) === fontName; });
+        var defaultPreview = fontObj ? (fontObj.preview || 'فۆنتەکانی یونی‌قەیدار') : 'فۆنتەکانی یونی‌قەیدار';
+        p.textContent = q || defaultPreview;
+        p.style.fontFamily = fontFamily;
+        p.style.fontSize   = fontSize;
+    });
 });
 
 // ── Clear search and reset to first category ──
@@ -2749,7 +2754,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const dCountBadge = document.createElement('span');
         dCountBadge.className = 'cat-count';
         dCountBadge.setAttribute('dir', 'ltr');
-        dCountBadge.textContent = ' (' + catCount + ')';
+        dCountBadge.textContent = '(' + catCount + ')';
         dBtn.appendChild(dCountBadge);
         const dCopy = document.createElement('button');
         dCopy.className = 'copy-cat-btn';
@@ -2767,7 +2772,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const mCountBadge = document.createElement('span');
         mCountBadge.className = 'cat-count';
         mCountBadge.setAttribute('dir', 'ltr');
-        mCountBadge.textContent = ' (' + catCount + ')';
+        mCountBadge.textContent = '(' + catCount + ')';
         mBtn.appendChild(mCountBadge);
         const mCopy = document.createElement('button');
         mCopy.className = 'copy-cat-btn';
@@ -2788,7 +2793,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (firstMobile)  firstMobile.classList.add('active');
 
     // Read the actual label from the button (respects admin renames)
-    const activeLabel = firstDesktop ? firstDesktop.textContent.trim() : '';
+    const activeLabel = firstDesktop ? firstDesktop.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim() : '';
     document.getElementById('desktop-active-label').textContent = activeLabel;
     document.getElementById('mobile-active-label').textContent  = activeLabel;
     fitMobileLabel();

@@ -2279,7 +2279,7 @@ function renderDlTable() {
     const fontMap = {};
     filtered.forEach(ev => {
         const k = ev.font||'?';
-        if (!fontMap[k]) fontMap[k] = { font:k, count:0, last:'' };
+        if (!fontMap[k]) fontMap[k] = { font:k, type:ev.type||'single', count:0, last:'' };
         fontMap[k].count++;
         if ((ev.ts||ev.date||'') > fontMap[k].last) fontMap[k].last = ev.ts||ev.date||'';
     });
@@ -2300,11 +2300,30 @@ function renderDlTable() {
             tr.onmouseover = ()=>tr.style.background='var(--surface2)';
             tr.onmouseout  = ()=>tr.style.background='';
             const lastSUL = item.last ? fmtSUL(item.last) : '—';
-            // FIX: Always include &cat=All so the font card is guaranteed to be in the DOM when the page loads
-            const fontLink = `https://uniqaidar.pages.dev/?cat=All&font=${encodeURIComponent(item.font)}`;
+
+            // Determine the correct link based on download type / font name
+            const isBulkEntry    = item.type==='bulk' || item.font.includes('داگرتنی تەواوی');
+            const isCatBulkEntry = item.type==='cat-bulk' || item.font.includes('داگرتنی کاتێگۆری');
+            let fontLink, linkLabel;
+            if (isBulkEntry) {
+                // Bulk = link to main page (opens download modal)
+                fontLink  = 'https://uniqaidar.pages.dev/';
+                linkLabel = item.font + ' ⬇';
+            } else if (isCatBulkEntry) {
+                // Category bulk: extract category ID from font name like "داگرتنی کاتێگۆری: Nwe"
+                const catMatch = item.font.match(/:\s*(\S+)\s*$/);
+                const catId    = catMatch ? catMatch[1] : '';
+                fontLink  = catId ? `https://uniqaidar.pages.dev/?cat=${encodeURIComponent(catId)}` : 'https://uniqaidar.pages.dev/';
+                linkLabel = item.font + ' 📂';
+            } else {
+                // Single font: link to font card via ?cat=All&font=...
+                fontLink  = `https://uniqaidar.pages.dev/?cat=All&font=${encodeURIComponent(item.font)}`;
+                linkLabel = item.font + ' 🔗';
+            }
+
             tr.innerHTML = `
                 <td style="padding:8px 12px;color:var(--muted);font-family:var(--mono);font-size:0.75rem;">${i+1}</td>
-                <td style="padding:8px 12px;font-family:var(--mono);font-size:0.8rem;direction:ltr;"><a href="${fontLink}" target="_blank" style="color:var(--yellow);text-decoration:none;" title="کردنەوەی فۆنت لە وێبسایت">${item.font} 🔗</a></td>
+                <td style="padding:8px 12px;font-family:var(--mono);font-size:0.8rem;direction:ltr;"><a href="${fontLink}" target="_blank" style="color:var(--yellow);text-decoration:none;" title="کردنەوە لە وێبسایت">${linkLabel}</a></td>
                 <td style="padding:8px 12px;text-align:center;"><span style="background:${item.count>=5?'var(--green)':'var(--border)'};color:${item.count>=5?'#000':'var(--text)'};padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${item.count}</span></td>
                 <td style="padding:8px 12px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${lastSUL}</td>`;
             ftbody.appendChild(tr);
@@ -2322,17 +2341,32 @@ function renderDlTable() {
             const tr  = document.createElement('tr');
             tr.style.cssText = 'border-bottom:1px solid var(--border);';
             const isCatBulk = ev.type==='cat-bulk' || (ev.font||'').includes('داگرتنی کاتێگۆری');
+            const isBulk    = !isCatBulk && (ev.type==='bulk' || (ev.font||'').includes('داگرتنی تەواوی'));
             const lbl = isCatBulk
                 ? '<span style="background:var(--purple);color:#fff;padding:1px 7px;border-radius:10px;font-size:0.72rem;">کاتێگۆری</span>'
-                : ev.type==='bulk'
+                : isBulk
                 ? '<span style="background:var(--green);color:#000;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تەواوی</span>'
                 : '<span style="background:var(--accent);color:#fff;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تاکە</span>';
             const evSUL = fmtSUL(ev.ts);
-            // FIX: Always include &cat=All so the font card is guaranteed in DOM
-            const evFontLink = `https://uniqaidar.pages.dev/?cat=All&font=${encodeURIComponent(ev.font||'')}`;
+
+            // Generate correct link per event type
+            let evFontLink, evLinkIcon;
+            if (isBulk) {
+                evFontLink  = 'https://uniqaidar.pages.dev/';
+                evLinkIcon  = '⬇';
+            } else if (isCatBulk) {
+                const catMatch = (ev.font||'').match(/:\s*(\S+)\s*$/);
+                const catId    = catMatch ? catMatch[1] : '';
+                evFontLink  = catId ? `https://uniqaidar.pages.dev/?cat=${encodeURIComponent(catId)}` : 'https://uniqaidar.pages.dev/';
+                evLinkIcon  = '📂';
+            } else {
+                evFontLink  = `https://uniqaidar.pages.dev/?cat=All&font=${encodeURIComponent(ev.font||'')}`;
+                evLinkIcon  = '🔗';
+            }
+
             tr.innerHTML = `
                 <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${i+1}</td>
-                <td style="padding:6px 10px;font-family:var(--mono);font-size:0.78rem;direction:ltr;"><a href="${evFontLink}" target="_blank" style="color:var(--accent);text-decoration:none;">${ev.font||'?'} 🔗</a></td>
+                <td style="padding:6px 10px;font-family:var(--mono);font-size:0.78rem;direction:ltr;"><a href="${evFontLink}" target="_blank" style="color:var(--accent);text-decoration:none;">${ev.font||'?'} ${evLinkIcon}</a></td>
                 <td style="padding:6px 10px;text-align:center;">${lbl}</td>
                 <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);">${ev.country||'—'}</td>
                 <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${evSUL}</td>`;
