@@ -1475,7 +1475,7 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     align-items: center;
     justify-content: center;
     z-index: 99999;
-    transition: opacity 0.8s ease, visibility 0.8s ease;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
     gap: 28px;
 }
 #splash.hide {
@@ -1487,7 +1487,7 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     width: 280px;
     max-width: 72vw;
     height: auto;
-    animation: splashIn 0.7s ease-out forwards, splashFloat 3s ease-in-out 0.7s infinite;
+    animation: splashIn 0.4s ease-out forwards, splashFloat 3s ease-in-out 0.4s infinite;
     opacity: 0;
 }
 @keyframes splashIn {
@@ -1510,8 +1510,8 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     width: 0%;
     background: linear-gradient(90deg, #ff5700, #ff8c42);
     border-radius: 99px;
-    animation: splashLoad 1.8s ease-out forwards;
-    animation-delay: 0.3s;
+    animation: splashLoad 0.9s ease-out forwards;
+    animation-delay: 0.15s;
 }
 @keyframes splashLoad {
     0%   { width: 0%; }
@@ -1534,13 +1534,13 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
         splash.classList.add('hide');
         setTimeout(function() {
             if (splash.parentNode) splash.parentNode.removeChild(splash);
-        }, 850);
+        }, 450);
     }
     if (document.readyState === 'complete') {
-        setTimeout(hideSplash, 2000);
+        setTimeout(hideSplash, 900);
     } else {
         window.addEventListener('load', function() {
-            setTimeout(hideSplash, 2000);
+            setTimeout(hideSplash, 900);
         });
     }
     setTimeout(hideSplash, 5000);
