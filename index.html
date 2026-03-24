@@ -2193,6 +2193,7 @@ var FONTS_PER_PAGE = 50; // admin:perpage
 var _currentPage   = 1;
 var _filteredFonts = [];   // full filtered list for current category
 var _currentCatId  = '';   // current active category ID
+var _uqInitDone    = false; // true after applyUrlParams — suppresses replaceState during init
 
 // ── ئەستێنەری داگرتن: تۆمارکردنی داگرتن بۆ Google Analytics ──
 function trackFontDownload(fontName, type) {
@@ -2230,12 +2231,14 @@ function renderFonts(data, text, resetPage) {
     if (_currentPage < 1) _currentPage = 1;
 
     // ── Sync page number to URL ──
-    try {
-        var params = new URLSearchParams(location.search);
-        if (_currentPage > 1) { params.set('page', _currentPage); }
-        else { params.delete('page'); }
-        history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params.toString() : ''));
-    } catch(e) {}
+    if (_uqInitDone) {
+        try {
+            var params = new URLSearchParams(location.search);
+            if (_currentPage > 1) { params.set('page', _currentPage); }
+            else { params.delete('page'); }
+            history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params.toString() : ''));
+        } catch(e) {}
+    }
 
     var start = (_currentPage - 1) * perPage;
     var pageData = data.slice(start, start + perPage);
@@ -2280,9 +2283,13 @@ function renderFonts(data, text, resetPage) {
         copyBtn.innerHTML = '<span style="position:relative;top:0px;font-style:normal;display:flex;align-items:center;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>';
         copyBtn.setAttribute('data-font', font.name);
         copyBtn.addEventListener('click', function() {
-            const activeBtn = document.querySelector('#desktop-panel .filter-btn.active, #mobile-panel .filter-btn.active');
-            const catId = activeBtn ? activeBtn.getAttribute('onclick').split("'")[1] : '';
-            copyFontLink(font.name, catId, copyBtn);
+            // Use _currentCatId if the font actually belongs to it; otherwise use font's own first category
+            var fontCats = Array.isArray(font.category) ? font.category : (font.category ? [font.category] : []);
+            var activeCat = _currentCatId || '';
+            var activeLower = activeCat.toLowerCase();
+            var fontInActiveCat = activeLower === 'all' || fontCats.some(function(c){ return c.toLowerCase() === activeLower; });
+            var resolvedCat = fontInActiveCat ? activeCat : (fontCats[0] || 'All');
+            copyFontLink(font.name, resolvedCat, copyBtn);
         });
 
         card.innerHTML =
@@ -2460,14 +2467,16 @@ function filterFonts(category, btn) {
     // Update category state for pagination and cat-download
     _currentCatId = category;
 
-    // ── Sync category + reset page in URL ──
-    try {
-        var params = new URLSearchParams(location.search);
-        if (category && category.toLowerCase() !== 'nwe') { params.set('cat', category); }
-        else { params.delete('cat'); }
-        params.delete('page');
-        history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params.toString() : ''));
-    } catch(e) {}
+    // ── Sync category + reset page in URL (only after init, so applyUrlParams can read original URL) ──
+    if (_uqInitDone) {
+        try {
+            var params = new URLSearchParams(location.search);
+            if (category) { params.set('cat', category); }
+            else { params.delete('cat'); }
+            params.delete('page');
+            history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params.toString() : ''));
+        } catch(e) {}
+    }
 
     // Update category download bar
     updateCatDownloadBar(filtered, category);
@@ -2982,6 +2991,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Apply URL params (?cat= and ?font=)
     applyUrlParams();
+    _uqInitDone = true;
 
     // ── Back to top: show when scrolled down 400px ──
     window.addEventListener('scroll', function() {
