@@ -47,7 +47,23 @@ Unicode">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
     <link rel="apple-touch-icon" sizes="180x180" href="favicon.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="preload" href="UniQaidarFonts/UniQAIDAR_Peregraf 01.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "UniQaidar Fonts",
+      "url": "https://uniqaidar.pages.dev/",
+      "description": "Kurdish and Arabic font library with 420+ free TTF fonts for download.",
+      "author": { "@type": "Person", "name": "Qaidar Rahim" },
+      "inLanguage": ["ckb", "ar", "en"]
+    }
+    </script>
 
     <style>
 
@@ -263,7 +279,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
         }
 
 /* CSS Fonts */
-@font-face { font-family: 'UniQAIDAR_Peregraf 01'; src: url('UniQaidarFonts/UniQAIDAR_Peregraf 01.ttf') format('truetype'); }
+@font-face { font-family: 'UniQAIDAR_Peregraf 01'; src: url('UniQaidarFonts/UniQAIDAR_Peregraf 01.ttf') format('truetype'); font-display: swap; }
 
 
 
@@ -1235,22 +1251,151 @@ a:active, button:active {
 .cat-count {
     display: inline;
     background: none;
-    color: rgba(255,255,255,0.75);
-    font-size: 0.75rem;
-    font-family: "Segoe UI Emoji", "Apple Color Emoji", Arial, sans-serif;
-    margin-right: 6px;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.72rem;
+    font-family: monospace, Arial, sans-serif !important;
     letter-spacing: 0;
     pointer-events: none;
-    position: relative;
-    top: -3px;
+    position: static;
+    vertical-align: middle;
 }
 .filter-btn.active .cat-count {
     color: rgba(255,255,255,0.95);
 }
 
+/* ── Back to Top button ── */
+#back-to-top {
+    position: fixed;
+    bottom: 24px;
+    left: 20px;
+    z-index: 8000;
+    background: #ff5700;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(255,87,0,0.45);
+    transition: opacity 0.3s, transform 0.3s;
+    opacity: 0.9;
+}
+#back-to-top:hover { opacity: 1; transform: translateY(-2px); }
+#back-to-top.visible { display: flex; }
+
+/* ── "New" badge on font cards ── */
+.new-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff5700, #ff8c42);
+    color: #fff;
+    font-size: 0.58rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin-right: 5px;
+    vertical-align: middle;
+    letter-spacing: 0.04em;
+    font-family: monospace;
+}
+
+/* ── No results found message ── */
+#no-results-msg {
+    display: none;
+    text-align: center;
+    padding: 60px 20px;
+    color: #888;
+    font-size: 1.05rem;
+    grid-column: 1 / -1;
+}
+#no-results-msg button {
+    margin-top: 14px;
+    background: #ff5700;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 9px 22px;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+/* ── Font size slider persist ── */
+/* (handled via sessionStorage in JS) */
+
+/* ── Dark/Light mode toggle ── */
+/* Default: site is LIGHT. Toggle adds dark-mode class for dark experience. */
+body.dark-mode {
+    background: #111 !important;
+    color: #e0e0e0;
+}
+body.dark-mode .font-grid {
+    background: #111;
+}
+body.dark-mode .card {
+    background: #1e1e1e !important;
+    border-color: #333 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
+}
+body.dark-mode .card-header {
+    background: #2a2a2a !important;
+    border-bottom-color: #3a3a3a !important;
+}
+body.dark-mode .card-eng-name { color: #f0f0f0 !important; }
+body.dark-mode .card-date { color: #888 !important; }
+body.dark-mode .preview { color: #e8e8e8 !important; }
+body.dark-mode .card-body { background: #1e1e1e; }
+body.dark-mode footer { background-color: #0d0d0d !important; }
+body.dark-mode .modal-content {
+    background: linear-gradient(145deg, #1e1e1e, #252525) !important;
+    color: #e0e0e0 !important;
+}
+body.dark-mode .modal-content p { color: #bbb !important; }
+body.dark-mode .modal-content h2 { color: #5ba3ff !important; }
+body.dark-mode #pagination-bar { background: #0d0d0d !important; }
+
+#theme-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.3s;
+    text-decoration: none;
+}
+#theme-toggle-btn:hover, #theme-toggle-btn:active { background: #ff5700; transform: scale(1.1); }
+
+/* ── Print CSS ── */
+@media print {
+    .header, .filter-container, #size-bar, #pagination-bar, footer,
+    .card-copy-btn, #back-to-top, #splash { display: none !important; }
+    body { background: #fff !important; }
+    .font-grid { grid-template-columns: repeat(2,1fr) !important; gap: 12px !important; padding: 8px !important; }
+    .card { box-shadow: none !important; border: 1px solid #ccc !important; break-inside: avoid; }
+    .preview { color: #000 !important; }
+    .download-btn { display: none !important; }
+    .card-header { background: #eee !important; }
+}
+
     </style>
 </head>
 <body style="min-height:100vh;display:flex;flex-direction:column;">
+<noscript>
+  <div style="text-align:center;padding:60px 20px;font-family:Tahoma,Arial,sans-serif;font-size:1.1rem;direction:rtl;">
+    تکایە JavaScript چالاک بکە بۆ بینینی فۆنتەکان.<br>
+    <span style="font-size:0.9rem;color:#888;">Please enable JavaScript to view the fonts.</span>
+  </div>
+</noscript>
+<!-- Back to Top Button -->
+<button id="back-to-top" aria-label="بگەڕێوە بۆ سەرەوە" title="بگەڕێوە بۆ سەرەوە" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <!-- ══════════════════════════════════════════ -->
 <!-- SPLASH SCREEN                             -->
@@ -1339,24 +1484,25 @@ a:active, button:active {
 
 <div class="header">
     <div class="social-links">
-        <a id="social-facebook" href="https://web.facebook.com/UniQaiidarFonts?_rdc=1&_rdr#" target="_blank" class="social-icon">
+        <a id="social-facebook" href="https://web.facebook.com/UniQaiidarFonts?_rdc=1&_rdr#" target="_blank" class="social-icon" aria-label="UniQaidar on Facebook">
             <i class="fab fa-facebook-f"></i>
         </a>
-        <a id="social-telegram" href="https://t.me/UniQaidar_Fonts" target="_blank" class="social-icon">
+        <a id="social-telegram" href="https://t.me/UniQaidar_Fonts" target="_blank" class="social-icon" aria-label="UniQaidar on Telegram">
             <i class="fab fa-telegram-plane"></i>
         </a>
-<a href="#" id="aboutBtn" class="social-icon">
+<a href="#" id="aboutBtn" class="social-icon" aria-label="دەربارەی پڕۆژە">
     <i class="fas fa-info-circle"></i>
 </a>
+<button id="theme-toggle-btn" onclick="toggleTheme()" aria-label="گۆڕینی شێوازی ڕووکار" title="Dark / Light mode">🌙</button>
 
 
-<button id="downloadModalBtn" class="header-btn">
+<button id="downloadModalBtn" class="header-btn" aria-label="داگرتنی تەواوی فۆنتەکان">
     <i class="fas fa-download"></i> <span id="header-btn-label">داگرتنی تەواوی فۆنتەکان</span>
 </button>
 
 <div id="downloadModal" class="modal">
     <div class="modal-content" style="overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;max-height:90vh;padding-bottom:50px;max-width:560px;">
-        <span class="close-download">&times;</span>
+        <span class="close-download" aria-label="داخستن">&times;</span>
         <h2 id="dm-title" style="font-size:1.5rem;letter-spacing:0.01em;">داگرتنی تەواوی فۆنتەکان</h2>
         <div class="download-box" style="text-align:center;padding:24px 20px 32px;">
             <!-- Icon -->
@@ -1497,6 +1643,12 @@ a:active, button:active {
 <span id="cat-download-btn-label" style="display:none">داگرتنی تەواوی فۆنتەکانی ئەم بەشە</span>
 
 <div class="font-grid" id="font-grid" style="flex:1"></div>
+<div id="no-results-msg">
+    <div style="font-size:2rem;margin-bottom:10px;">🔍</div>
+    <div>هیچ فۆنتێک نەدۆزرایەوە بۆ گەڕانەکەت</div>
+    <div style="font-size:0.85rem;color:#aaa;margin-top:6px;">No fonts found for your search</div>
+    <button onclick="clearSearchAndReset()">پاکردنەوەی گەڕان</button>
+</div>
 
 <!-- Pagination bar -->
 <div id="pagination-bar"></div>
@@ -1945,11 +2097,24 @@ function changeFontSize(val) {
     document.querySelectorAll('.preview').forEach(function(p) {
         p.style.fontSize = val + 'px';
     });
+    // Persist slider value across session
+    try { sessionStorage.setItem('uq_fontsize', val); } catch(e) {}
 }
 
 // ── ئەلێمێنتە سەرەکییەکان ──────────────────────────────
 const grid  = document.getElementById('font-grid');
 const input = document.getElementById('test-input');
+
+// Restore saved font size
+(function() {
+    try {
+        var saved = sessionStorage.getItem('uq_fontsize');
+        if (saved) {
+            var sl = document.getElementById('font-size-slider');
+            if (sl) { sl.value = saved; changeFontSize(saved); }
+        }
+    } catch(e) {}
+})();
 
 // ── Pagination & category state ─────────────────────────
 // FONTS_PER_PAGE: editable from admin panel — do not rename this comment marker
@@ -1997,14 +2162,42 @@ function renderFonts(data, text, resetPage) {
     var pageData = data.slice(start, start + perPage);
 
     grid.innerHTML = '';
+
+    // Show/hide no-results message
+    var noMsg = document.getElementById('no-results-msg');
+    if (data.length === 0) {
+        if (noMsg) noMsg.style.display = 'block';
+        renderPagination(0, perPage);
+        return;
+    }
+    if (noMsg) noMsg.style.display = 'none';
+
+    // 30-day "new" threshold
+    var thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    // Get current font size from slider
+    var currentSize = document.getElementById('font-size-slider') ? document.getElementById('font-size-slider').value : '32';
+
     pageData.forEach(function(font) {
         const card = document.createElement('div');
         card.className = 'card';
         const engName = font.displayName || font.name;
         const dateStr = font.dateAdded || '';
+
+        // Check if font is "new" (added within last 30 days)
+        var isNew = false;
+        if (dateStr) {
+            try {
+                var addedDate = new Date(dateStr + 'T00:00:00');
+                isNew = addedDate >= thirtyDaysAgo;
+            } catch(e) {}
+        }
+
         const copyBtn = document.createElement('button');
         copyBtn.className = 'card-copy-btn';
         copyBtn.title = 'Copy font link';
+        copyBtn.setAttribute('aria-label', 'کۆپیکردنی لینکی فۆنت');
         copyBtn.innerHTML = '<span style="position:relative;top:0px;font-style:normal;display:flex;align-items:center;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>';
         copyBtn.setAttribute('data-font', font.name);
         copyBtn.addEventListener('click', function() {
@@ -2015,15 +2208,15 @@ function renderFonts(data, text, resetPage) {
 
         card.innerHTML =
             '<div class="card-header">' +
-                '<span class="card-eng-name">' + engName + '</span>' +
+                '<span class="card-eng-name">' + (isNew ? '<span class="new-badge">نوێ</span>' : '') + engName + '</span>' +
                 (dateStr ? '<span class="card-date">&#128197; ' + dateStr + '</span>' : '') +
             '</div>' +
             '<div class="card-body">' +
-                '<div class="preview" style="font-family: \'' + font.name + '\';">' +
+                '<div class="preview" style="font-family: \'' + font.name + '\'; font-size:' + currentSize + 'px;">' +
                     (text || font.preview || 'فۆنتەکانی یونی‌قەیدار') +
                 '</div>' +
                 '<div class="download-btn-wrap">' +
-                    '<a href="' + font.path + '" class="download-btn" download data-font="' + font.name + '" onclick="trackFontDownload(\'' + font.name.replace(/'/g,"\\'") + '\',\'single\')">دابە‌زاندنی فۆنت TTF</a>' +
+                    '<a href="' + font.path + '" class="download-btn" download data-font="' + font.name + '" aria-label="داگرتنی فۆنت ' + font.name.replace(/"/g,'') + '" onclick="trackFontDownload(\'' + font.name.replace(/'/g,"\\'") + '\',\'single\')">دابە‌زاندنی فۆنت TTF</a>' +
                 '</div>' +
             '</div>';
         card.querySelector('.download-btn-wrap').append(copyBtn);
@@ -2146,6 +2339,7 @@ function filterFonts(category, btn) {
 
     // ئەگەر دوگمەکە لە desktop-panel بوو: لیبلی نوێ بدە و دابخە
     if (btn && btn.closest('#desktop-panel')) {
+        // Strip the count badge "(4)" from the toggle header label
         document.getElementById('desktop-active-label').textContent = btn.textContent.trim();
         document.getElementById('desktop-panel').classList.remove('open');
         const dt = document.getElementById('desktop-toggle');
@@ -2182,19 +2376,53 @@ function filterFonts(category, btn) {
 // ── بۆکسی تاقیکردنەوە ──────────────────────────────────
 // کاتێک بەکارهێنەر دەنووسێت، هەموو کارتەکان نوێ دەبنەوە
 // ── Live font preview: typing updates card text ──────────
+var _searchDebounceTimer = null;
 input.addEventListener('input', function() {
-    const activeBtn = document.querySelector('#desktop-panel .filter-btn.active, #mobile-panel .filter-btn.active');
-    const firstBtn2 = document.querySelector('#desktop-panel .filter-btn, #mobile-panel .filter-btn');
-    const fallback2  = firstBtn2 ? firstBtn2.getAttribute('onclick').split("'")[1] : 'Nwe';
-    const category  = activeBtn ? activeBtn.getAttribute('onclick').split("'")[1] : fallback2;
-    const catLower  = category.toLowerCase();
-    const filtered  = (catLower === 'all') ? fonts : fonts.filter(function(f) {
-        if (Array.isArray(f.category)) return f.category.some(function(c) { return c.toLowerCase() === catLower; });
-        return f.category.toLowerCase() === catLower;
-    });
-    // Live preview only updates card text, not the filtered font list — no page reset needed
-    renderFonts(filtered, input.value);
+    clearTimeout(_searchDebounceTimer);
+    _searchDebounceTimer = setTimeout(function() {
+        var q = input.value.trim();
+        if (q) {
+            // Search across ALL fonts when text is present
+            var qLower = q.toLowerCase();
+            var results = fonts.filter(function(f) {
+                var nameMatch    = f.name.toLowerCase().includes(qLower);
+                var displayMatch = f.displayName ? f.displayName.toLowerCase().includes(qLower) : false;
+                var previewMatch = f.preview ? f.preview.toLowerCase().includes(qLower) : false;
+                return nameMatch || displayMatch || previewMatch;
+            });
+            var wrap = document.getElementById('cat-dl-inline-wrap');
+            if (wrap) wrap.style.display = 'none';
+            var mwrap = document.getElementById('cat-dl-mobile-wrap');
+            if (mwrap) mwrap.style.display = 'none';
+            renderFonts(results, q, true);
+        } else {
+            // Empty input: restore current category view
+            var activeBtn = document.querySelector('#desktop-panel .filter-btn.active, #mobile-panel .filter-btn.active');
+            var firstBtn2 = document.querySelector('#desktop-panel .filter-btn, #mobile-panel .filter-btn');
+            var fallback2  = firstBtn2 ? firstBtn2.getAttribute('onclick').split("'")[1] : 'Nwe';
+            var category  = activeBtn ? activeBtn.getAttribute('onclick').split("'")[1] : fallback2;
+            var catLower  = category.toLowerCase();
+            var filtered  = (catLower === 'all') ? fonts : fonts.filter(function(f) {
+                if (Array.isArray(f.category)) return f.category.some(function(c) { return c.toLowerCase() === catLower; });
+                return f.category.toLowerCase() === catLower;
+            });
+            updateCatDownloadBar(filtered, category);
+            renderFonts(filtered, '', true);
+        }
+    }, 150);
 });
+
+// ── Clear search and reset to first category ──
+function clearSearchAndReset() {
+    input.value = '';
+    var firstBtn = document.querySelector('#desktop-panel .filter-btn, #mobile-panel .filter-btn');
+    if (firstBtn) {
+        var catId = firstBtn.getAttribute('onclick').split("'")[1];
+        filterFonts(catId, firstBtn);
+        document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+        firstBtn.classList.add('active');
+    }
+}
 
 // ── 🔍 Search button: filters font list by name/displayName/preview ──
 function doSearch() {
@@ -2207,7 +2435,7 @@ function doSearch() {
         filterFonts(category, null);
         return;
     }
-    // Search across all fonts — hide cat download button during search results
+    // Search across ALL fonts regardless of active category
     var wrap = document.getElementById('cat-dl-inline-wrap');
     if (wrap) wrap.style.display = 'none';
     var mwrap = document.getElementById('cat-dl-mobile-wrap');
@@ -2233,7 +2461,7 @@ function updateCatDownloadBar(filtered, catId) {
     var prog       = document.getElementById('cat-dl-progress-inline');
     var progM      = document.getElementById('cat-dl-progress-mobile');
 
-    // Sync button labels from hidden marker (admin-editable)
+    // Sync button labels from hidden marker (admin-editable) — label only, no count here
     var labelEl = document.getElementById('cat-download-btn-label');
     var labelTxt = (labelEl ? labelEl.textContent.trim() : '') || 'داگرتنی تەواوی فۆنتەکانی ئەم بەشە';
     var textEl  = document.getElementById('cat-dl-btn-text');
@@ -2384,7 +2612,6 @@ function applyUrlParams() {
 
     // If only font param (from admin link), show ALL fonts first so the card exists in DOM
     if (fontParam && !catParam) {
-        // Always use 'All' category — future-proof: works even if font categories change
         var allBtn = null;
         document.querySelectorAll('#desktop-panel .filter-btn').forEach(function(b) {
             const id = (b.getAttribute('onclick') || '').split("'")[1] || '';
@@ -2430,7 +2657,9 @@ function applyUrlParams() {
             const cards = document.querySelectorAll('.card');
             cards.forEach(function(card) {
                 const nameEl = card.querySelector('.card-eng-name');
-                if (nameEl && nameEl.textContent.trim() === fontParam) {
+                // Match against text content (which may include "نوێ" badge text — strip it)
+                var cardText = nameEl ? nameEl.textContent.replace('نوێ','').trim() : '';
+                if (nameEl && (cardText === fontParam || nameEl.textContent.trim() === fontParam)) {
                     found = true;
                     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     card.style.outline = '3px solid #0070e4';
@@ -2441,6 +2670,14 @@ function applyUrlParams() {
                     }, 3000);
                 }
             });
+            // Font not found: show friendly message
+            if (!found) {
+                var noMsg = document.getElementById('no-results-msg');
+                if (noMsg) {
+                    noMsg.querySelector('div:nth-child(2)').textContent = 'فۆنتی "' + fontParam + '" نەدۆزرایەوە — ئەگەر سڕاوەتەوە یان ناوەکەی گۆڕاوە.';
+                    noMsg.style.display = 'block';
+                }
+            }
         }, 600);
     }
 }
@@ -2511,7 +2748,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const dBtn = btn.cloneNode(true);
         const dCountBadge = document.createElement('span');
         dCountBadge.className = 'cat-count';
-        dCountBadge.textContent = ' (' + catCount + ')';
+        dCountBadge.setAttribute('dir', 'ltr');
+        dCountBadge.textContent = ' (' + catCount + ')';
         dBtn.appendChild(dCountBadge);
         const dCopy = document.createElement('button');
         dCopy.className = 'copy-cat-btn';
@@ -2528,7 +2766,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const mBtn = btn.cloneNode(true);
         const mCountBadge = document.createElement('span');
         mCountBadge.className = 'cat-count';
-        mCountBadge.textContent = ' (' + catCount + ')';
+        mCountBadge.setAttribute('dir', 'ltr');
+        mCountBadge.textContent = ' (' + catCount + ')';
         mBtn.appendChild(mCountBadge);
         const mCopy = document.createElement('button');
         mCopy.className = 'copy-cat-btn';
@@ -2540,7 +2779,7 @@ document.addEventListener('DOMContentLoaded', function() {
         mobilePanel.appendChild(mWrap);
     });
 
-    // Activate 'نوێ' in both panels
+    // Activate first button in both panels (do NOT hardcode 'nwe' — read actual first button)
     const nweBtns = document.querySelectorAll('#desktop-panel .filter-btn, #mobile-panel .filter-btn');
     nweBtns.forEach(function(b) { b.classList.remove('active'); });
     const firstDesktop = desktopPanel.querySelector('.filter-btn');
@@ -2548,17 +2787,17 @@ document.addEventListener('DOMContentLoaded', function() {
     if (firstDesktop) firstDesktop.classList.add('active');
     if (firstMobile)  firstMobile.classList.add('active');
 
-    // Read the actual label from the button (respects admin renames like 'فۆنتی نوێ')
+    // Read the actual label from the button (respects admin renames)
     const activeLabel = firstDesktop ? firstDesktop.textContent.trim() : '';
     document.getElementById('desktop-active-label').textContent = activeLabel;
     document.getElementById('mobile-active-label').textContent  = activeLabel;
     fitMobileLabel();
 
-    // Use the actual ID from the first button (works even if admin renamed nwe → Nwe etc.)
+    // Use the actual ID from the first button — no hardcoding of 'nwe'
     const firstBtnOnclick = firstDesktop ? firstDesktop.getAttribute('onclick') : null;
-    const firstCatId = firstBtnOnclick ? firstBtnOnclick.split("'")[1] : 'nwe';
+    const firstCatId = firstBtnOnclick ? firstBtnOnclick.split("'")[1] : '';
     _currentCatId = firstCatId;
-    var firstFiltered = firstCatId.toLowerCase() === 'all' ? fonts : fonts.filter(function(f) {
+    var firstFiltered = (!firstCatId || firstCatId.toLowerCase() === 'all') ? fonts : fonts.filter(function(f) {
         if (Array.isArray(f.category)) return f.category.some(function(c){ return c.toLowerCase() === firstCatId.toLowerCase(); });
         return (f.category||'').toLowerCase() === firstCatId.toLowerCase();
     });
@@ -2571,6 +2810,47 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Apply URL params (?cat= and ?font=)
     applyUrlParams();
+
+    // ── Back to top: show when scrolled down 400px ──
+    window.addEventListener('scroll', function() {
+        var btt = document.getElementById('back-to-top');
+        if (!btt) return;
+        if (window.scrollY > 400) btt.classList.add('visible');
+        else btt.classList.remove('visible');
+    }, { passive: true });
+
+    // ── Theme: restore saved preference ──
+    try {
+        var savedTheme = localStorage.getItem('uq_theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            var tb = document.getElementById('theme-toggle-btn');
+            if (tb) tb.textContent = '☀️';
+        }
+    } catch(e) {}
+
+    // ── Startup: log @font-face vs fonts[] mismatches to console ──
+    setTimeout(function() {
+        try {
+            var declared = new Set();
+            for (var si = 0; si < document.styleSheets.length; si++) {
+                try {
+                    var rules = document.styleSheets[si].cssRules || [];
+                    for (var ri = 0; ri < rules.length; ri++) {
+                        if (rules[ri].type === CSSRule.FONT_FACE_RULE) {
+                            var fam = rules[ri].style.getPropertyValue('font-family').replace(/['"]/g,'');
+                            declared.add(fam);
+                        }
+                    }
+                } catch(e2) {}
+            }
+            fonts.forEach(function(f) {
+                if (!declared.has(f.name)) {
+                    console.warn('[UniQaidar] Missing @font-face for:', f.name, '— font preview will fall back to default.');
+                }
+            });
+        } catch(e) {}
+    }, 2000);
 });
 
 // ── placeholder: desktop vs mobile ─────────────────────
@@ -2585,6 +2865,14 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', setPlaceholder);
     window.addEventListener('resize', fitMobileLabel);
 })();
+
+// ── Theme toggle ──────────────────────────────────────
+function toggleTheme() {
+    var isDark = document.body.classList.toggle('dark-mode');
+    var btn = document.getElementById('theme-toggle-btn');
+    if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+    try { localStorage.setItem('uq_theme', isDark ? 'dark' : 'light'); } catch(e) {}
+}
 
 // ── مۆدالی داگرتن ───────────────────────────────────────
 const downloadModal = document.getElementById('downloadModal');
@@ -2616,7 +2904,7 @@ window.addEventListener('click', function(e) {
 
 <div id="aboutModal" class="modal">
     <div class="modal-content" style="max-width:620px;">
-        <span class="close-btn">&times;</span>
+        <span class="close-btn" aria-label="داخستن">&times;</span>
         <h2 id="about-title" style="font-size:1.6rem;letter-spacing:0.02em;">دەربارەی پڕۆژە</h2>
 
         <p id="about-content" style="font-size:1.05rem;color:#333;text-align:justify;line-height:2;">
