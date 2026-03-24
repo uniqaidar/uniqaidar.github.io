@@ -1440,6 +1440,26 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
   </div>
 </noscript>
 <!-- Back to Top Button -->
+<div id="uq-copy-toast" style="
+    position:fixed;
+    bottom:80px;
+    left:50%;
+    transform:translateX(-50%) translateY(16px);
+    background:#1a1a1a;
+    color:#fff;
+    padding:11px 26px;
+    border-radius:50px;
+    font-size:1rem;
+    font-family:'UniQAIDAR_Peregraf 01',Tahoma,sans-serif;
+    direction:rtl;
+    z-index:999999;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.22s ease, transform 0.22s ease;
+    white-space:nowrap;
+    border:1px solid rgba(255,255,255,0.12);
+    box-shadow:0 4px 18px rgba(0,0,0,0.35);
+">لینک کۆپی کرا ✅</div>
 <button id="back-to-top" aria-label="بگەڕێوە بۆ سەرەوە" title="بگەڕێوە بۆ سەرەوە" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <!-- ══════════════════════════════════════════ -->
@@ -1545,10 +1565,16 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     <i class="fas fa-download"></i> <span id="header-btn-label">داگرتنی تەواوی فۆنتەکان</span>
 </button>
 
+
 <div id="downloadModal" class="modal">
     <div class="modal-content" style="overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;max-height:90vh;padding-bottom:50px;max-width:560px;">
         <span class="close-download" aria-label="داخستن">&times;</span>
-        <h2 id="dm-title" style="font-size:1.5rem;letter-spacing:0.01em;">داگرتنی تەواوی فۆنتەکان</h2>
+        <h2 id="dm-title" style="font-size:1.5rem;letter-spacing:0.01em;display:flex;align-items:center;justify-content:center;gap:10px;">
+            داگرتنی تەواوی فۆنتەکان
+            <button id="dm-copy-link-btn" onclick="copyDmLink(this)" title="کۆپیکردنی لینکی داگرتن" aria-label="کۆپیکردنی لینکی داگرتن" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:rgba(0,112,228,0.15);border:1px solid rgba(0,112,228,0.35);border-radius:7px;cursor:pointer;padding:0;transition:background 0.2s;flex-shrink:0;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0070e4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </button>
+        </h2>
         <div class="download-box" style="text-align:center;padding:24px 20px 32px;">
             <!-- Icon -->
             <div style="width:80px;height:80px;background:linear-gradient(135deg,#fff3cd,#ffe082);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:0 4px 15px rgba(241,196,15,0.3);">
@@ -2203,6 +2229,14 @@ function renderFonts(data, text, resetPage) {
     if (_currentPage > totalPages && totalPages > 0) _currentPage = totalPages;
     if (_currentPage < 1) _currentPage = 1;
 
+    // ── Sync page number to URL ──
+    try {
+        var params = new URLSearchParams(location.search);
+        if (_currentPage > 1) { params.set('page', _currentPage); }
+        else { params.delete('page'); }
+        history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params.toString() : ''));
+    } catch(e) {}
+
     var start = (_currentPage - 1) * perPage;
     var pageData = data.slice(start, start + perPage);
 
@@ -2426,6 +2460,15 @@ function filterFonts(category, btn) {
     // Update category state for pagination and cat-download
     _currentCatId = category;
 
+    // ── Sync category + reset page in URL ──
+    try {
+        var params = new URLSearchParams(location.search);
+        if (category && category.toLowerCase() !== 'nwe') { params.set('cat', category); }
+        else { params.delete('cat'); }
+        params.delete('page');
+        history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params.toString() : ''));
+    } catch(e) {}
+
     // Update category download bar
     updateCatDownloadBar(filtered, category);
 
@@ -2606,6 +2649,17 @@ function copyLink(url, btn, emoji) {
     function showTick() {
         btn.innerHTML = '<span style="display:flex;align-items:center;justify-content:center;font-size:16px;">✅</span>';
         btn.classList.add('copied');
+        // Show toast
+        var toast = document.getElementById('uq-copy-toast');
+        if (toast) {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+            clearTimeout(toast._hideTimer);
+            toast._hideTimer = setTimeout(function() {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(16px)';
+            }, 2000);
+        }
         setTimeout(function() {
             btn.innerHTML = origHTML;
             btn.classList.remove('copied');
@@ -2646,6 +2700,13 @@ function copyCatLink(catId, btn) {
     copyLink(url, btn, '🔗');
 }
 
+function copyDmLink(btn) {
+    var params = new URLSearchParams(location.search);
+    params.set('dm', '1');
+    var url = location.origin + location.pathname + '?' + params.toString();
+    copyLink(url, btn, '🔗');
+}
+
 function copyFontLink(fontName, catId, btn) {
     const url = location.origin + location.pathname +
         '?cat=' + encodeURIComponent(catId) +
@@ -2659,6 +2720,13 @@ function applyUrlParams() {
     const catParam  = params.get('cat');
     const fontParam = params.get('font');
     const dmParam   = params.get('dm');
+    const pageParam = params.get('page');
+
+    // Restore page number before any rendering
+    if (pageParam) {
+        var pg = parseInt(pageParam, 10);
+        if (!isNaN(pg) && pg > 1) _currentPage = pg;
+    }
 
     // If ?dm=1 is present, auto-open the download modal
     if (dmParam === '1') {

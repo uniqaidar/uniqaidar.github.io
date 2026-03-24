@@ -1737,8 +1737,8 @@ function loadAllSettings() {
     // ── Download Modal ──
     const dmHeaderBtn = RAW.match(/<span id="header-btn-label">([^<]*)<\/span>/);
     if (dmHeaderBtn) set('dm-header-btn-inp', dmHeaderBtn[1]);
-    const dmTitle = RAW.match(/<h2 id="dm-title"[^>]*>([^<]*)<\/h2>/);
-    if (dmTitle) set('dm-title-inp', dmTitle[1]);
+    const dmTitle = RAW.match(/<h2 id="dm-title"[^>]*>\s*([^<\n]+)/);
+    if (dmTitle) set('dm-title-inp', dmTitle[1].trim());
     const dmDesc = RAW.match(/<p id="dm-desc"[^>]*>([^<]*)<\/p>/);
     if (dmDesc) set('dm-desc-inp', dmDesc[1]);
     const dmBtnLabel = RAW.match(/<span id="dm-btn-label">([^<]*)<\/span>/);
@@ -1904,7 +1904,8 @@ async function saveDownloadModal() {
     let next = RAW;
     if (headerBtn) next = next.replace(/<span id="header-btn-label">[^<]*<\/span>/, `<span id="header-btn-label">${headerBtn}</span>`);
     if (title) {
-        next = next.replace(/<h2 id="dm-title"[^>]*>[^<]*<\/h2>/, `<h2 id="dm-title" style="font-size:1.5rem;letter-spacing:0.01em;">${title}</h2>`);
+        // Only replace the text node — preserve the copy-link button inside the h2
+        next = next.replace(/(<h2 id="dm-title"[^>]*>)\s*[^<\n]+/, `$1\n            ${title}\n            `);
     }
     if (desc)      next = next.replace(/<p id="dm-desc"[^>]*>[^<]*<\/p>/, `<p id="dm-desc" style="font-size:1.05rem;margin-bottom:24px;color:#444;line-height:1.8;background:#f4f7ff;border-radius:12px;padding:14px 18px;border:1px solid #d8e3ff;">${desc}</p>`);
     if (btnLabel)  next = next.replace(/<span id="dm-btn-label">[^<]*<\/span>/, `<span id="dm-btn-label">${btnLabel}</span>`);
