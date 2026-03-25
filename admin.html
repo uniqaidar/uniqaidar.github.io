@@ -879,6 +879,9 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
 // ══════════════════════════════════════════
 let TOKEN='', USER='', REPO='', BRANCH='main', FILE='index.html';
 let SHA='', RAW='', fnts=[], cats=[], ready=false;
+// ── fonts.json state ──
+const FONTS_FILE = 'fonts.json';
+let FONTS_SHA = '', FONTS_RAW = [];
 
 const LS_KEY = 'uqadmin_cfg';
 
@@ -994,12 +997,48 @@ async function ghPut(content, message) {
     return true;
 }
 
+// ══════════════════════════════════════════
+// GitHub API — fonts.json
+// ══════════════════════════════════════════
+async function ghGetFonts() {
+    const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${FONTS_FILE}?ref=${BRANCH}`,
+        { headers:{ Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json' }});
+    if (!r.ok) return null;
+    return r.json();
+}
+
+async function ghPutFonts(fontsArray, message) {
+    try { localStorage.setItem('uq_fonts_backup', JSON.stringify(FONTS_RAW)); localStorage.setItem('uq_fonts_backup_time', new Date().toISOString()); } catch(e) {}
+    const jsonStr = JSON.stringify(fontsArray, null, 2);
+    const body = JSON.stringify({ message, content: btoa(unescape(encodeURIComponent(jsonStr))), sha: FONTS_SHA || undefined, branch: BRANCH });
+    const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${FONTS_FILE}`,
+        { method:'PUT', headers:{ Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' }, body });
+    if (!r.ok) return false;
+    const d = await r.json();
+    FONTS_SHA = d.content.sha;
+    FONTS_RAW = fontsArray;
+    return true;
+}
+
+
 async function loadIndex() {
     try {
         const d = await ghGet();
         if (!d) return false;
         SHA = d.sha;
         RAW = decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))));
+
+        // Load fonts.json
+        const fd = await ghGetFonts();
+        if (fd) {
+            FONTS_SHA = fd.sha;
+            try { FONTS_RAW = JSON.parse(decodeURIComponent(escape(atob(fd.content.replace(/\n/g,''))))); }
+            catch(e2) { console.warn('fonts.json parse error:', e2); FONTS_RAW = []; }
+        } else {
+            FONTS_SHA = ''; FONTS_RAW = [];
+            console.warn('fonts.json not found — will be created on first font operation.');
+        }
+
         parseFonts();
         parseCats();
         buildCatPills();
@@ -1016,41 +1055,19 @@ async function loadIndex() {
 // Parse
 // ══════════════════════════════════════════
 function parseFonts() {
-    fnts = [];
-    // Match any font object in the array — capture the entire object content
-    const rx = /\{\s*name:\s*"([^"]+)"([\s\S]*?)\}/g;
-    let m;
-    while ((m = rx.exec(RAW)) !== null) {
-        const body = m[0];
-        // Only process if it looks like a font entry (has 'file:' or 'path:')
-        if (!body.includes('file:') && !body.includes('path:')) continue;
-        const nameM    = body.match(/name:\s*"([^"]*)"/);
-        const fileM    = body.match(/file:\s*"([^"]*)"/);
-        const pathM    = body.match(/path:\s*"([^"]*)"/);
-        const prevM    = body.match(/preview:\s*"([^"]*)"/);
-        const dateM    = body.match(/dateAdded:\s*"([^"]*)"/);
-        const dnM      = body.match(/displayName:\s*"([^"]*)"/);
-        const catM     = body.match(/category:\s*(\[[^\]]*\]|"[^"]*")/);
-        if (!nameM || !fileM) continue;
-        let cats_arr = [];
-        if (catM) {
-            const cats_raw = catM[1].trim();
-            if (cats_raw.startsWith('[')) {
-                cats_arr = cats_raw.replace(/[\[\]"'\s]/g,'').split(',').filter(Boolean);
-            } else {
-                cats_arr = [cats_raw.replace(/["']/g,'').trim()];
-            }
-        }
-        fnts.push({
-            name:        nameM ? nameM[1] : '',
-            file:        fileM ? fileM[1] : '',
-            path:        pathM ? pathM[1] : (fileM ? `UniQaidarFonts/${fileM[1]}.ttf` : ''),
+    fnts = FONTS_RAW.map(function(f) {
+        const cats_arr = Array.isArray(f.category) ? f.category
+            : (f.category ? [f.category] : []);
+        return {
+            name:        f.name        || '',
+            file:        f.file        || f.name || '',
+            path:        f.path        || (f.file ? 'UniQaidarFonts/' + f.file + '.ttf' : ''),
             category:    cats_arr,
-            preview:     prevM ? prevM[1] : '',
-            dateAdded:   dateM ? dateM[1] : '',
-            displayName: dnM   ? dnM[1]   : ''
-        });
-    }
+            preview:     f.preview     || '',
+            dateAdded:   f.dateAdded   || '',
+            displayName: f.displayName || ''
+        };
+    });
 }
 
 function parseCats() {
@@ -1217,33 +1234,34 @@ async function saveCatName(idx) {
 
     let next = RAW.split(oldBtn).join(newBtn);
 
+    // Fix remaining filterFonts calls in index.html (button section) — safe globally
     if (idChanged) {
-        // FIX: Scope the ID replacement to the fonts array section only — not the whole file
-        // This prevents corrupting preview text, meta tags, or comments that contain the old ID
-        const fontsStart = next.indexOf('const fonts = [');
-        const fontsEnd   = next.indexOf('];', fontsStart) + 2;
-        if (fontsStart !== -1 && fontsEnd > fontsStart) {
-            let fontsPart = next.slice(fontsStart, fontsEnd)
-                .split(`"${oldId}"`).join(`"${newId}"`);
-            next = next.slice(0, fontsStart) + fontsPart + next.slice(fontsEnd);
-        }
-        // Also fix remaining filterFonts calls (filter buttons section) globally — these are safe
         next = next.split(`filterFonts('${oldId}',`).join(`filterFonts('${newId}',`);
     }
 
     alert2(al, 'سەیڤ دەکرێت بۆ GitHub...', 'inf');
-    const ok = await ghPut(next, `Rename: ${oldLabel}(${oldId}) → ${newLabel}(${newId})`);
 
-    if (ok) {
-        cats[idx].label = newLabel;
-        cats[idx].id    = newId;
-        buildCatPills();
-        buildCatList();
-        buildArcSel();
-        alert2(al, `✅ "${oldLabel}" → "${newLabel}" گۆڕدرا!`, 'ok');
-    } else {
-        alert2(al, '❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!', 'err');
+    // Save index.html (button labels / IDs)
+    const ok = await ghPut(next, `Rename cat: ${oldLabel}(${oldId}) → ${newLabel}(${newId})`);
+    if (!ok) return alert2(al, '❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!', 'err');
+
+    // If ID changed: also update fonts.json category arrays
+    if (idChanged && FONTS_RAW.length > 0) {
+        const updatedFonts = FONTS_RAW.map(f => {
+            const cats_arr = Array.isArray(f.category) ? f.category : [f.category];
+            const newCats  = cats_arr.map(c => c === oldId ? newId : c);
+            return Object.assign({}, f, { category: newCats });
+        });
+        const fontsOk = await ghPutFonts(updatedFonts, `Rename cat in fonts.json: ${oldId} → ${newId}`);
+        if (!fontsOk) alert2(al, '⚠️ index.html نوێکرایەوە بەڵام fonts.json نەنوێکرایەوە — دووبارە هەوڵ بدەرەوە!', 'err');
     }
+
+    cats[idx].label = newLabel;
+    cats[idx].id    = newId;
+    buildCatPills();
+    buildCatList();
+    buildArcSel();
+    alert2(al, `✅ "${oldLabel}" → "${newLabel}" گۆڕدرا!`, 'ok');
 }
 
 function buildArcSel() {
@@ -1453,7 +1471,7 @@ function clearFont() {
 async function addFont() {
     const filename = document.getElementById('f-select').value;
     const name     = filename ? filename.replace(/\.ttf$/i, '') : '';
-    const prev     = document.getElementById('f-prev').value.trim() || 'فۆنتەکانی یونی‌قەیدار - فۆنتی کوردی';
+    const prev     = document.getElementById('f-prev').value.trim() || 'فۆنتەکانی یونی\u200cقەیدار - فۆنتی کوردی';
     const date     = v('f-date').trim();
     const cats_v   = v('f-cats').trim();
     const displayName = v('f-displayname').trim();
@@ -1464,90 +1482,75 @@ async function addFont() {
     const catsArr = cats_v ? cats_v.split(',').filter(Boolean) : [];
     if (!catsArr.length) return alert2(al, '❌ کەمترین یەک کاتێگۆری هەڵبژێرە!', 'err');
 
-    const path   = `UniQaidarFonts/${filename}`;
+    const path = `UniQaidarFonts/${filename}`;
     if (fnts.find(f => f.path === path)) return alert2(al, `❌ "${name}" پێشتر زیادکراوە!`, 'err');
 
-    if (!RAW || RAW.length < 1000) return alert2(al, '❌ index.html بە ڕاستی بارنەکراوە. دووبارە پەیوەندی بکە!', 'err');
+    if (!RAW || RAW.length < 1000) return alert2(al, '❌ index.html بار نەکراوە. دووبارە پەیوەندی بکە!', 'err');
 
-    // ── Verify TTF file actually exists in the repo before saving ──
+    // ── Verify TTF exists in repo ──
     alert2(al, 'پشکنینی فایل لە GitHub...', 'inf');
     try {
         const checkRes = await fetch(
             `https://api.github.com/repos/${USER}/${REPO}/contents/UniQaidarFonts/${encodeURIComponent(filename)}`,
             { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
         );
-        if (!checkRes.ok) {
-            return alert2(al, `❌ فایلی "${filename}" لە GitHub نییە — تکایە پێشتر فایلەکە باربکە بۆ UniQaidarFonts/ فۆڵدەرەکە!`, 'err');
-        }
-    } catch(e) {
-        return alert2(al, `❌ نەتوانرا پشکنین بکرێت: ${e.message}`, 'err');
-    }
+        if (!checkRes.ok) return alert2(al, `❌ فایلی "${filename}" لە GitHub نییە!`, 'err');
+    } catch(e) { return alert2(al, `❌ پشکنین سەرنەکەوت: ${e.message}`, 'err'); }
 
-    const catStr  = catsArr.length === 1 ? `"${catsArr[0]}"` : `["${catsArr.join('","')}"]`;
-    const dateStr = date ? `, dateAdded: "${date}"` : '';
-    // Only write displayName if it differs from name (avoid redundancy)
-    const dnStr   = (displayName && displayName !== name) ? `, displayName: "${displayName}"` : '';
+    // ── Build entry object ──
+    const newEntry = { name, file: name, path, category: catsArr };
+    if (prev)                                newEntry.preview = prev;
+    if (date)                                newEntry.dateAdded = date;
+    if (displayName && displayName !== name) newEntry.displayName = displayName;
 
-    // ① Add @font-face inside <style> block
-    // FIX: Find the </style> that comes AFTER the last @font-face, not the first </style>
+    // ── ① Add @font-face to index.html ──
     let next = RAW;
     if (!next.includes(`font-family: '${name}'`)) {
-        // Find last @font-face block
         const lastFaceIdx = next.lastIndexOf('@font-face {');
         if (lastFaceIdx === -1) return alert2(al, '❌ @font-face لە <style> نەدۆزرایەوە!', 'err');
-        // Find the correct </style> after the last @font-face
         const styleClose = next.indexOf('</style>', lastFaceIdx);
         if (styleClose === -1) return alert2(al, '❌ </style> نەدۆزرایەوە!', 'err');
         const styleBlock = next.slice(0, styleClose);
         const li = styleBlock.lastIndexOf('@font-face {');
-        // FIX: Use bracket-depth counting to find the correct closing brace
-        let depth2 = 0, j = li;
+        let d2 = 0, j = li;
         while (j < styleBlock.length) {
-            if (styleBlock[j] === '{') depth2++;
-            else if (styleBlock[j] === '}') { depth2--; if (depth2 === 0) break; }
+            if (styleBlock[j] === '{') d2++;
+            else if (styleBlock[j] === '}') { d2--; if (d2 === 0) break; }
             j++;
         }
-        const closingBrace = j;
         const eol = next.includes('\r\n') ? '\r\n' : '\n';
-        const at = closingBrace + 1 + eol.length;
-        const faceDecl = `@font-face { font-family: '${name}'; src: url('${path}'); font-display: swap; }`;
-        next = next.slice(0, at) + faceDecl + eol + next.slice(at);
+        const at = j + 1 + eol.length;
+        next = next.slice(0, at) + `@font-face { font-family: '${name}'; src: url('${path}'); font-display: swap; }` + eol + next.slice(at);
     }
 
-    // ② Insert font entry at top of fonts array
-    const entry = `\n    { name: "${name}", file: "${name}", path: "${path}", category: ${catStr}, preview: "${prev}"${dateStr}${dnStr} },`;
-    let arrOpen = next.indexOf('const fonts = [\n');
-    if (arrOpen === -1) arrOpen = next.indexOf('const fonts = [,\n');
-    if (arrOpen === -1) return alert2(al, '❌ fonts array نەدۆزرایەوە!', 'err');
-    const arrInsert = next.indexOf('\n', arrOpen) + 1;
-    next = next.slice(0, arrInsert) + entry + next.slice(arrInsert);
-
-    // ③ Also insert into FONT_FILES so zip download stays in sync (if present)
-    const ffAnchor = 'const FONT_FILES = [';
-    const ffPos = next.indexOf(ffAnchor);
+    // ── ② Update FONT_FILES array in index.html ──
+    const ffPos = next.indexOf('const FONT_FILES = [');
     if (ffPos !== -1) {
         const encodedPath = `UniQaidarFonts/${filename.replace(/ /g,'%20')}`;
-        const ffEntry = `\n        "${encodedPath}",`;
         const ffInsert = next.indexOf('\n', ffPos) + 1;
         if (!next.includes(`"${encodedPath}"`)) {
-            next = next.slice(0, ffInsert) + ffEntry + next.slice(ffInsert);
+            next = next.slice(0, ffInsert) + `\n        "${encodedPath}",` + next.slice(ffInsert);
         }
     }
 
-    // ④ Safety check
-    if (!next.includes('<!DOCTYPE html>') || !next.includes(`"${name}"`)) {
-        return alert2(al, '❌ Safety check سەرنەکەوت — بۆ پاراستنی فایلەکەت هەڵوەشاندرایەوە!', 'err');
-    }
+    if (!next.includes('<!DOCTYPE html>')) return alert2(al, '❌ Safety check سەرنەکەوت!', 'err');
 
     alert2(al, 'پۆش دەکرێت بۆ GitHub...', 'inf');
-    const ok = await ghPut(next, `Add font: ${name}`);
-    if (ok) {
-        parseFonts(); buildCatPills(); renderArc(); renderArcFull();
-        alert2(al, `✅ "${name}" زیادکرا!`, 'ok');
-        clearFont();
-    } else {
-        alert2(al, '❌ پۆش سەرنەکەوت. تۆکێنەکەت بپشکنەوە!', 'err');
+
+    // ── ③ Save fonts.json ──
+    const newFontsArray = [newEntry, ...FONTS_RAW];
+    const fontsOk = await ghPutFonts(newFontsArray, `Add font: ${name}`);
+    if (!fontsOk) return alert2(al, '❌ پۆشکردنی fonts.json سەرنەکەوت!', 'err');
+
+    // ── ④ Save index.html (only if changed) ──
+    if (next !== RAW) {
+        const idxOk = await ghPut(next, `Add font @font-face: ${name}`);
+        if (!idxOk) alert2(al, '⚠️ fonts.json نوێکرایەوە بەڵام @font-face لە index.html نەسەیڤکرا!', 'err');
     }
+
+    parseFonts(); buildCatPills(); renderArc(); renderArcFull();
+    alert2(al, `✅ "${name}" زیادکرا!`, 'ok');
+    clearFont();
 }
 
 // ══════════════════════════════════════════
@@ -1600,29 +1603,43 @@ async function saveEditFont() {
     const cats_v      = v('edit-cats');
     const al          = document.getElementById('edit-alert');
 
-    const origFont = fnts.find(f=>f.name===origName);
-    if (!origFont) return alert2(al,'❌ فۆنت نەدۆزرایەوە!','err');
+    const origIdx = FONTS_RAW.findIndex(f => f.name === origName);
+    if (origIdx === -1) return alert2(al, '❌ فۆنت نەدۆزرایەوە!', 'err');
 
-    const catsArr = cats_v ? cats_v.split(',').filter(Boolean) : (Array.isArray(origFont.category)?origFont.category:[origFont.category]);
-    const catStr  = catsArr.length===1 ? `"${catsArr[0]}"` : `[${catsArr.map(c=>`"${c}"`).join(',')}]`;
-    const dateStr = date ? `, dateAdded: "${date}"` : '';
-    const dnStr   = (displayName && displayName !== name) ? `, displayName: "${displayName}"` : '';
-    const newEntry = `{ name: "${name}", file: "${file}", path: "${path}", category: ${catStr}, preview: "${preview}"${dateStr}${dnStr} }`;
+    const origFont = FONTS_RAW[origIdx];
+    const catsArr = cats_v ? cats_v.split(',').filter(Boolean)
+        : (Array.isArray(origFont.category) ? origFont.category : [origFont.category]);
 
-    const escapedName = origFont.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    const rx = new RegExp(`\\{\\s*name:\\s*"${escapedName}"[^}]+\\}`, '');
-    const next = RAW.replace(rx, newEntry);
-    if (next===RAW) return alert2(al,'❌ تۆمارەکەی فۆنت لە index.html نەدۆزرایەوە!','err');
+    const updatedEntry = { name, file, path, category: catsArr };
+    if (preview)                             updatedEntry.preview = preview;
+    if (date)                                updatedEntry.dateAdded = date;
+    if (displayName && displayName !== name) updatedEntry.displayName = displayName;
 
-    alert2(al,'سەیڤ دەکرێت...','inf');
-    const ok = await ghPut(next, `Edit font: ${name}`);
-    if (ok) {
-        parseFonts(); buildCatPills(); renderArc(); renderArcFull();
-        alert2(al,`✅ "${name}" نوێکرایەوە!`,'ok');
-        setTimeout(closeEditModal, 1200);
-    } else {
-        alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
+    // ── Update @font-face in index.html if name changed ──
+    let next = RAW;
+    if (name !== origName) {
+        const escapedOrig = origName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const faceRx = new RegExp(`(@font-face \\{ font-family: ')(${escapedOrig})('\\s*;)`, 'g');
+        next = next.replace(faceRx, `$1${name}$3`);
     }
+
+    // ── Save fonts.json ──
+    const newFontsArray = [...FONTS_RAW];
+    newFontsArray[origIdx] = updatedEntry;
+
+    alert2(al, 'سەیڤ دەکرێت...', 'inf');
+    const ok = await ghPutFonts(newFontsArray, `Edit font: ${name}`);
+    if (!ok) return alert2(al, '❌ سەیڤ سەرنەکەوت!', 'err');
+
+    // Save index.html if @font-face changed
+    if (next !== RAW) {
+        const idxOk = await ghPut(next, `Edit font @font-face: ${origName} → ${name}`);
+        if (!idxOk) alert2(al, '⚠️ fonts.json نوێکرایەوە بەڵام @font-face لە index.html نەسەیڤکرا!', 'err');
+    }
+
+    parseFonts(); buildCatPills(); renderArc(); renderArcFull();
+    alert2(al, `✅ "${name}" نوێکرایەوە!`, 'ok');
+    setTimeout(closeEditModal, 1200);
 }
 
 // ══════════════════════════════════════════
@@ -1630,30 +1647,38 @@ async function saveEditFont() {
 // ══════════════════════════════════════════
 async function deleteFont(i) {
     const f = fnts[i];
-    if (!confirm(`فۆنتی "${f.name}" بسڕێتەوە لە وێبسایت؟\n\nتێبینی: تەنها لە index.html دەسڕێتەوە. فایلی .ttf لە UniQaidarFonts/ لە GitHub دەمێنێتەوە.`)) return;
-    const escapedName = f.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    const rx = new RegExp(`[ \\t]*\\{\\s*name:\\s*"${escapedName}"[^}]+\\},?\\r?\\n?`, '');
-    let next = RAW.replace(rx, '');
-    if (next===RAW) return alert('❌ تۆمارەکەی فۆنت نەدۆزرایەوە!');
+    if (!confirm(`فۆنتی "${f.name}" بسڕێتەوە لە وێبسایت؟\n\nتێبینی: تەنها لە fonts.json دەسڕێتەوە. فایلی .ttf لە UniQaidarFonts/ لە GitHub دەمێنێتەوە.`)) return;
 
-    // Also remove the @font-face CSS declaration for this font
-    const faceRx = new RegExp(`@font-face \\{ font-family: '${escapedName}';[^}]+\\}[font-display: swap; ]*\\r?\\n?`, 'g');
-    next = next.replace(faceRx, '');
-    // Fallback pattern without font-display
-    const faceRx2 = new RegExp(`@font-face \\{ font-family: '${escapedName}'; src: url\\('[^']*'\\)[^}]*\\}\\r?\\n?`, 'g');
-    next = next.replace(faceRx2, '');
+    // ── Remove @font-face from index.html ──
+    let next = RAW;
+    const escapedName = f.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const faceRx  = new RegExp(`@font-face \\{ font-family: '${escapedName}';[^}]+font-display: swap; }\\r?\\n?`, 'g');
+    const faceRx2 = new RegExp(`@font-face \\{ font-family: '${escapedName}'; src: url\\('[^']*'\\)[^}]*}\\r?\\n?`, 'g');
+    next = next.replace(faceRx, '').replace(faceRx2, '');
 
-    // Also remove from FONT_FILES (keep zip download in sync)
-    const filename = (f.file || f.name) + '.ttf';
+    // ── Remove from FONT_FILES in index.html ──
+    const filename    = (f.file || f.name) + '.ttf';
     const encodedPath = `UniQaidarFonts/${filename.replace(/ /g,'%20')}`;
     const ffRx = new RegExp(`[ \\t]*"${encodedPath.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}",?\\r?\\n?`, '');
     next = next.replace(ffRx, '');
 
+    // ── Remove from fonts.json ──
+    const newFontsArray = FONTS_RAW.filter((_, idx) => idx !== i);
+
     showOverlay(`سڕینەوەی ${f.name}...`);
-    const ok = await ghPut(next, `Delete font: ${f.name}`);
+
+    // Save fonts.json
+    const fontsOk = await ghPutFonts(newFontsArray, `Delete font: ${f.name}`);
+    if (!fontsOk) { hideOverlay(); return alert('❌ سڕینەوەی fonts.json سەرنەکەوت!'); }
+
+    // Save index.html if changed
+    if (next !== RAW) {
+        const idxOk = await ghPut(next, `Delete font @font-face: ${f.name}`);
+        if (!idxOk) alert('⚠️ fonts.json نوێکرایەوە بەڵام @font-face لە index.html نەسڕایەوە — دووبارە هەوڵ بدەرەوە!');
+    }
+
     hideOverlay();
-    if (ok) { parseFonts(); renderArc(); renderArcFull(); }
-    else alert('❌ سڕینەوە سەرنەکەوت. تۆکێنەکەت بپشکنەوە!');
+    parseFonts(); renderArc(); renderArcFull();
 }
 
 // ══════════════════════════════════════════
