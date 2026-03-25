@@ -730,12 +730,14 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;">#</th>
-                <th style="padding:7px 10px;text-align:right;font-weight:normal;">وڵات</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">ژمارەی سەردان</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">دوایین سەردان</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortVtCountryBy('country')">وڵات ▼</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtCountryBy('count')">ژمارەی سەردان</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtCountryBy('last')">دوایین سەردان</th>
               </tr></thead>
               <tbody id="v-country-tbody"></tbody>
             </table>
+            <div id="v-country-footer" style="margin-top:8px;font-size:0.75rem;color:var(--muted);text-align:center;"></div>
+            <div id="v-country-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
 
           <!-- Full visit log -->
@@ -744,13 +746,14 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             <table style="width:100%;border-collapse:collapse;font-size:0.8rem;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;font-family:var(--mono);">#</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">وڵات</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">شار</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">بەروار — کات (سلێمانی)</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('country')">وڵات ▼</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('city')">شار</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('ts')">بەروار — کات (سلێمانی)</th>
               </tr></thead>
               <tbody id="v-log-tbody"></tbody>
             </table>
             <div id="v-log-footer" style="margin-top:8px;font-size:0.75rem;color:var(--muted);text-align:center;"></div>
+            <div id="v-log-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
         </div>
       </div>
@@ -799,20 +802,23 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
               </tr></thead>
               <tbody id="dl-font-tbody"></tbody>
             </table>
+            <div id="dl-font-footer" style="margin-top:8px;font-size:0.75rem;color:var(--muted);text-align:center;"></div>
+            <div id="dl-font-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
           <div class="section-label" style="margin-bottom:10px;">تەواوی ئەرشیفی داگرتنەکان</div>
           <div style="overflow-x:auto;">
             <table style="width:100%;border-collapse:collapse;font-size:0.8rem;min-width:520px;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;font-family:var(--mono);">#</th>
-                <th style="padding:7px 10px;text-align:right;font-weight:normal;">ناوی فۆنت</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">جۆر</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">وڵات</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">بەروار — کات (سلێمانی)</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('font')">ناوی فۆنت ▼</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('type')">جۆر</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('country')">وڵات</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('ts')">بەروار — کات (سلێمانی)</th>
               </tr></thead>
               <tbody id="dl-log-tbody"></tbody>
             </table>
             <div id="dl-log-footer" style="margin-top:8px;font-size:0.75rem;color:var(--muted);text-align:center;"></div>
+            <div id="dl-log-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
         </div>
       </div>
@@ -2162,6 +2168,52 @@ let DL_DATA = [], DL_SORT = 'count', DL_SORT_DIR = -1, DL_TIMER = null;
 let VT_DATA = [], VT_TIMER = null;
 let STATS_LOADED = false;
 
+// Pagination state for all 4 tables
+const PG = { vcountry:1, vlog:1, dlfont:1, dllog:1 };
+const PG_SIZE = 50;
+
+// Sort state for visit tables
+let VT_COUNTRY_SORT = 'count', VT_COUNTRY_DIR = -1;
+let VT_LOG_SORT = 'ts', VT_LOG_DIR = -1;
+let DL_LOG_SORT = 'ts', DL_LOG_DIR = -1;
+
+// Full country name resolver
+const _cnDisplay = typeof Intl !== 'undefined' && Intl.DisplayNames
+    ? new Intl.DisplayNames(['en'], { type: 'region' }) : null;
+function fullCountryName(code) {
+    if (!code || code === '?' || code === '—') return code || '—';
+    if (!_cnDisplay) return code;
+    try { const n = _cnDisplay.of(code.toUpperCase()); return (n && n !== code.toUpperCase()) ? n : code; }
+    catch(e) { return code; }
+}
+
+// Generic pagination bar renderer
+function renderPgBar(containerId, currentPage, total, perPage, onGo) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const totalPages = Math.ceil(total / perPage);
+    if (totalPages <= 1) { el.innerHTML = ''; return; }
+    el.innerHTML = '';
+    const mkBtn = (label, page, active, disabled) => {
+        const b = document.createElement('button');
+        b.textContent = label;
+        b.style.cssText = `padding:4px 10px;border-radius:6px;border:1px solid var(--border);cursor:${disabled?'not-allowed':'pointer'};font-size:0.76rem;font-family:var(--mono);background:${active?'var(--accent)':'var(--surface2)'};color:${active?'#fff':'var(--muted)'};opacity:${disabled?'0.4':'1'};`;
+        if (!disabled) b.onclick = () => onGo(page);
+        return b;
+    };
+    el.appendChild(mkBtn('‹', currentPage - 1, false, currentPage <= 1));
+    const lo = Math.max(1, currentPage - 2), hi = Math.min(totalPages, currentPage + 2);
+    if (lo > 1) { el.appendChild(mkBtn('1', 1, false, false)); if (lo > 2) { const sp = document.createElement('span'); sp.textContent = '…'; sp.style.cssText = 'color:var(--muted);font-size:0.75rem;padding:0 4px;'; el.appendChild(sp); } }
+    for (let p = lo; p <= hi; p++) el.appendChild(mkBtn(p, p, p === currentPage, false));
+    if (hi < totalPages) { if (hi < totalPages - 1) { const sp = document.createElement('span'); sp.textContent = '…'; sp.style.cssText = 'color:var(--muted);font-size:0.75rem;padding:0 4px;'; el.appendChild(sp); } el.appendChild(mkBtn(totalPages, totalPages, false, false)); }
+    el.appendChild(mkBtn('›', currentPage + 1, false, currentPage >= totalPages));
+    const info = document.createElement('span');
+    const from = (currentPage - 1) * perPage + 1, to = Math.min(currentPage * perPage, total);
+    info.textContent = `${from}–${to} / ${total}`;
+    info.style.cssText = 'color:var(--muted);font-size:0.74rem;font-family:var(--mono);margin-right:6px;';
+    el.appendChild(info);
+}
+
 // Always use the Cloudflare Pages URL for the API — admin.html may be served from GitHub Pages
 const STATS_API_BASE = 'https://uniqaidar.pages.dev';
 
@@ -2215,6 +2267,9 @@ function loadDlStats(force)    { loadAllStats(force); }
 function loadVisitStats(force) { loadAllStats(force); }
 
 // ── VISITS ──────────────────────────────
+function sortVtCountryBy(col) { if(VT_COUNTRY_SORT===col) VT_COUNTRY_DIR*=-1; else { VT_COUNTRY_SORT=col; VT_COUNTRY_DIR=-1; } PG.vcountry=1; renderVisitStats(); }
+function sortVtLogBy(col)     { if(VT_LOG_SORT===col)     VT_LOG_DIR*=-1;     else { VT_LOG_SORT=col;     VT_LOG_DIR=-1;     } PG.vlog=1;     renderVisitStats(); }
+
 function renderVisitStats() {
     const today = todaySUL();
     const month = thisMonthSUL();
@@ -2231,31 +2286,51 @@ function renderVisitStats() {
     });
     document.getElementById('v-countries').textContent = Object.keys(countryMap).length;
 
-    const tbody = document.getElementById('v-country-tbody');
-    const arr   = Object.entries(countryMap).sort((a,b)=>b[1].count-a[1].count).slice(0,30);
-    tbody.innerHTML = arr.length ? arr.map(([country,info],i)=>`
+    // ── Country summary table — sortable + paginated ──
+    let countryArr = Object.entries(countryMap).map(([code, info]) => ({ code, name: fullCountryName(code), count: info.count, last: info.last }));
+    countryArr.sort((a,b)=>{
+        let va = a[VT_COUNTRY_SORT]||'', vb = b[VT_COUNTRY_SORT]||'';
+        if (VT_COUNTRY_SORT==='count'){va=a.count;vb=b.count;}
+        return va<vb ? VT_COUNTRY_DIR : va>vb ? -VT_COUNTRY_DIR : 0;
+    });
+    const vcTotal = countryArr.length;
+    const vcPage  = PG.vcountry;
+    const vcSlice = countryArr.slice((vcPage-1)*PG_SIZE, vcPage*PG_SIZE);
+    const tbody   = document.getElementById('v-country-tbody');
+    tbody.innerHTML = vcSlice.length ? vcSlice.map((item,i)=>`
         <tr style="border-bottom:1px solid var(--border);" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
-            <td style="padding:7px 10px;color:var(--muted);font-family:var(--mono);font-size:0.75rem;">${i+1}</td>
-            <td style="padding:7px 10px;font-family:var(--mono);font-size:0.82rem;color:var(--green);">${country}</td>
-            <td style="padding:7px 10px;text-align:center;"><span style="background:var(--border);padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${info.count}</span></td>
-            <td style="padding:7px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${fmtSUL(info.last)}</td>
+            <td style="padding:7px 10px;color:var(--muted);font-family:var(--mono);font-size:0.75rem;">${(vcPage-1)*PG_SIZE+i+1}</td>
+            <td style="padding:7px 10px;font-size:0.82rem;color:var(--green);">${item.name} <span style="color:var(--muted);font-size:0.7rem;font-family:var(--mono);">(${item.code})</span></td>
+            <td style="padding:7px 10px;text-align:center;"><span style="background:var(--border);padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${item.count}</span></td>
+            <td style="padding:7px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${fmtSUL(item.last)}</td>
         </tr>`).join('')
     : '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ داتایەک نییە</td></tr>';
+    const vcFooter = document.getElementById('v-country-footer');
+    if (vcFooter) vcFooter.textContent = `کۆی ${vcTotal} وڵات`;
+    renderPgBar('v-country-pg', vcPage, vcTotal, PG_SIZE, (p)=>{ PG.vcountry=p; renderVisitStats(); });
 
-    // Full visit log — most recent first, capped at 200
-    const vtSorted = [...VT_DATA].sort((a,b)=>{ const ta=a.ts||a.date||''; const tb=b.ts||b.date||''; return tb>ta?1:tb<ta?-1:0; }).slice(0,200);
-    const ltbody = document.getElementById('v-log-tbody');
+    // ── Full visit log — sortable + paginated ──
+    const vtSorted = [...VT_DATA].sort((a,b)=>{
+        let va = (a[VT_LOG_SORT]||a.ts||a.date||''), vb = (b[VT_LOG_SORT]||b.ts||b.date||'');
+        if (VT_LOG_SORT==='country'){ va=fullCountryName(a.country||''); vb=fullCountryName(b.country||''); }
+        if (VT_LOG_SORT==='city')   { va=a.city||''; vb=b.city||''; }
+        return va<vb ? VT_LOG_DIR : va>vb ? -VT_LOG_DIR : 0;
+    });
+    const vlTotal = vtSorted.length;
+    const vlPage  = PG.vlog;
+    const vlSlice = vtSorted.slice((vlPage-1)*PG_SIZE, vlPage*PG_SIZE);
+    const ltbody  = document.getElementById('v-log-tbody');
     if (ltbody) {
         ltbody.innerHTML = '';
-        if (!vtSorted.length) {
+        if (!vlSlice.length) {
             ltbody.innerHTML = '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
         } else {
-            vtSorted.forEach((ev,i) => {
+            vlSlice.forEach((ev,i) => {
                 const tr = document.createElement('tr');
                 tr.style.cssText = 'border-bottom:1px solid var(--border);';
                 tr.innerHTML = `
-                    <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${i+1}</td>
-                    <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--green);">${ev.country||'—'}</td>
+                    <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${(vlPage-1)*PG_SIZE+i+1}</td>
+                    <td style="padding:6px 10px;text-align:center;font-size:0.75rem;color:var(--green);">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
                     <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);">${ev.city||'—'}</td>
                     <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
                 ltbody.appendChild(tr);
@@ -2263,7 +2338,8 @@ function renderVisitStats() {
         }
     }
     const vtFooter = document.getElementById('v-log-footer');
-    if (vtFooter) vtFooter.textContent = VT_DATA.length > 200 ? `نیشاندانی ٢٠٠ لە ${VT_DATA.length} تۆمارەوە` : `کۆی ${VT_DATA.length} تۆمار`;
+    if (vtFooter) vtFooter.textContent = `کۆی ${vlTotal} تۆمار`;
+    renderPgBar('v-log-pg', vlPage, vlTotal, PG_SIZE, (p)=>{ PG.vlog=p; renderVisitStats(); });
 }
 
 // ── DOWNLOADS ──────────────────────────
@@ -2309,12 +2385,13 @@ function getFilteredEvents() {
     });
 }
 
-function sortDlBy(col) { if(DL_SORT===col) DL_SORT_DIR*=-1; else { DL_SORT=col; DL_SORT_DIR=-1; } renderDlTable(); }
+function sortDlBy(col)    { if(DL_SORT===col) DL_SORT_DIR*=-1; else { DL_SORT=col; DL_SORT_DIR=-1; } PG.dlfont=1; renderDlTable(); }
+function sortDlLogBy(col) { if(DL_LOG_SORT===col) DL_LOG_DIR*=-1; else { DL_LOG_SORT=col; DL_LOG_DIR=-1; } PG.dllog=1; renderDlTable(); }
 
 function renderDlTable() {
     const filtered = getFilteredEvents();
 
-    // Per-font summary
+    // ── Per-font summary — sortable + paginated ──
     const fontMap = {};
     filtered.forEach(ev => {
         const k = ev.font||'?';
@@ -2328,31 +2405,30 @@ function renderDlTable() {
         return va<vb?DL_SORT_DIR:va>vb?-DL_SORT_DIR:0;
     });
 
+    const dfTotal = arr.length;
+    const dfPage  = PG.dlfont;
+    const dfSlice = arr.slice((dfPage-1)*PG_SIZE, dfPage*PG_SIZE);
+
     const ftbody = document.getElementById('dl-font-tbody');
     ftbody.innerHTML = '';
-    if (!arr.length) {
+    if (!dfSlice.length) {
         ftbody.innerHTML = '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ داگرتنێک نییە</td></tr>';
     } else {
-        arr.forEach((item,i) => {
+        dfSlice.forEach((item,i) => {
             const tr = document.createElement('tr');
             tr.style.cssText = 'border-bottom:1px solid var(--border);transition:background 0.15s;';
             tr.onmouseover = ()=>tr.style.background='var(--surface2)';
             tr.onmouseout  = ()=>tr.style.background='';
             const lastSUL = item.last ? fmtSUL(item.last) : '—';
-
-            // Determine the correct link based on download type / font name
             const isBulkEntry    = item.type==='bulk' || item.font.includes('داگرتنی تەواوی');
             const isCatBulkEntry = item.type==='cat-bulk' || item.font.includes('داگرتنی کاتێگۆری');
             let fontLink, linkLabel;
             if (isBulkEntry) {
-                // Bulk = link to main page with ?dm=1 to auto-open download modal
                 fontLink  = 'https://uniqaidar.pages.dev/?dm=1';
                 linkLabel = item.font + ' ⬇';
             } else if (isCatBulkEntry) {
-                // Category bulk: extract value after colon (may be ID like "Ali" or old label like "فۆنتەکانی عەلی")
                 const catMatch = item.font.match(/:\s*(.+?)\s*$/);
                 let catId = catMatch ? catMatch[1].trim() : '';
-                // If catId looks like a Kurdish label (not a short ASCII ID), try to resolve it via cats[]
                 if (catId && cats && cats.length) {
                     const byId    = cats.find(c => c.id.toLowerCase() === catId.toLowerCase());
                     const byLabel = cats.find(c => c.label.toLowerCase() === catId.toLowerCase());
@@ -2361,28 +2437,41 @@ function renderDlTable() {
                 fontLink  = catId ? `https://uniqaidar.pages.dev/?cat=${encodeURIComponent(catId)}` : 'https://uniqaidar.pages.dev/';
                 linkLabel = item.font + ' 📂';
             } else {
-                // Single font: link to font card via ?cat=All&font=...
                 fontLink  = `https://uniqaidar.pages.dev/?cat=All&font=${encodeURIComponent(item.font)}`;
                 linkLabel = item.font + ' 🔗';
             }
-
             tr.innerHTML = `
-                <td style="padding:8px 12px;color:var(--muted);font-family:var(--mono);font-size:0.75rem;">${i+1}</td>
+                <td style="padding:8px 12px;color:var(--muted);font-family:var(--mono);font-size:0.75rem;">${(dfPage-1)*PG_SIZE+i+1}</td>
                 <td style="padding:8px 12px;font-family:var(--mono);font-size:0.8rem;direction:ltr;"><a href="${fontLink}" target="_blank" style="color:var(--yellow);text-decoration:none;" title="کردنەوە لە وێبسایت">${linkLabel}</a></td>
                 <td style="padding:8px 12px;text-align:center;"><span style="background:${item.count>=5?'var(--green)':'var(--border)'};color:${item.count>=5?'#000':'var(--text)'};padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${item.count}</span></td>
                 <td style="padding:8px 12px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${lastSUL}</td>`;
             ftbody.appendChild(tr);
         });
     }
+    const dfFooter = document.getElementById('dl-font-footer');
+    if (dfFooter) dfFooter.textContent = `کۆی ${dfTotal} فۆنت`;
+    renderPgBar('dl-font-pg', dfPage, dfTotal, PG_SIZE, (p)=>{ PG.dlfont=p; renderDlTable(); });
 
-    // Full event log
-    const shown  = [...filtered].sort((a,b)=>{ const ta=a.ts||a.date||''; const tb=b.ts||b.date||''; return tb>ta?1:tb<ta?-1:0; }).slice(0,200);
+    // ── Full event log — sortable + paginated ──
+    const logSorted = [...filtered].sort((a,b)=>{
+        let va = '', vb = '';
+        if (DL_LOG_SORT==='ts')           { va=a.ts||a.date||''; vb=b.ts||b.date||''; }
+        else if (DL_LOG_SORT==='font')    { va=a.font||''; vb=b.font||''; }
+        else if (DL_LOG_SORT==='type')    { va=a.type||''; vb=b.type||''; }
+        else if (DL_LOG_SORT==='country') { va=fullCountryName(a.country||''); vb=fullCountryName(b.country||''); }
+        return va<vb ? DL_LOG_DIR : va>vb ? -DL_LOG_DIR : 0;
+    });
+
+    const dlTotal = logSorted.length;
+    const dlPage  = PG.dllog;
+    const dlSlice = logSorted.slice((dlPage-1)*PG_SIZE, dlPage*PG_SIZE);
+
     const ltbody = document.getElementById('dl-log-tbody');
     ltbody.innerHTML = '';
-    if (!shown.length) {
-        ltbody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
+    if (!dlSlice.length) {
+        ltbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
     } else {
-        shown.forEach((ev,i) => {
+        dlSlice.forEach((ev,i) => {
             const tr  = document.createElement('tr');
             tr.style.cssText = 'border-bottom:1px solid var(--border);';
             const isCatBulk = ev.type==='cat-bulk' || (ev.font||'').includes('داگرتنی کاتێگۆری');
@@ -2393,39 +2482,36 @@ function renderDlTable() {
                 ? '<span style="background:var(--green);color:#000;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تەواوی</span>'
                 : '<span style="background:var(--accent);color:#fff;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تاکە</span>';
             const evSUL = fmtSUL(ev.ts);
-
-            // Generate correct link per event type
             let evFontLink, evLinkIcon;
             if (isBulk) {
-                evFontLink  = 'https://uniqaidar.pages.dev/?dm=1';
-                evLinkIcon  = '⬇';
+                evFontLink = 'https://uniqaidar.pages.dev/?dm=1';
+                evLinkIcon = '⬇';
             } else if (isCatBulk) {
                 const catMatch = (ev.font||'').match(/:\s*(.+?)\s*$/);
                 let evCatId = catMatch ? catMatch[1].trim() : '';
-                // Resolve Kurdish label → category ID via cats[] if needed
                 if (evCatId && cats && cats.length) {
                     const byId    = cats.find(c => c.id.toLowerCase() === evCatId.toLowerCase());
                     const byLabel = cats.find(c => c.label.toLowerCase() === evCatId.toLowerCase());
                     evCatId = byId ? byId.id : (byLabel ? byLabel.id : evCatId);
                 }
-                evFontLink  = evCatId ? `https://uniqaidar.pages.dev/?cat=${encodeURIComponent(evCatId)}` : 'https://uniqaidar.pages.dev/';
-                evLinkIcon  = '📂';
+                evFontLink = evCatId ? `https://uniqaidar.pages.dev/?cat=${encodeURIComponent(evCatId)}` : 'https://uniqaidar.pages.dev/';
+                evLinkIcon = '📂';
             } else {
-                evFontLink  = `https://uniqaidar.pages.dev/?cat=All&font=${encodeURIComponent(ev.font||'')}`;
-                evLinkIcon  = '🔗';
+                evFontLink = `https://uniqaidar.pages.dev/?cat=All&font=${encodeURIComponent(ev.font||'')}`;
+                evLinkIcon = '🔗';
             }
-
             tr.innerHTML = `
-                <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${i+1}</td>
+                <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${(dlPage-1)*PG_SIZE+i+1}</td>
                 <td style="padding:6px 10px;font-family:var(--mono);font-size:0.78rem;direction:ltr;"><a href="${evFontLink}" target="_blank" style="color:var(--accent);text-decoration:none;">${ev.font||'?'} ${evLinkIcon}</a></td>
                 <td style="padding:6px 10px;text-align:center;">${lbl}</td>
-                <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);">${ev.country||'—'}</td>
+                <td style="padding:6px 10px;text-align:center;font-size:0.75rem;color:var(--green);">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
                 <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${evSUL}</td>`;
             ltbody.appendChild(tr);
         });
     }
-    const footer = document.getElementById('dl-log-footer');
-    if (footer) footer.textContent = filtered.length>200 ? `نیشاندانی ٢٠٠ لە ${filtered.length} تۆمارەوە` : `کۆی ${filtered.length} تۆمار`;
+    const dlFooter = document.getElementById('dl-log-footer');
+    if (dlFooter) dlFooter.textContent = `کۆی ${dlTotal} تۆمار`;
+    renderPgBar('dl-log-pg', dlPage, dlTotal, PG_SIZE, (p)=>{ PG.dllog=p; renderDlTable(); });
 }
 
 function clearDlFilters() {
@@ -2433,6 +2519,7 @@ function clearDlFilters() {
         const el = document.getElementById(id);
         if (el) el.value = el.tagName==='SELECT' ? 'all' : '';
     });
+    PG.dlfont = 1; PG.dllog = 1;
     renderDlTable();
 }
 
