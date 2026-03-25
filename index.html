@@ -1862,7 +1862,7 @@ function renderFonts(data, text, resetPage) {
 
         card.innerHTML =
             '<div class="card-header">' +
-                '<span class="card-eng-name">' + (isNew ? '<span class="new-badge">نوێ</span>' : '') + engName + '</span>' +
+                '<span class="card-eng-name">' + (font._featured ? '<span class="new-badge" style="background:#0070e4;margin-left:4px;">⭐ Featured</span>' : '') + (isNew && !font._featured ? '<span class="new-badge">نوێ</span>' : '') + engName + '</span>' +
                 (dateStr ? '<span class="card-date">&#128197; ' + dateStr + '</span>' : '') +
             '</div>' +
             '<div class="card-body">' +
@@ -2488,6 +2488,38 @@ async function loadFontsAndInit() {
         if (g) g.innerHTML = '<div style="color:#ff5700;text-align:center;padding:40px;direction:rtl;font-size:1rem;">⚠️ فۆنتەکان بارنەبوون. تکایە پەڕەکە نوێ بکەرەوە.</div>';
         return;
     }
+    // ── Dynamic SEO: if ?font=Name is in URL, update <title> & <meta description> ──────────────
+    (function() {
+        try {
+            var _seoParams = new URLSearchParams(window.location.search);
+            var _seoFont   = _seoParams.get('font');
+            if (_seoFont) {
+                // Find the font in the loaded array (case-insensitive fallback)
+                var _seoEntry = fonts.find(function(f) {
+                    return f.name === _seoFont || (f.displayName && f.displayName === _seoFont);
+                }) || fonts.find(function(f) {
+                    return f.name.toLowerCase() === _seoFont.toLowerCase();
+                });
+                if (_seoEntry) {
+                    var _seoName = _seoEntry.displayName || _seoEntry.name;
+                    // Update <title>
+                    document.title = 'Download ' + _seoName + ' - Free Kurdish Font | UniQaidar';
+                    // Update <meta name="description">
+                    var _seoMeta = document.querySelector('meta[name="description"]');
+                    if (_seoMeta) {
+                        _seoMeta.setAttribute('content',
+                            'Preview and download the ' + _seoName + ' Kurdish typeface for free on UniQaidar Fonts.');
+                    }
+                    // Bubble the featured font to the top of the fonts array so it renders first
+                    fonts = [_seoEntry].concat(fonts.filter(function(f) { return f !== _seoEntry; }));
+                    // Tag it so the card can display a "Featured" badge
+                    _seoEntry._featured = true;
+                }
+            }
+        } catch(_seoErr) { /* silent — never break page load */ }
+    })();
+    // ── END Dynamic SEO ──────────────────────────────────────────────────────────────────────────
+
     // ── original DOMContentLoaded body ──
 
     // Populate both dropdown panels from the hidden marquee-content (admin source of truth)

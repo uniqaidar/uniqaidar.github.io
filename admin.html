@@ -645,6 +645,24 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 </div>
             </div>
         </div>
+
+        <!-- ── Sitemap Generator Box ── -->
+        <div class="box" style="margin-top:18px;">
+            <div class="box-header"><div class="dot" style="background:var(--accent)"></div> 🗺 Sitemap.xml — نوێکردنەوەی ئۆتۆماتیکی</div>
+            <div class="box-body">
+                <p style="font-size:0.83rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
+                    sitemap.xml بەخۆی نوێ دەکرێتەوە کاتێک فۆنتێک زیاد یان سڕایەوە.<br>
+                    ئەمەش دەتوانیت بە دەستی بکەیت بەکلیکی دوگمەی خوارەوە.
+                </p>
+                <div style="font-size:0.78rem;color:var(--muted);font-family:var(--mono);margin-bottom:12px;">
+                    کۆی URL: <strong>1 Home + <span id="sitemap-cat-count">—</span> کاتێگۆری + <span id="sitemap-font-count">—</span> فۆنت</strong>
+                </div>
+                <div id="sitemap-alert" class="alert"></div>
+                <div class="btn-row">
+                    <button class="btn btn-primary" onclick="regenerateSitemapManual()" id="sitemap-btn">🗺 دروستکردن و پۆشکردنی sitemap.xml</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- ══════════════════════════════════════════════════════ -->
@@ -882,6 +900,9 @@ let SHA='', RAW='', fnts=[], cats=[], ready=false;
 // ── fonts.json state ──
 const FONTS_FILE = 'fonts.json';
 let FONTS_SHA = '', FONTS_RAW = [];
+// ── sitemap.xml state ──
+const SITEMAP_FILE = 'sitemap.xml';
+let SITEMAP_SHA = '';
 
 const LS_KEY = 'uqadmin_cfg';
 
@@ -1020,6 +1041,116 @@ async function ghPutFonts(fontsArray, message) {
     return true;
 }
 
+// ══════════════════════════════════════════
+// GitHub API — sitemap.xml
+// ══════════════════════════════════════════
+async function ghGetSitemapSha() {
+    try {
+        const r = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/${SITEMAP_FILE}?ref=${BRANCH}`,
+            { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+        );
+        if (!r.ok) return '';
+        const d = await r.json();
+        SITEMAP_SHA = d.sha || '';
+        return SITEMAP_SHA;
+    } catch(e) { return ''; }
+}
+
+async function ghPutSitemap(xmlContent, message) {
+    // Always fetch the latest SHA before writing to avoid conflicts
+    if (!SITEMAP_SHA) await ghGetSitemapSha();
+    const body = JSON.stringify({
+        message,
+        content: btoa(unescape(encodeURIComponent(xmlContent))),
+        sha: SITEMAP_SHA || undefined,
+        branch: BRANCH
+    });
+    const r = await fetch(
+        `https://api.github.com/repos/${USER}/${REPO}/contents/${SITEMAP_FILE}`,
+        { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body }
+    );
+    if (!r.ok) return false;
+    const d = await r.json();
+    SITEMAP_SHA = d.content.sha;
+    return true;
+}
+
+// ══════════════════════════════════════════
+// Sitemap Generator
+// ══════════════════════════════════════════
+function buildSitemapXml(fontsArray) {
+    const BASE = 'https://uniqaidar.pages.dev/';
+    const today = new Date().toISOString().slice(0, 10);
+
+    // Collect all unique categories from the live fonts array
+    const catSet = new Set();
+    fontsArray.forEach(function(f) {
+        const arr = Array.isArray(f.category) ? f.category : (f.category ? [f.category] : []);
+        arr.forEach(function(c) { if (c) catSet.add(c); });
+    });
+    // Always include "All" at the top
+    const categories = ['All', ...Array.from(catSet).filter(c => c !== 'All').sort()];
+
+    const enc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n\n';
+
+    // Home
+    xml += '  <!-- Home Page -->\n';
+    xml += '  <url>\n';
+    xml += `    <loc>${BASE}</loc>\n`;
+    xml += `    <lastmod>${today}</lastmod>\n`;
+    xml += '    <changefreq>daily</changefreq>\n';
+    xml += '    <priority>1.00</priority>\n';
+    xml += '  </url>\n\n';
+
+    // Categories
+    xml += '  <!-- Category Pages -->\n';
+    categories.forEach(function(cat) {
+        const url = BASE + '?cat=' + encodeURIComponent(cat);
+        xml += `  <url><loc>${enc(url)}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.80</priority></url>\n`;
+    });
+    xml += '\n';
+
+    // Individual fonts
+    xml += '  <!-- Individual Font Pages -->\n';
+    fontsArray.forEach(function(font) {
+        const name = font.name || '';
+        if (!name) return;
+        const url = BASE + '?font=' + encodeURIComponent(name);
+        const lastmod = (font.dateAdded || today).trim();
+        xml += `  <url><loc>${enc(url)}</loc><lastmod>${lastmod}</lastmod><changefreq>monthly</changefreq><priority>0.60</priority></url>\n`;
+    });
+
+    xml += '\n</urlset>';
+    return xml;
+}
+
+async function generateAndPushSitemap(fontsArray, triggerMsg) {
+    if (!TOKEN || !USER || !REPO) return false; // not connected
+    const xml = buildSitemapXml(fontsArray);
+    const msg = triggerMsg || 'Auto-update sitemap.xml';
+    const ok = await ghPutSitemap(xml, msg);
+    return ok;
+}
+
+// Manual trigger from SEO tab UI
+async function regenerateSitemapManual() {
+    const al = document.getElementById('sitemap-alert');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە پەیوەندی بکە بە GitHub پێش ئەم کارە!', 'err');
+    if (!FONTS_RAW || FONTS_RAW.length === 0) return alert2(al, '❌ fonts.json بارنەکراوە — دووبارە پەیوەندی بکە.', 'err');
+    alert2(al, '⏳ Sitemap دروست دەکرێت و پۆش دەکرێت...', 'inf');
+    const ok = await generateAndPushSitemap(FONTS_RAW, 'Manual sitemap regeneration');
+    if (ok) {
+        const total = 1 + new Set(['All', ...FONTS_RAW.flatMap(f => Array.isArray(f.category) ? f.category : [f.category || ''])].filter(Boolean)).size + FONTS_RAW.length;
+        alert2(al, `✅ sitemap.xml نوێکرایەوە! کۆی URL: ${total}`, 'ok');
+    } else {
+        alert2(al, '❌ پۆشکردنی sitemap.xml سەرنەکەوت — دووبارە هەوڵ بدەرەوە.', 'err');
+    }
+}
+
 
 async function loadIndex() {
     try {
@@ -1047,8 +1178,26 @@ async function loadIndex() {
         renderArc();
         renderArcFull();
         buildInterfaceFontSelect();
+        // ── Prefetch sitemap SHA (background — non-blocking) ──
+        ghGetSitemapSha();
+        // ── Update sitemap counter display in SEO tab ──
+        updateSitemapCounters();
         return true;
     } catch(e){ console.error(e); return false; }
+}
+
+function updateSitemapCounters() {
+    try {
+        const catSet = new Set(['All']);
+        FONTS_RAW.forEach(function(f) {
+            const arr = Array.isArray(f.category) ? f.category : (f.category ? [f.category] : []);
+            arr.forEach(function(c) { if (c) catSet.add(c); });
+        });
+        const catEl  = document.getElementById('sitemap-cat-count');
+        const fontEl = document.getElementById('sitemap-font-count');
+        if (catEl)  catEl.textContent  = catSet.size;
+        if (fontEl) fontEl.textContent = FONTS_RAW.length;
+    } catch(e) {}
 }
 
 // ══════════════════════════════════════════
@@ -1551,11 +1700,9 @@ async function addFont() {
     parseFonts(); buildCatPills(); renderArc(); renderArcFull();
     alert2(al, `✅ "${name}" زیادکرا!`, 'ok');
     clearFont();
+    // ── Auto-update sitemap.xml ──
+    generateAndPushSitemap(newFontsArray, `Sitemap update: add font ${name}`);
 }
-
-// ══════════════════════════════════════════
-// Edit Font Modal
-// ══════════════════════════════════════════
 function openEdit(i) {
     const f = fnts[i];
     set('edit-orig-name', f.name);
@@ -1679,6 +1826,8 @@ async function deleteFont(i) {
 
     hideOverlay();
     parseFonts(); renderArc(); renderArcFull();
+    // ── Auto-update sitemap.xml ──
+    generateAndPushSitemap(newFontsArray, `Sitemap update: delete font ${f.name}`);
 }
 
 // ══════════════════════════════════════════
