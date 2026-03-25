@@ -246,6 +246,70 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
 }
+/* ── Featured font: neon laser-beam border ── */
+@property --laser-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+@keyframes laserSpin {
+    to { --laser-angle: 360deg; }
+}
+@-webkit-keyframes laserSpinFallback {
+    0%   { border-color: #0984e3; box-shadow: 0 0 8px 2px #0984e3, 0 0 18px 4px #00d2ff44; }
+    25%  { border-color: #00d2ff; box-shadow: 0 0 8px 2px #00d2ff, 0 0 18px 4px #0984e344; }
+    50%  { border-color: #0984e3; box-shadow: 0 0 8px 2px #0984e3, 0 0 18px 4px #00d2ff44; }
+    75%  { border-color: #00d2ff; box-shadow: 0 0 8px 2px #00d2ff, 0 0 18px 4px #0984e344; }
+    100% { border-color: #0984e3; box-shadow: 0 0 8px 2px #0984e3, 0 0 18px 4px #00d2ff44; }
+}
+@keyframes laserSpinFallback {
+    0%   { border-color: #0984e3; box-shadow: 0 0 8px 2px #0984e3, 0 0 18px 4px #00d2ff44; }
+    25%  { border-color: #00d2ff; box-shadow: 0 0 8px 2px #00d2ff, 0 0 18px 4px #0984e344; }
+    50%  { border-color: #0984e3; box-shadow: 0 0 8px 2px #0984e3, 0 0 18px 4px #00d2ff44; }
+    75%  { border-color: #00d2ff; box-shadow: 0 0 8px 2px #00d2ff, 0 0 18px 4px #0984e344; }
+    100% { border-color: #0984e3; box-shadow: 0 0 8px 2px #0984e3, 0 0 18px 4px #00d2ff44; }
+}
+.featured-laser-glow {
+    /* Layer 1: rotating conic-gradient beam (Chromium 111+) */
+    border: 2px solid transparent !important;
+    background-clip: padding-box !important;
+    -webkit-background-clip: padding-box !important;
+    position: relative;
+    z-index: 0;
+}
+.featured-laser-glow::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: conic-gradient(
+        from var(--laser-angle),
+        #00d2ff 0deg,
+        #0984e3 60deg,
+        #00d2ff 120deg,
+        transparent 160deg,
+        transparent 340deg,
+        #00d2ff 360deg
+    );
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: laserSpin 1.8s linear infinite;
+    z-index: -1;
+    pointer-events: none;
+}
+/* Fallback for browsers without @property (Safari < 16.4, Firefox < 117) */
+@supports not (background: conic-gradient(from 1deg, red, blue)) {
+    .featured-laser-glow {
+        border: 2px solid #0984e3 !important;
+        animation: laserSpinFallback 1.8s linear infinite !important;
+    }
+    .featured-laser-glow::before { display: none; }
+}
+/* ── END laser glow ── */
 .card-header {
     background: #dde3ea;
     padding: 12px 16px;
@@ -1862,7 +1926,7 @@ function renderFonts(data, text, resetPage) {
 
         card.innerHTML =
             '<div class="card-header">' +
-                '<span class="card-eng-name">' + (font._featured ? '<span class="new-badge" style="background:#0070e4;margin-left:4px;">⭐ Featured</span>' : '') + (isNew && !font._featured ? '<span class="new-badge">نوێ</span>' : '') + engName + '</span>' +
+                '<span class="card-eng-name">' + (isNew ? '<span class="new-badge">نوێ</span>' : '') + engName + '</span>' +
                 (dateStr ? '<span class="card-date">&#128197; ' + dateStr + '</span>' : '') +
             '</div>' +
             '<div class="card-body">' +
@@ -1881,6 +1945,13 @@ function renderFonts(data, text, resetPage) {
         card.classList.add('animate-in');
         card.style.animationDelay = (cardIndex * stagger) + 'ms';
         card.style.webkitAnimationDelay = (cardIndex * stagger) + 'ms';
+        // ── Laser glow for featured (no badge — pure visual border) ──
+        if (font._featured) {
+            card.classList.add('featured-laser-glow');
+            setTimeout(function() {
+                card.classList.remove('featured-laser-glow');
+            }, 600000); // 10 minutes
+        }
         grid.appendChild(card);
     });
 
@@ -2512,7 +2583,7 @@ async function loadFontsAndInit() {
                     }
                     // Bubble the featured font to the top of the fonts array so it renders first
                     fonts = [_seoEntry].concat(fonts.filter(function(f) { return f !== _seoEntry; }));
-                    // Tag it so the card can display a "Featured" badge
+                    // Tag it so the card receives the laser-glow border in renderFonts()
                     _seoEntry._featured = true;
                 }
             }
