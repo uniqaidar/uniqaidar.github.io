@@ -294,7 +294,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
     -webkit-mask-composite: xor;
             mask-composite: exclude;
     padding: 3px;
-    animation: laserRotate 2s linear infinite;
+    animation: laserRotate 5s linear infinite;
     pointer-events: none;
     z-index: 1;
 }
@@ -322,7 +322,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
     -webkit-mask-composite: xor;
             mask-composite: exclude;
     padding: 3px;
-    animation: laserRotate 2s linear infinite;
+    animation: laserRotate 5s linear infinite;
     pointer-events: none;
     z-index: 2;
     /* Outward glow — this is the "light" that radiates from the spot */
@@ -367,6 +367,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
     padding: 18px 22px 22px;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
         .preview {
             font-size: 2rem;
@@ -376,7 +377,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
         }
 
         .download-btn {
-            background: #0066cc;
+            background: #0044aa;
             color: white;
             text-decoration: none;
             text-align: center;
@@ -391,10 +392,24 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
             overflow: hidden;
             text-overflow: ellipsis;
             font-size: clamp(0.72rem, 2.5vw, 1rem);
+            position: relative;
+        }
+        .download-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,210,255,0.55), transparent);
+            animation: liquidSweepBlue 2.4s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes liquidSweepBlue {
+            0%   { left: -60%; }
+            60%  { left: 130%; }
+            100% { left: 130%; }
         }
         .download-btn:hover,
         .download-btn:active {
-            background: #0052a3;
+            background: #003399;
         }
 
 /* CSS Fonts */
@@ -1271,8 +1286,8 @@ a:active, button:active {
 .copy-cat-btn:hover, .copy-cat-btn:active { background: rgba(0,112,228,1); }
 .copy-cat-btn.copied { background: #cc4400; }
 .card-copy-btn {
-    position: static;
-    background: #ff5700;
+    position: relative;
+    background: #e04500;
     border: none;
     cursor: pointer;
     font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif !important;
@@ -1292,9 +1307,23 @@ a:active, button:active {
     overflow: hidden;
     flex-shrink: 0;
 }
+.card-copy-btn::after {
+    content: '';
+    position: absolute;
+    top: 0; right: -100%; width: 60%; height: 100%;
+    background: linear-gradient(270deg, transparent, rgba(255,255,255,0.55), transparent);
+    animation: liquidSweepOrange 2.4s ease-in-out infinite;
+    animation-delay: 1.2s;
+    pointer-events: none;
+}
+@keyframes liquidSweepOrange {
+    0%   { right: -60%; }
+    60%  { right: 130%; }
+    100% { right: 130%; }
+}
 .card-copy-btn span { display:flex; align-items:center; justify-content:center; width:100%; height:100%; }
-.card-copy-btn:hover, .card-copy-btn:active { background: #e04d00; }
-.card-copy-btn.copied { background: #cc4400; }
+.card-copy-btn:hover, .card-copy-btn:active { background: #cc3d00; }
+.card-copy-btn.copied { background: #bb3500; }
 .card-header { position: relative; }
 .download-btn-wrap {
     display: flex;
@@ -1517,6 +1546,141 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     .card-header { background: #eee !important; }
 }
 
+
+/* ══ Trinity button bar ══ */
+@keyframes liqLeft  { 0%{left:-60%} 60%{left:130%} 100%{left:130%} }
+@keyframes liqRight { 0%{right:-60%} 60%{right:130%} 100%{right:130%} }
+
+.download-btn-wrap {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    margin-top: 10px !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    gap: 0 !important;
+}
+/* LEFT (RTL: visually leftmost end) — Blue download */
+.trinity-dl {
+    flex: 1;
+    background: #0984e3;
+    color: #fff;
+    text-decoration: none;
+    text-align: center;
+    padding: 13px 10px;
+    border-radius: 0 12px 12px 0;
+    font-weight: bold;
+    font-size: clamp(0.72rem,2.5vw,1rem);
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: background .2s;
+    clip-path: inset(0 0 0 0 round 0 12px 12px 0);
+}
+.trinity-dl::after {
+    content:''; position:absolute; top:0; left:-60%; width:60%; height:100%;
+    background: linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
+    animation: liqLeft 2.4s ease-in-out infinite;
+    pointer-events: none;
+}
+.trinity-dl:hover,.trinity-dl:active { background:#0773c5; }
+
+/* MIDDLE — Deep Purple para toggle */
+.trinity-para {
+    background: #055a9e;
+    color: #fff;
+    border: none;
+    border-radius: 0 !important;
+    cursor: pointer;
+    width: 44px;
+    min-width: 44px;
+    align-self: stretch;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+    transition: background .2s;
+    flex-shrink: 0;
+    clip-path: none !important;
+}
+.trinity-para::after {
+    content:''; position:absolute; top:0; left:-60%; width:60%; height:100%;
+    background: linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
+    animation: liqLeft 2.4s ease-in-out infinite;
+    animation-delay: .8s;
+    pointer-events: none;
+}
+.trinity-para:hover,.trinity-para:active { background:#044d8a; }
+.trinity-para.active { background:#0366a7; }
+
+/* RIGHT (RTL: visually rightmost end) — Orange copy link */
+.trinity-copy {
+    background: #ff5e00;
+    color: #fff;
+    border: none;
+    border-radius: 12px 0 0 12px;
+    cursor: pointer;
+    width: 44px;
+    min-width: 44px;
+    align-self: stretch;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+    transition: background .2s;
+    flex-shrink: 0;
+    clip-path: inset(0 0 0 0 round 12px 0 0 12px);
+}
+.trinity-copy::after {
+    content:''; position:absolute; top:0; right:-60%; width:60%; height:100%;
+    background: linear-gradient(270deg,transparent,rgba(255,255,255,.45),transparent);
+    animation: liqRight 2.4s ease-in-out infinite;
+    animation-delay: 1.6s;
+    pointer-events: none;
+}
+.trinity-copy:hover,.trinity-copy:active { background:#cc4e00; }
+.trinity-copy.copied { background:#bb3500; }
+
+/* ══ Task 6: liquidSweep on header download btn + category banner ══ */
+#downloadModalBtn { position:relative; overflow:hidden; }
+#downloadModalBtn::after {
+    content:''; position:absolute; top:0; left:-60%; width:60%; height:100%;
+    background: linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
+    animation: liqLeft 2.4s ease-in-out infinite;
+    pointer-events:none;
+}
+#cat-dl-btn, #cat-dl-btn-mobile { position:relative; overflow:hidden; }
+#cat-dl-btn::after, #cat-dl-btn-mobile::after {
+    content:''; position:absolute; top:0; left:-60%; width:60%; height:100%;
+    background: linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
+    animation: liqLeft 2.4s ease-in-out infinite;
+    animation-delay: .4s;
+    pointer-events:none;
+}
+/* ── Trending sort bar ── */
+.tsort-btn {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #ccc;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+    white-space: nowrap;
+}
+.tsort-btn:hover { background: rgba(255,87,0,0.2); border-color: #ff5700; color:#fff; }
+.tsort-btn.active { background: #ff5700; border-color:#ff5700; color:#fff; font-weight:bold; }
+
     </style>
 </head>
 <body style="min-height:100vh;display:flex;flex-direction:column;">
@@ -1604,6 +1768,117 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     0%   { width: 0%; }
     60%  { width: 75%; }
     100% { width: 100%; }
+}
+
+/* ── Paragraph toggle button ── */
+.para-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+    padding: 0;
+    flex-shrink: 0;
+    vertical-align: middle;
+    color: #888;               /* Grey in light mode */
+    position: absolute;
+    top: 8px;
+    left: 8px;                 /* top-right of RTL box = left in CSS */
+    z-index: 2;
+}
+.para-toggle-btn:hover, .para-toggle-btn:active {
+    background: rgba(0,119,255,0.1);
+    color: #0077ff;
+    transform: scale(1.1);
+}
+.para-toggle-btn.active {
+    background: rgba(0,119,255,0.12);
+    color: #0077ff;            /* Blue when active */
+}
+body.dark-mode .para-toggle-btn {
+    color: #ffffff;            /* White in dark mode */
+    background: transparent;
+}
+body.dark-mode .para-toggle-btn:hover,
+body.dark-mode .para-toggle-btn:active {
+    background: rgba(0,119,255,0.2);
+    color: #4da3ff;
+}
+body.dark-mode .para-toggle-btn.active {
+    background: rgba(0,119,255,0.2);
+    color: #4da3ff;
+}
+/* Paragraph preview text styling */
+.preview.para-mode {
+    text-align: justify !important;
+    text-justify: inter-word !important;
+    text-align-last: start !important;
+    direction: rtl !important;
+    line-height: var(--para-line-height, 2) !important;
+}
+
+/* ── Animated gradient card backgrounds ── */
+@keyframes cardGradientLight {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+@keyframes cardGradientDark {
+    0%   { background-position: 0% 50%; }
+    33%  { background-position: 100% 0%; }
+    66%  { background-position: 50% 100%; }
+    100% { background-position: 0% 50%; }
+}
+/* Gradient base applied to card directly — does NOT use `animation` shorthand
+   to avoid overriding the `.card.animate-in` entry animation */
+/* HIGH-VISIBILITY gradient — 400% size so color flow is clearly noticeable */
+/* Light Mode: Soft Sky Blue + Pale Lavender + White */
+.card {
+    background: linear-gradient(135deg, #e0f2fe, #ffffff, #f5f3ff, #ffffff, #e0f2fe) !important;
+    background-size: 400% 400% !important;
+    animation-name: cardGradientLight !important;
+    animation-duration: 10s !important;
+    animation-timing-function: ease !important;
+    animation-iteration-count: infinite !important;
+}
+/* animate-in OVERRIDES the gradient animation temporarily with the fade-in */
+.card.animate-in {
+    opacity: 0;
+    animation-name: cardFadeIn, cardGradientLight !important;
+    animation-duration: 0.4s, 10s !important;
+    animation-timing-function: ease, ease !important;
+    animation-iteration-count: 1, infinite !important;
+    animation-fill-mode: both, none !important;
+}
+/* DARK MODE: Rich dark charcoal with subtle deep teal and midnight blue — slow, atmospheric flow */
+body.dark-mode .card {
+    background: linear-gradient(135deg, #0d1117, #161b22, #0d2137, #111827, #0d1117) !important;
+    background-size: 400% 400% !important;
+    animation-name: cardGradientDark !important;
+    animation-duration: 14s !important;
+    animation-timing-function: ease-in-out !important;
+    animation-iteration-count: infinite !important;
+    border-color: #1e3a5f !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.6), 0 0 0 1px rgba(30,58,95,0.3) !important;
+}
+body.dark-mode .card.animate-in {
+    animation-name: cardFadeIn, cardGradientDark !important;
+    animation-duration: 0.4s, 14s !important;
+    animation-timing-function: ease, ease-in-out !important;
+    animation-iteration-count: 1, infinite !important;
+    animation-fill-mode: both, none !important;
+}
+body.dark-mode .card-header {
+    background: rgba(255,255,255,0.04) !important;
+    border-bottom-color: #1e293b !important;
+}
+body.dark-mode .card-body {
+    background: transparent !important;
 }
 </style>
 
@@ -1721,6 +1996,7 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     <div style="display:none" aria-hidden="true">
         <div class="marquee-content">
             <button class="filter-btn" onclick="filterFonts('Nwe', this)">نوێترین فۆنت</button>
+            <button class="filter-btn" onclick="filterFonts('Trending', this)">🔥 زۆرترین داونلۆکراوەکان</button>
             <button class="filter-btn" onclick="filterFonts('All', this)">هەموو فۆنتەکان</button>
             <button class="filter-btn" onclick="filterFonts('Taybat', this)">فۆنتی تایبەت</button>
             <button class="filter-btn" onclick="filterFonts('Kanal', this)">فۆنتی کەناڵ و دەزگاکان</button>
@@ -1797,6 +2073,7 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
         border-radius:12px;padding:3px 10px;cursor:pointer;font-size:0.75rem;">ڕیسێت</button>
 </div>
 
+<!-- Trending sort bar removed per update — category now auto-sorted by Cloudflare download stats -->
 <!-- Hidden marker for admin panel to read/write category download button label -->
 <span id="cat-download-btn-label" style="display:none">داگرتنی تەواوی فۆنتەکانی ئەم بەشە</span>
 
@@ -1821,9 +2098,9 @@ let fonts = []; // loaded async from fonts.json
 function changeFontSize(val) {
     document.getElementById('size-label').textContent = val + 'px';
     document.querySelectorAll('.preview').forEach(function(p) {
+        // Update ALL previews — headline and paragraph mode both scale with slider
         p.style.fontSize = val + 'px';
     });
-    // Persist slider value across session
     try { sessionStorage.setItem('uq_fontsize', val); } catch(e) {}
 }
 
@@ -1848,6 +2125,7 @@ var FONTS_PER_PAGE = 50; // admin:perpage
 var _currentPage   = 1;
 var _filteredFonts = [];   // full filtered list for current category
 var _currentCatId  = '';   // current active category ID
+var _trendingSort  = 'rank'; // 'rank' | 'name' | 'date' — sort for Trending category
 var _uqInitDone    = false; // true after applyUrlParams — suppresses replaceState during init
 
 // ── ئەستێنەری داگرتن: تۆمارکردنی داگرتن بۆ Google Analytics ──
@@ -1917,6 +2195,7 @@ function renderFonts(data, text, resetPage) {
     var currentSize = document.getElementById('font-size-slider') ? document.getElementById('font-size-slider').value : '32';
 
     pageData.forEach(function(font, cardIndex) {
+        try {
         const card = document.createElement('div');
         card.className = 'card';
         const engName = font.displayName || font.name;
@@ -1957,10 +2236,20 @@ function renderFonts(data, text, resetPage) {
                     (text || font.preview || 'فۆنتەکانی یونی‌قەیدار') +
                 '</div>' +
                 '<div class="download-btn-wrap">' +
-                    '<a href="' + font.path + '" class="download-btn" download data-font="' + font.name + '" aria-label="داگرتنی فۆنت ' + font.name.replace(/"/g,'') + '" onclick="trackFontDownload(\'' + font.name.replace(/'/g,"\\'") + '\',\'single\')">دابە‌زاندنی فۆنت TTF</a>' +
+                    '<a href="' + font.path + '" class="trinity-dl" download data-font="' + font.name + '" aria-label="داگرتنی فۆنت" onclick="trackFontDownload(\'' + font.name.replace(/'/g,"\\'") + '\',\'single\')">دابە‌زاندنی فۆنت TTF</a>' +
+                    '<button class="trinity-para" title="دەقی پەرەگراف" aria-label="دەقی پەرەگراف" onclick="toggleParaPreview(this,\'' + font.name.replace(/'/g, "\\'") + '\')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="10" x2="8" y2="10"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="10" y2="18"/></svg></button>' +
+                    '<button class="trinity-copy" title="کۆپیکردنی لینک" aria-label="کۆپیکردنی لینکی فۆنت"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>' +
                 '</div>' +
             '</div>';
-        card.querySelector('.download-btn-wrap').append(copyBtn);
+        // Wire trinity-copy click
+        (function(copyBtn, f) {
+            copyBtn.addEventListener('click', function() {
+                var fontCats = Array.isArray(f.category) ? f.category : (f.category ? [f.category] : []);
+                var activeLower = (_currentCatId || '').toLowerCase();
+                var inCat = activeLower === 'all' || fontCats.some(function(c){ return c.toLowerCase() === activeLower; });
+                copyFontLink(f.name, inCat ? _currentCatId : (fontCats[0] || 'All'), copyBtn);
+            });
+        })(card.querySelector('.trinity-copy'), font);
         // Staggered entry animation — one card at a time (RTL: right→left, row by row)
         // Mobile: 60ms stagger (1 col, so truly one-by-one but not too slow)
         // Desktop: 90ms stagger (multi-col, fills right→left per row)
@@ -1976,6 +2265,7 @@ function renderFonts(data, text, resetPage) {
             }, 600000); // 10 minutes
         }
         grid.appendChild(card);
+        } catch(cardErr) { console.warn('[UniQaidar] Card render error:', cardErr, font); }
     });
 
     renderPagination(data.length, perPage);
@@ -2121,10 +2411,33 @@ function filterFonts(category, btn) {
 
     // فلتەر کردنی لیست — case-insensitive so renamed IDs still work
     const catLower = category.toLowerCase();
-    const filtered = (catLower === 'all') ? fonts : fonts.filter(function(f) {
-        if (Array.isArray(f.category)) return f.category.some(function(c) { return c.toLowerCase() === catLower; });
-        return f.category.toLowerCase() === catLower;
-    });
+    var filtered;
+    if (catLower === 'trending') {
+        // Sort fonts by popular.json order (most downloaded first)
+        // Safe: if popular.json missing or empty, fall back gracefully to newest-first
+        var popList = (typeof _popularFonts !== 'undefined' && Array.isArray(_popularFonts)) ? _popularFonts : [];
+        if (popList.length) {
+            var top25 = popList.slice(0, 25);
+            var popMap = {};
+            top25.forEach(function(name, idx){ popMap[name] = idx; });
+            filtered = fonts.filter(function(f){ return popMap.hasOwnProperty(f.name); })
+                            .sort(function(a,b){ return popMap[a.name] - popMap[b.name]; });
+            if (!filtered.length) {
+                filtered = fonts.slice().sort(function(a,b){
+                    return ((b.dateAdded||'') > (a.dateAdded||'')) ? 1 : -1;
+                }).slice(0, 25);
+            }
+        } else {
+            filtered = fonts.slice().sort(function(a,b){
+                return ((b.dateAdded||'') > (a.dateAdded||'')) ? 1 : -1;
+            }).slice(0, 25);
+        }
+    } else {
+        filtered = (catLower === 'all') ? fonts : fonts.filter(function(f) {
+            if (Array.isArray(f.category)) return f.category.some(function(c) { return c.toLowerCase() === catLower; });
+            return f.category.toLowerCase() === catLower;
+        });
+    }
 
     // Update category state for pagination and cat-download
     _currentCatId = category;
@@ -2139,6 +2452,10 @@ function filterFonts(category, btn) {
             history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params.toString() : ''));
         } catch(e) {}
     }
+
+    // Trending sort bar removed — sorting always by rank (Cloudflare stats order)
+    var tsortBar = document.getElementById('trending-sort-bar');
+    if (tsortBar) tsortBar.style.display = 'none';
 
     // Update category download bar
     updateCatDownloadBar(filtered, category);
@@ -2565,6 +2882,9 @@ function fitMobileLabel() {
 document.fonts.ready.then(function() { fitMobileLabel(); });
 
 // ── فۆنتەکان لە fonts.json بار دەکرێن بە شێوەی async ──
+// Global: populated by popular.json fetch on init
+var _popularFonts = [];
+
 async function loadFontsAndInit() {
     try {
         const resp = await fetch('fonts.json');
@@ -2614,6 +2934,67 @@ async function loadFontsAndInit() {
     })();
     // ── END Dynamic SEO ──────────────────────────────────────────────────────────────────────────
 
+    // ── Fetch top-25 trending fonts from popular.json BEFORE building panels ──
+    // Must happen here so the Trending count badge is correct on first render
+    try {
+        var _popResp = await fetch('popular.json?_=' + Date.now());
+        if (_popResp.ok) {
+            var _popData = await _popResp.json();
+            _popularFonts = Array.isArray(_popData) ? _popData.filter(function(n){ return typeof n === 'string' && n.trim(); }).slice(0, 25) : [];
+        } else { _popularFonts = []; }
+    } catch(e) { _popularFonts = []; }
+
+    // ── Also silently fetch live Cloudflare stats from /api/stats ──
+    // If we get real-time download data, use it to override _popularFonts
+    // so 🔥 زۆرترین داونلۆکراوەکان always reflects actual Cloudflare data
+    (async function() {
+        try {
+            var _statsResp = await fetch('/api/stats');
+            if (_statsResp.ok) {
+                var _statsData = await _statsResp.json();
+                // /api/stats returns {downloads:[{font,count,...},...], ...} or an array
+                var dlArr = null;
+                if (Array.isArray(_statsData)) {
+                    dlArr = _statsData;
+                } else if (_statsData && Array.isArray(_statsData.downloads)) {
+                    dlArr = _statsData.downloads;
+                } else if (_statsData && Array.isArray(_statsData.events)) {
+                    dlArr = _statsData.events;
+                }
+                if (dlArr && dlArr.length) {
+                    // Count per font (single downloads only)
+                    var _cfCountMap = {};
+                    dlArr.forEach(function(ev) {
+                        if (ev.type && ev.type !== 'single') return;
+                        var fn = ev.font || ev.name || '';
+                        if (!fn) return;
+                        if (fn.indexOf('داگرتنی') !== -1) return;
+                        _cfCountMap[fn] = (_cfCountMap[fn] || 0) + 1;
+                    });
+                    var _cfTop25 = Object.entries(_cfCountMap)
+                        .sort(function(a,b){ return b[1]-a[1]; })
+                        .slice(0, 25)
+                        .map(function(e){ return e[0]; });
+                    if (_cfTop25.length) {
+                        _popularFonts = _cfTop25;
+                        // Update the Trending count badge in panels if already rendered
+                        try {
+                            var _tNames = new Set(_popularFonts);
+                            var _tCount = fonts.filter(function(f){ return _tNames.has(f.name); }).length;
+                            document.querySelectorAll('.filter-btn').forEach(function(b) {
+                                var oc = b.getAttribute('onclick') || '';
+                                if ((oc.split("'")[1]||'').toLowerCase() === 'trending') {
+                                    var badge = b.querySelector('.cat-count');
+                                    if (badge) badge.textContent = '(' + _tCount + ')';
+                                }
+                            });
+                        } catch(e2) {}
+                    }
+                }
+            }
+        } catch(e) { /* silent — popular.json fallback already set */ }
+    })();
+
     // ── original DOMContentLoaded body ──
 
     // Populate both dropdown panels from the hidden marquee-content (admin source of truth)
@@ -2629,12 +3010,19 @@ async function loadFontsAndInit() {
         const dWrap = document.createElement('span');
         dWrap.style.cssText = 'display:inline-flex;align-items:center;gap:2px;flex-shrink:0;';
         // Count fonts for this category
-        const catCount = catId === 'All'
-            ? fonts.length
-            : fonts.filter(function(f) {
+        var catCount;
+        if (catId === 'All') {
+            catCount = fonts.length;
+        } else if (catId.toLowerCase() === 'trending') {
+            // Trending count = number of fonts found in _popularFonts that exist in fonts[]
+            var _trendNames = new Set(_popularFonts.slice(0, 25));
+            catCount = fonts.filter(function(f){ return _trendNames.has(f.name); }).length;
+        } else {
+            catCount = fonts.filter(function(f) {
                 if (Array.isArray(f.category)) return f.category.some(function(cc){ return cc.toLowerCase() === catId.toLowerCase(); });
                 return (f.category || '').toLowerCase() === catId.toLowerCase();
-              }).length;
+            }).length;
+        }
 
         const dBtn = btn.cloneNode(true);
         const dCountBadge = document.createElement('span');
@@ -2670,33 +3058,56 @@ async function loadFontsAndInit() {
         mobilePanel.appendChild(mWrap);
     });
 
-    // Activate first button in both panels (do NOT hardcode 'nwe' — read actual first button)
-    const nweBtns = document.querySelectorAll('#desktop-panel .filter-btn, #mobile-panel .filter-btn');
-    nweBtns.forEach(function(b) { b.classList.remove('active'); });
-    const firstDesktop = desktopPanel.querySelector('.filter-btn');
-    const firstMobile  = mobilePanel.querySelector('.filter-btn');
-    if (firstDesktop) firstDesktop.classList.add('active');
-    if (firstMobile)  firstMobile.classList.add('active');
+    // ── Default category: always activate "Nwe" (نوێترین فۆنت) on load ──
+    // Find the Nwe button; fall back to the first button if not found
+    const allFilterBtns = desktopPanel.querySelectorAll('.filter-btn');
+    var defaultBtn = null;
+    allFilterBtns.forEach(function(b) {
+        if (!defaultBtn) {
+            var onclk = b.getAttribute('onclick') || '';
+            var catId = onclk.split("'")[1] || '';
+            if (catId.toLowerCase() === 'nwe') defaultBtn = b;
+        }
+    });
+    if (!defaultBtn) defaultBtn = desktopPanel.querySelector('.filter-btn');
 
-    // Read the actual label from the button (respects admin renames), including count badge
-    var firstLabelText = firstDesktop ? firstDesktop.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim() : '';
-    var firstCountSpan = firstDesktop ? firstDesktop.querySelector('.cat-count') : null;
-    var firstCount     = firstCountSpan ? firstCountSpan.textContent.trim() : '';
-    var firstLabelHTML = firstLabelText + (firstCount ? ' <span style="font-size:0.72em;opacity:0.75;font-family:inherit;vertical-align:middle;line-height:1;position:relative;top:0.18em;">' + firstCount + '</span>' : '');
-    document.getElementById('desktop-active-label').innerHTML = firstLabelHTML;
-    document.getElementById('mobile-active-label').innerHTML  = firstLabelHTML;
+    // Clear all active states, mark the default button active
+    desktopPanel.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+    mobilePanel.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+    if (defaultBtn) defaultBtn.classList.add('active');
+
+    // Mirror to mobile panel
+    var defaultCatId = '';
+    if (defaultBtn) {
+        var defaultOnclick = defaultBtn.getAttribute('onclick') || '';
+        defaultCatId = defaultOnclick.split("'")[1] || '';
+        // Find matching mobile button and activate it too
+        mobilePanel.querySelectorAll('.filter-btn').forEach(function(b) {
+            var oc = b.getAttribute('onclick') || '';
+            if ((oc.split("'")[1] || '') === defaultCatId) b.classList.add('active');
+        });
+    }
+
+    // Set the label display in both panels
+    var defaultLabelText = defaultBtn ? defaultBtn.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim() : '';
+    var defaultCountSpan = defaultBtn ? defaultBtn.querySelector('.cat-count') : null;
+    var defaultCount     = defaultCountSpan ? defaultCountSpan.textContent.trim() : '';
+    var defaultLabelHTML = defaultLabelText + (defaultCount ? ' <span style="font-size:0.72em;opacity:0.75;font-family:inherit;vertical-align:middle;line-height:1;position:relative;top:0.18em;">' + defaultCount + '</span>' : '');
+    document.getElementById('desktop-active-label').innerHTML = defaultLabelHTML;
+    document.getElementById('mobile-active-label').innerHTML  = defaultLabelHTML;
     fitMobileLabel();
 
-    // Use the actual ID from the first button — no hardcoding of 'nwe'
-    const firstBtnOnclick = firstDesktop ? firstDesktop.getAttribute('onclick') : null;
-    const firstCatId = firstBtnOnclick ? firstBtnOnclick.split("'")[1] : '';
-    _currentCatId = firstCatId;
-    var firstFiltered = (!firstCatId || firstCatId.toLowerCase() === 'all') ? fonts : fonts.filter(function(f) {
-        if (Array.isArray(f.category)) return f.category.some(function(c){ return c.toLowerCase() === firstCatId.toLowerCase(); });
-        return (f.category||'').toLowerCase() === firstCatId.toLowerCase();
+    // Filter and render the default category
+    _currentCatId = defaultCatId;
+    var firstFiltered = (!defaultCatId || defaultCatId.toLowerCase() === 'all') ? fonts : fonts.filter(function(f) {
+        if (Array.isArray(f.category)) return f.category.some(function(c){ return c.toLowerCase() === defaultCatId.toLowerCase(); });
+        return (f.category||'').toLowerCase() === defaultCatId.toLowerCase();
     });
-    updateCatDownloadBar(firstFiltered, firstCatId);
-    filterFonts(firstCatId, null);
+    updateCatDownloadBar(firstFiltered, defaultCatId);
+
+    // popular.json already fetched above before panel build
+
+    filterFonts(defaultCatId, null);
 
     // Arrow scroll init (kept for compatibility)
     const w = document.getElementById('marquee-wrapper');
@@ -2714,15 +3125,17 @@ async function loadFontsAndInit() {
         else btt.classList.remove('visible');
     }, { passive: true });
 
-    // ── Theme: restore saved preference ──
+    // ── Theme: default is DARK; stays dark unless user explicitly chose 'light' ──
     try {
         var savedTheme = localStorage.getItem('uq_theme');
-        if (savedTheme === 'dark') {
+        if (savedTheme !== 'light') {
             document.body.classList.add('dark-mode');
             var tb = document.getElementById('theme-toggle-btn');
             if (tb) tb.innerHTML = '<i class="fas fa-sun"></i>';
         }
     } catch(e) {}
+
+    // Trending data loaded from /api/stats before filterFonts — see above
 
     // ── Startup: log @font-face vs fonts[] mismatches to console ──
     setTimeout(function() {
@@ -2747,6 +3160,26 @@ async function loadFontsAndInit() {
         } catch(e) {}
     }, 2000);
 
+}
+
+// ── Trending sort ──────────────────────────────────────
+function setTrendingSort(mode, btn) {
+    _trendingSort = mode;
+    document.querySelectorAll('.tsort-btn').forEach(function(b){ b.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    // Re-sort current _filteredFonts in place and re-render
+    var popList = Array.isArray(_popularFonts) ? _popularFonts : [];
+    if (mode === 'rank') {
+        var popMap = {};
+        popList.slice(0,25).forEach(function(n,i){ popMap[n]=i; });
+        _filteredFonts.sort(function(a,b){ return (popMap[a.name]||99)-(popMap[b.name]||99); });
+    } else if (mode === 'name') {
+        _filteredFonts.sort(function(a,b){ return (a.name||'').localeCompare(b.name||''); });
+    } else if (mode === 'date') {
+        _filteredFonts.sort(function(a,b){ return ((b.dateAdded||'')>(a.dateAdded||''))?1:-1; });
+    }
+    _currentPage = 1;
+    renderFonts(_filteredFonts, document.getElementById('test-input').value, false);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -2990,5 +3423,50 @@ async function downloadFontsDirectly() {
         btn.style.opacity = '1';
     }
 }
+
+// ── Paragraph preview toggle ─────────────────────────────
+var DEFAULT_PARA_TEXT = 'فۆنتەکانی یونی قەیدار کۆکراوەی کۆمەڵێک فۆنتی کوردین کە بۆ گشت بوارەکانی دیزاین و نووسین گونجاون. ئەم پڕۆژەیە خزمەتێکە بە زمانی کوردی و جیهانی دیزاینی کوردی بۆ ئەوەی هەمووان بتوانن بە ئاسایی دەستیان بە جوانترین جۆرەکانی فۆنت بگات.';
+function toggleParaPreview(btn, fontName) {
+    var card = btn.closest('.card');
+    if (!card) return;
+    var preview = card.querySelector('.preview');
+    if (!preview) return;
+    var isActive = btn.classList.toggle('active');
+    if (isActive) {
+        // Find paragraph for this font
+        var fontObj = fonts.find(function(f){ return f.name === fontName; });
+        var paraText = (fontObj && fontObj.paragraph && fontObj.paragraph.trim()) ? fontObj.paragraph.trim() : DEFAULT_PARA_TEXT;
+        // Apply lineHeight from fonts.json if available
+        var lineH = (fontObj && fontObj.lineHeight != null) ? fontObj.lineHeight : 2;
+        preview.dataset.originalText = preview.textContent;
+        preview.dataset.originalStyle = preview.getAttribute('style') || '';
+        preview.textContent = paraText;
+        preview.classList.add('para-mode');
+        // Set CSS variable for line-height on the element
+        preview.style.setProperty('--para-line-height', lineH);
+        preview.style.lineHeight = lineH;
+        preview.style.textAlign = 'justify';
+        preview.style.direction = 'rtl';
+        // Keep current slider font size — don't override to 1.1rem
+    } else {
+        // Restore original
+        var orig = preview.dataset.originalText || (function(){
+            var fo = fonts.find(function(f){ return f.name === fontName; });
+            return fo ? (fo.preview || 'فۆنتەکانی یونی‌قەیدار') : 'فۆنتەکانی یونی‌قەیدار';
+        })();
+        preview.textContent = orig;
+        preview.classList.remove('para-mode');
+        // Restore original inline style
+        var origStyle = preview.dataset.originalStyle || '';
+        if (origStyle) {
+            preview.setAttribute('style', origStyle);
+        } else {
+            preview.removeAttribute('style');
+        }
+        delete preview.dataset.originalText;
+        delete preview.dataset.originalStyle;
+    }
+}
+
 </script>
 </body>

@@ -193,11 +193,11 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
 
 <!-- هێدەر -->
 <header>
-    <h1>⚙️ پانێلی UniQaidar</h1>
+    <h1><a href="https://uniqaidar.pages.dev/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">⚙️ پانێلی UniQaidar</a></h1>
     <div class="header-right">
         <span id="rbadge" class="repo-badge">پەیوەند نەکراوە</span>
         <div id="sdot" class="status-dot"></div>
-        <button class="btn btn-ghost" onclick="restoreBackup()" style="font-size:0.78rem;padding:6px 12px;" title="گەڕاندنەوەی دوایین نوێکردنەوەی پاراستراو">↩ بازگرتن</button>
+        <button class="btn btn-ghost" onclick="restoreBackup()" style="font-size:0.78rem;padding:6px 12px;" title="گەڕاندنەوەی دوایین نوێکردنەوەی پاراستراو">↩ گەڕاندنەوەی باکئەپ</button>
         <button class="btn btn-ghost" onclick="showSetup()" style="font-size:0.78rem;padding:6px 12px;">⚙ گۆڕین</button>
     </div>
 </header>
@@ -243,6 +243,28 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                     <div class="form-group full">
                         <label>دەقی پیشاندان</label>
                         <input id="f-prev" type="text" placeholder="فۆنتەکانی یونی‌قەیدار - فۆنتی کوردی" oninput="updateFontPreview()">
+                    </div>
+                    <div class="form-group full">
+                        <label>دەقی پەرەگراف</label>
+                        <textarea id="f-paragraph" dir="rtl" rows="3" placeholder="فۆنتەکانی یونی قەیدار کۆکراوەی کۆمەڵێک فۆنتی کوردین..." oninput="updateAddParaPreview()"></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>پیشاندانی ڕاستەقینەی پەرەگراف</label>
+                        <div id="add-para-preview-box" dir="rtl" style="
+                            min-height:80px; background:#111; border:1px solid #333;
+                            border-radius:8px; padding:14px 18px; font-size:1.1rem;
+                            color:#f0f0f0; text-align:justify; direction:rtl;
+                            line-height:1.8; overflow:hidden; font-family:Tahoma,sans-serif;
+                            transition:line-height 0.2s; word-break:break-word;">
+                            دەقی پەرەگراف بنووسە بۆ دەرکەوتنی پریڤیو
+                        </div>
+                    </div>
+                    <div class="form-group full">
+                        <label>مەودای نێوان دێڕەکان — <span id="f-lh-display" style="font-family:var(--mono);color:var(--accent);">1.8</span></label>
+                        <input type="range" id="f-lineheight" min="0.1" max="6.0" step="0.1" value="1.8"
+                            style="width:100%;accent-color:var(--accent);cursor:pointer;"
+                            oninput="updateAddLhPreview()">
+                        <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);margin-top:2px;font-family:var(--mono);"><span>0.1</span><span>6.0</span></div>
                     </div>
                     <div class="form-group full">
                         <label>پیشاندانی ڕاستەقینە</label>
@@ -318,6 +340,9 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
         <div class="box">
             <div class="box-header"><div class="dot" style="background:var(--yellow)"></div> کاتێگۆریەکانی ئێستا</div>
             <div class="box-body">
+                <div style="background:rgba(9,132,227,0.1);border:1px solid rgba(9,132,227,0.3);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:0.8rem;color:var(--accent);line-height:1.7;">
+                    💡 <strong>تێبینی:</strong> کاتێگۆری <strong>🔥 زۆرترین داونلۆکراوەکان</strong> ئەمەش دەتوانرێت بگوازرێتەوە بە ▲▼ — مەسەلەن بردنەوەی تەنیشت <strong>فۆنتی دەستنووس</strong> یان هەر شوێنێکی تر. پاشکەوتکردنی ڕیزبەندی نوێ بکە بۆ پەڕەی سەرەکی.
+                </div>
                 <div id="cat-list" style="display:flex;flex-direction:column;gap:6px;"></div>
                 <div style="margin-top:12px;display:flex;gap:10px;align-items:center;">
                     <button class="btn btn-primary" onclick="saveReorder()" style="background:var(--accent)">
@@ -785,6 +810,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadDlStats(true)">🔄 نوێکردنەوە</button>
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="exportDlCsv()">📥 Export CSV</button>
             <button class="btn btn-red" style="font-size:0.78rem;padding:5px 12px;" onclick="clearDlStats()">🗑 سڕینەوەی هەموو ئامارەکان</button>
+            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="updateTrending()" title="Top 25 زۆرترین داونلۆکراوەکان بنووسە بۆ popular.json">🔄 نوێکردنەوەی زۆرترین داونلۆکراوەکان</button>
           </div>
         </div>
         <div class="box-body">
@@ -840,6 +866,33 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
           </div>
         </div>
       </div>
+
+      <!-- TRENDING MANAGEMENT BOX -->
+      <div class="box" id="trending-box">
+        <div class="box-header" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--green)"></div><span>🔥 بەڕێوەبردنی زۆرترین داونلۆکراوەکان (popular.json)</span></div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadPopularJson()">📥 بارکردن لە GitHub</button>
+            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="autoFillTrending()" title="داخستنی تاپ ٢٥ لە ئامارەکانی داگرتن">⚡ دەستبجێ لە ئامار</button>
+            <button class="btn btn-primary" style="font-size:0.78rem;padding:5px 12px;" onclick="savePopularJson()">💾 سەیڤی popular.json بۆ GitHub</button>
+          </div>
+        </div>
+        <div class="box-body">
+          <div id="trending-alert" class="alert"></div>
+          <p style="font-size:0.8rem;color:var(--muted);margin-bottom:14px;">ڕیزبەندی فۆنتەکان دەتوانی بگۆڕی بە ▲▼ یان بە لابردن و زیادکردن. تاپ ٢٥ فۆنت دەخرێنە پیشاندان لە بەشی 🔥 سایتەکە.<br>
+          <span style="color:var(--green);font-size:0.78rem;">⚡ کاتێک تابی 📊 Downloads کردنەوە، لیستەکە بەخۆی لە ئامارەکانی Cloudflare نوێ دەبێتەوە. دواتر 💾 سەیڤ بکە بۆ popular.json.</span></p>
+          
+          <!-- Add font manually -->
+          <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap;">
+            <input type="text" id="trending-add-input" placeholder="ناوی فۆنت بنووسە، مەسەلەن: UniQAIDAR_BiLaL 084" style="flex:1;min-width:200px;direction:ltr;font-family:monospace;">
+            <button class="btn btn-green" style="font-size:0.8rem;padding:7px 14px;" onclick="trendingAddFont()">➕ زیادکردن</button>
+          </div>
+
+          <!-- Trending list -->
+          <div id="trending-list" style="display:flex;flex-direction:column;gap:5px;max-height:520px;overflow-y:auto;"></div>
+          <div style="margin-top:8px;font-size:0.75rem;color:var(--muted);font-family:monospace;" id="trending-count"></div>
+        </div>
+      </div>
     </div>
 
 </main>
@@ -878,6 +931,28 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 <input type="text" id="edit-preview">
             </div>
             <div class="form-group full">
+                <label>دەقی پەرەگراف</label>
+                <textarea id="edit-paragraph" dir="rtl" rows="3" placeholder="فۆنتەکانی یونی قەیدار کۆکراوەی کۆمەڵێک فۆنتی کوردین..." oninput="updateEditParaPreview()"></textarea>
+            </div>
+            <div class="form-group full">
+                <label>پیشاندانی ڕاستەقینەی پەرەگراف</label>
+                <div id="edit-para-preview-box" dir="rtl" style="
+                    min-height:80px; background:#111; border:1px solid #333;
+                    border-radius:8px; padding:14px 18px; font-size:1.1rem;
+                    color:#f0f0f0; text-align:justify; direction:rtl;
+                    line-height:1.8; overflow:hidden; font-family:Tahoma,sans-serif;
+                    transition:line-height 0.2s; word-break:break-word;">
+                    دەقی پەرەگراف بنووسە بۆ دەرکەوتنی پریڤیو
+                </div>
+            </div>
+            <div class="form-group full">
+                <label>مەودای نێوان دێڕەکان — <span id="edit-lh-display" style="font-family:var(--mono);color:var(--accent);">1.8</span></label>
+                <input type="range" id="edit-lineheight" min="0.1" max="6.0" step="0.1" value="1.8"
+                    style="width:100%;accent-color:var(--accent);cursor:pointer;"
+                    oninput="updateEditLhPreview()">
+                <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);margin-top:2px;font-family:var(--mono);"><span>0.1</span><span>6.0</span></div>
+            </div>
+            <div class="form-group full">
                 <label>کاتێگۆریەکان — یەک یان زیاتر هەڵبژێرە</label>
                 <div id="edit-cat-pills" class="cat-pills" style="margin-top:6px;"></div>
                 <input type="hidden" id="edit-cats">
@@ -909,6 +984,67 @@ const LS_KEY = 'uqadmin_cfg';
 // ══════════════════════════════════════════
 // Init
 // ══════════════════════════════════════════
+// ── Paragraph live preview helpers ──────────────────────
+function updateAddParaPreview() {
+    var ta = document.getElementById('f-paragraph');
+    var box = document.getElementById('add-para-preview-box');
+    if (!box || !ta) return;
+    var text = ta.value.trim();
+    box.textContent = text || 'دەقی پەرەگراف بنووسە بۆ دەرکەوتنی پریڤیو';
+    // Apply font from selected file
+    var sel = document.getElementById('f-select');
+    if (sel && sel.value) {
+        var fname = sel.value.replace(/\.ttf$/i, '');
+        box.style.fontFamily = "'" + fname + "', Tahoma, sans-serif";
+    }
+    // Apply line-height from slider
+    var lhSlider = document.getElementById('f-lineheight');
+    if (lhSlider) box.style.lineHeight = parseFloat(lhSlider.value).toFixed(1);
+}
+function updateEditParaPreview() {
+    var ta = document.getElementById('edit-paragraph');
+    var box = document.getElementById('edit-para-preview-box');
+    if (!box || !ta) return;
+    var text = ta.value.trim();
+    box.textContent = text || 'دەقی پەرەگراف بنووسە بۆ دەرکەوتنی پریڤیو';
+    // Apply font from edit-name
+    var nameEl = document.getElementById('edit-name');
+    if (nameEl && nameEl.value) box.style.fontFamily = "'" + nameEl.value + "', Tahoma, sans-serif";
+    // Apply line-height from slider
+    var lhSlider = document.getElementById('edit-lineheight');
+    if (lhSlider) box.style.lineHeight = parseFloat(lhSlider.value).toFixed(1);
+}
+
+// ── LineHeight live preview helpers ──────────────────────
+function updateAddLhPreview() {
+    var slider = document.getElementById('f-lineheight');
+    var val = parseFloat(slider.value).toFixed(1);
+    document.getElementById('f-lh-display').textContent = val;
+    var box = document.getElementById('add-lh-preview-box');
+    if (box) {
+        box.style.lineHeight = val;
+        var lpb = document.getElementById('live-preview-box');
+        if (lpb && lpb.style.fontFamily) box.style.fontFamily = lpb.style.fontFamily;
+    }
+    // Also update paragraph preview line-height
+    var paraBox = document.getElementById('add-para-preview-box');
+    if (paraBox) paraBox.style.lineHeight = val;
+}
+function updateEditLhPreview() {
+    var slider = document.getElementById('edit-lineheight');
+    var val = parseFloat(slider.value).toFixed(1);
+    document.getElementById('edit-lh-display').textContent = val;
+    var box = document.getElementById('edit-lh-preview-box');
+    if (box) {
+        box.style.lineHeight = val;
+        var nameEl = document.getElementById('edit-name');
+        if (nameEl && nameEl.value) box.style.fontFamily = "'" + nameEl.value + "', Tahoma, sans-serif";
+    }
+    // Also update paragraph preview line-height
+    var paraBox = document.getElementById('edit-para-preview-box');
+    if (paraBox) paraBox.style.lineHeight = val;
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
     const saved = localStorage.getItem(LS_KEY);
     if (saved) {
@@ -1586,6 +1722,8 @@ function onFontSelect() {
     const dnInput = document.getElementById('f-displayname');
     if (!filename) {
         if (box) { box.textContent = 'فۆنتێک هەڵبژێرە بۆ دەرکەوتنی پریڤیو'; box.style.fontFamily = 'Tahoma, sans-serif'; }
+    var paraBox = document.getElementById('add-para-preview-box');
+    if (paraBox) { paraBox.textContent = 'دەقی پەرەگراف بنووسە بۆ دەرکەوتنی پریڤیو'; paraBox.style.fontFamily = 'Tahoma, sans-serif'; }
         if (dnInput) dnInput.value = '';
         return;
     }
@@ -1612,12 +1750,16 @@ function updateFontPreview() {
     }
     box.style.fontFamily = `'${name}', Tahoma, sans-serif`;
     box.textContent = prev;
+    // Also update paragraph preview font
+    var paraBox = document.getElementById('add-para-preview-box');
+    if (paraBox) paraBox.style.fontFamily = `'${name}', Tahoma, sans-serif`;
 }
 
 function clearFont() {
     const sel = document.getElementById('f-select');
     if (sel) sel.selectedIndex = 0;
     set('f-prev', '');
+    set('f-paragraph', '');
     set('f-date', '');
     set('f-displayname', '');
     const status = document.getElementById('scan-status');
@@ -1658,8 +1800,12 @@ async function addFont() {
     } catch(e) { return alert2(al, `❌ پشکنین سەرنەکەوت: ${e.message}`, 'err'); }
 
     // ── Build entry object ──
+    const paraVal    = document.getElementById('f-paragraph') ? document.getElementById('f-paragraph').value.trim() : '';
+    const lineHVal   = document.getElementById('f-lineheight') ? parseFloat(document.getElementById('f-lineheight').value) : null;
     const newEntry = { name, file: name, path, category: catsArr };
     if (prev)                                newEntry.preview = prev;
+    if (paraVal)                             newEntry.paragraph = paraVal;
+    if (lineHVal)                            newEntry.lineHeight = lineHVal;
     if (date)                                newEntry.dateAdded = date;
     if (displayName && displayName !== name) newEntry.displayName = displayName;
 
@@ -1722,8 +1868,28 @@ function openEdit(i) {
     set('edit-file', f.file || f.name);
     set('edit-path', f.path);
     set('edit-preview', f.preview);
+    set('edit-paragraph', f.paragraph || '');
     const dateVal = (f.dateAdded || '').trim();
     set('edit-date', dateVal);
+    // Pre-populate lineHeight slider
+    const lhVal = f.lineHeight ? parseFloat(f.lineHeight) : 1.8;
+    const lhSlider = document.getElementById('edit-lineheight');
+    const lhDisplay = document.getElementById('edit-lh-display');
+    if (lhSlider) { lhSlider.value = lhVal.toFixed(1); }
+    if (lhDisplay) { lhDisplay.textContent = lhVal.toFixed(1); }
+    var editLhBox = document.getElementById('edit-lh-preview-box');
+    if (editLhBox) {
+        editLhBox.style.lineHeight = lhVal;
+        if (f.name) editLhBox.style.fontFamily = "'" + f.name + "', Tahoma, sans-serif";
+    }
+    // Pre-populate paragraph preview
+    var editParaBox = document.getElementById('edit-para-preview-box');
+    if (editParaBox) {
+        var paraText = (f.paragraph && f.paragraph.trim()) ? f.paragraph.trim() : 'دەقی پەرەگراف بنووسە بۆ دەرکەوتنی پریڤیو';
+        editParaBox.textContent = paraText;
+        editParaBox.style.lineHeight = lhVal;
+        if (f.name) editParaBox.style.fontFamily = "'" + f.name + "', Tahoma, sans-serif";
+    }
 
     // Build pills with correct ON state for ALL pre-selected categories
     const catArr = Array.isArray(f.category) ? f.category : (f.category ? [f.category] : []);
@@ -1768,8 +1934,12 @@ async function saveEditFont() {
     const catsArr = cats_v ? cats_v.split(',').filter(Boolean)
         : (Array.isArray(origFont.category) ? origFont.category : [origFont.category]);
 
+    const paragraphVal  = document.getElementById('edit-paragraph') ? document.getElementById('edit-paragraph').value.trim() : '';
+    const editLineHVal  = document.getElementById('edit-lineheight') ? parseFloat(document.getElementById('edit-lineheight').value) : null;
     const updatedEntry = { name, file, path, category: catsArr };
     if (preview)                             updatedEntry.preview = preview;
+    if (paragraphVal)                        updatedEntry.paragraph = paragraphVal;
+    if (editLineHVal)                          updatedEntry.lineHeight = editLineHVal;
     if (date)                                updatedEntry.dateAdded = date;
     if (displayName && displayName !== name) updatedEntry.displayName = displayName;
 
@@ -1874,6 +2044,7 @@ async function addCat() {
 async function deleteCat(idx) {
     const c = cats[idx];
     if (c.id==='All') return alert('نەتوانرێت کاتێگۆری "All" بسڕێتەوە.');
+    if (c.id === 'Trending') return alert('کاتێگۆری "زۆرترین داونلۆکراوەکان" سیستەمییە — ناتوانرێت بسڕێتەوە.');
     const n = fnts.filter(f=>(Array.isArray(f.category)?f.category:[f.category]).includes(c.id)).length;
     const msg = n>0
         ? `کاتێگۆری "${c.label}" بسڕێتەوە؟\n\n⚠️ ${n} فۆنت لەم کاتێگۆریەدان. هێشتا دەمێننەوە بەڵام لەم کاتێگۆریەدا نایەن.`
@@ -2326,7 +2497,7 @@ function go(id, btn) {
     btn.classList.add('active');
     if (id==='t-arc')     renderArcFull();
     if (id==='t-ifont')   buildInterfaceFontSelect();
-    if (id==='t-dlstats') { loadDlStats(false); loadVisitStats(false); }
+    if (id==='t-dlstats') { loadDlStats(false); loadVisitStats(false); if(TOKEN && USER && REPO && !_trendingList.length) { loadPopularJson(); } }
 }
 
 function showOverlay(msg) { document.getElementById('overlay-msg').textContent = msg||'...'; document.getElementById('overlay').classList.add('show'); }
@@ -2436,6 +2607,26 @@ async function loadAllStats(force) {
         document.getElementById('visit-last-refresh').textContent = ts;
 
         updateDlSummary(); renderDlTable(); renderVisitStats();
+
+        // ── Auto-sync Trending Manager with freshest Cloudflare data ──
+        // Compute top-25 silently and update the trending list view if it hasn't been manually edited
+        try {
+            const singleEvs = DL_DATA.filter(ev => {
+                if (ev.type !== 'single') return false;
+                const fn = ev.font || '';
+                return !fn.includes('داگرتنی کاتێگۆری') && !fn.includes('داگرتنی تەواوی');
+            });
+            const cfCountMap = {};
+            singleEvs.forEach(ev => { const k = ev.font||'?'; cfCountMap[k] = (cfCountMap[k]||0)+1; });
+            const cfTop25 = Object.entries(cfCountMap).sort((a,b)=>b[1]-a[1]).slice(0,25).map(([n])=>n);
+            if (cfTop25.length && !_trendingList.length) {
+                // Only auto-fill if list hasn't been manually loaded yet
+                _trendingList = cfTop25.slice();
+                buildTrendingList();
+                const tral = document.getElementById('trending-alert');
+                if (tral) alert2(tral, '✅ زۆرترین داونلۆکراوەکان بەخۆی نوێکرایەوە لە ئامارەکانی Cloudflare (' + cfTop25.length + ' فۆنت). بۆ پاشکەوتکردن کلیک لەسەر 💾 سەیڤی popular.json بکە.', 'ok');
+            }
+        } catch(e) { /* silent */ }
 
         if (DL_TIMER) clearInterval(DL_TIMER);
         if (VT_TIMER) clearInterval(VT_TIMER);
@@ -2547,19 +2738,24 @@ function getFilteredEvents() {
     return DL_DATA.filter(ev => {
         if (q    && !(ev.font||'').toLowerCase().includes(q)) return false;
         if (typeF !== 'all') {
+            const fontName = ev.font || '';
+            const isCatBulkEntry = ev.type === 'cat-bulk' || fontName.includes('داگرتنی کاتێگۆری');
+            const isTotalBulk    = fontName.includes('داگرتنی تەواوی');
             if (typeF === 'cat-bulk') {
-                // cat-bulk: type is cat-bulk OR font name starts with داگرتنی کاتێگۆری
-                const isCatBulk = ev.type === 'cat-bulk' || (ev.font||'').includes('داگرتنی کاتێگۆری');
-                if (!isCatBulk) return false;
+                // cat-bulk: only entries that are category downloads
+                if (!isCatBulkEntry) return false;
             } else if (typeF === 'bulk') {
-                // bulk: type is bulk AND font name is NOT a cat-bulk entry
-                const isBulkOnly = (ev.type === 'bulk' || ev.type === 'cat-bulk') && !(ev.font||'').includes('داگرتنی کاتێگۆری');
-                const isCatBulk  = ev.type === 'cat-bulk' || (ev.font||'').includes('داگرتنی کاتێگۆری');
-                if (!isBulkOnly && !isCatBulk) return false;
-                if (isCatBulk) return false; // exclude cat-bulk from bulk filter
-                // include only real bulk (zip all fonts)
-                const isRealBulk = (ev.type === 'bulk') && !(ev.font||'').includes('داگرتنی کاتێگۆری');
+                // bulk: real full-library zip only (not cat-bulk, not single)
+                const isRealBulk = (ev.type === 'bulk') && !isCatBulkEntry;
                 if (!isRealBulk) return false;
+            } else if (typeF === 'single') {
+                // single: strictly exclude any cat-bulk or total-download entries
+                if (ev.type !== 'single') return false;
+                if (isCatBulkEntry) return false;
+                if (isTotalBulk) return false;
+                const _fn = (ev.font || '');
+                if (_fn.includes('داگرتنی کاتێگۆری')) return false;
+                if (_fn.includes('داگرتنی تەواوی')) return false;
             } else {
                 if (ev.type !== typeF) return false;
             }
@@ -2747,6 +2943,209 @@ function thisMonthSUL() {
 
 
 function alert2(el, msg, type) { el.textContent=msg; el.className=`alert ${type} show`; }
+
+// ══════════════════════════════════════════
+// Trending: Top 25 most downloaded single fonts → popular.json
+// ══════════════════════════════════════════
+async function updateTrending() {
+    if (!TOKEN || !USER || !REPO) return alert('تکایە یەکەم پەیوەندی بکە بە GitHub.');
+
+    // Get only clean single-font downloads (using same strict filter as Task 4 fix)
+    const singleEvents = DL_DATA.filter(ev => {
+        if (ev.type !== 'single') return false;
+        const fn = ev.font || '';
+        if (fn.includes('داگرتنی کاتێگۆری')) return false;
+        if (fn.includes('داگرتنی تەواوی')) return false;
+        return true;
+    });
+
+    // Count per font
+    const countMap = {};
+    singleEvents.forEach(ev => {
+        const k = ev.font || '?';
+        countMap[k] = (countMap[k] || 0) + 1;
+    });
+
+    // Sort by count desc, take top 25 names only
+    const top25 = Object.entries(countMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 25)
+        .map(([name]) => name);
+
+    if (!top25.length) return alert('هیچ داگرتنی تاکەیەک نەدۆزرایەوە.');
+
+    // Save to popular.json on GitHub
+    const popularContent = JSON.stringify(top25, null, 2);
+    const encoded = btoa(unescape(encodeURIComponent(popularContent)));
+
+    // Check if popular.json exists to get its SHA
+    let popularSha = undefined;
+    try {
+        const chk = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/popular.json?ref=${BRANCH}`,
+            { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+        );
+        if (chk.ok) {
+            const chkd = await chk.json();
+            popularSha = chkd.sha;
+        }
+    } catch(e) {}
+
+    const body = { message: 'Update popular.json: top 25 trending fonts', content: encoded, branch: BRANCH };
+    if (popularSha) body.sha = popularSha;
+
+    const r = await fetch(
+        `https://api.github.com/repos/${USER}/${REPO}/contents/popular.json`,
+        { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+    );
+    if (r.ok) {
+        // Sync the Trending Manager UI
+        _trendingList = top25.slice();
+        buildTrendingList();
+        const tral = document.getElementById('trending-alert');
+        if (tral) alert2(tral, '✅ popular.json نوێکرایەوە! ' + top25.length + ' فۆنت.', 'ok');
+        alert(`✅ popular.json نوێکرایەوە!\n\nتاپ ${top25.length} فۆنت پاشکەوت کرا.\n\n${top25.slice(0,5).join('\n')}${top25.length > 5 ? '\n...' : ''}`);
+    } else {
+        const err = await r.json().catch(() => ({}));
+        alert('❌ popular.json سەیڤ نەکرا: ' + (err.message || r.status));
+    }
+}
+
+
+// ══════════════════════════════════════════
+// Trending Manager — popular.json editor
+// ══════════════════════════════════════════
+var _trendingList = []; // current working list (array of font name strings)
+var _popularJsonSha = undefined; // GitHub SHA for PUT update
+
+// Load popular.json from GitHub
+async function loadPopularJson() {
+    const al = document.getElementById('trending-alert');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە یەکەم پەیوەندی بکە بە GitHub.', 'err');
+    alert2(al, 'بارکردن...', 'inf');
+    try {
+        const r = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/popular.json?ref=${BRANCH}&_=${Date.now()}`,
+            { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+        );
+        if (!r.ok) { alert2(al, '❌ popular.json نەدۆزرایەوە لە GitHub.', 'err'); return; }
+        const d = await r.json();
+        _popularJsonSha = d.sha;
+        const decoded = decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))));
+        _trendingList = JSON.parse(decoded).filter(n => typeof n === 'string' && n.trim()).slice(0, 25);
+        buildTrendingList();
+        alert2(al, `✅ بارکرا! ${_trendingList.length} فۆنت.`, 'ok');
+    } catch(e) { alert2(al, '❌ هەڵە: ' + e.message, 'err'); }
+}
+
+// Auto-fill from current download stats (top 25)
+function autoFillTrending() {
+    const al = document.getElementById('trending-alert');
+    if (!DL_DATA || !DL_DATA.length) {
+        alert2(al, '❌ تکایە یەکەم ئامارەکانی داگرتن بارکە (🔄 نوێکردنەوە).', 'err');
+        return;
+    }
+    const singleEvents = DL_DATA.filter(ev => {
+        if (ev.type !== 'single') return false;
+        const fn = ev.font || '';
+        return !fn.includes('\u062f\u0627\u06af\u0631\u062a\u0646\u06cc \u06a9\u0627\u062a\u06ce\u06af\u06c6\u0631\u06cc') && !fn.includes('\u062f\u0627\u06af\u0631\u062a\u0646\u06cc \u062a\u06d5\u0648\u0627\u0648\u06cc');
+    });
+    const countMap = {};
+    singleEvents.forEach(ev => { const k = ev.font || '?'; countMap[k] = (countMap[k] || 0) + 1; });
+    _trendingList = Object.entries(countMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 25)
+        .map(([name]) => name);
+    buildTrendingList();
+    alert2(al, `\u2705 ${_trendingList.length} \u0641\u06c6\u0646\u062a\u06cc \u062a\u0627\u067e \u0644\u06d5 \u0626\u0627\u0645\u0627\u0631\u06d5\u06a9\u0627\u0646\u06d5\u0648\u06d5 \u0647\u06ce\u0646\u0631\u0627.`, 'ok');
+}
+
+// Build the visual list with move up/down and delete
+function buildTrendingList() {
+    const el = document.getElementById('trending-list');
+    const countEl = document.getElementById('trending-count');
+    if (!el) return;
+    el.innerHTML = '';
+    _trendingList.forEach((name, i) => {
+        const isFirst = i === 0, isLast = i === _trendingList.length - 1;
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 12px;';
+        row.innerHTML = `
+            <span style="font-family:monospace;font-size:0.7rem;color:var(--muted);min-width:22px;text-align:center;">${i+1}</span>
+            <div style="display:flex;flex-direction:column;gap:2px;">
+                <button class="btn btn-ghost" style="padding:1px 6px;font-size:0.68rem;opacity:${isFirst?'0.25':'1'}" ${isFirst?'disabled':''} onclick="trendingMove(${i},-1)">&#9650;</button>
+                <button class="btn btn-ghost" style="padding:1px 6px;font-size:0.68rem;opacity:${isLast?'0.25':'1'}" ${isLast?'disabled':''} onclick="trendingMove(${i},1)">&#9660;</button>
+            </div>
+            <span style="flex:1;font-family:monospace;font-size:0.82rem;color:var(--yellow);direction:ltr;">${name}</span>
+            <button class="btn btn-red" style="padding:4px 10px;font-size:0.72rem;" onclick="trendingRemove(${i})">&#128465;</button>`;
+        el.appendChild(row);
+    });
+    if (countEl) countEl.textContent = _trendingList.length + ' / 25 \u0641\u06c6\u0646\u062a';
+}
+
+function trendingMove(idx, dir) {
+    const ni = idx + dir;
+    if (ni < 0 || ni >= _trendingList.length) return;
+    [_trendingList[idx], _trendingList[ni]] = [_trendingList[ni], _trendingList[idx]];
+    buildTrendingList();
+}
+
+function trendingRemove(idx) {
+    _trendingList.splice(idx, 1);
+    buildTrendingList();
+}
+
+function trendingAddFont() {
+    const inp = document.getElementById('trending-add-input');
+    const name = (inp.value || '').trim();
+    const al = document.getElementById('trending-alert');
+    if (!name) return;
+    if (_trendingList.includes(name)) {
+        alert2(al, '\u26a0\ufe0f \u0626\u06d5\u0645 \u0641\u06c6\u0646\u062a\u06d5 \u067e\u06ce\u0634\u062a\u0631 \u0647\u06d5\u06cc\u06d5 \u0644\u06d5 \u0644\u06cc\u0633\u062a\u06d5\u06a9\u06d5.', 'inf');
+        return;
+    }
+    if (_trendingList.length >= 25) {
+        alert2(al, '\u26a0\ufe0f \u0644\u06cc\u0633\u062a\u06d5\u06a9\u06d5 \u062a\u06d5\u0648\u0627\u0648\u06d5 (25 \u0641\u06c6\u0646\u062a). \u06cc\u06d5\u06a9\u06ce\u06a9 \u0644\u0627\u0628\u0628\u06d5 \u067e\u06ce\u0634 \u0632\u06cc\u0627\u062f\u06a9\u0631\u062f\u0646\u06cc \u0646\u0648\u06ce.', 'inf');
+        return;
+    }
+    _trendingList.unshift(name);
+    buildTrendingList();
+    inp.value = '';
+}
+
+// Save to popular.json on GitHub
+async function savePopularJson() {
+    const al = document.getElementById('trending-alert');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە یەکەم پەیوەندی بکە بە GitHub.', 'err');
+    if (!_trendingList.length) return alert2(al, '⚠️ لیستەکە بووە. تکایە فۆنتی زیاد بکە.', 'inf');
+    alert2(al, 'سەیڤ دەکرێت...', 'inf');
+    const popularContent = JSON.stringify(_trendingList, null, 2);
+    const encoded = btoa(unescape(encodeURIComponent(popularContent)));
+    if (!_popularJsonSha) {
+        try {
+            const chk = await fetch(
+                `https://api.github.com/repos/${USER}/${REPO}/contents/popular.json?ref=${BRANCH}`,
+                { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+            );
+            if (chk.ok) { const d = await chk.json(); _popularJsonSha = d.sha; }
+        } catch(e) {}
+    }
+    const body = { message: 'Update popular.json: trending fonts', content: encoded, branch: BRANCH };
+    if (_popularJsonSha) body.sha = _popularJsonSha;
+    const r = await fetch(
+        `https://api.github.com/repos/${USER}/${REPO}/contents/popular.json`,
+        { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+    );
+    if (r.ok) {
+        const rd = await r.json();
+        _popularJsonSha = rd.content ? rd.content.sha : undefined;
+        alert2(al, `✅ popular.json \u0633\u06d5\u06cc\u06a4\u06a9\u0631\u0627! ${_trendingList.length} \u0641\u06c6\u0646\u062a.`, 'ok');
+    } else {
+        const err = await r.json().catch(() => ({}));
+        alert2(al, '❌ \u0633\u06d5\u06cc\u06a4 \u0633\u06d5\u0631\u0646\u06d5\u06a9\u06d5\u0648\u062a: ' + (err.message || r.status), 'err');
+    }
+}
+
 </script>
 </body>
 </html>
