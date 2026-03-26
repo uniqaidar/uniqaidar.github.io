@@ -1717,7 +1717,7 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
 
     </style>
 </head>
-<body style="min-height:100vh;display:flex;flex-direction:column;">
+<body style="min-height:100vh;display:flex;flex-direction:column;" class="dark-mode"><script>try{if(localStorage.getItem('uq_theme')==='light'){document.body.classList.remove('dark-mode');}}catch(e){}</script>
 <noscript>
   <div style="text-align:center;padding:60px 20px;font-family:Tahoma,Arial,sans-serif;font-size:1.1rem;direction:rtl;">
     تکایە JavaScript چالاک بکە بۆ بینینی فۆنتەکان.<br>
@@ -1954,7 +1954,7 @@ body.dark-mode .card-body {
 <a href="#" id="aboutBtn" class="social-icon" aria-label="دەربارەی پڕۆژە">
     <i class="fas fa-info-circle"></i>
 </a>
-<button id="theme-toggle-btn" onclick="toggleTheme()" aria-label="گۆڕینی شێوازی ڕووکار" title="Dark / Light mode"><i class="fas fa-moon"></i></button>
+<button id="theme-toggle-btn" onclick="toggleTheme()" aria-label="گۆڕینی شێوازی ڕووکار" title="Dark / Light mode"><i class="fas fa-sun"></i></button>
 
 
 <button id="downloadModalBtn" class="header-btn" aria-label="داگرتنی تەواوی فۆنتەکان">
@@ -3168,9 +3168,12 @@ async function loadFontsAndInit() {
     // ── Theme: default is DARK; stays dark unless user explicitly chose 'light' ──
     try {
         var savedTheme = localStorage.getItem('uq_theme');
-        if (savedTheme !== 'light') {
-            document.body.classList.add('dark-mode');
-            var tb = document.getElementById('theme-toggle-btn');
+        var tb = document.getElementById('theme-toggle-btn');
+        if (savedTheme === 'light') {
+            // already removed dark-mode at top of body; just ensure icon is moon
+            if (tb) tb.innerHTML = '<i class="fas fa-moon"></i>';
+        } else {
+            // dark mode already applied at body tag; ensure icon is sun
             if (tb) tb.innerHTML = '<i class="fas fa-sun"></i>';
         }
     } catch(e) {}

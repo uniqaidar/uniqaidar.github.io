@@ -1421,7 +1421,14 @@ function buildCatList() {
     if (!el) return;
     el.innerHTML = '';
     cats.forEach((c,i) => {
-        const count = fnts.filter(f => (Array.isArray(f.category)?f.category:[f.category]).includes(c.id)).length;
+        let count;
+        if (c.id === 'All') {
+            count = fnts.length;
+        } else if (c.id === 'Trending') {
+            count = Math.min(25, fnts.length);
+        } else {
+            count = fnts.filter(f => (Array.isArray(f.category)?f.category:[f.category]).includes(c.id)).length;
+        }
         const isFirst = i === 0;
         const isLast  = i === cats.length - 1;
         const row = document.createElement('div');
