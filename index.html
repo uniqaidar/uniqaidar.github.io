@@ -1548,8 +1548,24 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
 
 
 /* ══ Trinity button bar ══ */
+
+/* Shimmer for download button — narrow blue-tinted, RTL direction (right to left) */
 @keyframes liqLeft  { 0%{left:-60%} 60%{left:130%} 100%{left:130%} }
 @keyframes liqRight { 0%{right:-60%} 60%{right:130%} 100%{right:130%} }
+@keyframes shimmerRTL { 0%{right:-30%} 70%{right:115%} 100%{right:115%} }
+
+/* Copy icon breathe */
+@keyframes iconBreathe { 0%,100%{transform:scale(1)} 50%{transform:scale(1.22)} }
+
+/* Para lines — draw from RIGHT to LEFT (RTL, like Sorani Kurdish)
+   clip-path: inset(0 0 0 100%) = fully hidden from left side
+   clip-path: inset(0 0 0 0)    = fully visible
+   Each line reveals left-to-right within the element but
+   since the element is right-aligned, it reads RTL visually */
+@keyframes paraLine1 { 0%,100%{clip-path:inset(0 0 0 100%)} 8%,90%{clip-path:inset(0 0 0 0%)} }
+@keyframes paraLine2 { 0%,8%,100%{clip-path:inset(0 0 0 100%)} 16%,90%{clip-path:inset(0 0 0 0%)} }
+@keyframes paraLine3 { 0%,16%,100%{clip-path:inset(0 0 0 100%)} 24%,90%{clip-path:inset(0 0 0 0%)} }
+@keyframes paraLine4 { 0%,24%,100%{clip-path:inset(0 0 0 100%)} 32%,90%{clip-path:inset(0 0 0 0%)} }
 
 .download-btn-wrap {
     display: flex !important;
@@ -1560,7 +1576,8 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     overflow: visible !important;
     gap: 0 !important;
 }
-/* LEFT (RTL: visually leftmost end) — Blue download */
+
+/* LEFT (RTL: visually leftmost end) — Blue download, narrow blue shimmer sweeps RTL */
 .trinity-dl {
     flex: 1;
     background: #0984e3;
@@ -1582,14 +1599,18 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     clip-path: inset(0 0 0 0 round 0 12px 12px 0);
 }
 .trinity-dl::after {
-    content:''; position:absolute; top:0; left:-60%; width:60%; height:100%;
-    background: linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
-    animation: liqLeft 2.4s ease-in-out infinite;
+    content: '';
+    position: absolute;
+    top: 0; right: -30%;
+    width: 20%;
+    height: 100%;
+    background: linear-gradient(270deg, transparent, rgba(130,200,255,0.30), transparent);
+    animation: shimmerRTL 3.8s cubic-bezier(0.4,0,0.6,1) infinite;
     pointer-events: none;
 }
 .trinity-dl:hover,.trinity-dl:active { background:#0773c5; }
 
-/* MIDDLE — Deep Purple para toggle */
+/* MIDDLE — Para toggle: 4 lines draw in from right, like RTL Sorani text */
 .trinity-para {
     background: #055a9e;
     color: #fff;
@@ -1609,17 +1630,35 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     flex-shrink: 0;
     clip-path: none !important;
 }
-.trinity-para::after {
-    content:''; position:absolute; top:0; left:-60%; width:60%; height:100%;
-    background: linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
-    animation: liqLeft 2.4s ease-in-out infinite;
-    animation-delay: .8s;
-    pointer-events: none;
-}
+.trinity-para::after { content: none; }
 .trinity-para:hover,.trinity-para:active { background:#044d8a; }
 .trinity-para.active { background:#0366a7; }
 
-/* RIGHT (RTL: visually rightmost end) — Orange copy link */
+/* Para lines container — right-aligned so lines grow from the right side */
+.trinity-para .para-svg-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3.5px;
+    width: 22px;
+    direction: rtl;
+}
+.trinity-para .para-line {
+    height: 2.2px;
+    background: white;
+    border-radius: 2px;
+    clip-path: inset(0 0 0 100%);
+    animation-duration: 10s;
+    animation-timing-function: cubic-bezier(0.4,0,0.2,1);
+    animation-iteration-count: infinite;
+}
+/* Line widths mimic RTL text: long / medium-short / long / short */
+.trinity-para .pl1 { width: 100%; animation-name: paraLine1; }
+.trinity-para .pl2 { width: 68%;  animation-name: paraLine2; }
+.trinity-para .pl3 { width: 100%; animation-name: paraLine3; }
+.trinity-para .pl4 { width: 52%;  animation-name: paraLine4; }
+
+/* RIGHT (RTL: visually rightmost end) — Orange copy: icon breathes */
 .trinity-copy {
     background: #ff5e00;
     color: #fff;
@@ -1639,13 +1678,8 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     flex-shrink: 0;
     clip-path: inset(0 0 0 0 round 12px 0 0 12px);
 }
-.trinity-copy::after {
-    content:''; position:absolute; top:0; right:-60%; width:60%; height:100%;
-    background: linear-gradient(270deg,transparent,rgba(255,255,255,.45),transparent);
-    animation: liqRight 2.4s ease-in-out infinite;
-    animation-delay: 1.6s;
-    pointer-events: none;
-}
+.trinity-copy::after { content: none; }
+.trinity-copy svg { animation: iconBreathe 2.2s ease-in-out infinite; display: block; }
 .trinity-copy:hover,.trinity-copy:active { background:#cc4e00; }
 .trinity-copy.copied { background:#bb3500; }
 
@@ -2121,7 +2155,7 @@ const input = document.getElementById('test-input');
 
 // ── Pagination & category state ─────────────────────────
 // FONTS_PER_PAGE: editable from admin panel — do not rename this comment marker
-var FONTS_PER_PAGE = 50; // admin:perpage
+var FONTS_PER_PAGE = 25; // admin:perpage
 var _currentPage   = 1;
 var _filteredFonts = [];   // full filtered list for current category
 var _currentCatId  = '';   // current active category ID
@@ -2237,7 +2271,7 @@ function renderFonts(data, text, resetPage) {
                 '</div>' +
                 '<div class="download-btn-wrap">' +
                     '<a href="' + font.path + '" class="trinity-dl" download data-font="' + font.name + '" aria-label="داگرتنی فۆنت" onclick="trackFontDownload(\'' + font.name.replace(/'/g,"\\'") + '\',\'single\')">دابە‌زاندنی فۆنت TTF</a>' +
-                    '<button class="trinity-para" title="دەقی پەرەگراف" aria-label="دەقی پەرەگراف" onclick="toggleParaPreview(this,\'' + font.name.replace(/'/g, "\\'") + '\')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="10" x2="8" y2="10"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="10" y2="18"/></svg></button>' +
+                    '<button class="trinity-para" title="دەقی پەرەگراف" aria-label="دەقی پەرەگراف" onclick="toggleParaPreview(this,\'' + font.name.replace(/'/g, "\\'") + '\')"><div class="para-svg-wrap"><div class="para-line pl1"></div><div class="para-line pl2"></div><div class="para-line pl3"></div><div class="para-line pl4"></div></div></button>' +
                     '<button class="trinity-copy" title="کۆپیکردنی لینک" aria-label="کۆپیکردنی لینکی فۆنت"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>' +
                 '</div>' +
             '</div>';
@@ -2478,7 +2512,13 @@ input.addEventListener('input', function() {
         var fontName = card ? (card.querySelector('.card-eng-name') ? card.querySelector('.card-eng-name').textContent.replace(/^نوێ\s*/,'').trim() : '') : '';
         var fontObj = fonts.find(function(f){ return (f.displayName||f.name) === fontName; });
         var defaultPreview = fontObj ? (fontObj.preview || 'فۆنتەکانی یونی‌قەیدار') : 'فۆنتەکانی یونی‌قەیدار';
-        p.textContent = q || defaultPreview;
+        // If in paragraph mode, use the typed text or the paragraph text
+        if (p.classList.contains('para-mode')) {
+            var paraDefault = (fontObj && fontObj.paragraph && fontObj.paragraph.trim()) ? fontObj.paragraph.trim() : DEFAULT_PARA_TEXT;
+            p.textContent = q || paraDefault;
+        } else {
+            p.textContent = q || defaultPreview;
+        }
         p.style.fontFamily = fontFamily;
         p.style.fontSize   = fontSize;
     });

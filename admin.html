@@ -872,8 +872,8 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
         <div class="box-header" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
           <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--green)"></div><span>🔥 بەڕێوەبردنی زۆرترین داونلۆکراوەکان (popular.json)</span></div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadPopularJson()">📥 بارکردن لە GitHub</button>
-            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="autoFillTrending()" title="داخستنی تاپ ٢٥ لە ئامارەکانی داگرتن">⚡ دەستبجێ لە ئامار</button>
+            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadPopularJson()">📥 Load from GitHub</button>
+            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="autoFillTrending()" title="داخستنی تاپ ٢٥ لە ئامارەکانی داگرتن">⚡ Auto-fill from Stats</button>
             <button class="btn btn-primary" style="font-size:0.78rem;padding:5px 12px;" onclick="savePopularJson()">💾 سەیڤی popular.json بۆ GitHub</button>
           </div>
         </div>
@@ -2526,7 +2526,7 @@ let STATS_LOADED = false;
 
 // Pagination state for all 4 tables
 const PG = { vcountry:1, vlog:1, dlfont:1, dllog:1 };
-const PG_SIZE = 50;
+const PG_SIZE = 25;
 
 // Sort state for visit tables
 let VT_COUNTRY_SORT = 'count', VT_COUNTRY_DIR = -1;
