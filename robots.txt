@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://uniqaidar.pages.dev/sitemap.xml
