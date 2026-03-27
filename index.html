@@ -12,10 +12,9 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniQaidar Fonts | فۆنتەکانی یونی قەیدار - داگرتنی فۆنتی کوردی</title>
+    <title>UniQaidar Fonts | داگرتنی فۆنتی کوردی - Kurdish Font Download - فۆنتەکانی یونی قەیدار</title>
     <meta name="description" content="گەورەترین کۆکراوەی فۆنتی کوردی و عەرەبی بۆ داگرتن. تاقیکردنەوە و داگرتنی فۆنتەکانی یونی‌قەیدار بە خۆڕایی. Download 420+ free TTF fonts.">
-    <meta name="keywords" content="فۆنتەکانی یونی‌قەیدار, فۆنتەکانی یونی قەیدار, فۆنتی کوردی, فۆنتی عەرەبی, داگرتنی فۆنت, kurdish fonts, arabic fonts, uniqaidar fonts, typography
-Unicode">
+    <meta name="keywords" content="فۆنتەکانی یونی‌قەیدار, فۆنتەکانی یونی قەیدار, فۆنتی کوردی, فۆنتی عەرەبی, داگرتنی فۆنت, kurdish fonts, arabic fonts, uniqaidar fonts, typography, Unicode, فۆنتی کوردی بۆ کێپکات, فۆنتی کوردی بۆ ئینستاگرام, Kurdish font download">
     <!-- ── Open Graph (Facebook, WhatsApp, Telegram, LinkedIn) ── -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="UniQaidar Fonts">
@@ -66,6 +65,21 @@ Unicode">
     </script>
 
     <style>
+        /* Hidden SEO Keywords Section - Invisible to users, visible to search engines */
+        .seo-keywords-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+            visibility: hidden;
+            display: none;
+        }
+
 
         :root {
             --primary: #2c3e50;
@@ -226,11 +240,10 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
 }
-.card:hover,
-.card:active {
-    box-shadow: 0 6px 20px rgba(0,0,0,0.10);
-    transform: translateY(-2px);
-}
+        .card:hover,
+        .card:active {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+        }
 @keyframes cardFadeIn {
     from { opacity: 0; transform: translateY(22px) scale(0.96); }
     to   { opacity: 1; transform: translateY(0)    scale(1);    }
@@ -391,21 +404,88 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-size: clamp(0.72rem, 2.5vw, 1rem);
+            font-size: 0.95rem; /* Same as category labels */
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif;
         }
+        /* Trinity Button Bar Segments */
+        .trinity-size {
+            background: #044d8a;
+            color: #fff;
+            border: none;
+            border-radius: 0; /* Normal square corners */
+            width: 75px; /* Slightly wider for larger icon and text */
+            min-width: 75px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.82rem;
+            font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif;
+            position: relative;
+            overflow: hidden;
+            transition: background .2s;
+            flex-shrink: 0;
+            direction: rtl; /* RTL layout for the whole bar */
+        }
+        .trinity-size svg {
+            width: 18px; /* Larger icon */
+            height: 18px;
+            fill: #ffffff; /* Clean white icon */
+        }
+        .trinity-size:hover { background: #033f71; }
         .download-btn::after {
             content: '';
             position: absolute;
-            top: 0; left: -100%; width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0,210,255,0.55), transparent);
-            animation: liquidSweepBlue 2.4s ease-in-out infinite;
+            top: 0; right: -100%; width: 80%; height: 100%;
+            background: linear-gradient(-90deg, transparent, rgba(0,68,170,0.2), rgba(0,102,255,0.4), rgba(0,68,170,0.2), transparent);
+            animation: liquidSweepBlueRTL 3.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            animation-delay: 1.2s;
             pointer-events: none;
         }
-        @keyframes liquidSweepBlue {
-            0%   { left: -60%; }
-            60%  { left: 130%; }
-            100% { left: 130%; }
+        @keyframes liquidSweepBlueRTL {
+            0%   { right: -80%; }
+            70%  { right: 150%; }
+            100% { right: 150%; }
+        }
+        /* Modern SVG Icon Styles */
+        .modern-dl-icon {
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            flex-shrink: 0;
+            margin-top: -1px; /* Fine-tune vertical alignment with text baseline */
+        }
+        .modern-dl-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: currentColor;
+        }
+        .modern-dl-icon .arrow-part {
+            transition: transform 0.3s ease;
+        }
+        .download-btn:hover .arrow-part, .download-btn:active .arrow-part,
+        .header-btn:hover .arrow-part, .header-btn:active .arrow-part,
+        .dm-drive-btn:hover .arrow-part, .dm-drive-btn:active .arrow-part,
+        .dm-direct-btn-el:hover .arrow-part, .dm-direct-btn-el:active .arrow-part,
+        #cat-dl-btn:hover .arrow-part, #cat-dl-btn:active .arrow-part,
+        #cat-dl-btn-mobile:hover .arrow-part, #cat-dl-btn-mobile:active .arrow-part,
+        #downloadModalBtn:hover .arrow-part, #downloadModalBtn:active .arrow-part,
+        .trinity-dl:hover .arrow-part, .trinity-dl:active .arrow-part {
+            animation: modernArrowLoop 0.8s ease-in-out infinite;
+        }
+        @keyframes modernArrowLoop {
+            0% { transform: translateY(0); }
+            40% { transform: translateY(4px); }
+            70% { transform: translateY(-1px); }
+            100% { transform: translateY(0); }
         }
         .download-btn:hover,
         .download-btn:active {
@@ -1073,7 +1153,6 @@ footer strong {
 .header-btn:active {
     background: #ff5700; 
     border-color: #ff5700;
-    transform: translateY(-2px);
 }
 
 .header-content {
@@ -1567,15 +1646,19 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
 @keyframes paraLine3 { 0%,16%,100%{clip-path:inset(0 0 0 100%)} 24%,90%{clip-path:inset(0 0 0 0%)} }
 @keyframes paraLine4 { 0%,24%,100%{clip-path:inset(0 0 0 100%)} 32%,90%{clip-path:inset(0 0 0 0%)} }
 
-.download-btn-wrap {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: stretch !important;
-    margin-top: 10px !important;
-    border-radius: 0 !important;
-    overflow: visible !important;
-    gap: 0 !important;
-}
+        .download-btn-wrap {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: stretch !important;
+            margin-top: 10px !important;
+            border-radius: 0 !important;
+            overflow: visible !important;
+            gap: 0 !important;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .download-btn-wrap:hover {
+            transform: translateY(-3px);
+        }
 
 /* LEFT (RTL: visually leftmost end) — Blue download, narrow blue shimmer sweeps RTL */
 .trinity-dl {
@@ -1587,16 +1670,19 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     padding: 13px 10px;
     border-radius: 0 12px 12px 0;
     font-weight: bold;
-    font-size: clamp(0.72rem,2.5vw,1rem);
-    font-family: inherit;
+    font-size: 0.95rem; /* Same as category labels */
+    font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     position: relative;
     overflow: hidden;
     white-space: nowrap;
     transition: background .2s;
-    clip-path: inset(0 0 0 0 round 0 12px 12px 0);
+    clip-path: none !important;
+    border-radius: 0 12px 12px 0;
+    direction: rtl;
 }
 .trinity-dl::after {
     content: '';
@@ -1605,7 +1691,8 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     width: 20%;
     height: 100%;
     background: linear-gradient(270deg, transparent, rgba(130,200,255,0.30), transparent);
-    animation: shimmerRTL 3.8s cubic-bezier(0.4,0,0.6,1) infinite;
+    animation: shimmerRTL 4.5s cubic-bezier(0.4,0,0.6,1) infinite;
+    animation-delay: 0.2s;
     pointer-events: none;
 }
 .trinity-dl:hover,.trinity-dl:active { background:#0773c5; }
@@ -1686,18 +1773,24 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
 /* ══ Task 6: liquidSweep on header download btn + category banner ══ */
 #downloadModalBtn { position:relative; overflow:hidden; }
 #downloadModalBtn::after {
-    content:''; position:absolute; top:0; left:-60%; width:60%; height:100%;
-    background: linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
-    animation: liqLeft 2.4s ease-in-out infinite;
+    content:''; position:absolute; top:0; right:-100%; width:80%; height:100%;
+                        background: linear-gradient(-90deg, transparent, rgba(255,255,255,0.1), rgba(255,255,255,0.3), rgba(255,255,255,0.1), transparent);
+    animation: liquidSweepRTL 5.0s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    animation-delay: 2.5s;
     pointer-events:none;
 }
 #cat-dl-btn, #cat-dl-btn-mobile { position:relative; overflow:hidden; }
 #cat-dl-btn::after, #cat-dl-btn-mobile::after {
-    content:''; position:absolute; top:0; left:-60%; width:60%; height:100%;
-    background: linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
-    animation: liqLeft 2.4s ease-in-out infinite;
-    animation-delay: .4s;
+    content:''; position:absolute; top:0; right:-100%; width:80%; height:100%;
+    background: linear-gradient(-90deg, transparent, rgba(255,255,255,0.1), rgba(255,255,255,0.3), rgba(255,255,255,0.1), transparent);
+    animation: liquidSweepRTL 4.0s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    animation-delay: 1.8s;
     pointer-events:none;
+}
+@keyframes liquidSweepRTL {
+    0%   { right: -80%; }
+    70%  { right: 150%; }
+    100% { right: 150%; }
 }
 /* ── Trending sort bar ── */
 .tsort-btn {
@@ -1958,7 +2051,13 @@ body.dark-mode .card-body {
 
 
 <button id="downloadModalBtn" class="header-btn" aria-label="داگرتنی تەواوی فۆنتەکان">
-    <i class="fas fa-download"></i> <span id="header-btn-label">داگرتنی تەواوی فۆنتەکان</span>
+    <span class="modern-dl-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path class="base-part" d="M19 18H5V19H19V18Z" />
+            <path class="arrow-part" d="M12 15L17 10H14V4H10V10H7L12 15Z" />
+        </svg>
+    </span>
+    <span id="header-btn-label">داگرتنی تەواوی فۆنتەکان</span>
 </button>
 
 
@@ -1981,12 +2080,30 @@ body.dark-mode .card-body {
             <p id="dm-desc" style="font-size:1.05rem;margin-bottom:24px;color:#444;line-height:1.8;background:#f4f7ff;border-radius:12px;padding:14px 18px;border:1px solid #d8e3ff;">فەرموون لەگەڵ داگرتنی دوایین ئەپدەیتی تەواوی فۆنتەکانی یونی‌قەیدار بە شێوەی فایلی زیپ (ZIP) کە لە ئێستادا ژمارەی فۆنتەکان 424 فۆنتە:</p>
 
             <!-- Google Drive Button -->
-            <a id="dm-btn" href="https://drive.google.com/uc?export=download&id=1sXwTWo3D8_Z_ohppLHHu-YxALLUteiGe" target="_blank" class="dm-drive-btn"
-               onclick="trackFontDownload('داگرتنی تەواوی فۆنتەکان (Google Drive)', 'bulk')"
-               style="display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#ff6a1a,#ff5700);color:white;text-decoration:none;padding:14px 28px;border-radius:14px;font-size:1.05rem;margin-bottom:12px;box-shadow:0 4px 14px rgba(255,87,0,0.35);transition:all 0.2s;">
-                <i class="fas fa-cloud-download-alt" style="font-size:1.2rem;"></i>
-                <span id="dm-btn-label">داگرتن لە ڕێگەی لینکی ڕاستەوخۆی گۆگڵ درایڤەوە</span>
-            </a>
+            <div style="display:flex;justify-content:center;margin-bottom:12px;">
+                <a id="dm-btn" href="https://drive.google.com/uc?export=download&id=1sXwTWo3D8_Z_ohppLHHu-YxALLUteiGe" target="_blank" class="dm-drive-btn"
+                   onclick="trackFontDownload('داگرتنی تەواوی فۆنتەکان (Google Drive)', 'bulk')"
+                   style="display:inline-flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#ff6a1a,#ff5700);color:white;text-decoration:none;padding:10px 20px;border-radius:12px;font-size:0.95rem;box-shadow:0 4px 14px rgba(255,87,0,0.3);transition:all 0.2s;position:relative;overflow:hidden;width:fit-content;">
+                    <span class="modern-dl-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path class="base-part" d="M19 18H5V19H19V18Z" />
+                            <path class="arrow-part" d="M12 15L17 10H14V4H10V10H7L12 15Z" />
+                        </svg>
+                    </span>
+                    <span id="dm-btn-label">داگرتن لە ڕێگەی لینکی ڕاستەوخۆی گۆگڵ درایڤەوە</span>
+                    <style>
+                        .dm-drive-btn::after {
+                            content: '';
+                            position: absolute;
+                            top: 0; right: -100%; width: 80%; height: 100%;
+                            background: linear-gradient(-90deg, transparent, rgba(255,255,255,0.1), rgba(255,255,255,0.3), rgba(255,255,255,0.1), transparent);
+                            animation: liquidSweepRTL 5.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                            animation-delay: 0.5s;
+                            pointer-events: none;
+                        }
+                    </style>
+                </a>
+            </div>
 
             <!-- Divider -->
             <div style="display:flex;align-items:center;gap:10px;margin:14px 0;color:#aaa;font-size:0.85rem;">
@@ -1996,11 +2113,29 @@ body.dark-mode .card-body {
             </div>
 
             <!-- Direct Download Button -->
-            <button id="dm-direct-btn" onclick="downloadFontsDirectly()" class="dm-direct-btn-el"
-                    style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:linear-gradient(135deg,#2ecc71,#27ae60);color:white;padding:14px 28px;border-radius:14px;font-size:1.05rem;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(39,174,96,0.3);transition:all 0.2s;">
-                <i class="fas fa-download" style="font-size:1.2rem;"></i>
-                <span id="dm-direct-label">داگرتنی ڕاستەوخۆ بەبێ گووگڵ درایڤ</span>
-            </button>
+            <div style="display:flex;justify-content:center;">
+                <button id="dm-direct-btn" onclick="downloadFontsDirectly()" class="dm-direct-btn-el"
+                        style="display:inline-flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#2ecc71,#27ae60);color:white;padding:10px 20px;border-radius:12px;font-size:0.95rem;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(39,174,96,0.25);transition:all 0.2s;position:relative;overflow:hidden;width:fit-content;">
+                    <span class="modern-dl-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path class="base-part" d="M19 18H5V19H19V18Z" />
+                            <path class="arrow-part" d="M12 15L17 10H14V4H10V10H7L12 15Z" />
+                        </svg>
+                    </span>
+                    <span id="dm-direct-label">داگرتنی ڕاستەوخۆ بەبێ گووگڵ درایڤ</span>
+                    <style>
+                        .dm-direct-btn-el::after {
+                            content: '';
+                            position: absolute;
+                            top: 0; right: -100%; width: 80%; height: 100%;
+                            background: linear-gradient(-90deg, transparent, rgba(255,255,255,0.1), rgba(255,255,255,0.3), rgba(255,255,255,0.1), transparent);
+                            animation: liquidSweepRTL 4.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                            animation-delay: 3.0s;
+                            pointer-events: none;
+                        }
+                    </style>
+                </button>
+            </div>
 
             <!-- Progress -->
             <div id="zip-progress" style="display:none;margin-top:16px;font-size:0.95rem;color:#555;direction:rtl;background:#f8f9fa;border-radius:10px;padding:12px 16px;">
@@ -2058,7 +2193,12 @@ body.dark-mode .card-body {
             <span id="desktop-active-label" style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></span>
             <span id="cat-dl-inline-wrap" style="display:none;align-items:center;gap:8px;flex-shrink:0;" onclick="event.stopPropagation()">
                 <button id="cat-dl-btn" onclick="event.stopPropagation();downloadCategoryFonts()">
-                    <i class="fas fa-download"></i>
+                    <span class="modern-dl-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path class="base-part" d="M19 18H5V19H19V18Z" />
+                            <path class="arrow-part" d="M12 15L17 10H14V4H10V10H7L12 15Z" />
+                        </svg>
+                    </span>
                     <span id="cat-dl-btn-text">داگرتنی تەواوی فۆنتەکانی ئەم بەشە</span>
                 </button>
                 <span id="cat-dl-progress-inline" style="display:none;font-size:0.78rem;color:#ccc;background:#16213e;border-radius:7px;padding:4px 10px;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis;"></span>
@@ -2080,7 +2220,12 @@ body.dark-mode .card-body {
         <!-- Mobile cat-download bar: full-width, below toggle row -->
         <div id="cat-dl-mobile-wrap" style="display:none;direction:rtl;background:#1a1a2e;padding:8px 14px;flex-direction:column;gap:6px;border-bottom:1px solid rgba(255,255,255,0.08);">
             <button id="cat-dl-btn-mobile" onclick="downloadCategoryFonts()" style="width:100%;">
-                <i class="fas fa-download"></i>
+                <span class="modern-dl-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="base-part" d="M19 18H5V19H19V18Z" />
+                        <path class="arrow-part" d="M12 15L17 10H14V4H10V10H7L12 15Z" />
+                    </svg>
+                </span>
                 <span id="cat-dl-btn-text-mobile">داگرتنی تەواوی فۆنتەکانی ئەم بەشە</span>
             </button>
             <div id="cat-dl-progress-mobile" style="display:none;font-size:0.8rem;color:#ccc;background:#16213e;border-radius:7px;padding:5px 10px;text-align:center;width:100%;box-sizing:border-box;"></div>
@@ -2260,6 +2405,7 @@ function renderFonts(data, text, resetPage) {
             copyFontLink(font.name, resolvedCat, copyBtn);
         });
 
+        const fileSize = font.size || '--- KB';
         card.innerHTML =
             '<div class="card-header">' +
                 '<span class="card-eng-name">' + (isNew ? '<span class="new-badge">نوێ</span>' : '') + engName + '</span>' +
@@ -2270,7 +2416,19 @@ function renderFonts(data, text, resetPage) {
                     (text || font.preview || 'فۆنتەکانی یونی‌قەیدار') +
                 '</div>' +
                 '<div class="download-btn-wrap">' +
-                    '<a href="' + font.path + '" class="trinity-dl" download data-font="' + font.name + '" aria-label="داگرتنی فۆنت" onclick="trackFontDownload(\'' + font.name.replace(/'/g,"\\'") + '\',\'single\')">دابە‌زاندنی فۆنت TTF</a>' +
+                    '<a href="' + font.path + '" class="trinity-dl" download data-font="' + font.name + '" aria-label="داگرتنی فۆنت" onclick="trackFontDownload(\'' + font.name.replace(/'/g,"\\'") + '\',\'single\')">' +
+                        '<span class="modern-dl-icon" style="width:18px;height:18px;">' +
+                            '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
+                                '<path class="base-part" d="M19 18H5V19H19V18Z" />' +
+                                '<path class="arrow-part" d="M12 15L17 10H14V4H10V10H7L12 15Z" />' +
+                            '</svg>' +
+                        '</span>' +
+                        'دابە‌زاندنی فۆنت TTF' +
+                    '</a>' +
+                    '<div class="trinity-size" title="قەبارەی فۆنت">' +
+                        '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>' +
+                        '<span>' + fileSize + '</span>' +
+                    '</div>' +
                     '<button class="trinity-para" title="دەقی پەرەگراف" aria-label="دەقی پەرەگراف" onclick="toggleParaPreview(this,\'' + font.name.replace(/'/g, "\\'") + '\')"><div class="para-svg-wrap"><div class="para-line pl1"></div><div class="para-line pl2"></div><div class="para-line pl3"></div><div class="para-line pl4"></div></div></button>' +
                     '<button class="trinity-copy" title="کۆپیکردنی لینک" aria-label="کۆپیکردنی لینکی فۆنت"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>' +
                 '</div>' +
@@ -3512,4 +3670,9 @@ function toggleParaPreview(btn, fontName) {
 }
 
 </script>
+    <!-- Hidden SEO Keywords Section for Search Engines -->
+    <div id="seo-keywords-container" class="seo-keywords-hidden" aria-hidden="true">
+        <!-- Keywords will be injected here by admin panel -->
+        فۆنتی کوردی, داگرتنی فۆنتی کوردی, فۆنتی کوردی بە خۆڕایی, فۆنتی کوردی سۆرانی, باشترین فۆنتی کوردی, Kurdish font download, Sorani Kurdish font free, جوانترین فۆنتی کوردی, نوێترین فۆنتی کوردی, فۆنت کوردی جوان, کۆمەڵە فۆنتی کوردی, پاکی فۆنتی کوردی, کۆکراوەی فۆنتی کوردی, داگرتنی فۆنت, فۆنتی کوردی بۆ داگرتن, باشترین فۆنتەکانی ٢٠٢٦, فۆنتی کوردی یونیکۆد, فۆنتی یونیکۆد کوردی, داگرتنی فۆنتی کوردی TTF, فۆنتی کوردی OTF, گۆڕینی فۆنتی عەلی بۆ یونیکۆد, وەرگێڕی فۆنتی کوردی, Kurdish font TTF, Kurdish font OTF, Kurdish Unicode font, فۆنتی کوردی بۆ کێپکات, فۆنتی کوردی بۆ کاپکەت, چارەسەری فۆنتی کوردی کێپکات, فۆنتی کوردی بۆ ئەلایت مۆشن, فێرکاری فۆنتی کوردی بۆ ئەلایت مۆشن, زیادکردنی فۆنتی کوردی بۆ ئەلایت مۆشن, فۆنتی کوردی بۆ ئینشۆت, دابەزاندنی فۆنت بۆ ئینشۆت, فۆنتی کوردی بۆ پیکس ئارت, فۆنتی کوردی بۆ ئینستاگرام, فۆنتی کوردی بۆ فۆتۆشۆپ, چارەسەری فۆنتی کوردی لە فۆتۆشۆپ, فۆنتی کوردی بۆ وۆرد, فۆنتی کوردی بۆ ئێکسڵ, فۆنتی کوردی بۆ پریمیەر, فۆنتی کوردی بۆ ویندۆز, فۆنتی کوردی بۆ ماک, فۆنتی کوردی بۆ لینوکس, فۆنتی کوردی بۆ ئەندرۆید, فۆنتی کوردی بۆ ئایفۆن, Kurdish font for Photoshop, Kurdish font for Word, Kurdish font Windows, Kurdish font Mac, فۆنتی کوردی بۆ ژێرنووس, باشترین فۆنت بۆ ژێرنووس, فۆنتی مۆدێرن بۆ ڤیدیۆ, فۆنتی کوردی بۆ لۆگۆ, فۆنتی تایبەت بۆ لۆگۆ, فۆنتی کوردی بۆ دیزاین, فۆنتی هەواڵ, فۆنتی کەناڵی ڕووداو, فۆنتی کەناڵی کوردستان ٢٤, فۆنتی کوردی بۆ کاتنامە, فۆنت بۆ کارتی بانگهێشت, Kurdish font for subtitles, فۆنتی کوردی بۆڵد, فۆنتی کوردی قەڵەو, فۆنتی بۆڵد بۆ ناونیشان, فۆنتی کوردی تەنک, فۆنتی کوردی نازک, فۆنتی کوردی سادە, فۆنتی کوردی ڕێک و سادە, فۆنتی دەستنووس, فۆنتی کوردی دەستنووس, فۆنتی خەتخۆشی کوردی, فۆنتی کوردی مۆدێرن, فۆنتی کوردی کۆن, فۆنتی کوردی ئیسلامی, فۆنتی شێوە کۆن, فۆنتەکانی یونی قەیدار, داگرتنی فۆنتەکانی قەیدار, فۆنتەکانی qaidar rahim, uniqaidar font, uniqaidar Kurdish font, Kurdish font, Kurdish fonts, Sorani font, Sorani Kurdish font, Kurdish font download, Kurdish fonts free download, Kurdish font pack, Kurdish font bundle, best Kurdish fonts 2026, Kurdish font TTF, Kurdish font OTF, Kurdish font for Photoshop, Kurdish font for Word, Kurdish font Windows, Kurdish font Mac, Kurdish font for subtitles, Kurdish calligraphy font, Kurdish handwriting font, Kurdish bold font, download Kurdish fonts
+    </div>
 </body>

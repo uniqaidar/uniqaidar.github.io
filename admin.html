@@ -214,6 +214,32 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
         <button class="tab"        onclick="go('t-arc',     this)">📦 Archive</button>
         <button class="tab"        onclick="go('t-ifont',   this)">🎨 Interface</button>
         <button class="tab"        onclick="go('t-dlstats', this)">📊 Downloads</button>
+        <button class="tab"        onclick="go('t-seo-keywords', this)">🔍 SEO Keywords</button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB: SEO Keywords Manager                             -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="t-seo-keywords" class="tab-content">
+        <div class="box">
+            <div class="box-header">
+                <div class="dot" style="background:var(--accent)"></div>
+                بەڕێوەبردنی کلیلەوشەکانی SEO (Hidden Keywords)
+            </div>
+            <div class="box-body">
+                <p class="sub" style="margin-bottom:15px; color:var(--muted); font-size:0.85rem;">
+                    ئەم کلیلەوشانە لە وێبسایتەکەدا نابینرێن بەڵام بزوێنەرەکانی گەڕان (وەک Google) دەیانبینن. تکایە کلیلەوشەکان بە کۆما (,) لەیەک جیا بکەرەوە.
+                </p>
+                <div class="form-group full">
+                    <label>کلیلەوشەکان (Keywords)</label>
+                    <textarea id="seo-keywords-input" style="min-height: 200px;" placeholder="کلیلەوشەکان لێرە بنووسە..."></textarea>
+                </div>
+                <div id="seo-keywords-alert" class="alert"></div>
+                <div class="btn-row">
+                    <button class="btn btn-primary" onclick="saveSeoKeywords()">💾 پاشکەوتکردنی کلیلەوشەکان</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- ══════════════════════════════════════════════════════ -->
@@ -2505,6 +2531,73 @@ function go(id, btn) {
     if (id==='t-arc')     renderArcFull();
     if (id==='t-ifont')   buildInterfaceFontSelect();
     if (id==='t-dlstats') { loadDlStats(false); loadVisitStats(false); if(TOKEN && USER && REPO && !_trendingList.length) { loadPopularJson(); } }
+    if (id==='t-seo-keywords') { loadSeoKeywords(); }
+}
+
+// ══════════════════════════════════════════
+// SEO Keywords Manager
+// ══════════════════════════════════════════
+function loadSeoKeywords() {
+    const input = document.getElementById('seo-keywords-input');
+    if (INDEX_HTML && input) {
+        const match = INDEX_HTML.match(/<div id="seo-keywords-container"[^>]*>([\s\S]*?)<\/div>/);
+        if (match && match[1]) {
+            input.value = match[1].trim().replace(/<!--[\s\S]*?-->/g, '').trim();
+        }
+    }
+}
+
+async function saveSeoKeywords() {
+    const al = document.getElementById('seo-keywords-alert');
+    const input = document.getElementById('seo-keywords-input');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە یەکەم پەیوەندی بکە بە GitHub.', 'err');
+    
+    const newKeywords = input.value.trim();
+    const newContainerHtml = `<div id="seo-keywords-container" class="seo-keywords-hidden" aria-hidden="true">\n        <!-- Keywords will be injected here by admin panel -->\n        ${newKeywords}\n    </div>`;
+    
+    // Replace in INDEX_HTML
+    const updatedHtml = INDEX_HTML.replace(/<div id="seo-keywords-container"[^>]*>([\s\S]*?)<\/div>/, newContainerHtml);
+    
+    if (updatedHtml === INDEX_HTML) {
+        return alert2(al, '⚠️ هیچ گۆڕانکارییەک نەکراوە یان کۆنتێنەرەکە نەدۆزرایەوە.', 'inf');
+    }
+    
+    alert2(al, 'سەیڤ دەکرێت...', 'inf');
+    
+    try {
+        const encoded = btoa(unescape(encodeURIComponent(updatedHtml)));
+        const body = {
+            message: 'Update SEO keywords in index.html',
+            content: encoded,
+            branch: BRANCH,
+            sha: INDEX_SHA
+        };
+        
+        const r = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/index.html`,
+            {
+                method: 'PUT',
+                headers: {
+                    Authorization: `token ${TOKEN}`,
+                    Accept: 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            }
+        );
+        
+        if (r.ok) {
+            const rd = await r.json();
+            INDEX_SHA = rd.content.sha;
+            INDEX_HTML = updatedHtml;
+            alert2(al, '✅ کلیلەوشەکان بە سەرکەوتوویی پاشکەوت کران!', 'ok');
+        } else {
+            const err = await r.json().catch(() => ({}));
+            alert2(al, '❌ پاشکەوت نەکرا: ' + (err.message || r.status), 'err');
+        }
+    } catch (e) {
+        alert2(al, '❌ هەڵە: ' + e.message, 'err');
+    }
 }
 
 function showOverlay(msg) { document.getElementById('overlay-msg').textContent = msg||'...'; document.getElementById('overlay').classList.add('show'); }
