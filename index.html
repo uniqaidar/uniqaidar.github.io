@@ -2066,6 +2066,7 @@ body.dark-mode .card-body {
         <span class="close-download" aria-label="داخستن">&times;</span>
         <h2 id="dm-title" style="font-size:1.5rem;letter-spacing:0.01em;display:flex;align-items:center;justify-content:center;gap:10px;">
             داگرتنی تەواوی فۆنتەکان
+            
             <button id="dm-copy-link-btn" onclick="copyDmLink(this)" title="کۆپیکردنی لینکی داگرتن" aria-label="کۆپیکردنی لینکی داگرتن" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:rgba(0,112,228,0.15);border:1px solid rgba(0,112,228,0.35);border-radius:7px;cursor:pointer;padding:0;transition:background 0.2s;flex-shrink:0;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0070e4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
             </button>
@@ -2300,7 +2301,7 @@ const input = document.getElementById('test-input');
 
 // ── Pagination & category state ─────────────────────────
 // FONTS_PER_PAGE: editable from admin panel — do not rename this comment marker
-var FONTS_PER_PAGE = 25; // admin:perpage
+var FONTS_PER_PAGE = 50; // admin:perpage
 var _currentPage   = 1;
 var _filteredFonts = [];   // full filtered list for current category
 var _currentCatId  = '';   // current active category ID
