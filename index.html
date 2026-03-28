@@ -420,25 +420,25 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
             background: #044d8a;
             color: #fff;
             border: none;
-            border-radius: 0; /* Normal square corners */
-            width: 80px; /* Slightly wider for larger icon and text */
+            border-radius: 0;
+            width: 80px;
             min-width: 80px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 4px;
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif;
             position: relative;
             overflow: hidden;
             transition: background .2s;
             flex-shrink: 0;
-            direction: ltr; /* LTR so icon then text left-to-right */
+            direction: ltr;
         }
         .trinity-size svg {
-            width: 22px; /* Larger icon */
-            height: 22px;
-            fill: #ffffff; /* Clean white icon */
+            width: 24px;
+            height: 24px;
+            fill: #ffffff;
             flex-shrink: 0;
         }
         .trinity-size:hover { background: #033f71; }
@@ -1287,6 +1287,33 @@ a:active, button:active {
         grid-template-columns: 1fr;
         gap: 15px;
         padding: 15px;
+    }
+
+    /* مۆبایل: نیان لایت — بەرپاگرتنی سنووری شاشە */
+    .featured-laser-glow {
+        overflow: hidden !important;
+    }
+    .featured-laser-glow::before,
+    .featured-laser-glow::after {
+        inset: -2px !important;
+    }
+
+    /* مۆبایل: شاردنەوەی بۆکسی قەبارەی فایل */
+    .trinity-size { display: none !important; }
+
+    /* مۆبایل: دووگمەی دابەزاندن — پڕکردنەوەی ئینلاین و نەچوونی دەرەوە */
+    .trinity-dl {
+        min-width: 0 !important;
+        padding: 13px 8px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+    }
+    .trinity-dl .dl-label {
+        display: inline-block !important;
+        transform-origin: center !important;
+        white-space: nowrap !important;
+        /* Scale text to fit without wrapping — flexible per screen width */
+        font-size: clamp(0.7rem, 3.5vw, 0.95rem) !important;
     }
 
     /* فۆنتی پیشاندان لە کارت */
@@ -2447,7 +2474,7 @@ function renderFonts(data, text, resetPage) {
             copyFontLink(font.name, resolvedCat, copyBtn);
         });
 
-        const fileSize = font.size || '--- KB';
+        const fileSize = font.size || null; // null = fetch dynamically
         card.innerHTML =
             '<div class="card-header">' +
                 '<span class="card-eng-name">' + (isNew ? '<span class="new-badge">نوێ</span>' : '') + engName + '</span>' +
@@ -2468,8 +2495,8 @@ function renderFonts(data, text, resetPage) {
                         '<span class="dl-label">دابە‌زاندنی فۆنت</span>' +
                     '</a>' +
                     '<div class="trinity-size" title="قەبارەی فۆنت">' +
+                        '<span class="size-val">' + (fileSize || '…') + '</span>' +
                         '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>' +
-                        '<span>' + fileSize + '</span>' +
                     '</div>' +
                     '<button class="trinity-para" title="دەقی پەرەگراف" aria-label="دەقی پەرەگراف" onclick="toggleParaPreview(this,\'' + font.name.replace(/'/g, "\\'") + '\')"><div class="para-svg-wrap"><div class="para-line pl1"></div><div class="para-line pl2"></div><div class="para-line pl3"></div><div class="para-line pl4"></div></div></button>' +
                     '<button class="trinity-copy" title="کۆپیکردنی لینک" aria-label="کۆپیکردنی لینکی فۆنت"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>' +
@@ -2515,6 +2542,22 @@ function renderFonts(data, text, resetPage) {
             }, 600000); // 10 minutes
         }
         grid.appendChild(card);
+        // Fetch real file size if not in fonts.json
+        if (!fileSize) {
+            (function(card, path) {
+                var sizeEl = card.querySelector('.size-val');
+                if (!sizeEl) return;
+                fetch(path, { method: 'HEAD' }).then(function(r) {
+                    var cl = r.headers.get('content-length');
+                    if (cl) {
+                        var kb = Math.round(parseInt(cl) / 1024);
+                        sizeEl.textContent = kb + ' KB';
+                    } else {
+                        sizeEl.textContent = '?';
+                    }
+                }).catch(function() { sizeEl.textContent = '?'; });
+            })(card, font.path);
+        }
         } catch(cardErr) { console.warn('[UniQaidar] Card render error:', cardErr, font); }
     });
 
