@@ -1299,6 +1299,8 @@ a:active, button:active {
         gap: 5px;
         justify-content: center;
         align-items: center;
+        width: fit-content;
+        align-self: center;
     }
 
     /* تۆگڵی کاتیگۆری — مۆبایل */
@@ -3043,7 +3045,7 @@ async function downloadCategoryFonts() {
             if (prog)  { prog.innerHTML  = html; prog.style.display  = html ? 'inline-block' : 'none'; }
             if (progM) { progM.innerHTML = html; progM.style.display = html ? 'block' : 'none'; }
         }
-        setProgress('⚠️ براوزەری تێلیگرام داگرتنی زیپ پشتیوانی ناکات. تکایە لینکی گووگڵ درایڤ بەکاربهێنە یان لە براوزەری ئاساییەکەتەوە بکەرەوە.');
+        setProgress('⚠️ براوزەری تێلیگرام پشتیوانی داونلۆدکردنی فایلی زیپ ناکات. تکایە وێبسایتەکە لە براوزەرێکی دیکەی مۆبایلەکەتدا بکەرەوە.');
         return;
     }
 
@@ -3840,7 +3842,7 @@ async function downloadFontsDirectly() {
                   || (typeof window.TelegramWebviewProxy !== 'undefined');
     if (isTelegram) {
         progressDiv.style.display = 'block';
-        progressText.innerHTML = '⚠️ براوزەری تێلیگرام داگرتنی زیپ پشتیوانی ناکات.<br>تکایە لینکی گووگڵ درایڤ بەکاربهێنە 👆 یان لە براوزەری ئاساییەکەتەوە بکەرەوە.';
+        progressText.innerHTML = '⚠️ براوزەری تێلیگرام پشتیوانی داونلۆدکردنی فایلی زیپ ناکات.<br>تکایە وێبسایتەکە لە براوزەرێکی دیکەی مۆبایلەکەتدا بکەرەوە.';
         return;
     }
 
