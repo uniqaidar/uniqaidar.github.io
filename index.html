@@ -66,6 +66,9 @@
 
     <style>
         /* Hidden SEO Keywords Section - Invisible to users, visible to search engines */
+        /* SEO-safe visually hidden: visible to Googlebot, invisible to users.
+           Uses the WCAG "sr-only" clip pattern — NO display:none or visibility:hidden
+           which Google penalizes as intentionally hidden content. */
         .seo-keywords-hidden {
             position: absolute;
             width: 1px;
@@ -76,8 +79,7 @@
             clip: rect(0, 0, 0, 0);
             white-space: nowrap;
             border: 0;
-            visibility: hidden;
-            display: none;
+            /* Note: NO display:none, NO visibility:hidden — Google indexes this */
         }
 
 
@@ -385,6 +387,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
         .preview {
             font-size: 2rem;
             margin: 10px 0;
+            padding: 8px 0;
             color: #2c3e50;
             text-align: center;
         }
@@ -418,24 +421,25 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
             color: #fff;
             border: none;
             border-radius: 0; /* Normal square corners */
-            width: 75px; /* Slightly wider for larger icon and text */
-            min-width: 75px;
+            width: 80px; /* Slightly wider for larger icon and text */
+            min-width: 80px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            font-size: 0.82rem;
+            gap: 4px;
+            font-size: 0.78rem;
             font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif;
             position: relative;
             overflow: hidden;
             transition: background .2s;
             flex-shrink: 0;
-            direction: rtl; /* RTL layout for the whole bar */
+            direction: ltr; /* LTR so icon then text left-to-right */
         }
         .trinity-size svg {
-            width: 18px; /* Larger icon */
-            height: 18px;
+            width: 22px; /* Larger icon */
+            height: 22px;
             fill: #ffffff; /* Clean white icon */
+            flex-shrink: 0;
         }
         .trinity-size:hover { background: #033f71; }
         .download-btn::after {
@@ -1269,8 +1273,8 @@ a:active, button:active {
     .filter-desktop { display: none !important; }
     .filter-mobile  { display: block !important; }
     /* سلایدەری قەبارە لە مۆبایل */
-    #size-bar { padding: 6px 10px !important; gap: 6px !important; }
-    #font-size-slider { width: 110px !important; }
+    #size-bar { padding: 6px 10px !important; gap: 6px !important; overflow: hidden !important; max-width: 100vw !important; box-sizing: border-box !important; }
+    #font-size-slider { width: 100px !important; max-width: 100px !important; min-width: 0 !important; flex-shrink: 1 !important; }
     /* کەمکردنەوەی بۆشایی نێوان لۆگۆ و باکسەکە */
     .search-container { margin-top: 6px !important; }
     .filter-mobile-panel .filter-btn {
@@ -1810,7 +1814,8 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
 
     </style>
 </head>
-<body style="min-height:100vh;display:flex;flex-direction:column;" class="dark-mode"><script>try{if(localStorage.getItem('uq_theme')==='light'){document.body.classList.remove('dark-mode');}}catch(e){}</script>
+<body style="min-height:100vh;display:flex;flex-direction:column;" class="dark-mode"><script>try{if(localStorage.getItem('uq_theme')==='light'){document.body.classList.remove('dark-mode');}else{// Force dark mode in Telegram browser which may not support localStorage properly
+var ua=navigator.userAgent||'';if(/Telegram|TelegramBot|tv\.danke/i.test(ua)){document.body.classList.add('dark-mode');}}}catch(e){document.body.classList.add('dark-mode');}</script>
 <noscript>
   <div style="text-align:center;padding:60px 20px;font-family:Tahoma,Arial,sans-serif;font-size:1.1rem;direction:rtl;">
     تکایە JavaScript چالاک بکە بۆ بینینی فۆنتەکان.<br>
@@ -2038,19 +2043,19 @@ body.dark-mode .card-body {
 
 <div class="header">
     <div class="social-links">
-        <a id="social-facebook" href="https://www.facebook.com/UniQaiidarFonts" target="_blank" class="social-icon" aria-label="UniQaidar on Facebook">
+        <a id="social-facebook" href="https://www.facebook.com/UniQaiidarFonts" target="_blank" class="social-icon" aria-label="UniQaidar on Facebook" title="فەیسبووک">
             <i class="fab fa-facebook-f"></i>
         </a>
-        <a id="social-telegram" href="https://t.me/UniQaidar_Fonts" target="_blank" class="social-icon" aria-label="UniQaidar on Telegram">
+        <a id="social-telegram" href="https://t.me/UniQaidar_Fonts" target="_blank" class="social-icon" aria-label="UniQaidar on Telegram" title="تێلیگرام">
             <i class="fab fa-telegram-plane"></i>
         </a>
-<a href="#" id="aboutBtn" class="social-icon" aria-label="دەربارەی پڕۆژە">
+<a href="#" id="aboutBtn" class="social-icon" aria-label="دەربارەی پڕۆژە" title="دەربارە">
     <i class="fas fa-info-circle"></i>
 </a>
 <button id="theme-toggle-btn" onclick="toggleTheme()" aria-label="گۆڕینی شێوازی ڕووکار" title="Dark / Light mode"><i class="fas fa-sun"></i></button>
 
 
-<button id="downloadModalBtn" class="header-btn" aria-label="داگرتنی تەواوی فۆنتەکان">
+<button id="downloadModalBtn" class="header-btn" aria-label="داگرتنی تەواوی فۆنتەکان" title="کلیک بکە">
     <span class="modern-dl-icon">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path class="base-part" d="M19 18H5V19H19V18Z" />
@@ -2156,7 +2161,42 @@ body.dark-mode .card-body {
     <div class="search-container">
         <div style="position:relative;display:inline-block;width:90%;max-width:700px;">
             <input type="text" id="test-input" placeholder="لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنتەکان و گەڕان بەدوای فۆنتدا...">
-            <button id="search-btn" onclick="doSearch()" title="Search" style="position:absolute;left:14px;top:50%;transform:translateY(-50%) scaleX(-1);background:none;border:none;cursor:pointer;font-size:1.3rem;color:#888;padding:0;line-height:1;z-index:2;">&#128269;</button>
+            <button id="search-btn" onclick="doSearch()" title="گەڕان" aria-label="گەڕان" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:0;line-height:1;z-index:2;display:flex;align-items:center;justify-content:center;width:32px;height:32px;">
+<svg id="search-icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#888" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;transition:stroke 0.2s;transform:scaleX(-1);"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+</button>
+<style>
+@keyframes searchWiggle {
+  0%   { transform: scaleX(-1) scale(1) rotate(0deg); }
+  15%  { transform: scaleX(-1) scale(1.18) rotate(-12deg); }
+  30%  { transform: scaleX(-1) scale(1.18) rotate(10deg); }
+  45%  { transform: scaleX(-1) scale(1.12) rotate(-6deg); }
+  60%  { transform: scaleX(-1) scale(1.08) rotate(4deg); }
+  75%  { transform: scaleX(-1) scale(1.04) rotate(-2deg); }
+  100% { transform: scaleX(-1) scale(1) rotate(0deg); }
+}
+#search-icon-svg { animation: searchWiggle 0.7s ease 10s 1; }
+#search-btn:hover #search-icon-svg, #search-btn:active #search-icon-svg {
+  stroke: #ff5700;
+  animation: searchWiggle 0.5s ease forwards;
+}
+</style>
+<script>
+(function(){
+  var t = 0;
+  function scheduleWiggle() {
+    t = setTimeout(function(){
+      var svg = document.getElementById('search-icon-svg');
+      if (svg) {
+        svg.style.animation = 'none';
+        void svg.offsetWidth;
+        svg.style.animation = 'searchWiggle 0.7s ease forwards';
+        setTimeout(function(){ svg.style.animation = ''; scheduleWiggle(); }, 700);
+      } else { scheduleWiggle(); }
+    }, 10000);
+  }
+  scheduleWiggle();
+})();
+</script>
         </div>
     </div>
 </div> 
@@ -2242,6 +2282,7 @@ body.dark-mode .card-body {
     background:#1a1a1a; padding:8px 16px; display:flex;
     align-items:center; gap:8px; justify-content:center;
     flex-wrap:nowrap; direction:rtl; overflow:hidden;
+    max-width:100vw; box-sizing:border-box;
 ">
     <span style="color:#aaa;font-size:0.82rem;white-space:nowrap">قەبارەی فۆنت:</span>
     <input type="range" id="font-size-slider" min="12" max="90" value="32"
@@ -2417,14 +2458,14 @@ function renderFonts(data, text, resetPage) {
                     (text || font.preview || 'فۆنتەکانی یونی‌قەیدار') +
                 '</div>' +
                 '<div class="download-btn-wrap">' +
-                    '<a href="' + font.path + '" class="trinity-dl" download data-font="' + font.name + '" aria-label="داگرتنی فۆنت" onclick="trackFontDownload(\'' + font.name.replace(/'/g,"\\'") + '\',\'single\')">' +
-                        '<span class="modern-dl-icon" style="width:18px;height:18px;">' +
+                    '<a href="' + font.path + '" class="trinity-dl" download data-font="' + font.name + '" aria-label="داگرتنی فۆنت">' +
+                        '<span class="modern-dl-icon" style="width:22px;height:22px;">' +
                             '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
                                 '<path class="base-part" d="M19 18H5V19H19V18Z" />' +
                                 '<path class="arrow-part" d="M12 15L17 10H14V4H10V10H7L12 15Z" />' +
                             '</svg>' +
                         '</span>' +
-                        'دابە‌زاندنی فۆنت TTF' +
+                        '<span class="dl-label">دابە‌زاندنی فۆنت</span>' +
                     '</a>' +
                     '<div class="trinity-size" title="قەبارەی فۆنت">' +
                         '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>' +
@@ -2443,6 +2484,22 @@ function renderFonts(data, text, resetPage) {
                 copyFontLink(f.name, inCat ? _currentCatId : (fontCats[0] || 'All'), copyBtn);
             });
         })(card.querySelector('.trinity-copy'), font);
+        // Wire trinity-dl click: track download + swap label text temporarily
+        (function(dlLink, f) {
+            dlLink.addEventListener('click', function() {
+                trackFontDownload(f.name, 'single');
+                var lbl = dlLink.querySelector('.dl-label');
+                if (!lbl || dlLink._dlAnimating) return;
+                dlLink._dlAnimating = true;
+                lbl.textContent = 'فۆنتەکەت دابەزاند ✓';
+                dlLink.style.background = '#1a7a3a';
+                setTimeout(function() {
+                    lbl.textContent = 'دابە‌زاندنی فۆنت';
+                    dlLink.style.background = '';
+                    dlLink._dlAnimating = false;
+                }, 3000);
+            });
+        })(card.querySelector('.trinity-dl'), font);
         // Staggered entry animation — one card at a time (RTL: right→left, row by row)
         // Mobile: 60ms stagger (1 col, so truly one-by-one but not too slow)
         // Desktop: 90ms stagger (multi-col, fills right→left per row)
@@ -3673,7 +3730,6 @@ function toggleParaPreview(btn, fontName) {
 </script>
     <!-- Hidden SEO Keywords Section for Search Engines -->
     <div id="seo-keywords-container" class="seo-keywords-hidden" aria-hidden="true">
-        <!-- Keywords will be injected here by admin panel -->
-        فۆنتی کوردی, داگرتنی فۆنتی کوردی, فۆنتی کوردی بە خۆڕایی, فۆنتی کوردی سۆرانی, باشترین فۆنتی کوردی, Kurdish font download, Sorani Kurdish font free, جوانترین فۆنتی کوردی, نوێترین فۆنتی کوردی, فۆنت کوردی جوان, کۆمەڵە فۆنتی کوردی, پاکی فۆنتی کوردی, کۆکراوەی فۆنتی کوردی, داگرتنی فۆنت, فۆنتی کوردی بۆ داگرتن, باشترین فۆنتەکانی ٢٠٢٦, فۆنتی کوردی یونیکۆد, فۆنتی یونیکۆد کوردی, داگرتنی فۆنتی کوردی TTF, فۆنتی کوردی OTF, گۆڕینی فۆنتی عەلی بۆ یونیکۆد, وەرگێڕی فۆنتی کوردی, Kurdish font TTF, Kurdish font OTF, Kurdish Unicode font, فۆنتی کوردی بۆ کێپکات, فۆنتی کوردی بۆ کاپکەت, چارەسەری فۆنتی کوردی کێپکات, فۆنتی کوردی بۆ ئەلایت مۆشن, فێرکاری فۆنتی کوردی بۆ ئەلایت مۆشن, زیادکردنی فۆنتی کوردی بۆ ئەلایت مۆشن, فۆنتی کوردی بۆ ئینشۆت, دابەزاندنی فۆنت بۆ ئینشۆت, فۆنتی کوردی بۆ پیکس ئارت, فۆنتی کوردی بۆ ئینستاگرام, فۆنتی کوردی بۆ فۆتۆشۆپ, چارەسەری فۆنتی کوردی لە فۆتۆشۆپ, فۆنتی کوردی بۆ وۆرد, فۆنتی کوردی بۆ ئێکسڵ, فۆنتی کوردی بۆ پریمیەر, فۆنتی کوردی بۆ ویندۆز, فۆنتی کوردی بۆ ماک, فۆنتی کوردی بۆ لینوکس, فۆنتی کوردی بۆ ئەندرۆید, فۆنتی کوردی بۆ ئایفۆن, Kurdish font for Photoshop, Kurdish font for Word, Kurdish font Windows, Kurdish font Mac, فۆنتی کوردی بۆ ژێرنووس, باشترین فۆنت بۆ ژێرنووس, فۆنتی مۆدێرن بۆ ڤیدیۆ, فۆنتی کوردی بۆ لۆگۆ, فۆنتی تایبەت بۆ لۆگۆ, فۆنتی کوردی بۆ دیزاین, فۆنتی هەواڵ, فۆنتی کەناڵی ڕووداو, فۆنتی کەناڵی کوردستان ٢٤, فۆنتی کوردی بۆ کاتنامە, فۆنت بۆ کارتی بانگهێشت, Kurdish font for subtitles, فۆنتی کوردی بۆڵد, فۆنتی کوردی قەڵەو, فۆنتی بۆڵد بۆ ناونیشان, فۆنتی کوردی تەنک, فۆنتی کوردی نازک, فۆنتی کوردی سادە, فۆنتی کوردی ڕێک و سادە, فۆنتی دەستنووس, فۆنتی کوردی دەستنووس, فۆنتی خەتخۆشی کوردی, فۆنتی کوردی مۆدێرن, فۆنتی کوردی کۆن, فۆنتی کوردی ئیسلامی, فۆنتی شێوە کۆن, فۆنتەکانی یونی قەیدار, داگرتنی فۆنتەکانی قەیدار, فۆنتەکانی qaidar rahim, uniqaidar font, uniqaidar Kurdish font, Kurdish font, Kurdish fonts, Sorani font, Sorani Kurdish font, Kurdish font download, Kurdish fonts free download, Kurdish font pack, Kurdish font bundle, best Kurdish fonts 2026, Kurdish font TTF, Kurdish font OTF, Kurdish font for Photoshop, Kurdish font for Word, Kurdish font Windows, Kurdish font Mac, Kurdish font for subtitles, Kurdish calligraphy font, Kurdish handwriting font, Kurdish bold font, download Kurdish fonts
+        فۆنتی کوردی · داگرتنی فۆنتی کوردی · فۆنتی کوردی بە خۆڕایی · فۆنتی کوردی سۆرانی · باشترین فۆنتی کوردی · نوێترین فۆنتی کوردی · جوانترین فۆنتی کوردی · فۆنت کوردی جوان · داگرتنی فۆنت · فۆنتی کوردی بۆ داگرتن · باشترین فۆنتەکانی ٢٠٢٦ · کۆمەڵە فۆنتی کوردی · پاکی فۆنتی کوردی · کۆکراوەی فۆنتی کوردی · فۆنتەکانی یونی قەیدار · داگرتنی فۆنتەکانی قەیدار · فۆنتەکانی qaidar rahim · فۆنتی کوردی یونیکۆد · فۆنتی یونیکۆد کوردی · داگرتنی فۆنتی کوردی TTF · فۆنتی کوردی OTF · فۆنتی کوردی TTF · گۆڕینی فۆنتی عەلی بۆ یونیکۆد · وەرگێڕی فۆنتی کوردی · فۆنتی کوردی بۆ کێپکات · فۆنتی کوردی بۆ کاپکەت · چارەسەری فۆنتی کوردی کێپکات · فۆنتی کوردی بۆ ئەلایت مۆشن · فێرکاری فۆنتی کوردی بۆ ئەلایت مۆشن · زیادکردنی فۆنتی کوردی بۆ ئەلایت مۆشن · فۆنتی کوردی بۆ ئینشۆت · دابەزاندنی فۆنت بۆ ئینشۆت · فۆنتی کوردی بۆ پیکس ئارت · فۆنتی کوردی بۆ ئینستاگرام · فۆنتی کوردی بۆ تیک تۆک · فۆنتی کوردی بۆ فۆتۆشۆپ · چارەسەری فۆنتی کوردی لە فۆتۆشۆپ · فۆنتی کوردی بۆ وۆرد · فۆنتی کوردی بۆ ئێکسڵ · فۆنتی کوردی بۆ پریمیەر · فۆنتی کوردی بۆ ویندۆز · فۆنتی کوردی بۆ ماک · فۆنتی کوردی بۆ لینوکس · فۆنتی کوردی بۆ ئەندرۆید · فۆنتی کوردی بۆ ئایفۆن · فۆنتی کوردی بۆ ژێرنووس · باشترین فۆنت بۆ ژێرنووس · فۆنتی مۆدێرن بۆ ڤیدیۆ · فۆنتی کوردی بۆ لۆگۆ · فۆنتی تایبەت بۆ لۆگۆ · فۆنتی کوردی بۆ دیزاین · فۆنتی هەواڵ · فۆنتی کەناڵی ڕووداو · فۆنتی کەناڵی کوردستان ٢٤ · فۆنتی کوردی بۆ کاتنامە · فۆنت بۆ کارتی بانگهێشت · فۆنتی جوانترین بۆ ناو ئەکاونت · فۆنتی کوردی بۆڵد · فۆنتی کوردی قەڵەو · فۆنتی بۆڵد بۆ ناونیشان · فۆنتی کوردی تەنک · فۆنتی کوردی نازک · فۆنتی کوردی سادە · فۆنتی کوردی ڕێک و سادە · فۆنتی دەستنووس · فۆنتی کوردی دەستنووس · فۆنتی خەتخۆشی کوردی · فۆنتی کوردی مۆدێرن · فۆنتی کوردی کۆن · فۆنتی کوردی ئیسلامی · فۆنتی شێوە کۆن · Kurdish font · Kurdish fonts · Sorani font · Sorani Kurdish font · Kurdish font download · Kurdish fonts free download · Kurdish font pack · Kurdish font bundle · best Kurdish fonts 2026 · Kurdish font TTF · Kurdish font OTF · Kurdish Unicode font · Kurdish font for Photoshop · Kurdish font for Word · Kurdish font for Premiere · Kurdish font Windows · Kurdish font Mac · Kurdish font Android · Kurdish font iPhone · Kurdish font for subtitles · Kurdish font for CapCut · Kurdish font for Alight Motion · Kurdish font for logo · Kurdish calligraphy font · Kurdish handwriting font · Kurdish bold font · Kurdish modern font · Kurdish Islamic font · Kurdish news font · download Kurdish fonts · Kurdish font collection · Kurdish font library · uniqaidar font · uniqaidar Kurdish font · UniQaidar Fonts · Qaidar Rahim font · arabic fonts · typography
     </div>
 </body>
