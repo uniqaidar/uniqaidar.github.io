@@ -1313,7 +1313,7 @@ a:active, button:active {
         transform-origin: center !important;
         white-space: nowrap !important;
         /* Scale text to fit without wrapping — flexible per screen width */
-        font-size: clamp(0.7rem, 3.5vw, 0.95rem) !important;
+        font-size: clamp(0.82rem, 3.8vw, 1.08rem) !important;
     }
 
     /* فۆنتی پیشاندان لە کارت */
@@ -1321,18 +1321,53 @@ a:active, button:active {
         font-size: 1.8rem;
     }
 
-    /* مۆدال */
+    /* مۆدال — مۆبایل: کەمکردنەوەی قەبارە و پڕکردنەوەی شاشە */
+    .modal {
+        align-items: flex-start !important;
+        padding: 10px 0 20px !important;
+        overflow-y: auto !important;
+    }
     .modal-content {
-        margin: 4vh auto;
-        width: 94% !important;
-        max-width: 94vw !important;
-        padding: 24px 14px !important;
-        max-height: 90vh;
-        overflow-y: auto;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
-        box-sizing: border-box;
+        margin: 0 auto !important;
+        width: 96% !important;
+        max-width: 96vw !important;
+        max-height: none !important;
+        padding: 18px 13px 22px !important;
+        border-radius: 16px !important;
+        box-sizing: border-box !important;
+        overflow-y: visible !important;
+    }
+    .modal-content h2 {
+        font-size: 1.1rem !important;
+        margin-bottom: 12px !important;
+        padding-bottom: 8px !important;
+    }
+    .modal-content p {
+        font-size: 0.88rem !important;
+        line-height: 1.65 !important;
+        margin-bottom: 10px !important;
+    }
+    /* شاردنەوەی ئایکۆنی زیپی گەورە لە مۆبایل */
+    .modal-content .download-box > div:first-child {
+        width: 52px !important;
+        height: 52px !important;
+        border-radius: 14px !important;
+        margin-bottom: 10px !important;
+    }
+    .modal-content .download-box > div:first-child i {
+        font-size: 24px !important;
+    }
+    #dm-desc {
+        font-size: 0.84rem !important;
+        padding: 10px 12px !important;
+        margin-bottom: 14px !important;
+    }
+    .dm-drive-btn, .dm-direct-btn-el {
+        font-size: 0.84rem !important;
+        padding: 9px 14px !important;
+        width: 100% !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
     }
     .modal-content * {
         max-width: 100%;
@@ -1340,7 +1375,30 @@ a:active, button:active {
         word-break: break-word;
     }
     .download-box {
-        padding: 16px 10px 24px !important;
+        padding: 12px 8px 18px !important;
+    }
+    /* About modal تایبەت */
+    #aboutModal .modal-content {
+        font-size: 0.88rem !important;
+    }
+    #aboutModal .modal-content p,
+    #aboutModal .modal-content span {
+        font-size: 0.84rem !important;
+        line-height: 1.65 !important;
+    }
+    #aboutModal .modal-content strong {
+        font-size: 0.86rem !important;
+    }
+    .close-btn {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 20px !important;
+        line-height: 28px !important;
+        top: 10px !important;
+        right: 10px !important;
+    }
+    .close-download {
+        font-size: 22px !important;
     }
 }
 
@@ -1701,7 +1759,7 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     padding: 13px 10px;
     border-radius: 0 12px 12px 0;
     font-weight: bold;
-    font-size: 0.95rem; /* Same as category labels */
+    font-size: 1.08rem;
     font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif;
     display: flex;
     align-items: center;
@@ -2188,42 +2246,79 @@ body.dark-mode .card-body {
     <div class="search-container">
         <div style="position:relative;display:inline-block;width:90%;max-width:700px;">
             <input type="text" id="test-input" placeholder="لێرەدا بنووسە بۆ تاقیکردنەوەی فۆنتەکان و گەڕان بەدوای فۆنتدا...">
-            <button id="search-btn" onclick="doSearch()" title="گەڕان" aria-label="گەڕان" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:0;line-height:1;z-index:2;display:flex;align-items:center;justify-content:center;width:32px;height:32px;">
-<svg id="search-icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#888" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;transition:stroke 0.2s;transform:scaleX(-1);"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+<!-- Ripple search button (RTL, site palette) -->
+<div class="uq-ripple-container" id="uq-ripple-wrap">
+    <div class="uq-ripple-line"></div>
+    <div class="uq-ripple-line"></div>
+</div>
+<button id="search-btn" onclick="doSearch()" title="گەڕان" aria-label="گەڕان">
+    <i class="fas fa-search" id="search-icon-svg"></i>
 </button>
 <style>
-@keyframes searchWiggle {
-  0%   { transform: scaleX(-1) scale(1) rotate(0deg); }
-  15%  { transform: scaleX(-1) scale(1.18) rotate(-12deg); }
-  30%  { transform: scaleX(-1) scale(1.18) rotate(10deg); }
-  45%  { transform: scaleX(-1) scale(1.12) rotate(-6deg); }
-  60%  { transform: scaleX(-1) scale(1.08) rotate(4deg); }
-  75%  { transform: scaleX(-1) scale(1.04) rotate(-2deg); }
-  100% { transform: scaleX(-1) scale(1) rotate(0deg); }
+/* ── Ripple Magnifier (search-box-wrapper uses position:relative already) ── */
+#search-btn {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ff5700;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(255,87,0,0.35);
+    z-index: 2;
+    padding: 0;
+    line-height: 1;
+    transition: background 0.2s, box-shadow 0.2s;
 }
-#search-icon-svg { animation: searchWiggle 0.7s ease 10s 1; }
-#search-btn:hover #search-icon-svg, #search-btn:active #search-icon-svg {
-  stroke: #ff5700;
-  animation: searchWiggle 0.5s ease forwards;
+#search-btn #search-icon-svg {
+    transform: scaleX(-1);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands", FontAwesome !important;
+}
+#search-btn:hover #search-icon-svg,
+#search-btn:active #search-icon-svg {
+    transform: scaleX(-1) rotate(360deg);
+}
+#search-btn:hover, #search-btn:active {
+    background: #e04e00;
+    box-shadow: 0 3px 12px rgba(255,87,0,0.55);
+}
+/* Ripple rings container */
+.uq-ripple-container {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    pointer-events: none;
+    z-index: 1;
+}
+.uq-ripple-line {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border: 1.5px solid #ff5700;
+    border-radius: 50%;
+    opacity: 0;
+    animation: uqRippleLoop 3s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+.uq-ripple-line:nth-child(2) {
+    animation-delay: 0.5s;
+}
+@keyframes uqRippleLoop {
+    0%   { transform: scale(1);   opacity: 0.65; border-width: 1.5px; }
+    40%  { opacity: 0.3; }
+    100% { transform: scale(2.4); opacity: 0;    border-width: 0.5px; }
 }
 </style>
-<script>
-(function(){
-  var t = 0;
-  function scheduleWiggle() {
-    t = setTimeout(function(){
-      var svg = document.getElementById('search-icon-svg');
-      if (svg) {
-        svg.style.animation = 'none';
-        void svg.offsetWidth;
-        svg.style.animation = 'searchWiggle 0.7s ease forwards';
-        setTimeout(function(){ svg.style.animation = ''; scheduleWiggle(); }, 700);
-      } else { scheduleWiggle(); }
-    }, 10000);
-  }
-  scheduleWiggle();
-})();
-</script>
         </div>
     </div>
 </div> 
@@ -2486,7 +2581,7 @@ function renderFonts(data, text, resetPage) {
                 '</div>' +
                 '<div class="download-btn-wrap">' +
                     '<a href="' + font.path + '" class="trinity-dl" download data-font="' + font.name + '" aria-label="داگرتنی فۆنت">' +
-                        '<span class="modern-dl-icon" style="width:22px;height:22px;">' +
+                        '<span class="modern-dl-icon" style="width:26px;height:26px;">' +
                             '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
                                 '<path class="base-part" d="M19 18H5V19H19V18Z" />' +
                                 '<path class="arrow-part" d="M12 15L17 10H14V4H10V10H7L12 15Z" />' +
@@ -2882,6 +2977,18 @@ async function downloadCategoryFonts() {
     // Use full filtered list (all pages), not just current page
     var files = _filteredFonts.map(function(f) { return f.path; });
     if (!files.length) return;
+
+    // Telegram in-app browser blocks createObjectURL + a.click()
+    var ua = navigator.userAgent || '';
+    var isTelegram = /Telegram|TelegramBot|tv\.danke/i.test(ua);
+    if (isTelegram) {
+        function setProgress(html) {
+            if (prog)  { prog.innerHTML  = html; prog.style.display  = html ? 'inline-block' : 'none'; }
+            if (progM) { progM.innerHTML = html; progM.style.display = html ? 'block' : 'none'; }
+        }
+        setProgress('⚠️ براوزەری تێلیگرام داگرتنی زیپ پشتیوانی ناکات. تکایە بەڕووی براوزەری ئاساییەکەتەوە وەبگەڕ بکە.');
+        return;
+    }
 
     function setDisabled(v) {
         if (btn)  btn.disabled  = v;
@@ -3669,6 +3776,15 @@ async function downloadFontsDirectly() {
     const btn = document.getElementById('dm-direct-btn');
     const progressDiv = document.getElementById('zip-progress');
     const progressText = document.getElementById('zip-progress-text');
+
+    // Telegram in-app browser blocks createObjectURL + a.click() — redirect to Google Drive instead
+    var ua = navigator.userAgent || '';
+    var isTelegram = /Telegram|TelegramBot|tv\.danke/i.test(ua);
+    if (isTelegram) {
+        progressDiv.style.display = 'block';
+        progressText.innerHTML = '⚠️ براوزەری تێلیگرام داگرتنی زیپ پشتیوانی ناکات.<br>تکایە لینکی گووگڵ درایڤ بەکاربهێنە 👆 یان بەڕووی براوزەری ئاساییەکەتەوە وەبگەڕ بکە.';
+        return;
+    }
 
     btn.disabled = true;
     btn.style.opacity = '0.6';
