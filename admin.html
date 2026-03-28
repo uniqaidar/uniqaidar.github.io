@@ -288,8 +288,8 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
     var _kwList = []; // array of keyword strings
 
     function loadKeywords() {
-        if (!INDEX_HTML) return;
-        const match = INDEX_HTML.match(/<div id="seo-keywords-container"[^>]*>([\s\S]*?)<\/div>/);
+        if (!RAW) return;
+        const match = RAW.match(/<div id="seo-keywords-container"[^>]*>([\s\S]*?)<\/div>/);
         if (match && match[1]) {
             const raw = match[1].replace(/<!--[\s\S]*?-->/g, '').trim();
             _kwList = raw.split('·').map(s => s.trim()).filter(Boolean);
@@ -365,20 +365,20 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
         if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە یەکەم پەیوەندی بکە بە GitHub.', 'err');
         const newContent = _kwList.join(' · ');
         const newContainerHtml = `<div id="seo-keywords-container" class="seo-keywords-hidden" aria-hidden="true">\n        ${newContent}\n    </div>`;
-        const updatedHtml = INDEX_HTML.replace(/<div id="seo-keywords-container"[^>]*>([\s\S]*?)<\/div>/, newContainerHtml);
-        if (updatedHtml === INDEX_HTML) return alert2(al, '⚠️ هیچ گۆڕانکارییەک نەکراوە.', 'inf');
+        const updatedHtml = RAW.replace(/<div id="seo-keywords-container"[^>]*>([\s\S]*?)<\/div>/, newContainerHtml);
+        if (updatedHtml === RAW) return alert2(al, '⚠️ هیچ گۆڕانکارییەک نەکراوە.', 'inf');
         alert2(al, 'سەیڤ دەکرێت...', 'inf');
         try {
             const encoded = btoa(unescape(encodeURIComponent(updatedHtml)));
             const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/index.html`, {
                 method: 'PUT',
                 headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'Update SEO keywords', content: encoded, branch: BRANCH, sha: INDEX_SHA })
+                body: JSON.stringify({ message: 'Update SEO keywords', content: encoded, branch: BRANCH, sha: SHA })
             });
             if (r.ok) {
                 const rd = await r.json();
-                INDEX_SHA = rd.content.sha;
-                INDEX_HTML = updatedHtml;
+                SHA = rd.content.sha;
+                RAW = updatedHtml;
                 alert2(al, '✅ کلیلەوشەکان پاشکەوت کران.', 'ok');
             } else {
                 const err = await r.json();

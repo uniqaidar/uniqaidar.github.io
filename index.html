@@ -2547,15 +2547,28 @@ function renderFonts(data, text, resetPage) {
             (function(card, path) {
                 var sizeEl = card.querySelector('.size-val');
                 if (!sizeEl) return;
-                fetch(path, { method: 'HEAD' }).then(function(r) {
-                    var cl = r.headers.get('content-length');
-                    if (cl) {
-                        var kb = Math.round(parseInt(cl) / 1024);
-                        sizeEl.textContent = kb + ' KB';
-                    } else {
-                        sizeEl.textContent = '?';
+                // Cloudflare Pages strips Content-Length on compressed responses.
+                // Use Range request: Content-Range header always contains total size.
+                fetch(path, { method: 'GET', headers: { 'Range': 'bytes=0-0' } }).then(function(r) {
+                    // Content-Range: bytes 0-0/TOTAL
+                    var cr = r.headers.get('content-range');
+                    if (cr) {
+                        var m = cr.match(/\/(\d+)$/);
+                        if (m) {
+                            var kb = Math.round(parseInt(m[1]) / 1024);
+                            sizeEl.textContent = kb + ' KB';
+                            return;
+                        }
                     }
-                }).catch(function() { sizeEl.textContent = '?'; });
+                    // Fallback: try Content-Length from the partial response
+                    var cl = r.headers.get('content-length');
+                    if (cl && parseInt(cl) > 1) {
+                        var kb2 = Math.round(parseInt(cl) / 1024);
+                        sizeEl.textContent = kb2 + ' KB';
+                    } else {
+                        sizeEl.textContent = '';
+                    }
+                }).catch(function() { sizeEl.textContent = ''; });
             })(card, font.path);
         }
         } catch(cardErr) { console.warn('[UniQaidar] Card render error:', cardErr, font); }
