@@ -465,7 +465,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
             justify-content: center;
             position: relative;
             flex-shrink: 0;
-            margin-top: -1px; /* Fine-tune vertical alignment with text baseline */
+            margin-top: 0; /* No offset — let flexbox center naturally */
         }
         .modern-dl-icon svg {
             width: 100%;
@@ -1097,24 +1097,43 @@ footer strong {
 
 .close-btn {
     position: absolute;
-    right: 20px;
+    right: 15px;
     top: 15px;
-    color: #888;
-    font-size: 24px;
-    background: #eee;
-    width: 35px;
-    height: 35px;
-    line-height: 32px;
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
     border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
     cursor: pointer;
-    transition: 0.3s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 100;
+    transition: background-color 0.3s, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+    animation: uqClosePulse 3s infinite ease-in-out;
+    line-height: 1;
 }
-
+.close-btn i {
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
 .close-btn:hover,
 .close-btn:active {
-    background: #ff4d4d;
-    color: white;
-    transform: rotate(90deg);
+    background-color: #a71d2a;
+    transform: scale(1.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    animation: none;
+}
+.close-btn:hover i,
+.close-btn:active i {
+    transform: rotate(360deg);
+}
+@keyframes uqClosePulse {
+    0%, 100% { transform: scale(1); outline: 0px solid transparent; outline-offset: 0px; }
+    15%       { transform: scale(1.15); outline: 3px solid rgba(220,53,69,0.6); outline-offset: 4px; }
+    30%       { transform: scale(1); outline: 0px solid transparent; outline-offset: 0px; }
 }
 
 .modal-content h2 {
@@ -1138,6 +1157,7 @@ footer strong {
 .header-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     height: 35px;
     padding: 0 13px;
@@ -1173,16 +1193,42 @@ footer strong {
 }
 
 .close-download {
-    color: #aaa;
-    float: left; 
-    font-size: 28px;
-    font-weight: bold;
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
     cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 100;
+    transition: background-color 0.3s, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+    animation: uqClosePulse 3s infinite ease-in-out;
+    line-height: 1;
+    float: none;
+    font-weight: normal;
 }
-
+.close-download i {
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
 .close-download:hover,
 .close-download:active {
-    color: #e74c3c;
+    background-color: #a71d2a;
+    transform: scale(1.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    animation: none;
+    color: #fff;
+}
+.close-download:hover i,
+.close-download:active i {
+    transform: rotate(360deg);
 }
 
 .download-box {
@@ -1250,6 +1296,8 @@ a:active, button:active {
         height: 35px;
         border-radius: 8px;
         gap: 5px;
+        justify-content: center;
+        align-items: center;
     }
 
     /* تۆگڵی کاتیگۆری — مۆبایل */
@@ -1323,16 +1371,15 @@ a:active, button:active {
 
     /* مۆدال — مۆبایل: کەمکردنەوەی قەبارە و پڕکردنەوەی شاشە */
     .modal {
-        align-items: flex-start !important;
-        padding: 10px 0 20px !important;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch !important;
+        align-items: center !important;
+        padding: 16px !important;
+        overflow-y: hidden !important;
     }
     .modal-content {
         margin: 0 auto !important;
         width: 96% !important;
         max-width: 96vw !important;
-        max-height: calc(100vh - 40px) !important;
+        max-height: 78vh !important;
         padding: 18px 13px 22px !important;
         border-radius: 16px !important;
         box-sizing: border-box !important;
@@ -1538,6 +1585,11 @@ a:active, button:active {
     font-size: 1rem;
     padding: 10px 16px;
     border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    text-align: center;
 }
 #cat-dl-btn:disabled, #cat-dl-btn-mobile:disabled { opacity: 0.6; cursor: not-allowed; }
 #cat-dl-btn:hover:not(:disabled), #cat-dl-btn-mobile:hover:not(:disabled) { opacity: 0.88; }
@@ -2155,8 +2207,8 @@ body.dark-mode .card-body {
 
 
 <div id="downloadModal" class="modal">
-    <div class="modal-content" style="overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;max-height:90vh;padding-bottom:50px;max-width:560px;">
-        <span class="close-download" aria-label="داخستن">&times;</span>
+    <div class="modal-content" style="overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;max-height:90vh;padding-bottom:50px;padding-top:54px;max-width:560px;position:relative;">
+        <button class="close-download" aria-label="داخستن" title="داخستن"><i class="fas fa-times"></i></button>
         <h2 id="dm-title" style="font-size:1.5rem;letter-spacing:0.01em;display:flex;align-items:center;justify-content:center;gap:10px;">
             داگرتنی تەواوی فۆنتەکان
             
@@ -2981,15 +3033,16 @@ async function downloadCategoryFonts() {
     var files = _filteredFonts.map(function(f) { return f.path; });
     if (!files.length) return;
 
-    // Telegram in-app browser blocks createObjectURL + a.click()
+    // Telegram in-app browser silently swallows the ZIP blob — detect and warn
     var ua = navigator.userAgent || '';
-    var isTelegram = /Telegram|TelegramBot|tv\.danke/i.test(ua);
+    var isTelegram = /Telegram|TelegramBot|TelegramWebview|tv\.danke/i.test(ua)
+                  || (typeof window.TelegramWebviewProxy !== 'undefined');
     if (isTelegram) {
         function setProgress(html) {
             if (prog)  { prog.innerHTML  = html; prog.style.display  = html ? 'inline-block' : 'none'; }
             if (progM) { progM.innerHTML = html; progM.style.display = html ? 'block' : 'none'; }
         }
-        setProgress('⚠️ براوزەری تێلیگرام داگرتنی زیپ پشتیوانی ناکات. تکایە بەڕووی براوزەری ئاساییەکەتەوە وەبگەڕ بکە.');
+        setProgress('⚠️ براوزەری تێلیگرام داگرتنی زیپ پشتیوانی ناکات. تکایە لینکی گووگڵ درایڤ بەکاربهێنە یان لە براوزەری ئاساییەکەتەوە بکەرەوە.');
         return;
     }
 
@@ -3722,7 +3775,7 @@ window.addEventListener('click', function(e) {
 
 <div id="aboutModal" class="modal">
     <div class="modal-content" style="max-width:620px;">
-        <span class="close-btn" aria-label="داخستن">&times;</span>
+        <button class="close-btn" aria-label="داخستن" title="داخستن"><i class="fas fa-times"></i></button>
         <h2 id="about-title" style="font-size:1.6rem;letter-spacing:0.02em;">دەربارەی پڕۆژە</h2>
 
         <p id="about-content" style="font-size:1.05rem;color:#333;text-align:justify;line-height:2;">
@@ -3780,12 +3833,13 @@ async function downloadFontsDirectly() {
     const progressDiv = document.getElementById('zip-progress');
     const progressText = document.getElementById('zip-progress-text');
 
-    // Telegram in-app browser blocks createObjectURL + a.click() — redirect to Google Drive instead
+    // Telegram in-app browser silently swallows the ZIP blob — detect and warn
     var ua = navigator.userAgent || '';
-    var isTelegram = /Telegram|TelegramBot|tv\.danke/i.test(ua);
+    var isTelegram = /Telegram|TelegramBot|TelegramWebview|tv\.danke/i.test(ua)
+                  || (typeof window.TelegramWebviewProxy !== 'undefined');
     if (isTelegram) {
         progressDiv.style.display = 'block';
-        progressText.innerHTML = '⚠️ براوزەری تێلیگرام داگرتنی زیپ پشتیوانی ناکات.<br>تکایە لینکی گووگڵ درایڤ بەکاربهێنە 👆 یان بەڕووی براوزەری ئاساییەکەتەوە وەبگەڕ بکە.';
+        progressText.innerHTML = '⚠️ براوزەری تێلیگرام داگرتنی زیپ پشتیوانی ناکات.<br>تکایە لینکی گووگڵ درایڤ بەکاربهێنە 👆 یان لە براوزەری ئاساییەکەتەوە بکەرەوە.';
         return;
     }
 
