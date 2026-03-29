@@ -485,6 +485,27 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 <div id="arc-list" style="margin-top:12px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;"></div>
             </div>
         </div>
+
+        <div class="box">
+            <div class="box-header"><div class="dot" style="background:var(--green)"></div> یەک جار بەکارهێنە — پڕکردنەوەی قەبارەی فۆنتەکان لە fonts.json</div>
+            <div class="box-body">
+                <p style="font-size:0.83rem;color:var(--muted);margin-bottom:16px;line-height:1.8;">
+                    ئەم دوگمەیە یەک جار بەکارهێنرێت. قەبارەی ڕاستەقینەی هەموو فۆنتەکان لە GitHub دەخوێنێتەوە و بە شێوەی دایمی لە <code style="color:var(--yellow);font-family:var(--mono)">fonts.json</code> پاشکەوت دەکات. دوای ئەمەش ماڵپەڕەکە هیچ کات داواکاری سایز لە GitHub ناکات.
+                </p>
+                <div id="backfill-progress" style="display:none;margin-bottom:14px;">
+                    <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 16px;">
+                        <div id="backfill-bar-wrap" style="background:var(--border);border-radius:4px;height:6px;margin-bottom:10px;overflow:hidden;">
+                            <div id="backfill-bar" style="height:100%;background:var(--green);width:0%;transition:width 0.3s;border-radius:4px;"></div>
+                        </div>
+                        <div id="backfill-status" style="font-size:0.82rem;font-family:var(--mono);color:var(--muted);"></div>
+                    </div>
+                </div>
+                <div id="backfill-alert" class="alert"></div>
+                <div class="btn-row">
+                    <button id="backfill-btn" class="btn btn-green" onclick="backfillFontSizes()">&#9889; پڕکردنەوەی قەبارەی هەموو فۆنتەکان — یەک جار بەکارهێنە</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- ══════════════════════════════════════════════════════ -->
@@ -1229,9 +1250,13 @@ window.addEventListener('DOMContentLoaded', async () => {
         } catch(e){}
     }
     if (TOKEN && USER && REPO) {
-        const ok = await loadIndex();
-        if (ok) { setReady(true); hideLoading(); }
-        else     { hideLoading(); showSetup(); }
+        try {
+            // 15s timeout — prevents loading screen hanging forever if GitHub is unreachable
+            const timeout = new Promise(resolve => setTimeout(() => resolve(false), 15000));
+            const ok = await Promise.race([loadIndex(), timeout]);
+            if (ok) { setReady(true); hideLoading(); }
+            else     { hideLoading(); showSetup(); }
+        } catch(e) { hideLoading(); showSetup(); }
     } else {
         hideLoading(); showSetup();
     }
@@ -1301,8 +1326,13 @@ async function doSetup() {
 // GitHub API
 // ══════════════════════════════════════════
 async function ghGet() {
-    const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${FILE}?ref=${BRANCH}`,
-        { headers:{ Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json' }});
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12000);
+    let r;
+    try {
+        r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${FILE}?ref=${BRANCH}`,
+            { headers:{ Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json' }, signal: controller.signal });
+    } finally { clearTimeout(timer); }
     if (!r.ok) {
         // Token validation: detect revoked/invalid token
         if (r.status === 401) {
@@ -1854,6 +1884,8 @@ async function scanFonts() {
         const ttfFiles = files
             .filter(f => f.type === 'file' && f.name.toLowerCase().endsWith('.ttf'))
             .sort((a, b) => a.name.localeCompare(b.name));
+        window._scanSizes = {};
+        ttfFiles.forEach(f => { window._scanSizes[f.name] = Math.round(f.size / 1024) || 1; });
 
         const existingPaths = new Set(fnts.map(f => f.path));
         const newFiles  = ttfFiles.filter(f => !existingPaths.has(`UniQaidarFonts/${f.name}`));
@@ -1989,6 +2021,7 @@ async function addFont() {
     if (lineHVal)                            newEntry.lineHeight = lineHVal;
     if (date)                                newEntry.dateAdded = date;
     if (displayName && displayName !== name) newEntry.displayName = displayName;
+    if (window._scanSizes && window._scanSizes[filename]) newEntry.size = window._scanSizes[filename] + ' KB';
 
     // ── ① Add @font-face to index.html ──
     let next = RAW;
@@ -3331,6 +3364,57 @@ async function savePopularJson() {
     }
 }
 
+
+async function backfillFontSizes() {
+    const btn    = document.getElementById('backfill-btn');
+    const al     = document.getElementById('backfill-alert');
+    const prog   = document.getElementById('backfill-progress');
+    const bar    = document.getElementById('backfill-bar');
+    const status = document.getElementById('backfill-status');
+    if (!ready) return alert2(al, '❌ دووبارە پەیوەندی بکە پێش بەکارهێنانی ئەم تایبەتمەندییە.', 'err');
+    if (!FONTS_RAW || !FONTS_RAW.length) return alert2(al, '❌ fonts.json بارنەکراوە.', 'err');
+    const missing = FONTS_RAW.filter(f => !f.size);
+    if (!missing.length) return alert2(al, '✅ هەموو فۆنتەکان پێشتر قەبارەیان تۆماربووە!', 'ok');
+    if (!confirm('قەبارەی ' + missing.length + ' فۆنت تۆمارنەکراوە. ئەمەیان پڕ دەکرێتەوە لە GitHub. بەردەوام بێت؟')) return;
+    btn.disabled = true;
+    prog.style.display = 'block';
+    alert2(al, '', '');
+    try {
+        status.textContent = 'خوێندنەوەی قەبارەکان لە GitHub...';
+        bar.style.width = '10%';
+        const res = await fetch(
+            'https://api.github.com/repos/' + USER + '/' + REPO + '/contents/UniQaidarFonts',
+            { headers: { Authorization: 'token ' + TOKEN, Accept: 'application/vnd.github.v3+json' } }
+        );
+        if (!res.ok) throw new Error('GitHub API سەرنەکەوت (' + res.status + ')');
+        const files = await res.json();
+        const sizeMap = {};
+        files.forEach(function(f) { sizeMap[f.name] = Math.round(f.size / 1024) || 1; });
+        bar.style.width = '40%';
+        let filled = 0;
+        const updated = FONTS_RAW.map(function(f) {
+            if (f.size) return f;
+            const filename = (f.file || f.name) + '.ttf';
+            const kb = sizeMap[filename];
+            if (kb) { filled++; return Object.assign({}, f, { size: kb + ' KB' }); }
+            return f;
+        });
+        status.textContent = 'پاشکەوتکردن بۆ GitHub... (' + filled + ' فۆنت نوێکرا)';
+        bar.style.width = '70%';
+        const ok = await ghPutFonts(updated, 'Backfill font sizes: ' + filled + ' fonts updated');
+        if (!ok) throw new Error('پاشکەوتکردنی fonts.json سەرنەکەوت');
+        bar.style.width = '100%';
+        FONTS_RAW = updated;
+        parseFonts(); buildCatPills(); renderArc(); renderArcFull();
+        status.textContent = '✅ ' + filled + ' فۆنت نوێکرا';
+        alert2(al, '✅ تەواو! ' + filled + ' فۆنت قەبارەیان تۆمارکرا بە دایمی. ئێستا ماڵپەڕەکە هیچ کات داواکاری سایز لە GitHub ناکات.', 'ok');
+        btn.textContent = '✅ تەواوکرا';
+    } catch(e) {
+        alert2(al, '❌ ' + e.message, 'err');
+        bar.style.width = '0%';
+        btn.disabled = false;
+    }
+}
 </script>
 </body>
 </html>

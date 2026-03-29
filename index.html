@@ -1076,7 +1076,7 @@ footer strong {
     width: 92%;
     max-width: 800px;
     max-height: 90vh;
-    overflow: visible;
+    overflow: hidden;
     text-align: center;
     position: relative;
     direction: rtl;
@@ -1100,25 +1100,12 @@ footer strong {
     padding: 40px 30px 50px;
     box-sizing: border-box;
 }
-@property --mla { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
-@keyframes modalLaserRotate { to { --mla: 360deg; } }
-.modal.modal-open .modal-content { outline: 2px solid rgba(9,132,227,0.35); outline-offset: 0px; }
-.modal.modal-open .modal-content::before {
-    content: ''; position: absolute; inset: -3px; border-radius: 27px;
-    background: conic-gradient(from var(--mla), transparent 0deg, transparent 300deg, #00d2ff 320deg, #ffffff 340deg, #0984e3 350deg, transparent 360deg);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor; mask-composite: exclude; padding: 3px;
-    animation: modalLaserRotate 5s linear infinite; pointer-events: none; z-index: 10;
+@keyframes modalRippleEffect {
+    0%   { box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.5), 0 20px 50px rgba(0, 0, 0, 0.3); }
+    70%  { box-shadow: 0 0 0 15px rgba(0, 210, 255, 0), 0 20px 50px rgba(0, 0, 0, 0.3); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 210, 255, 0), 0 20px 50px rgba(0, 0, 0, 0.3); }
 }
-.modal.modal-open .modal-content::after {
-    content: ''; position: absolute; inset: -3px; border-radius: 27px;
-    background: conic-gradient(from var(--mla), transparent 0deg, transparent 325deg, #00d2ff 340deg, #ffffff 350deg, transparent 360deg);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor; mask-composite: exclude; padding: 3px;
-    animation: modalLaserRotate 5s linear infinite; pointer-events: none; z-index: 11;
-    filter: blur(4px) brightness(1.6);
-    box-shadow: 0 0 6px 2px #00d2ffcc, 0 0 14px 4px #0984e388, 0 0 28px 6px #00d2ff33;
-}
+.modal.modal-open .modal-content { border: 1.5px solid rgba(9, 132, 227, 0.3); animation: modalRippleEffect 2.5s ease-out infinite; will-change: box-shadow; }
 @keyframes dmFadeSlideUp { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
 @keyframes dmLineGrow { from { transform:scaleX(0); } to { transform:scaleX(1); } }
 @keyframes dmIconFloat {
@@ -1424,14 +1411,15 @@ a:active, button:active {
     }
     .modal-content {
         margin: 0 auto !important;
-        width: 96% !important;
-        max-width: 96vw !important;
+        width: 88% !important;
+        max-width: 88vw !important;
+        max-height: 72vh !important;
         padding: 0 !important;
         border-radius: 16px !important;
-        overflow: visible !important;
+        overflow: hidden !important;
     }
     .modal-inner-scroll {
-        max-height: 78vh !important;
+        max-height: 72vh !important;
         border-radius: 16px !important;
         padding: 18px 13px 22px !important;
         box-sizing: border-box !important;
@@ -2746,33 +2734,18 @@ function renderFonts(data, text, resetPage) {
             }, 600000); // 10 minutes
         }
         grid.appendChild(card);
-        // Fetch real file size if not in fonts.json
+        // Fetch real file size from GitHub API (exact uncompressed size, immune to Cloudflare Brotli compression)
         if (!fileSize) {
             (function(card, path) {
                 var sizeEl = card.querySelector('.size-val');
                 if (!sizeEl) return;
-                // Cloudflare Pages strips Content-Length on compressed responses.
-                // Use Range request: Content-Range header always contains total size.
-                fetch(path, { method: 'GET', headers: { 'Range': 'bytes=0-0' } }).then(function(r) {
-                    // Content-Range: bytes 0-0/TOTAL
-                    var cr = r.headers.get('content-range');
-                    if (cr) {
-                        var m = cr.match(/\/(\d+)$/);
-                        if (m) {
-                            var kb = Math.round(parseInt(m[1]) / 1024);
-                            sizeEl.textContent = kb + ' KB';
-                            return;
-                        }
-                    }
-                    // Fallback: try Content-Length from the partial response
-                    var cl = r.headers.get('content-length');
-                    if (cl && parseInt(cl) > 1) {
-                        var kb2 = Math.round(parseInt(cl) / 1024);
-                        sizeEl.textContent = kb2 + ' KB';
-                    } else {
-                        sizeEl.textContent = '';
-                    }
-                }).catch(function() { sizeEl.textContent = ''; });
+                var filename = decodeURIComponent(path.split('/').pop());
+                if (window._ghFontSizes) {
+                    var kb = window._ghFontSizes[filename];
+                    if (kb) sizeEl.textContent = kb + ' KB';
+                } else {
+                    sizeEl.setAttribute('data-pending', filename);
+                }
             })(card, font.path);
         }
         } catch(cardErr) { console.warn('[UniQaidar] Card render error:', cardErr, font); }
@@ -4017,4 +3990,25 @@ function toggleParaPreview(btn, fontName) {
     <div id="seo-keywords-container" class="seo-keywords-hidden" aria-hidden="true">
         فۆنتی کوردی · داگرتنی فۆنتی کوردی · فۆنتی کوردی بە خۆڕایی · فۆنتی کوردی سۆرانی · باشترین فۆنتی کوردی · نوێترین فۆنتی کوردی · جوانترین فۆنتی کوردی · فۆنت کوردی جوان · داگرتنی فۆنت · فۆنتی کوردی بۆ داگرتن · باشترین فۆنتەکانی ٢٠٢٦ · کۆمەڵە فۆنتی کوردی · پاکی فۆنتی کوردی · کۆکراوەی فۆنتی کوردی · فۆنتەکانی یونی قەیدار · داگرتنی فۆنتەکانی قەیدار · فۆنتەکانی qaidar rahim · فۆنتی کوردی یونیکۆد · فۆنتی یونیکۆد کوردی · داگرتنی فۆنتی کوردی TTF · فۆنتی کوردی OTF · فۆنتی کوردی TTF · گۆڕینی فۆنتی عەلی بۆ یونیکۆد · وەرگێڕی فۆنتی کوردی · فۆنتی کوردی بۆ کێپکات · فۆنتی کوردی بۆ کاپکەت · چارەسەری فۆنتی کوردی کێپکات · فۆنتی کوردی بۆ ئەلایت مۆشن · فێرکاری فۆنتی کوردی بۆ ئەلایت مۆشن · زیادکردنی فۆنتی کوردی بۆ ئەلایت مۆشن · فۆنتی کوردی بۆ ئینشۆت · دابەزاندنی فۆنت بۆ ئینشۆت · فۆنتی کوردی بۆ پیکس ئارت · فۆنتی کوردی بۆ ئینستاگرام · فۆنتی کوردی بۆ تیک تۆک · فۆنتی کوردی بۆ فۆتۆشۆپ · چارەسەری فۆنتی کوردی لە فۆتۆشۆپ · فۆنتی کوردی بۆ وۆرد · فۆنتی کوردی بۆ ئێکسڵ · فۆنتی کوردی بۆ پریمیەر · فۆنتی کوردی بۆ ویندۆز · فۆنتی کوردی بۆ ماک · فۆنتی کوردی بۆ لینوکس · فۆنتی کوردی بۆ ئەندرۆید · فۆنتی کوردی بۆ ئایفۆن · فۆنتی کوردی بۆ ژێرنووس · باشترین فۆنت بۆ ژێرنووس · فۆنتی مۆدێرن بۆ ڤیدیۆ · فۆنتی کوردی بۆ لۆگۆ · فۆنتی تایبەت بۆ لۆگۆ · فۆنتی کوردی بۆ دیزاین · فۆنتی هەواڵ · فۆنتی کەناڵی ڕووداو · فۆنتی کەناڵی کوردستان ٢٤ · فۆنتی کوردی بۆ کاتنامە · فۆنت بۆ کارتی بانگهێشت · فۆنتی جوانترین بۆ ناو ئەکاونت · فۆنتی کوردی بۆڵد · فۆنتی کوردی قەڵەو · فۆنتی بۆڵد بۆ ناونیشان · فۆنتی کوردی تەنک · فۆنتی کوردی نازک · فۆنتی کوردی سادە · فۆنتی کوردی ڕێک و سادە · فۆنتی دەستنووس · فۆنتی کوردی دەستنووس · فۆنتی خەتخۆشی کوردی · فۆنتی کوردی مۆدێرن · فۆنتی کوردی کۆن · فۆنتی کوردی ئیسلامی · فۆنتی شێوە کۆن · Kurdish font · Kurdish fonts · Sorani font · Sorani Kurdish font · Kurdish font download · Kurdish fonts free download · Kurdish font pack · Kurdish font bundle · best Kurdish fonts 2026 · Kurdish font TTF · Kurdish font OTF · Kurdish Unicode font · Kurdish font for Photoshop · Kurdish font for Word · Kurdish font for Premiere · Kurdish font Windows · Kurdish font Mac · Kurdish font Android · Kurdish font iPhone · Kurdish font for subtitles · Kurdish font for CapCut · Kurdish font for Alight Motion · Kurdish font for logo · Kurdish calligraphy font · Kurdish handwriting font · Kurdish bold font · Kurdish modern font · Kurdish Islamic font · Kurdish news font · download Kurdish fonts · Kurdish font collection · Kurdish font library · uniqaidar font · uniqaidar Kurdish font · UniQaidar Fonts · Qaidar Rahim font · arabic fonts · typography
     </div>
+<script>
+// Fallback: fetch sizes from GitHub API only for fonts that don't have size in fonts.json yet
+(function() {
+    window.addEventListener('load', function() {
+        var pending = document.querySelectorAll('.size-val[data-pending]');
+        if (!pending.length) return; // all fonts already have size hardcoded — skip entirely
+        fetch('https://api.github.com/repos/uniqaidar/uniqaidar.github.io/contents/UniQaidarFonts')
+            .then(function(r) { return r.json(); })
+            .then(function(files) {
+                var map = {};
+                files.forEach(function(f) { map[f.name] = Math.round(f.size / 1024) || 1; });
+                document.querySelectorAll('.size-val[data-pending]').forEach(function(el) {
+                    var kb = map[el.dataset.pending];
+                    if (kb) el.textContent = kb + ' KB';
+                    el.removeAttribute('data-pending');
+                });
+            })
+            .catch(function() {});
+    });
+})();
+</script>
 </body>
