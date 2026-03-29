@@ -144,7 +144,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
             top: 15px;
             left: 15px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
         }
 
@@ -164,8 +164,8 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
 }
 
         .social-icon {
-            width: 35px;
-            height: 35px;
+            width: 38px;
+            height: 38px;
             background: rgba(255, 255, 255, 0.1);
             color: white;
             border-radius: 8px;
@@ -1071,29 +1071,73 @@ footer strong {
 .modal-content {
     background: linear-gradient(145deg, #ffffff, #f0f4f8);
     margin: 0 auto;
-    padding: 40px 30px;
+    padding: 0;
     border-radius: 25px;
     width: 92%;
     max-width: 800px;
     max-height: 90vh;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    padding-bottom: 40px;
+    overflow: visible;
     text-align: center;
     position: relative;
     direction: rtl;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    transform: translateY(40px) scale(0.97);
-    transition: transform 0.35s cubic-bezier(0.34,1.3,0.64,1), opacity 0.3s ease;
+    transform: translateY(60px) scale(0.92) rotateX(6deg);
+    transition: transform 0.45s cubic-bezier(0.34,1.4,0.64,1), opacity 0.35s ease;
     opacity: 0;
 }
 .modal.modal-open .modal-content {
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1) rotateX(0deg);
     opacity: 1;
 }
+.modal-inner-scroll {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    max-height: 88vh;
+    border-radius: 25px;
+    padding: 40px 30px 50px;
+    box-sizing: border-box;
+}
+@property --mla { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes modalLaserRotate { to { --mla: 360deg; } }
+.modal.modal-open .modal-content { outline: 2px solid rgba(9,132,227,0.35); outline-offset: 0px; }
+.modal.modal-open .modal-content::before {
+    content: ''; position: absolute; inset: -3px; border-radius: 27px;
+    background: conic-gradient(from var(--mla), transparent 0deg, transparent 300deg, #00d2ff 320deg, #ffffff 340deg, #0984e3 350deg, transparent 360deg);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude; padding: 3px;
+    animation: modalLaserRotate 5s linear infinite; pointer-events: none; z-index: 10;
+}
+.modal.modal-open .modal-content::after {
+    content: ''; position: absolute; inset: -3px; border-radius: 27px;
+    background: conic-gradient(from var(--mla), transparent 0deg, transparent 325deg, #00d2ff 340deg, #ffffff 350deg, transparent 360deg);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude; padding: 3px;
+    animation: modalLaserRotate 5s linear infinite; pointer-events: none; z-index: 11;
+    filter: blur(4px) brightness(1.6);
+    box-shadow: 0 0 6px 2px #00d2ffcc, 0 0 14px 4px #0984e388, 0 0 28px 6px #00d2ff33;
+}
+@keyframes dmFadeSlideUp { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+@keyframes dmLineGrow { from { transform:scaleX(0); } to { transform:scaleX(1); } }
+@keyframes dmIconFloat {
+    0%,100% { transform:translateY(0) scale(1); filter:drop-shadow(0 4px 12px rgba(241,196,15,0.4)); }
+    50%      { transform:translateY(-7px) scale(1.05); filter:drop-shadow(0 10px 20px rgba(241,196,15,0.7)); }
+}
+@keyframes dmTitleGlow { 0%,100% { text-shadow:none; } 50% { text-shadow:0 0 18px rgba(51,156,255,0.35); } }
+@keyframes amTitleGlow { 0%,100% { text-shadow:none; } 50% { text-shadow:0 0 18px rgba(51,156,255,0.35); } }
+.modal.modal-open #dm-icon-wrap    { animation: dmIconFloat 3.2s ease-in-out 0.5s infinite; }
+.modal.modal-open #dm-title        { animation: dmFadeSlideUp 0.5s cubic-bezier(0.34,1.3,0.64,1) 0.15s both, dmTitleGlow 4s ease-in-out 0.8s infinite; }
+.modal.modal-open #dm-desc         { animation: dmFadeSlideUp 0.5s cubic-bezier(0.34,1.3,0.64,1) 0.28s both; }
+.modal.modal-open .dm-divider      { animation: dmFadeSlideUp 0.4s ease 0.45s both; }
+.modal.modal-open .dm-divider .dm-divider-line { animation: dmLineGrow 0.6s cubic-bezier(0.4,0,0.2,1) 0.5s both; transform-origin: center; }
+.modal.modal-open #dm-btn-wrap     { animation: dmFadeSlideUp 0.5s cubic-bezier(0.34,1.3,0.64,1) 0.38s both; }
+.modal.modal-open #dm-direct-wrap  { animation: dmFadeSlideUp 0.5s cubic-bezier(0.34,1.3,0.64,1) 0.52s both; }
+.modal.modal-open #about-title        { animation: dmFadeSlideUp 0.5s cubic-bezier(0.34,1.3,0.64,1) 0.15s both, amTitleGlow 4s ease-in-out 0.8s infinite; }
+.modal.modal-open #about-content      { animation: dmFadeSlideUp 0.5s cubic-bezier(0.34,1.3,0.64,1) 0.28s both; }
+.modal.modal-open #about-features-box { animation: dmFadeSlideUp 0.5s cubic-bezier(0.34,1.3,0.64,1) 0.40s both; }
+.modal.modal-open #about-footer-bar   { animation: dmFadeSlideUp 0.5s cubic-bezier(0.34,1.3,0.64,1) 0.54s both; }
 
 .close-btn {
     position: absolute;
@@ -1160,8 +1204,8 @@ footer strong {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    height: 35px;
-    padding: 0 13px;
+    height: 38px;
+    padding: 0 14px;
     box-sizing: border-box;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1294,7 +1338,7 @@ a:active, button:active {
     .header-btn {
         font-size: 0.72rem;
         padding: 0 10px;
-        height: 35px;
+        height: 38px;
         border-radius: 8px;
         gap: 5px;
         justify-content: center;
@@ -1382,9 +1426,14 @@ a:active, button:active {
         margin: 0 auto !important;
         width: 96% !important;
         max-width: 96vw !important;
-        max-height: 78vh !important;
-        padding: 18px 13px 22px !important;
+        padding: 0 !important;
         border-radius: 16px !important;
+        overflow: visible !important;
+    }
+    .modal-inner-scroll {
+        max-height: 78vh !important;
+        border-radius: 16px !important;
+        padding: 18px 13px 22px !important;
         box-sizing: border-box !important;
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch !important;
@@ -1745,8 +1794,8 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 35px;
-    height: 35px;
+    width: 38px;
+    height: 38px;
     background: rgba(255,255,255,0.1);
     color: white;
     border-radius: 8px;
@@ -2210,7 +2259,8 @@ body.dark-mode .card-body {
 
 
 <div id="downloadModal" class="modal">
-    <div class="modal-content" style="overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;max-height:90vh;padding-bottom:50px;padding-top:54px;max-width:560px;position:relative;">
+    <div class="modal-content" style="max-width:560px;position:relative;">
+        <div class="modal-inner-scroll" style="padding-top:54px;">
         <button class="close-download" aria-label="داخستن" title="داخستن"><i class="fas fa-times"></i></button>
         <h2 id="dm-title" style="font-size:1.5rem;letter-spacing:0.01em;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:normal;padding-right:44px;">
             داگرتنی تەواوی فۆنتەکان
@@ -2221,15 +2271,15 @@ body.dark-mode .card-body {
         </h2>
         <div class="download-box" style="text-align:center;padding:24px 20px 32px;">
             <!-- Icon -->
-            <div style="width:80px;height:80px;background:linear-gradient(135deg,#fff3cd,#ffe082);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:0 4px 15px rgba(241,196,15,0.3);">
+            <div id="dm-icon-wrap" style="width:80px;height:80px;background:linear-gradient(135deg,#fff3cd,#ffe082);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:0 4px 15px rgba(241,196,15,0.3);">
                 <i class="fas fa-file-archive" style="font-size:38px;color:#e6a800;"></i>
             </div>
 
             <!-- Description -->
-            <p id="dm-desc" style="font-size:1.05rem;margin-bottom:24px;color:#444;line-height:1.8;background:#f4f7ff;border-radius:12px;padding:14px 18px;border:1px solid #d8e3ff;">فەرموون لەگەڵ داگرتنی دوایین ئەپدەیتی تەواوی فۆنتەکانی یونی‌قەیدار بە شێوەی فایلی زیپ (ZIP) کە لە ئێستادا ژمارەی فۆنتەکان 424 فۆنتە:</p>
+            <p id="dm-desc" style="font-size:1rem;margin-bottom:24px;color:#444;line-height:2;background:#f4f7ff;border-radius:12px;padding:14px 18px;border:1px solid #d8e3ff;text-align:justify;text-align-last:right;direction:rtl;">فەرموون لەگەڵ داگرتنی دوایین ئەپدەیتی تەواوی فۆنتەکانی یونی‌قەیدار بە شێوەی فایلی زیپ (ZIP) کە لە ئێستادا ژمارەی فۆنتەکان 424 فۆنتە:</p>
 
             <!-- Google Drive Button -->
-            <div style="display:flex;justify-content:center;margin-bottom:12px;">
+            <div id="dm-btn-wrap" style="display:flex;justify-content:center;margin-bottom:12px;">
                 <a id="dm-btn" href="https://drive.google.com/uc?export=download&id=1sXwTWo3D8_Z_ohppLHHu-YxALLUteiGe" target="_blank" class="dm-drive-btn"
                    onclick="trackFontDownload('داگرتنی تەواوی فۆنتەکان (Google Drive)', 'bulk')"
                    style="display:inline-flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#ff6a1a,#ff5700);color:white;text-decoration:none;padding:10px 20px;border-radius:12px;font-size:0.95rem;box-shadow:0 4px 14px rgba(255,87,0,0.3);transition:all 0.2s;position:relative;overflow:hidden;width:fit-content;">
@@ -2255,14 +2305,14 @@ body.dark-mode .card-body {
             </div>
 
             <!-- Divider -->
-            <div style="display:flex;align-items:center;gap:10px;margin:14px 0;color:#aaa;font-size:0.85rem;">
-                <div style="flex:1;height:1px;background:#e0e0e0;"></div>
+            <div class="dm-divider" style="display:flex;align-items:center;gap:10px;margin:14px 0;color:#aaa;font-size:0.85rem;">
+                <div class="dm-divider-line" style="flex:1;height:1px;background:#e0e0e0;"></div>
                 <span>یان</span>
-                <div style="flex:1;height:1px;background:#e0e0e0;"></div>
+                <div class="dm-divider-line" style="flex:1;height:1px;background:#e0e0e0;"></div>
             </div>
 
             <!-- Direct Download Button -->
-            <div style="display:flex;justify-content:center;">
+            <div id="dm-direct-wrap" style="display:flex;justify-content:center;">
                 <button id="dm-direct-btn" onclick="downloadFontsDirectly()" class="dm-direct-btn-el"
                         style="display:inline-flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#2ecc71,#27ae60);color:white;padding:10px 20px;border-radius:12px;font-size:0.95rem;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(39,174,96,0.25);transition:all 0.2s;position:relative;overflow:hidden;width:fit-content;">
                     <span class="modern-dl-icon">
@@ -2291,6 +2341,7 @@ body.dark-mode .card-body {
                 <i class="fas fa-spinner fa-spin"></i> <span id="zip-progress-text">چاوەڕێ بکە...</span>
             </div>
         </div>
+        </div><!-- /modal-inner-scroll -->
     </div>
 </div>
     </div>
@@ -3778,6 +3829,7 @@ window.addEventListener('click', function(e) {
 
 <div id="aboutModal" class="modal">
     <div class="modal-content" style="max-width:620px;">
+        <div class="modal-inner-scroll">
         <button class="close-btn" aria-label="داخستن" title="داخستن"><i class="fas fa-times"></i></button>
         <h2 id="about-title" style="font-size:1.6rem;letter-spacing:0.02em;font-weight:normal;">دەربارەی پڕۆژە</h2>
 
@@ -3785,34 +3837,35 @@ window.addEventListener('click', function(e) {
             فۆنتەکانی یونی‌قەیدار (UniQaidar Fonts) کۆمەڵێک فۆنتی کوردی و عەرەبی بەکوالیتی بەرزن کە بۆ دیزاین، نوسین و بوارە جیاوازەکانی تری وەک ماڵپەڕ و بەڵگەنامەکان گونجاون. ئەم فۆنتانە بە تایبەتمەندی ڕێکی و ڕەوانی لە دیزایندا ناسراون.
         </p>
 
-        <div style="background:linear-gradient(135deg,#f0f6ff,#e8f0fe);border-radius:16px;padding:20px 24px;margin:18px 0;text-align:right;">
+        <div id="about-features-box" style="background:linear-gradient(135deg,#f0f6ff,#e8f0fe);border-radius:16px;padding:20px 24px;margin:18px 0;text-align:right;">
             <div id="about-features-title" style="font-size:1rem;font-weight:bold;color:#1a56db;margin-bottom:14px;border-bottom:2px solid #c7d9ff;padding-bottom:8px;">
                 ✦ تایبەتمەندییە سەرەکییەکان
             </div>
             <div style="display:flex;flex-direction:column;gap:10px;">
                 <div style="display:flex;align-items:flex-start;gap:10px;color:#2d3748;">
                     <span id="about-feat1-icon" style="color:#1a56db;font-size:1.1rem;flex-shrink:0;">🎨</span>
-                    <span id="about-feat1-text"><strong>گونجاو بۆ گشت بوارەکان:</strong> لە دیزاینی گرافیکەوە تا نووسینی دەقی درێژ.</span>
+                    <span id="about-feat1-text" style="text-align:justify;text-align-last:right;direction:rtl;display:block;"><strong>گونجاو بۆ گشت بوارەکان:</strong> لە دیزاینی گرافیکەوە تا نووسینی دەقی درێژ.</span>
                 </div>
                 <div style="display:flex;align-items:flex-start;gap:10px;color:#2d3748;">
                     <span id="about-feat2-icon" style="color:#1a56db;font-size:1.1rem;flex-shrink:0;">✒️</span>
-                    <span id="about-feat2-text"><strong>سەرنجڕاکێش و ڕێک:</strong> دیزاینێکی مۆدێرن و سەرنجڕاکێشیان هەیە.</span>
+                    <span id="about-feat2-text" style="text-align:justify;text-align-last:right;direction:rtl;display:block;"><strong>سەرنجڕاکێش و ڕێک:</strong> دیزاینێکی مۆدێرن و سەرنجڕاکێشیان هەیە.</span>
                 </div>
                 <div style="display:flex;align-items:flex-start;gap:10px;color:#2d3748;">
                     <span id="about-feat3-icon" style="color:#1a56db;font-size:1.1rem;flex-shrink:0;">🌐</span>
-                    <span id="about-feat3-text"><strong>پشتیوانی زمانی کوردی:</strong> بە تەواوی کوردی و عەرەبی پشتیوانی دەکەن.</span>
+                    <span id="about-feat3-text" style="text-align:justify;text-align-last:right;direction:rtl;display:block;"><strong>پشتیوانی زمانی کوردی:</strong> بە تەواوی کوردی و عەرەبی پشتیوانی دەکەن.</span>
                 </div>
                 <div style="display:flex;align-items:flex-start;gap:10px;color:#2d3748;">
                     <span id="about-feat4-icon" style="color:#1a56db;font-size:1.1rem;flex-shrink:0;">🏆</span>
-                    <span id="about-feat4-text">ئەم فۆنتانە یارمەتیدەرن بۆ ئەوەی بەرهەمەکانت زیاتر پرۆفیشناڵ و جوان دەربکەون.</span>
+                    <span id="about-feat4-text" style="text-align:justify;text-align-last:right;direction:rtl;display:block;">ئەم فۆنتانە یارمەتیدەرن بۆ ئەوەی بەرهەمەکانت زیاتر پرۆفیشناڵ و جوان دەربکەون.</span>
                 </div>
             </div>
         </div>
 
-        <div style="background:#f8fafc;border-radius:12px;padding:14px 18px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border:1px solid #e2e8f0;">
+        <div id="about-footer-bar" style="background:#f8fafc;border-radius:12px;padding:14px 18px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border:1px solid #e2e8f0;">
             <span id="about-launch-date" style="color:#555;font-size:0.9rem;">🗓 یەکەم گورزە: مانگی ئابی ساڵی ٢٠٠٩</span>
             <span id="about-developer" style="color:#ff5700;font-weight:bold;font-size:0.9rem;">گەشەپێدەر: قەیدار ڕەحیم</span>
         </div>
+        </div><!-- /modal-inner-scroll -->
     </div>
 </div>
 
