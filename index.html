@@ -65,23 +65,6 @@
     </script>
 
     <style>
-        /* Hidden SEO Keywords Section - Invisible to users, visible to search engines */
-        /* SEO-safe visually hidden: visible to Googlebot, invisible to users.
-           Uses the WCAG "sr-only" clip pattern — NO display:none or visibility:hidden
-           which Google penalizes as intentionally hidden content. */
-        .seo-keywords-hidden {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-            /* Note: NO display:none, NO visibility:hidden — Google indexes this */
-        }
-
 
         :root {
             --primary: #2c3e50;
@@ -99,6 +82,7 @@ body {
 }
 .font-grid {
     background: #f4f7f6;
+    min-height: 200px;
 }
 
 
@@ -110,6 +94,20 @@ button,
 .modal-content, .modal-content *,
 h1, h2 {
     font-family: 'UniQAIDAR_Peregraf 01', Tahoma, Arial, sans-serif !important;
+}
+
+/* Peregraf 02 is inherently a regular-weight font — never apply bold to it
+   because it has no bold variant and synthesized bold creates double-bold artifacts */
+[style*="UniQAIDAR_Peregraf 02"],
+.peregraf02,
+#uq-welcome-body p,
+#uq-welcome-body li,
+#uq-welcome-lead,
+#uq-welcome-intro,
+#uq-welcome-platform,
+#uq-welcome-apps-lead,
+#uq-welcome-close {
+    font-weight: normal !important;
 }
 
 .font-card h3, 
@@ -132,9 +130,9 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
     /* ڕەنگە نوێیەکە لێرە جێگیر کراوە */
     background: #1a1a1a; 
     color: #2d3436; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     padding: 18px 10px 14px;
     text-align: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .header h1 { display: none; }
@@ -183,6 +181,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
         .social-icon:active {
             background: #ff5700;
             transform: scale(1.1);
+            border-color: #ff5700;
         }
 
         .search-container { margin-top: 40px; text-align: center; }
@@ -235,13 +234,14 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
     display: flex;
     flex-direction: column;
     border: 1px solid #eaecf0;
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
     box-sizing: border-box;
     min-height: 0;
     overflow: hidden;
     align-self: start;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
+    position: relative;
 }
         .card:hover,
         .card:active {
@@ -386,7 +386,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
     position: relative;
 }
         .preview {
-            font-size: 2rem;
+            font-size: 2.2rem;
             margin: 10px 0;
             padding: 8px 0;
             color: #2c3e50;
@@ -408,7 +408,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-size: 0.95rem; /* Same as category labels */
+            font-size: 0.95rem;
             position: relative;
             display: flex;
             align-items: center;
@@ -501,7 +501,8 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
         }
 
 /* CSS Fonts */
-@font-face { font-family: 'UniQAIDAR_Peregraf 01'; src: url('UniQaidarFonts/UniQAIDAR_Peregraf 01.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'UniQAIDAR_Peregraf 01'; src: url('UniQaidarFonts/UniQAIDAR_Peregraf 01.ttf') format('truetype'); font-display: swap; font-weight: normal; }
+@font-face { font-family: 'UniQAIDAR_Peregraf 02'; src: url('UniQaidarFonts/UniQAIDAR_Peregraf 02.ttf') format('truetype'); font-display: swap; font-weight: normal; }
 
 
 
@@ -981,7 +982,7 @@ footer strong {
     cursor: pointer;
     font-weight: normal;
     font-size: 0.92rem;
-    transition: background 0.2s, border-color 0.2s;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -1181,7 +1182,7 @@ footer strong {
 }
 
 .modal-content p {
-    color: #555;
+    color: #111111;
     line-height: 1.8;
     font-size: 16px;
     margin-bottom: 15px;
@@ -1268,9 +1269,22 @@ footer strong {
 }
 
 .download-box {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 18px;
     margin-top: 15px;
+    padding: 20px 16px 24px;
+}
+body.dark-mode .download-box {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+/* Light mode divider lines */
+.dm-divider-line {
+    background: #d0d7de !important;
+}
+body.dark-mode .dm-divider-line {
+    background: rgba(255,255,255,0.18) !important;
 }
 
 /* ── Touch-friendly hover states for download modal buttons ── */
@@ -1537,7 +1551,6 @@ a:active, button:active {
     opacity: 1;
     font-size: 14px;
     line-height: 24px;
-    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif !important;
     border-radius: 4px;
     transition: background 0.2s;
     flex-shrink: 0;
@@ -1546,7 +1559,7 @@ a:active, button:active {
 }
 .copy-cat-btn span { display:flex; align-items:center; justify-content:center; width:100%; height:100%; }
 .copy-cat-btn:hover, .copy-cat-btn:active { background: rgba(0,112,228,1); }
-.copy-cat-btn.copied { background: #cc4400; }
+.copy-cat-btn.copied { background: linear-gradient(135deg, #009944, #006622); }
 .card-copy-btn {
     position: relative;
     background: #e04500;
@@ -1568,6 +1581,7 @@ a:active, button:active {
     text-align: center;
     overflow: hidden;
     flex-shrink: 0;
+    color: #fff;
 }
 .card-copy-btn::after {
     content: '';
@@ -1585,7 +1599,7 @@ a:active, button:active {
 }
 .card-copy-btn span { display:flex; align-items:center; justify-content:center; width:100%; height:100%; }
 .card-copy-btn:hover, .card-copy-btn:active { background: #cc3d00; }
-.card-copy-btn.copied { background: #bb3500; }
+.card-copy-btn.copied { background: #009944; }
 .card-header { position: relative; }
 .download-btn-wrap {
     display: flex;
@@ -1605,14 +1619,15 @@ a:active, button:active {
     justify-content: center;
 }
 
-/* ── Category Download Button (desktop toggle row) ── */
 /* ── Category Download Button (toggle row, desktop + mobile) ── */
 #cat-dl-btn, #cat-dl-btn-mobile {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 7px;
-    background: linear-gradient(135deg, #ff6a1a, #ff5700);
+    background: linear-gradient(90deg, rgba(140,40,0,1) 0%, rgba(255,107,26,1) 40%, rgba(255,87,0,1) 60%, rgba(140,40,0,1) 100%);
+    background-size: 200% auto;
+    animation: uqGreenMoving 2.5s linear infinite;
     color: #fff;
     border: none;
     border-radius: 10px;
@@ -1643,7 +1658,7 @@ a:active, button:active {
     display: none;
     direction: rtl;
     padding: 14px 16px;
-    background: #111;
+    background: #1a1a1a;
     align-items: center;
     justify-content: center;
     gap: 8px;
@@ -1663,7 +1678,7 @@ a:active, button:active {
     transition: background 0.15s;
     min-width: 36px;
 }
-.pg-btn:hover { background: rgba(255,87,0,0.18); border-color: #ff5700; color: #fff; }
+.pg-btn:hover { background: rgba(255,87,0,0.25); border-color: #ff5700; color: #fff; }
 .pg-btn.active { background: #ff5700; border-color: #ff5700; color: #fff; font-weight: normal; }
 .pg-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 #pg-info { color: #888; font-size: 0.8rem; padding: 0 6px; }
@@ -1686,12 +1701,25 @@ a:active, button:active {
     color: rgba(255,255,255,0.95);
 }
 
-/* ── Back to Top button ── */
-#back-to-top {
+/* ── Back to Top wrapper ── */
+#back-to-top-wrap {
     position: fixed;
     bottom: 24px;
     left: 20px;
     z-index: 8000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    pointer-events: none;
+}
+#back-to-top-wrap.visible { pointer-events: auto; }
+
+/* ── Back to Top button ── */
+#back-to-top {
+    position: relative;
+    z-index: 1;
     background: #ff5700;
     color: #fff;
     border: none;
@@ -1700,20 +1728,18 @@ a:active, button:active {
     height: 44px;
     font-size: 1.3rem;
     cursor: pointer;
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 14px rgba(255,87,0,0.45);
+    box-shadow: 0 4px 14px rgba(255,87,0,0.5);
     transition: opacity 0.3s, transform 0.3s;
     opacity: 0.9;
 }
-#back-to-top:hover { opacity: 1; transform: translateY(-2px); }
-#back-to-top.visible { display: flex; }
 
 /* ── "New" badge on font cards ── */
 .new-badge {
     display: inline-block;
-    background: linear-gradient(135deg, #ff5700, #ff8c42);
+    background: #0070e4;
     color: #fff;
     font-size: 0.58rem;
     font-weight: normal;
@@ -1729,10 +1755,23 @@ a:active, button:active {
 #no-results-msg {
     display: none;
     text-align: center;
-    padding: 60px 20px;
-    color: #888;
+    padding: 80px 20px;
+    color: #ff5700;
     font-size: 1.05rem;
     grid-column: 1 / -1;
+    background: #f4f7f6;
+    width: 100%;
+    box-sizing: border-box;
+}
+body.dark-mode #no-results-msg {
+    background: #111 !important;
+}
+body.dark-mode #no-results-msg > div {
+    color: #ffffff !important;
+}
+/* light mode: emoji div inherits orange from parent, keep specific overrides */
+#no-results-msg > div {
+    color: #ff5700;
 }
 #no-results-msg button {
     margin-top: 14px;
@@ -1743,7 +1782,10 @@ a:active, button:active {
     padding: 9px 22px;
     cursor: pointer;
     font-size: 0.95rem;
+    font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif;
+    transition: background 0.2s;
 }
+#no-results-msg button:hover { background: #e04e00; }
 
 /* ── Font size slider persist ── */
 /* (handled via sessionStorage in JS) */
@@ -1758,13 +1800,13 @@ body.dark-mode .font-grid {
     background: #111;
 }
 body.dark-mode .card {
-    background: #1e1e1e !important;
-    border-color: #333 !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
+    background: linear-gradient(135deg, #0d1117, #161b22, #0d2137, #111827, #0d1117) !important;
+    border-color: #1e3a5f !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.6), 0 0 0 1px rgba(30,58,95,0.3) !important;
 }
 body.dark-mode .card-header {
-    background: #2a2a2a !important;
-    border-bottom-color: #3a3a3a !important;
+    background: rgba(255,255,255,0.04) !important;
+    border-bottom-color: #1e293b !important;
 }
 body.dark-mode .card-eng-name { color: #f0f0f0 !important; }
 body.dark-mode .card-date { color: #888 !important; }
@@ -1775,11 +1817,12 @@ body.dark-mode .modal-content {
     background: linear-gradient(145deg, #1e1e1e, #252525) !important;
     color: #e0e0e0 !important;
 }
-body.dark-mode .modal-content p { color: #bbb !important; }
+body.dark-mode .modal-content p { color: #ffffff !important; }
 body.dark-mode .modal-content h2 { color: #5ba3ff !important; }
-body.dark-mode #dm-desc { color: #000 !important; }
+body.dark-mode #dm-desc { color: #ffffff !important; }
 body.dark-mode #about-content { color: #fff !important; }
-body.dark-mode #about-launch-date { color: #000 !important; }
+body.dark-mode #about-launch-date { color: #ffffff !important; }
+body.dark-mode #about-developer { color: #ff5700 !important; }
 body.dark-mode #pagination-bar { background: #0d0d0d !important; }
 
 #theme-toggle-btn {
@@ -1800,12 +1843,12 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     padding: 0;
     box-sizing: border-box;
 }
-#theme-toggle-btn:hover, #theme-toggle-btn:active { background: #ff5700; transform: scale(1.1); }
+#theme-toggle-btn:hover, #theme-toggle-btn:active { background: #ff5700; color: #fff; transform: scale(1.1); }
 
 /* ── Print CSS ── */
 @media print {
     .header, .filter-container, #size-bar, #pagination-bar, footer,
-    .card-copy-btn, #back-to-top, #splash { display: none !important; }
+    .card-copy-btn, #back-to-top, #back-to-top-wrap, #splash { display: none !important; }
     body { background: #fff !important; }
     .font-grid { grid-template-columns: repeat(2,1fr) !important; gap: 12px !important; padding: 8px !important; }
     .card { box-shadow: none !important; border: 1px solid #ccc !important; break-inside: avoid; }
@@ -1849,7 +1892,7 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
             transform: translateY(-3px);
         }
 
-/* LEFT (RTL: visually leftmost end) — Blue download, narrow blue shimmer sweeps RTL */
+/* LEFT (RTL: visually leftmost end) — Blue download */
 .trinity-dl {
     flex: 1;
     background: #0984e3;
@@ -1870,7 +1913,6 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     white-space: nowrap;
     transition: background .2s;
     clip-path: none !important;
-    border-radius: 0 12px 12px 0;
     direction: rtl;
 }
 .trinity-dl::after {
@@ -1884,9 +1926,9 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     animation-delay: 0.2s;
     pointer-events: none;
 }
-.trinity-dl:hover,.trinity-dl:active { background:#0773c5; }
+.trinity-dl:hover,.trinity-dl:active { background: #0773c5; }
 
-/* MIDDLE — Para toggle: 4 lines draw in from right, like RTL Sorani text */
+/* MIDDLE — Para toggle */
 .trinity-para {
     background: #055a9e;
     color: #fff;
@@ -1907,8 +1949,8 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     clip-path: none !important;
 }
 .trinity-para::after { content: none; }
-.trinity-para:hover,.trinity-para:active { background:#044d8a; }
-.trinity-para.active { background:#0366a7; }
+.trinity-para:hover,.trinity-para:active { background: #044d8a; }
+.trinity-para.active { background: #0366a7; }
 
 /* Para lines container — right-aligned so lines grow from the right side */
 .trinity-para .para-svg-wrap {
@@ -1934,7 +1976,7 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
 .trinity-para .pl3 { width: 100%; animation-name: paraLine3; }
 .trinity-para .pl4 { width: 52%;  animation-name: paraLine4; }
 
-/* RIGHT (RTL: visually rightmost end) — Orange copy: icon breathes */
+/* RIGHT (RTL: visually rightmost end) — Orange copy */
 .trinity-copy {
     background: #ff5e00;
     color: #fff;
@@ -1956,8 +1998,8 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
 }
 .trinity-copy::after { content: none; }
 .trinity-copy svg { animation: iconBreathe 2.2s ease-in-out infinite; display: block; }
-.trinity-copy:hover,.trinity-copy:active { background:#cc4e00; }
-.trinity-copy.copied { background:#bb3500; }
+.trinity-copy:hover,.trinity-copy:active { background: #cc4e00; }
+.trinity-copy.copied { background: #009944; }
 
 /* ══ Task 6: liquidSweep on header download btn + category banner ══ */
 #downloadModalBtn { position:relative; overflow:hidden; }
@@ -1994,11 +2036,140 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     transition: background 0.15s;
     white-space: nowrap;
 }
-.tsort-btn:hover { background: rgba(255,87,0,0.2); border-color: #ff5700; color:#fff; }
-.tsort-btn.active { background: #ff5700; border-color:#ff5700; color:#fff; font-weight:normal; }
+.tsort-btn:hover { background: rgba(0,112,228,0.25); border-color: #0070e4; color:#fff; }
+.tsort-btn.active { background: #0070e4; border-color:#0070e4; color:#fff; font-weight:normal; }
+
+/* ══════════════════════════════════════════════════════
+   RICH HOVER EFFECTS — All cards and specific buttons
+   ══════════════════════════════════════════════════════ */
+
+/* Font cards: lift + scale + blue border glow */
+.card:hover, .card:focus-within {
+    transform: translateY(-5px) scale(1.013) !important;
+    box-shadow: 0 10px 32px rgba(0,112,228,0.22), 0 0 0 2px rgba(0,150,255,0.45) !important;
+    border-color: rgba(0, 150, 255, 0.55) !important;
+    transition: transform 0.28s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.28s ease, border-color 0.25s ease !important;
+}
+/* Dark mode card hover — needs stronger glow to overcome the dark background and existing animations */
+body.dark-mode .card:hover,
+body.dark-mode .card:focus-within {
+    transform: translateY(-5px) scale(1.013) !important;
+    box-shadow: 0 12px 38px rgba(0,130,255,0.45), 0 0 0 2px rgba(0,190,255,0.7), 0 0 22px rgba(0,180,255,0.3) !important;
+    border-color: rgba(0, 200, 255, 0.75) !important;
+    transition: transform 0.28s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.28s ease, border-color 0.25s ease !important;
+    animation: none !important;
+}
+/* Trinity download (blue): lift + blue shadow */
+.trinity-dl:hover, .trinity-dl:active {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 22px rgba(9,132,227,0.55) !important;
+    background: #0773c5 !important;
+    transition: all 0.22s cubic-bezier(0.34,1.4,0.64,1) !important;
+}
+/* Trinity copy (orange): scale pulse + orange glow */
+.trinity-copy:hover, .trinity-copy:active {
+    transform: scale(1.12) !important;
+    box-shadow: 0 4px 18px rgba(255,94,0,0.65) !important;
+    background: #cc4e00 !important;
+    transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+/* Trinity para (dark blue): scale pulse + dark blue shadow */
+.trinity-para:hover, .trinity-para:active {
+    transform: scale(1.1) !important;
+    box-shadow: 0 4px 16px rgba(3,70,130,0.7) !important;
+    background: #033f71 !important;
+    transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+/* Category copy-link (blue): scale pop + blue shadow */
+.copy-cat-btn:hover, .copy-cat-btn:active {
+    transform: scale(1.2) !important;
+    box-shadow: 0 4px 14px rgba(0,112,228,0.55) !important;
+    transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+/* Card copy-link (orange): scale + orange glow */
+.card-copy-btn:hover, .card-copy-btn:active {
+    transform: scale(1.07) !important;
+    box-shadow: 0 4px 16px rgba(255,87,0,0.6) !important;
+    transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+/* Category download button: lift + orange shadow */
+#cat-dl-btn:hover:not(:disabled), #cat-dl-btn-mobile:hover:not(:disabled) {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 24px rgba(255,87,0,0.55) !important;
+    opacity: 1 !important;
+    transition: all 0.22s cubic-bezier(0.34,1.4,0.64,1) !important;
+}
+/* Header bulk download: scale pulse + orange glow */
+#downloadModalBtn:hover, #downloadModalBtn:active {
+    transform: scale(1.07) !important;
+    background: #ff5700 !important;
+    border-color: #ff5700 !important;
+    box-shadow: 0 4px 20px rgba(255,87,0,0.6) !important;
+    transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+/* Social icons: scale + rotate -6° + orange glow */
+.social-icon:hover, .social-icon:active {
+    transform: scale(1.18) rotate(-6deg) !important;
+    background: #ff5700 !important;
+    border-color: #ff5700 !important;
+    box-shadow: 0 4px 18px rgba(255,87,0,0.65) !important;
+    transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+/* Theme toggle: rotate -20° + scale */
+#theme-toggle-btn:hover, #theme-toggle-btn:active {
+    transform: rotate(-20deg) scale(1.15) !important;
+    background: #ff5700 !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(255,87,0,0.5) !important;
+    transition: all 0.28s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+/* Modal download buttons: lift + colored shadow */
+.dm-drive-btn:hover, .dm-drive-btn:active {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 10px 26px rgba(15,85,48,0.55), 0 2px 8px rgba(0,0,0,0.3) !important;
+    filter: brightness(1.1) !important;
+    transition: all 0.25s cubic-bezier(0.34,1.4,0.64,1) !important;
+}
+.dm-direct-btn-el:hover, .dm-direct-btn-el:active {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 10px 26px rgba(255,87,0,0.5), 0 2px 8px rgba(0,0,0,0.3) !important;
+    filter: brightness(1.08) !important;
+    transition: all 0.25s cubic-bezier(0.34,1.4,0.64,1) !important;
+}
+#back-to-top:hover { opacity: 1; transform: translateY(-2px); }
+/* Back-to-top: lift + scale + orange shadow */
+#back-to-top:hover, #back-to-top:active {
+    transform: translateY(-4px) scale(1.12) !important;
+    box-shadow: 0 8px 24px rgba(255,87,0,0.65) !important;
+    opacity: 1 !important;
+    transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+/* Pagination buttons: lift */
+.pg-btn:hover {
+    transform: translateY(-2px) !important;
+    transition: all 0.18s cubic-bezier(0.34,1.4,0.64,1) !important;
+}
+/* Filter buttons: pop up + blue shadow */
+.filter-btn:hover, .filter-btn:active {
+    transform: translateY(-3px) scale(1.04) !important;
+    box-shadow: 0 6px 18px rgba(0,112,228,0.4) !important;
+    transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+/* Trinity size (file size): lift + blue shadow */
+.trinity-size:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 14px rgba(4,77,138,0.5) !important;
+    transition: all 0.2s ease !important;
+}
+/* Download btn (trinity): lift + blue shadow */
+.download-btn:hover, .download-btn:active {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 22px rgba(0,68,170,0.5) !important;
+    background: #003399 !important;
+    transition: all 0.22s cubic-bezier(0.34,1.4,0.64,1) !important;
+}
 
     </style>
-</head>
 <body style="min-height:100vh;display:flex;flex-direction:column;" class="dark-mode"><script>try{if(localStorage.getItem('uq_theme')==='light'){document.body.classList.remove('dark-mode');}else{// Force dark mode in Telegram browser which may not support localStorage properly
 var ua=navigator.userAgent||'';if(/Telegram|TelegramBot|tv\.danke/i.test(ua)){document.body.classList.add('dark-mode');}}}catch(e){document.body.classList.add('dark-mode');}</script>
 <noscript>
@@ -2013,7 +2184,7 @@ var ua=navigator.userAgent||'';if(/Telegram|TelegramBot|tv\.danke/i.test(ua)){do
     bottom:80px;
     left:50%;
     transform:translateX(-50%) translateY(16px);
-    background:#1a1a1a;
+    background: #1a1a1a;
     color:#fff;
     padding:11px 26px;
     border-radius:50px;
@@ -2028,7 +2199,17 @@ var ua=navigator.userAgent||'';if(/Telegram|TelegramBot|tv\.danke/i.test(ua)){do
     border:1px solid rgba(255,255,255,0.12);
     box-shadow:0 4px 18px rgba(0,0,0,0.35);
 ">لینک کۆپی کرا ✅</div>
-<button id="back-to-top" aria-label="بگەڕێوە بۆ سەرەوە" title="بگەڕێوە بۆ سەرەوە" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<div id="back-to-top-wrap" style="position:fixed;bottom:24px;left:20px;z-index:8000;display:flex;align-items:center;justify-content:center;width:52px;height:52px;pointer-events:none;">
+    <svg id="btt-progress-ring" width="52" height="52" style="position:absolute;top:0;left:0;transform:rotate(-90deg);pointer-events:none;opacity:0;transition:opacity 0.3s;">
+        <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(0,200,255,0.18)" stroke-width="6"/>
+        <circle id="btt-ring-fill" cx="26" cy="26" r="22" fill="none" stroke="#00c8ff" stroke-width="6"
+            stroke-linecap="round"
+            stroke-dasharray="138.23"
+            stroke-dashoffset="138.23"
+            style="transition:stroke-dashoffset 0.15s linear;"/>
+    </svg>
+    <button id="back-to-top" aria-label="بگەڕێوە بۆ سەرەوە" title="بگەڕێوە بۆ سەرەوە" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="display:none;"><span id="btt-arrow" style="display:none;">↑</span></button>
+</div>
 
 <!-- ══════════════════════════════════════════ -->
 <!-- SPLASH SCREEN                             -->
@@ -2139,40 +2320,103 @@ body.dark-mode .para-toggle-btn.active {
     line-height: var(--para-line-height, 2) !important;
 }
 
-/* ── Animated gradient card backgrounds ── */
-@keyframes cardGradientLight {
-    0%   { background-position: 0% 50%; }
-    50%  { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+/* ── Para-mode card animation: RTL shimmer wave + border glow ── */
+@keyframes paraShimmerRTL {
+    0%   { right: -80%; opacity: 0; }
+    10%  { opacity: 1; }
+    75%  { right: 130%; opacity: 0.9; }
+    100% { right: 130%; opacity: 0; }
 }
+@keyframes paraCardGlowLight {
+    0%   { box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-color: #eaecf0; border-radius: 16px; }
+    25%  { box-shadow: 0 10px 34px rgba(0,112,228,0.32), 0 0 0 3px rgba(0,180,255,0.4); border-color: rgba(0,170,255,0.7); border-radius: 20px; }
+    65%  { box-shadow: 0 8px 24px rgba(0,112,228,0.2), 0 0 0 2px rgba(0,160,255,0.25); border-color: rgba(0,150,255,0.45); border-radius: 20px; }
+    100% { box-shadow: 0 4px 16px rgba(0,100,228,0.14), 0 0 0 1.5px rgba(0,140,255,0.28); border-color: rgba(0,140,255,0.32); border-radius: 18px; }
+}
+@keyframes paraCardGlowDark {
+    0%   { box-shadow: 0 2px 12px rgba(0,0,0,0.6), 0 0 0 1px rgba(30,58,95,0.3); border-color: #1e3a5f; border-radius: 16px; }
+    25%  { box-shadow: 0 10px 36px rgba(0,130,255,0.55), 0 0 0 3px rgba(0,210,255,0.5); border-color: rgba(0,210,255,0.8); border-radius: 20px; }
+    65%  { box-shadow: 0 8px 28px rgba(0,100,228,0.35), 0 0 0 2px rgba(0,180,255,0.3); border-color: rgba(0,170,255,0.55); border-radius: 20px; }
+    100% { box-shadow: 0 4px 22px rgba(0,100,228,0.28), 0 0 0 1.5px rgba(0,150,255,0.42); border-color: rgba(0,150,255,0.48); border-radius: 18px; }
+}
+.card.para-expand-anim {
+    animation: paraCardGlowLight 0.85s cubic-bezier(0.34,1.2,0.64,1) forwards !important;
+    overflow: visible !important;
+}
+body.dark-mode .card.para-expand-anim {
+    animation: paraCardGlowDark 0.85s cubic-bezier(0.34,1.2,0.64,1) forwards !important;
+}
+/* The shimmer overlay div injected by JS */
+.para-shimmer-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 20;
+    border-radius: inherit;
+    overflow: hidden;
+}
+.para-shimmer-overlay::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -80%;
+    width: 55%;
+    height: 100%;
+    background: linear-gradient(
+        270deg,
+        transparent 0%,
+        rgba(80,190,255,0.12) 20%,
+        rgba(160,225,255,0.30) 50%,
+        rgba(80,190,255,0.12) 80%,
+        transparent 100%
+    );
+    animation: paraShimmerRTL 0.75s cubic-bezier(0.4,0,0.2,1) forwards;
+    border-radius: inherit;
+}
+
+/* ── FLIP CARD animation on paragraph toggle ── */
+@keyframes cardFlipIn {
+    0%   { transform: perspective(800px) rotateY(-90deg) scale(0.92); opacity: 0; }
+    50%  { transform: perspective(800px) rotateY(8deg)  scale(1.01); opacity: 0.8; }
+    75%  { transform: perspective(800px) rotateY(-4deg) scale(1.00); opacity: 1; }
+    100% { transform: perspective(800px) rotateY(0deg)  scale(1);    opacity: 1; }
+}
+@keyframes cardFlipOut {
+    0%   { transform: perspective(800px) rotateY(0deg)   scale(1); opacity: 1; }
+    40%  { transform: perspective(800px) rotateY(90deg)  scale(0.92); opacity: 0; }
+    100% { transform: perspective(800px) rotateY(90deg)  scale(0.92); opacity: 0; }
+}
+.card.para-flip-out {
+    animation: cardFlipOut 0.22s cubic-bezier(0.4,0,1,1) forwards !important;
+    pointer-events: none;
+}
+.card.para-flip-in {
+    animation: cardFlipIn 0.42s cubic-bezier(0.34,1.3,0.64,1) forwards !important;
+}
+.card.para-flip-out,
+.card.para-flip-in {
+    transform-style: preserve-3d;
+    overflow: visible !important;
+    will-change: transform, opacity;
+}
+.card {
+    background: #ffffff !important;
+}
+.card.animate-in {
+    opacity: 0;
+    animation-name: cardFadeIn !important;
+    animation-duration: 0.4s !important;
+    animation-timing-function: ease !important;
+    animation-iteration-count: 1 !important;
+    animation-fill-mode: both !important;
+}
+/* DARK MODE: deep teal-dark gradient */
 @keyframes cardGradientDark {
     0%   { background-position: 0% 50%; }
     33%  { background-position: 100% 0%; }
     66%  { background-position: 50% 100%; }
     100% { background-position: 0% 50%; }
 }
-/* Gradient base applied to card directly — does NOT use `animation` shorthand
-   to avoid overriding the `.card.animate-in` entry animation */
-/* HIGH-VISIBILITY gradient — 400% size so color flow is clearly noticeable */
-/* Light Mode: Soft Sky Blue + Pale Lavender + White */
-.card {
-    background: linear-gradient(135deg, #e0f2fe, #ffffff, #f5f3ff, #ffffff, #e0f2fe) !important;
-    background-size: 400% 400% !important;
-    animation-name: cardGradientLight !important;
-    animation-duration: 10s !important;
-    animation-timing-function: ease !important;
-    animation-iteration-count: infinite !important;
-}
-/* animate-in OVERRIDES the gradient animation temporarily with the fade-in */
-.card.animate-in {
-    opacity: 0;
-    animation-name: cardFadeIn, cardGradientLight !important;
-    animation-duration: 0.4s, 10s !important;
-    animation-timing-function: ease, ease !important;
-    animation-iteration-count: 1, infinite !important;
-    animation-fill-mode: both, none !important;
-}
-/* DARK MODE: Rich dark charcoal with subtle deep teal and midnight blue — slow, atmospheric flow */
 body.dark-mode .card {
     background: linear-gradient(135deg, #0d1117, #161b22, #0d2137, #111827, #0d1117) !important;
     background-size: 400% 400% !important;
@@ -2227,6 +2471,7 @@ body.dark-mode .card-body {
 </script>
 
 <div class="header">
+    <h1 class="sr-only" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">UniQaidar Fonts</h1>
     <div class="social-links">
         <a id="social-facebook" href="https://www.facebook.com/UniQaiidarFonts" target="_blank" class="social-icon" aria-label="UniQaidar on Facebook" title="فەیسبووک">
             <i class="fab fa-facebook-f"></i>
@@ -2234,7 +2479,7 @@ body.dark-mode .card-body {
         <a id="social-telegram" href="https://t.me/UniQaidar_Fonts" target="_blank" class="social-icon" aria-label="UniQaidar on Telegram" title="تێلیگرام">
             <i class="fab fa-telegram-plane"></i>
         </a>
-<button id="theme-toggle-btn" onclick="toggleTheme()" aria-label="گۆڕینی شێوازی ڕووکار" title="Dark / Light mode"><i class="fas fa-sun"></i></button>
+<button id="theme-toggle-btn" onclick="toggleTheme()" aria-label="گۆڕینی شێوازی ڕووکار" title="گۆڕینی شێوازی ڕووکار (تاریک / ڕووناک)"><i class="fas fa-sun"></i></button>
 
 
 <button id="downloadModalBtn" class="header-btn" aria-label="داگرتنی تەواوی فۆنتەکان" title="کلیک بکە">
@@ -2269,13 +2514,13 @@ body.dark-mode .card-body {
             </div>
 
             <!-- Description -->
-            <p id="dm-desc" style="font-size:1rem;margin-bottom:24px;color:#444;line-height:2;background:#f4f7ff;border-radius:12px;padding:14px 18px;border:1px solid #d8e3ff;text-align:justify;text-align-last:right;direction:rtl;">فەرموون لەگەڵ داگرتنی دوایین ئەپدەیتی تەواوی فۆنتەکانی یونی‌قەیدار بە شێوەی فایلی زیپ (ZIP) کە لە ئێستادا ژمارەی فۆنتەکان 424 فۆنتە:</p>
+            <p id="dm-desc" style="font-size:1rem;margin-bottom:24px;color:#111111;line-height:2;background:rgba(0,153,255,0.08);border-radius:12px;padding:14px 18px;border:1px solid rgba(0,153,255,0.3);text-align:justify;text-align-last:right;direction:rtl;">فەرموون لەگەڵ داگرتنی دوایین ئەپدەیتی تەواوی فۆنتەکانی یونی‌قەیدار بە شێوەی فایلی زیپ (ZIP) کە لە ئێستادا ژمارەی فۆنتەکان 424 فۆنتە:</p>
 
             <!-- Google Drive Button -->
             <div id="dm-btn-wrap" style="display:flex;justify-content:center;margin-bottom:12px;">
                 <a id="dm-btn" href="https://drive.google.com/uc?export=download&id=1sXwTWo3D8_Z_ohppLHHu-YxALLUteiGe" target="_blank" class="dm-drive-btn"
                    onclick="trackFontDownload('داگرتنی تەواوی فۆنتەکان (Google Drive)', 'bulk')"
-                   style="display:inline-flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#ff6a1a,#ff5700);color:white;text-decoration:none;padding:10px 20px;border-radius:12px;font-size:0.95rem;box-shadow:0 4px 14px rgba(255,87,0,0.3);transition:all 0.2s;position:relative;overflow:hidden;width:fit-content;">
+                   style="display:inline-flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(90deg, rgba(10,74,34,1) 0%, rgba(46,204,113,1) 40%, rgba(39,174,96,1) 60%, rgba(10,74,34,1) 100%);background-size:200% auto;animation:uqGreenMoving 2.5s linear infinite;color:white;text-decoration:none;padding:10px 20px;border-radius:12px;font-size:0.95rem;box-shadow:0 4px 14px rgba(39,174,96,0.4);transition:all 0.2s;position:relative;overflow:hidden;width:fit-content;">
                     <span class="modern-dl-icon">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path class="base-part" d="M19 18H5V19H19V18Z" />
@@ -2307,7 +2552,7 @@ body.dark-mode .card-body {
             <!-- Direct Download Button -->
             <div id="dm-direct-wrap" style="display:flex;justify-content:center;">
                 <button id="dm-direct-btn" onclick="downloadFontsDirectly()" class="dm-direct-btn-el"
-                        style="display:inline-flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#2ecc71,#27ae60);color:white;padding:10px 20px;border-radius:12px;font-size:0.95rem;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(39,174,96,0.25);transition:all 0.2s;position:relative;overflow:hidden;width:fit-content;">
+                        style="display:inline-flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(90deg, rgba(140,40,0,1) 0%, rgba(255,107,26,1) 40%, rgba(255,87,0,1) 60%, rgba(140,40,0,1) 100%);background-size:200% auto;animation:uqGreenMoving 2.5s linear infinite;color:white;padding:10px 20px;border-radius:12px;font-size:0.95rem;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(255,87,0,0.35);transition:all 0.2s;position:relative;overflow:hidden;width:fit-content;">
                     <span class="modern-dl-icon">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path class="base-part" d="M19 18H5V19H19V18Z" />
@@ -2340,8 +2585,8 @@ body.dark-mode .card-body {
     </div>
 
     <div class="header-logo">
-        <a id="logo-link" href="https://uniqaidar.pages.dev" onclick="window.location.href='https://uniqaidar.pages.dev'; return false;" title="UniQaidar Fonts" style="cursor:pointer;">
-            <img src="Logo.png" alt="UniQaidar logo">
+        <a id="logo-link" href="https://uniqaidar.pages.dev" onclick="window.location.href='https://uniqaidar.pages.dev'; return false;" title="UniQaidar Fonts - فۆنتەکانی یونی قەیدار" style="cursor:pointer;">
+            <img src="Logo.png" alt="UniQaidar Fonts - Kurdish Font Download - داگرتنی فۆنتی کوردی - فۆنتەکانی یونی قەیدار">
         </a>
     </div>
 
@@ -2424,6 +2669,533 @@ body.dark-mode .card-body {
         </div>
     </div>
 </div> 
+
+<!-- ══════════════════════════════════════════════════════════════════
+     UniQaidar SEO Welcome Section — v2 (Always Open, Animated)
+     ID: uq-welcome-section
+     Fully editable by admin panel via pvbOpenWelcomeEditor()
+     DO NOT remove data-pvb-* attributes — admin panel reads/writes them
+     ═══════════════════════════════════════════════════════════════════ -->
+<section id="uq-welcome-section" dir="rtl" aria-label="دەربارەی ماڵپەڕی یونی‌قەیدار">
+
+    <!-- ── Animated Hero Banner (replaces the old toggle button) ── -->
+    <div id="uq-welcome-hero">
+        <!-- Single row: [dots] [button] [tagline] -->
+        <div id="uq-welcome-title-wrap">
+            <!-- Decorative animated dots (RTL side) -->
+            <span class="uq-hero-dot" style="animation-delay:0s">•</span>
+            <span class="uq-hero-dot" style="animation-delay:0.3s">•</span>
+            <!-- Animated welcome button -->
+            <button id="uq-welcome-btn" class="uq-welcome-btn" onclick="uqExpandWelcome(this)" aria-expanded="false" title="کلیک بکە بۆ دەرکەوتنی دەقی تەواو">
+                <span class="uq-wbtn-short">بەخێربێن بۆ یونی‌قەیدار</span>
+                <span class="uq-wbtn-full" aria-hidden="true">بەخێربێن بۆ ماڵپەڕی فۆنتەکانی یونی‌قەیدار</span>
+                <span class="uq-wbtn-arrow">▾</span>
+            </button>
+            <!-- Looping animated tagline inline -->
+            <div id="uq-welcome-tagline-anim">
+                <span class="uq-tagline-item active" data-pvb="tagline-1">🎨 زیاتر لە ٤٢٠ فۆنتی کوردی و عەرەبی بۆ داگرتن</span>
+                <span class="uq-tagline-item" data-pvb="tagline-2">✨ بە خۆڕایی — داگرتنی خێرا و ئاسان</span>
+                <span class="uq-tagline-item" data-pvb="tagline-3">🖋 فۆنتی پیشەیی بۆ هەموو بوارەکان</span>
+                <span class="uq-tagline-item" data-pvb="tagline-4">📱 گونجاو بۆ مۆبایل، کۆمپیوتەر و تابلێت</span>
+            </div>
+            <!-- Decorative animated dot (LTR side) -->
+            <span class="uq-hero-dot" style="animation-delay:0.6s">•</span>
+        </div>
+        <!-- Orange accent bar — full width -->
+        <div id="uq-welcome-accent-bar"></div>
+    </div>
+
+    <!-- ── Always-visible body (no collapse) ── -->
+    <div id="uq-welcome-body">
+
+        <!-- Heading -->
+        <h1 id="uq-welcome-h1" data-pvb="heading">بەخێربێن بۆ ماڵپەڕی فۆنتەکانی یونی‌قەیدار</h1>
+
+        <!-- Lead paragraph -->
+        <p id="uq-welcome-lead" data-pvb="lead">یەکێک لە گەورەترین و دەوڵەمەندترین ناوەندی فۆنتی کوردی بۆ داگرتنی فۆنتی کوردی جوان بێبەرامبەر</p>
+
+        <!-- Main intro -->
+        <p id="uq-welcome-intro" data-pvb="intro">فۆنتەکانی یونی‌قەیدار (UniQaidar Fonts) کۆمەڵێک فۆنتی کوردی و عەرەبی بەکوالیتی بەرزن کە بۆ دیزاین، نوسین و بوارە جیاوازەکانی تری وەک ماڵپەڕ و بەڵگەنامەکان گونجاون. ئەم فۆنتانە بە تایبەتمەندی ڕێکی و ڕەوانی لە دیزایندا ناسراون. یەکەم گورزەی فۆنتەکان لە مانگی ئابی ساڵی ٢٠٠٩دا بڵاوکراوتەوە لەلایەن قەیدار ڕەحیم.</p>
+
+        <!-- Platform paragraph -->
+        <p id="uq-welcome-platform" data-pvb="platform">ماڵپەڕی یونی‌قەیدار سەکۆیەکی پیشەیییە بۆ دابینکردنی فۆنتە کوردییەکان. لێرەدا دەتوانن بە ئاسانی دەستان بگات بە زیاتر لە ٤٢٠ فۆنتی جیاوازی یونیکۆد کە بە وردی پۆلێن کراون بۆ هەموو بوارەکان.</p>
+
+        <!-- Categories section -->
+        <div id="uq-welcome-cats-wrap" data-pvb="cats-wrap">
+            <h2 id="uq-welcome-cats-h2" data-pvb="cats-h2">🎨 جۆر و تایبەتمەندی فۆنتەکان لە ماڵپەڕەکەمان:</h2>
+            <ul id="uq-welcome-cats-list" data-pvb="cats-list">
+                <li data-pvb="cat-1"><strong>فۆنتەکانی بڵاوکراوە و ڕاگەیاندن:</strong> ئەم فۆنتانە بەهۆی پارسەنگی و ڕوونییەکەیان ناسراون؛ تایبەتن بە خوێندنەوەی درێژخایەن لە ناو هەواڵ، کتێب، گۆڤار، ڕۆژنامە و ڕاپۆرتە فەرمییەکاندا بێ ئەوەی چاو ماندوو بکەن.</li>
+                <li data-pvb="cat-2"><strong>فۆنتەکانی دیزاین و مۆنتاژ:</strong> فۆنتی خێزانی و ئەستوور (بۆڵد) کە بۆ لۆگۆ، تابلۆی سەر شەقام، سەردێڕی ڤیدیۆ و پۆستەری ڕیکلامی بەکاردێن و سەرنجی بینەر ڕادەکێشن.</li>
+                <li data-pvb="cat-3"><strong>فۆنتەکانی سۆشیاڵ میدیا:</strong> فۆنتی مۆدێرن و گەنجانە کە شێوازێکی ناوازە دەدەن بە پۆست و چیرۆکەکانی (ئینستاگرام، فەیسبووک، سناپچات، تیکتۆک و یوتیوب).</li>
+                <li data-pvb="cat-4"><strong>فۆنتەکانی منداڵان و فێرکاری:</strong> فۆنتی نەرم و خڕ و کارتۆنی کە بۆ کتێبی خوێندن، چیرۆکی منداڵان، یارییە فێرکارییەکان و پۆستەری قوتابخانەکان گونجاون.</li>
+                <li data-pvb="cat-5"><strong>فۆنتەکانی دەستنووس و نەستەعڵیق:</strong> فۆنتی کلاسیکی و هونەری کە وەک خەتاتی دەستی دەردەکەون؛ بۆ نووسینی شیعر، بانگهێشتنامەی زەماوەند و تابلۆ هونەرییەکان بێوێنەن.</li>
+                <li data-pvb="cat-6"><strong>فۆنتە تایبەتەکان:</strong> فۆنتەکانی عەلی (بە شێوەی یونیکۆد)، فۆنتی سەمیک، فۆنتە ئیسلامییەکان بۆ قورئان و فەرموودە، و فۆنتی تایبەت بە ژێرنووسی فیلم و زنجیرەکان.</li>
+            </ul>
+        </div>
+
+        <!-- Apps section -->
+        <div id="uq-welcome-apps-wrap" data-pvb="apps-wrap">
+            <h2 id="uq-welcome-apps-h2" data-pvb="apps-h2">📱 گونجاو بۆ هەموو بەرنامە و ئامێرەکان</h2>
+            <p id="uq-welcome-apps-lead" data-pvb="apps-lead">فۆنتەکانی ئێمە بە بێ کێشە لەسەر تەواوی سیستەمەکانی (<strong>ویندۆز، ماک، ئەندرۆید، ئایفۆن</strong>) کار دەکەن. دەتوانیت لەم بەرنامانەدا بەکاریان بهێنیت:</p>
+            <ul id="uq-welcome-apps-list" data-pvb="apps-list">
+                <li data-pvb="app-1"><strong>بەرنامەکانی دەستکاری ڤیدیۆ لە مۆبایل:</strong> کاپ کەت، ڤی ئێن مۆنتاژ، کایین ماستەر، ئین شۆت، ئالایت مۆشن، لوما فیوژن.</li>
+                <li data-pvb="app-2"><strong>بەرنامەکانی دیزاین و وێنە لە مۆبایل:</strong> پیکسڵ لاب، پیکس ئارت، کانڤا، فۆنتۆ، ئەدۆبی ئێکسپرێس، پۆستەر مەکەر.</li>
+                <li data-pvb="app-3"><strong>بەرنامەکانی کۆمپیوتەر:</strong> ئەدۆب فۆتۆشۆپ، ئەدۆبی پریمیەر، ئافتەر ئیفێکت، ئیلسترەیتەر، ئیندیزاین، کۆرێڵ درۆ.</li>
+                <li data-pvb="app-4"><strong>بەرنامەکانی نووسین:</strong> مایکرۆسۆفت وۆرد، پاوەرپۆینت، ئێکسڵ، ئەپڵ پەیجیز، گوگڵ دۆکس.</li>
+            </ul>
+        </div>
+
+        <!-- Features section -->
+        <div id="uq-welcome-feats-wrap" data-pvb="feats-wrap">
+            <h2 id="uq-welcome-feats-h2" data-pvb="feats-h2">✨ تایبەتمەندییەکانی ماڵپەڕی یونی‌قەیدار</h2>
+            <ul id="uq-welcome-feats-list" data-pvb="feats-list">
+                <li data-pvb="feat-1"><strong>تاقیکردنەوەی ڕاستەوخۆ:</strong> پێش دونلۆدکردن و داگرتن، دەتوانیت دەقەکەت بنووسیت و شێوە و کێشی فۆنتەکە لە ناو ماڵپەڕەکەدا ببینیت.</li>
+                <li data-pvb="feat-2"><strong>داگرتنی خێرا و ئاسان:</strong> دەتوانیت فۆنتەکان بە تاک، بەپێی جۆرەکانیان، یان تەواوی فۆنتەکان بە یەک کلیک یاخود فۆنتی بەشێکی دیاریکراو و بەیەکجار دابگریت.</li>
+                <li data-pvb="feat-3"><strong>ناردن بۆ هاوڕێیان:</strong> بە یەک دەستلێدان بەستەری فۆنتەکە کۆپی بکە و بۆ هاوڕێ و هاوکارانت بنێرە بۆ ئەوەی ئەوانیش سوودی لێ ببینن.</li>
+                <li data-pvb="feat-4"><strong>گونجانی تەواو:</strong> ماڵپەڕەکەمان بە شێوازێکی گونجێنراوە و خێرایە بۆ کردنەوە لە مۆبایل، کۆمپیوتەر و تابلێت گونجێنراوە.</li>
+            </ul>
+        </div>
+
+        <!-- Closing tagline -->
+        <p id="uq-welcome-close" data-pvb="close">یونی‌قەیدار هاوبەشی سەرەکی و بنەڕەتی گرافیک دیزاینەران، مۆنتێرەکان، نووسەران و بەڕێوەبەرانی تۆڕە کۆمەڵایەتییەکانە، کە یارمەتیدەرە بۆ ئەوەی پڕۆژەکانتان بگەیننە بەرزترین ئاستی جوانی و لێهاتوویی پیشەیی.</p>
+
+    </div><!-- /uq-welcome-body -->
+
+</section><!-- /uq-welcome-section -->
+
+<style>
+/* ══════════════════════════════════════════════════════════
+   UQ Welcome Section v2 — Always-open animated hero
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Section wrapper ── */
+#uq-welcome-section {
+    direction: rtl;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ══ HERO BANNER ══════════════════════════════════════════ */
+#uq-welcome-hero {
+    width: 100%;
+    box-sizing: border-box;
+    background: #1a1a1a;
+    background-size: 300% 100%;
+    animation: heroBlueDarkShift 6s ease-in-out infinite alternate;
+    position: relative;
+    overflow: hidden;
+    padding: 7px 16px;
+    text-align: center;
+    border-top: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    flex-wrap: nowrap;
+    justify-content: center;
+    min-height: 0;
+}
+@keyframes heroBlueDarkShift {
+    0%   { background-position: 0% center; }
+    100% { background-position: 100% center; }
+}
+
+/* Moving top border line — smooth seamless RTL sweep */
+#uq-welcome-hero::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        #0070e4 15%,
+        #00d2ff 30%,
+        #ffffff 50%,
+        #00d2ff 70%,
+        #0070e4 85%,
+        transparent 100%);
+    background-size: 200% 100%;
+    animation: heroBorderSweepRTL 3s linear infinite;
+    pointer-events: none;
+    z-index: 2;
+}
+@keyframes heroBorderSweepRTL {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Blue flowing gradient behind the welcome button — removed to match filter bar */
+#uq-welcome-hero::before {
+    content: '';
+    display: none;
+}
+
+/* Moving green gradient — used on download success label and Google Drive button */
+@keyframes uqGreenMoving {
+    0%   { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
+/* ── Welcome Expand Button — dark glass + blue accent ── */
+.uq-welcome-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(10, 20, 40, 0.72);
+    border: 1.5px solid rgba(0, 150, 255, 0.45);
+    border-radius: 16px;
+    padding: 5px 16px;
+    cursor: pointer;
+    color: #ffffff !important;
+    font-family: 'UniQAIDAR_Peregraf 01', Tahoma, Arial, sans-serif !important;
+    font-weight: normal !important;
+    font-size: clamp(0.78rem, 2vw, 0.92rem);
+    letter-spacing: 0.01em;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+    direction: rtl;
+    white-space: nowrap;
+    flex-shrink: 0;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 0 18px rgba(0, 120, 255, 0.25), 0 2px 12px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
+    animation: uqBtnBluePulse 3s ease-in-out infinite;
+}
+@keyframes uqBtnBluePulse {
+    0%, 100% { box-shadow: 0 0 18px rgba(0,120,255,0.25), 0 2px 12px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08); border-color: rgba(0,150,255,0.45); }
+    50%       { box-shadow: 0 0 36px rgba(0,180,255,0.55), 0 4px 18px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.12); border-color: rgba(0,200,255,0.75); }
+}
+/* Blue shimmer sweep — RTL: starts from left, sweeps rightward (visually right→left in RTL) */
+.uq-welcome-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; right: -80%; width: 55%; height: 100%;
+    background: linear-gradient(270deg, transparent, rgba(80,180,255,0.22), rgba(180,230,255,0.28), rgba(80,180,255,0.22), transparent);
+    animation: uqBtnShimmerRTL 3.5s cubic-bezier(0.4,0,0.6,1) infinite;
+    pointer-events: none;
+    border-radius: 16px;
+}
+@keyframes uqBtnShimmerRTL {
+    0%   { right: -80%; }
+    65%  { right: 130%; }
+    100% { right: 130%; }
+}
+.uq-welcome-btn::after { display: none; }
+
+.uq-welcome-btn:hover {
+    border-color: rgba(0, 210, 255, 0.9);
+    color: #ffffff !important;
+    box-shadow: 0 0 42px rgba(0, 190, 255, 0.6), 0 4px 18px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12);
+    transform: translateY(-2px) scale(1.02);
+    animation: none;
+}
+.uq-welcome-btn:active { transform: scale(0.97); animation: none; }
+
+/* Short text: always visible. Full text: hidden until expanded */
+.uq-wbtn-short {
+    display: inline;
+    transition: opacity 0.3s;
+}
+.uq-wbtn-full {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+.uq-wbtn-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4em;
+    line-height: 1;
+    transition: transform 0.4s cubic-bezier(0.34,1.3,0.64,1);
+    color: #fff;
+    flex-shrink: 0;
+    margin-right: 2px;
+    vertical-align: middle;
+    position: relative;
+    top: 0;
+}
+/* Expanded state */
+.uq-welcome-btn[aria-expanded="true"] .uq-wbtn-short { display: none; }
+.uq-welcome-btn[aria-expanded="true"] .uq-wbtn-full { display: inline; opacity: 1; }
+.uq-welcome-btn[aria-expanded="true"] .uq-wbtn-arrow { transform: rotate(180deg); color: #fff; }
+.uq-welcome-btn[aria-expanded="true"] {
+    border-color: rgba(0, 200, 255, 0.8);
+    border-radius: 16px;
+    color: #ffffff !important;
+    box-shadow: 0 0 42px rgba(0, 190, 255, 0.55), 0 4px 18px rgba(0,0,0,0.5);
+    animation: none;
+}
+
+@keyframes uqHeroGlow {
+    0%   { opacity: 0.6; transform: translateX(-50%) scale(1); }
+    100% { opacity: 1;   transform: translateX(-50%) scale(1.15); }
+}
+
+/* ── Title wrap — row: [dots] [button] [tagline] ── */
+#uq-welcome-title-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 10px;
+    margin-bottom: 0;
+    flex-wrap: nowrap;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+/* ── Main hero title ── */
+.uq-hero-title {
+    font-family: 'UniQAIDAR_Peregraf 01', Tahoma, Arial, sans-serif !important;
+    font-weight: normal !important;
+    font-size: clamp(1.45rem, 4vw, 2.2rem);
+    color: #fff;
+    letter-spacing: 0.02em;
+    animation: uqTitlePulse 3s ease-in-out infinite;
+    display: inline-block;
+    text-shadow: 0 0 28px rgba(1,108,230,0.55), 0 2px 8px rgba(0,0,0,0.4);
+}
+@keyframes uqTitlePulse {
+    0%, 100% { text-shadow: 0 0 20px rgba(1,108,230,0.45), 0 2px 8px rgba(0,0,0,0.4); }
+    50%       { text-shadow: 0 0 50px rgba(77,217,254,0.85), 0 4px 16px rgba(0,0,0,0.5); }
+}
+
+/* ── Animated dots beside title ── */
+.uq-hero-dot {
+    font-size: 1rem;
+    display: inline-block;
+    animation: uqDotBounce 1.2s ease-in-out infinite;
+    line-height: 1;
+}
+.uq-hero-dot:nth-child(1) { color: #FC6301; }
+.uq-hero-dot:nth-child(2) { color: #FEB301; animation-delay: 0.3s; }
+.uq-hero-dot:nth-child(3) { color: #4DD9FE; animation-delay: 0.6s; }
+@keyframes uqDotBounce {
+    0%, 100% { transform: translateY(0);    opacity: 1; }
+    50%       { transform: translateY(-6px); opacity: 0.5; }
+}
+
+/* ── Looping tagline carousel ── */
+#uq-welcome-tagline-anim {
+    position: relative;
+    height: 28px;
+    overflow: visible;
+    margin-bottom: 0;
+    z-index: 1;
+    clip-path: inset(0 -200px 0 -200px);
+    min-width: 160px;
+    max-width: 340px;
+    flex: 1;
+}
+.uq-tagline-item {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-family: 'UniQAIDAR_Peregraf 02', Tahoma, Arial, sans-serif !important;
+    font-weight: normal !important;
+    font-size: clamp(0.72rem, 1.8vw, 0.85rem);
+    color: rgba(220, 220, 220, 0.88);
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    pointer-events: none;
+    white-space: nowrap;
+    right: 0;
+    left: 0;
+    padding: 0 12px;
+}
+.uq-tagline-item.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+.uq-tagline-item.leaving {
+    opacity: 0;
+    transform: translateY(-18px);
+}
+
+/* ── Full-width complementary accent bar — hidden (incorporated into hero border) ── */
+#uq-welcome-accent-bar {
+    display: none;
+}
+@keyframes uqAccentSlide {
+    0%   { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+}
+
+/* ══ BODY (always visible) ════════════════════════════════ */
+#uq-welcome-body {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 16px;
+    box-sizing: border-box;
+    /* Collapsed by default — click the hero button to expand */
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.55s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease, padding 0.4s ease;
+}
+#uq-welcome-body.uq-body-open {
+    max-height: 3000px;
+    opacity: 1;
+    padding: 20px 16px 16px;
+}
+
+/* ── Headings ── */
+#uq-welcome-section h1 {
+    font-family: 'UniQAIDAR_Peregraf 01', Tahoma, Arial, sans-serif !important;
+    font-weight: normal !important;
+    font-size: 1.35rem;
+    color: #016CE6;
+    margin: 0 0 8px;
+    line-height: 1.6;
+    text-align: right;
+}
+#uq-welcome-section h2 {
+    font-family: 'UniQAIDAR_Peregraf 01', Tahoma, Arial, sans-serif !important;
+    font-weight: normal !important;
+    font-size: 1rem;
+    color: #016CE6;
+    margin: 18px 0 8px;
+    line-height: 1.6;
+    text-align: right;
+}
+
+/* ── Paragraphs — Peregraf 02, never bold ── */
+#uq-welcome-section p {
+    font-family: 'UniQAIDAR_Peregraf 02', Tahoma, Arial, sans-serif !important;
+    font-weight: normal !important;
+    font-size: 0.92rem;
+    line-height: 2;
+    text-align: justify;
+    text-align-last: right;
+    margin: 0 0 10px;
+    color: #e0e0e0;
+}
+
+/* ── Lists — Peregraf 02, never bold ── */
+#uq-welcome-section ul {
+    margin: 0 0 10px;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+#uq-welcome-section li {
+    font-family: 'UniQAIDAR_Peregraf 02', Tahoma, Arial, sans-serif !important;
+    font-weight: normal !important;
+    font-size: 0.88rem;
+    line-height: 1.9;
+    text-align: justify;
+    text-align-last: right;
+    color: #e0e0e0;
+    padding-right: 20px;
+    position: relative;
+}
+#uq-welcome-section li::before {
+    content: "•";
+    color: #FEB301;
+    position: absolute;
+    right: 4px;
+    top: 0;
+    font-size: 1rem;
+    line-height: 1.9;
+}
+/* strong inside paragraphs/li — use Peregraf 01 (the bold one) */
+#uq-welcome-section strong {
+    font-family: 'UniQAIDAR_Peregraf 01', Tahoma, Arial, sans-serif !important;
+    font-weight: normal !important;
+    color: #FEB301;
+}
+
+/* ── Sub-section wrappers ── */
+#uq-welcome-cats-wrap,
+#uq-welcome-apps-wrap,
+#uq-welcome-feats-wrap {
+    border-top: 1px solid rgba(1,108,230,0.15);
+    padding-top: 4px;
+    margin-top: 4px;
+}
+
+/* ── LIGHT MODE overrides — match dark mode exactly ── */
+body:not(.dark-mode) #uq-welcome-hero {
+    background: #1a1a1a;
+}
+body:not(.dark-mode) #uq-welcome-body {
+    background: #1a1a1a;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+body:not(.dark-mode) #uq-welcome-section p,
+body:not(.dark-mode) #uq-welcome-section li { color: #e0e0e0; }
+body:not(.dark-mode) #uq-welcome-section strong { color: #FEB301; }
+body:not(.dark-mode) #uq-welcome-section h1,
+body:not(.dark-mode) #uq-welcome-section h2 { color: #5ba3ff; }
+
+/* ── DARK MODE overrides for welcome section ── */
+body.dark-mode #uq-welcome-body {
+    background: #1a1a1a;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+body.dark-mode #uq-welcome-section p,
+body.dark-mode #uq-welcome-section li { color: #e0e0e0 !important; }
+body.dark-mode #uq-welcome-section strong { color: #FEB301 !important; }
+body.dark-mode #uq-welcome-section h1,
+body.dark-mode #uq-welcome-section h2 { color: #5ba3ff !important; }
+
+/* ── MOBILE ── */
+@media (max-width: 600px) {
+    #uq-welcome-hero { padding: 5px 8px; }
+    #uq-welcome-title-wrap { flex-wrap: wrap; gap: 6px; }
+    #uq-welcome-tagline-anim { min-width: 100%; height: 20px; max-width: 100%; order: 3; }
+    .uq-tagline-item { font-size: 0.7rem; white-space: normal; }
+    #uq-welcome-section h1 { font-size: 1.05rem; }
+    #uq-welcome-section h2 { font-size: 0.9rem; }
+    #uq-welcome-section p,
+    #uq-welcome-section li { font-size: 0.84rem; }
+}
+</style>
+
+<script>
+
+// ── Welcome button expand/collapse ──────────────────────
+function uqExpandWelcome(btn) {
+    var expanded = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    var body = document.getElementById('uq-welcome-body');
+    if (body) {
+        if (expanded) {
+            body.classList.remove('uq-body-open');
+        } else {
+            body.classList.add('uq-body-open');
+        }
+    }
+}
+
+// ── Welcome section tagline carousel (looping) ───────────
+(function() {
+    var items = document.querySelectorAll('.uq-tagline-item');
+    if (!items.length) return;
+    var current = 0;
+    setInterval(function() {
+        items[current].classList.remove('active');
+        items[current].classList.add('leaving');
+        var prev = current;
+        current = (current + 1) % items.length;
+        items[current].classList.add('active');
+        setTimeout(function() { items[prev].classList.remove('leaving'); }, 650);
+    }, 3200);
+})();
+// uqWelcomeToggle kept as no-op for admin panel compatibility
+function uqWelcomeToggle() {}
+</script>
 <div class="filter-container">
 
     <!-- SOURCE OF TRUTH: hidden, read/written by admin panel -->
@@ -2453,11 +3225,11 @@ body.dark-mode .card-body {
 
     <!-- Desktop: collapsible dropdown — populated dynamically from marquee-content -->
     <div class="filter-desktop" id="filter-desktop">
-        <div id="desktop-toggle" onclick="toggleDesktopCats()" style="width:100%;background:#1a1a1a;border:none;border-top:2px solid rgba(255,255,255,0.2);margin-top:4px;border-bottom:1px solid rgba(255,255,255,0.15);color:#fff;padding:12px 20px;font-size:1.1rem;font-weight:normal;display:flex;align-items:center;direction:rtl;cursor:pointer;font-family:'UniQAIDAR_Peregraf 01',Tahoma,sans-serif;gap:10px;box-sizing:border-box;">
+        <div id="desktop-toggle" onclick="toggleDesktopCats()" style="width:100%;background:#1a1a1a;border:none;border-top:1px solid rgba(255,255,255,0.12);margin-top:0;border-bottom:1px solid rgba(255,255,255,0.1);color:#fff;padding:10px 20px;font-size:1.1rem;font-weight:normal;display:flex;align-items:center;direction:rtl;cursor:pointer;font-family:'UniQAIDAR_Peregraf 01',Tahoma,sans-serif;gap:10px;box-sizing:border-box;">
             <span style="font-size:1rem;">&#9776;</span>
             <span id="desktop-active-label" style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></span>
             <span id="cat-dl-inline-wrap" style="display:none;align-items:center;gap:8px;flex-shrink:0;" onclick="event.stopPropagation()">
-                <button id="cat-dl-btn" onclick="event.stopPropagation();downloadCategoryFonts()">
+                <button id="cat-dl-btn" onclick="event.stopPropagation();downloadCategoryFonts()" title="کلیک بکە">
                     <span class="modern-dl-icon">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path class="base-part" d="M19 18H5V19H19V18Z" />
@@ -2466,7 +3238,7 @@ body.dark-mode .card-body {
                     </span>
                     <span id="cat-dl-btn-text">داگرتنی تەواوی فۆنتەکانی ئەم بەشە</span>
                 </button>
-                <span id="cat-dl-progress-inline" style="display:none;font-size:0.78rem;color:#ccc;background:#16213e;border-radius:7px;padding:4px 10px;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis;"></span>
+                <span id="cat-dl-progress-inline" style="display:none;font-size:0.78rem;color:#ccc;background:rgba(0,5,20,0.95);border-radius:7px;padding:4px 10px;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis;"></span>
             </span>
             <span class="toggle-arrow" style="transition:transform 0.25s;font-size:0.8rem;flex-shrink:0;">&#9660;</span>
         </div>
@@ -2483,8 +3255,8 @@ body.dark-mode .card-body {
             <span class="toggle-arrow">&#9660;</span>
         </button>
         <!-- Mobile cat-download bar: full-width, below toggle row -->
-        <div id="cat-dl-mobile-wrap" style="display:none;direction:rtl;background:#1a1a2e;padding:8px 14px;flex-direction:column;gap:6px;border-bottom:1px solid rgba(255,255,255,0.08);">
-            <button id="cat-dl-btn-mobile" onclick="downloadCategoryFonts()" style="width:100%;">
+        <div id="cat-dl-mobile-wrap" style="display:none;direction:rtl;background:#1a1a1a;padding:8px 14px;flex-direction:column;gap:6px;border-bottom:1px solid rgba(255,51,0,0.3);">
+            <button id="cat-dl-btn-mobile" onclick="downloadCategoryFonts()" title="کلیک بکە" style="width:100%;">
                 <span class="modern-dl-icon">
                     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path class="base-part" d="M19 18H5V19H19V18Z" />
@@ -2493,7 +3265,7 @@ body.dark-mode .card-body {
                 </span>
                 <span id="cat-dl-btn-text-mobile">داگرتنی تەواوی فۆنتەکانی ئەم بەشە</span>
             </button>
-            <div id="cat-dl-progress-mobile" style="display:none;font-size:0.8rem;color:#ccc;background:#16213e;border-radius:7px;padding:5px 10px;text-align:center;width:100%;box-sizing:border-box;"></div>
+            <div id="cat-dl-progress-mobile" style="display:none;font-size:0.8rem;color:#ccc;background:rgba(0,5,20,0.95);border-radius:7px;padding:5px 10px;text-align:center;width:100%;box-sizing:border-box;"></div>
         </div>
         <div class="filter-mobile-panel" id="mobile-panel"></div>
     </div>
@@ -2507,18 +3279,27 @@ body.dark-mode .card-body {
     align-items:center; gap:8px; justify-content:center;
     flex-wrap:nowrap; direction:rtl; overflow:hidden;
     max-width:100vw; box-sizing:border-box;
+    border-top:1px solid rgba(255,107,53,0.12);
 ">
     <span style="color:#aaa;font-size:0.82rem;white-space:nowrap">قەبارەی فۆنت:</span>
     <input type="range" id="font-size-slider" min="12" max="90" value="32"
         style="width:160px;accent-color:#ff5700;cursor:pointer"
         oninput="changeFontSize(this.value)">
     <span id="size-label" style="color:#ff5700;font-family:monospace;font-size:0.82rem;min-width:38px">32px</span>
-    <button onclick="changeFontSize(32); document.getElementById('font-size-slider').value=32;"
-        style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#aaa;
-        border-radius:12px;padding:3px 10px;cursor:pointer;font-size:0.75rem;">ڕیسێت</button>
+    <button id="size-reset-btn" onclick="changeFontSize(32); document.getElementById('font-size-slider').value=32;"
+        title="ڕیسێتکردنی قەبارەی فۆنت"
+        style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#ccc;
+        border-radius:12px;padding:3px 10px;cursor:pointer;font-size:0.75rem;transition:background 0.2s,color 0.2s;">ڕیسێت</button>
 </div>
 
 <!-- Trending sort bar removed per update — category now auto-sorted by Cloudflare download stats -->
+<style>
+#size-reset-btn:hover, #size-reset-btn:active {
+    background: rgba(255,255,255,0.2) !important;
+    color: #fff !important;
+    border-color: rgba(255,255,255,0.4) !important;
+}
+</style>
 <!-- Hidden marker for admin panel to read/write category download button label -->
 <span id="cat-download-btn-label" style="display:none">داگرتنی تەواوی فۆنتەکانی ئەم بەشە</span>
 
@@ -2526,7 +3307,7 @@ body.dark-mode .card-body {
 <div id="no-results-msg">
     <div style="font-size:2rem;margin-bottom:10px;">🔍</div>
     <div>هیچ فۆنتێک نەدۆزرایەوە بۆ گەڕانەکەت</div>
-    <div style="font-size:0.85rem;color:#aaa;margin-top:6px;">No fonts found for your search</div>
+    <div style="font-size:0.85rem;margin-top:6px;">No fonts found for your search</div>
     <button onclick="clearSearchAndReset()">پاکردنەوەی گەڕان</button>
 </div>
 
@@ -2657,7 +3438,7 @@ function renderFonts(data, text, resetPage) {
 
         const copyBtn = document.createElement('button');
         copyBtn.className = 'card-copy-btn';
-        copyBtn.title = 'Copy font link';
+        copyBtn.title = 'کۆپیکردنی لینکی فۆنت - کلیک بکە';
         copyBtn.setAttribute('aria-label', 'کۆپیکردنی لینکی فۆنت');
         copyBtn.innerHTML = '<span style="position:relative;top:0px;font-style:normal;display:flex;align-items:center;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>';
         copyBtn.setAttribute('data-font', font.name);
@@ -2682,7 +3463,7 @@ function renderFonts(data, text, resetPage) {
                     (text || font.preview || 'فۆنتەکانی یونی‌قەیدار') +
                 '</div>' +
                 '<div class="download-btn-wrap">' +
-                    '<a href="' + font.path + '" class="trinity-dl" download data-font="' + font.name + '" aria-label="داگرتنی فۆنت">' +
+                    '<a href="' + font.path + '" class="trinity-dl" download data-font="' + font.name + '" aria-label="دابەزاندنی فۆنت" title="کلیک بکە">' +
                         '<span class="modern-dl-icon" style="width:26px;height:26px;">' +
                             '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
                                 '<path class="base-part" d="M19 18H5V19H19V18Z" />' +
@@ -2695,8 +3476,8 @@ function renderFonts(data, text, resetPage) {
                         '<span class="size-val">' + (fileSize || '…') + '</span>' +
                         '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>' +
                     '</div>' +
-                    '<button class="trinity-para" title="دەقی پەرەگراف" aria-label="دەقی پەرەگراف" onclick="toggleParaPreview(this,\'' + font.name.replace(/'/g, "\\'") + '\')"><div class="para-svg-wrap"><div class="para-line pl1"></div><div class="para-line pl2"></div><div class="para-line pl3"></div><div class="para-line pl4"></div></div></button>' +
-                    '<button class="trinity-copy" title="کۆپیکردنی لینک" aria-label="کۆپیکردنی لینکی فۆنت"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>' +
+                    '<button class="trinity-para" title="پیشاندانی پەرەگراف - کلیک بکە" aria-label="دەقی پەرەگراف" onclick="toggleParaPreview(this,\'' + font.name.replace(/'/g, "\\'") + '\')"><div class="para-svg-wrap"><div class="para-line pl1"></div><div class="para-line pl2"></div><div class="para-line pl3"></div><div class="para-line pl4"></div></div></button>' +
+                    '<button class="trinity-copy" title="کۆپیکردنی لینکی فۆنت - کلیک بکە" aria-label="کۆپیکردنی لینکی فۆنت"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>' +
                 '</div>' +
             '</div>';
         // Wire trinity-copy click
@@ -2716,10 +3497,14 @@ function renderFonts(data, text, resetPage) {
                 if (!lbl || dlLink._dlAnimating) return;
                 dlLink._dlAnimating = true;
                 lbl.textContent = 'فۆنتەکەت دابەزاند ✓';
-                dlLink.style.background = '#1a7a3a';
+                dlLink.style.background = 'linear-gradient(90deg, rgba(10,74,34,1) 0%, rgba(46,204,113,1) 40%, rgba(39,174,96,1) 60%, rgba(10,74,34,1) 100%)';
+                dlLink.style.backgroundSize = '200% auto';
+                dlLink.style.animation = 'uqGreenMoving 2s linear infinite';
                 setTimeout(function() {
                     lbl.textContent = 'دابە‌زاندنی فۆنت';
                     dlLink.style.background = '';
+                    dlLink.style.backgroundSize = '';
+                    dlLink.style.animation = '';
                     dlLink._dlAnimating = false;
                 }, 3000);
             });
@@ -3532,6 +4317,7 @@ async function loadFontsAndInit() {
         }
 
         const dBtn = btn.cloneNode(true);
+        dBtn.title = 'کلیک بکە';
         const dCountBadge = document.createElement('span');
         dCountBadge.className = 'cat-count';
         dCountBadge.setAttribute('dir', 'ltr');
@@ -3539,7 +4325,7 @@ async function loadFontsAndInit() {
         dBtn.appendChild(dCountBadge);
         const dCopy = document.createElement('button');
         dCopy.className = 'copy-cat-btn';
-        dCopy.title = 'Copy category link';
+        dCopy.title = 'کۆپیکردنی لینکی کاتێگۆری';
         dCopy.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
         dCopy.onclick = function(e) { e.stopPropagation(); copyCatLink(catId, dCopy); };
         dWrap.appendChild(dBtn);
@@ -3550,6 +4336,7 @@ async function loadFontsAndInit() {
         const mWrap = document.createElement('span');
         mWrap.style.cssText = 'display:inline-flex;align-items:center;gap:2px;flex-shrink:0;';
         const mBtn = btn.cloneNode(true);
+        mBtn.title = 'کلیک بکە';
         const mCountBadge = document.createElement('span');
         mCountBadge.className = 'cat-count';
         mCountBadge.setAttribute('dir', 'ltr');
@@ -3557,7 +4344,7 @@ async function loadFontsAndInit() {
         mBtn.appendChild(mCountBadge);
         const mCopy = document.createElement('button');
         mCopy.className = 'copy-cat-btn';
-        mCopy.title = 'Copy category link';
+        mCopy.title = 'کۆپیکردنی لینکی کاتێگۆری';
         mCopy.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
         mCopy.onclick = function(e) { e.stopPropagation(); copyCatLink(catId, mCopy); };
         mWrap.appendChild(mBtn);
@@ -3624,13 +4411,7 @@ async function loadFontsAndInit() {
     applyUrlParams();
     _uqInitDone = true;
 
-    // ── Back to top: show when scrolled down 400px ──
-    window.addEventListener('scroll', function() {
-        var btt = document.getElementById('back-to-top');
-        if (!btt) return;
-        if (window.scrollY > 400) btt.classList.add('visible');
-        else btt.classList.remove('visible');
-    }, { passive: true });
+    // BTT setup moved to standalone script block at bottom of page
 
     // ── Theme: default is DARK; stays dark unless user explicitly chose 'light' ──
     try {
@@ -3811,37 +4592,37 @@ window.addEventListener('click', function(e) {
         <button class="close-btn" aria-label="داخستن" title="داخستن"><i class="fas fa-times"></i></button>
         <h2 id="about-title" style="font-size:1.6rem;letter-spacing:0.02em;font-weight:normal;">دەربارەی پڕۆژە</h2>
 
-        <p id="about-content" style="font-size:1.05rem;color:#333;text-align:justify;line-height:2;">
-            فۆنتەکانی یونی‌قەیدار (UniQaidar Fonts) کۆمەڵێک فۆنتی کوردی و عەرەبی بەکوالیتی بەرزن کە بۆ دیزاین، نوسین و بوارە جیاوازەکانی تری وەک ماڵپەڕ و بەڵگەنامەکان گونجاون. ئەم فۆنتانە بە تایبەتمەندی ڕێکی و ڕەوانی لە دیزایندا ناسراون.
+        <p id="about-content" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;font-size:1.05rem;color:#333;text-align:justify;line-height:2;">
+            پڕۆژەی یونی‌قەیدار لە ساڵی ٢٠٠٩ دەستی پێکرد، کاتێک قەیدار ڕەحیم یەکەم گورزەی فۆنتەکانی کوردی بڵاوکردەوە. ئامانجەکە یەک بوو — دروستکردنی فۆنتی کوردی بەکوالیتی بەرز کە بتوانێت لەگەڵ سیستەمی یونیکۆد کار بکات و ئاسانکاری بۆ کارەکانی دیزاین و نووسینی کوردی بکات.
         </p>
 
         <div id="about-features-box" style="background:linear-gradient(135deg,#f0f6ff,#e8f0fe);border-radius:16px;padding:20px 24px;margin:18px 0;text-align:right;">
-            <div id="about-features-title" style="font-size:1rem;font-weight:bold;color:#1a56db;margin-bottom:14px;border-bottom:2px solid #c7d9ff;padding-bottom:8px;">
+            <div id="about-features-title" style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;font-size:1rem;color:#1a56db;margin-bottom:14px;border-bottom:2px solid #c7d9ff;padding-bottom:8px;">
                 ✦ تایبەتمەندییە سەرەکییەکان
             </div>
             <div style="display:flex;flex-direction:column;gap:10px;">
                 <div style="display:flex;align-items:flex-start;gap:10px;color:#2d3748;">
                     <span id="about-feat1-icon" style="color:#1a56db;font-size:1.1rem;flex-shrink:0;">🎨</span>
-                    <span id="about-feat1-text" style="text-align:justify;text-align-last:right;direction:rtl;display:block;"><strong>گونجاو بۆ گشت بوارەکان:</strong> لە دیزاینی گرافیکەوە تا نووسینی دەقی درێژ.</span>
+                    <span id="about-feat1-text" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;text-align:justify;text-align-last:right;direction:rtl;display:block;"><strong style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;">گونجاو بۆ گشت بوارەکان:</strong> لە دیزاینی گرافیکەوە تا نووسینی دەقی درێژ.</span>
                 </div>
                 <div style="display:flex;align-items:flex-start;gap:10px;color:#2d3748;">
                     <span id="about-feat2-icon" style="color:#1a56db;font-size:1.1rem;flex-shrink:0;">✒️</span>
-                    <span id="about-feat2-text" style="text-align:justify;text-align-last:right;direction:rtl;display:block;"><strong>سەرنجڕاکێش و ڕێک:</strong> دیزاینێکی مۆدێرن و سەرنجڕاکێشیان هەیە.</span>
+                    <span id="about-feat2-text" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;text-align:justify;text-align-last:right;direction:rtl;display:block;"><strong style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;">دیزاینی مۆدێرن:</strong> هەر فۆنتێک بە وردی دیزاین کراوە بۆ ئەوەی لە شاشەی دیجیتاڵ و چاپدا جوان بکاتەوە.</span>
                 </div>
                 <div style="display:flex;align-items:flex-start;gap:10px;color:#2d3748;">
                     <span id="about-feat3-icon" style="color:#1a56db;font-size:1.1rem;flex-shrink:0;">🌐</span>
-                    <span id="about-feat3-text" style="text-align:justify;text-align-last:right;direction:rtl;display:block;"><strong>پشتیوانی زمانی کوردی:</strong> بە تەواوی کوردی و عەرەبی پشتیوانی دەکەن.</span>
+                    <span id="about-feat3-text" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;text-align:justify;text-align-last:right;direction:rtl;display:block;"><strong style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;">یونیکۆدی تەواو:</strong> هەموو فۆنتەکان Unicode TTF-ن و بەبێ کێشە لە هەموو ئامێر و بەرنامەکاندا کار دەکەن.</span>
                 </div>
                 <div style="display:flex;align-items:flex-start;gap:10px;color:#2d3748;">
                     <span id="about-feat4-icon" style="color:#1a56db;font-size:1.1rem;flex-shrink:0;">🏆</span>
-                    <span id="about-feat4-text" style="text-align:justify;text-align-last:right;direction:rtl;display:block;">ئەم فۆنتانە یارمەتیدەرن بۆ ئەوەی بەرهەمەکانت زیاتر پرۆفیشناڵ و جوان دەربکەون.</span>
+                    <span id="about-feat4-text" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;text-align:justify;text-align-last:right;direction:rtl;display:block;">زیاتر لە <strong style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;">١٦ ساڵ</strong> مێژووی بەردەوامی دروستکردن و گەشەپێدانی فۆنتی کوردی.</span>
                 </div>
             </div>
         </div>
 
-        <div id="about-footer-bar" style="background:#f8fafc;border-radius:12px;padding:14px 18px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border:1px solid #e2e8f0;">
-            <span id="about-launch-date" style="color:#555;font-size:0.9rem;">🗓 یەکەم گورزە: مانگی ئابی ساڵی ٢٠٠٩</span>
-            <span id="about-developer" style="color:#ff5700;font-weight:bold;font-size:0.9rem;">گەشەپێدەر: قەیدار ڕەحیم</span>
+        <div id="about-footer-bar" style="background:rgba(0,153,255,0.08);border-radius:12px;padding:14px 18px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border:1px solid rgba(0,153,255,0.2);">
+            <span id="about-launch-date" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;color:#111111;font-size:0.9rem;">🗓 یەکەم گورزە: مانگی ئابی ساڵی ٢٠٠٩</span>
+            <span id="about-developer" style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;color:#ff5700;font-size:0.9rem;">گەشەپێدەر: قەیدار ڕەحیم</span>
         </div>
         </div><!-- /modal-inner-scroll -->
     </div>
@@ -3954,47 +4735,69 @@ function toggleParaPreview(btn, fontName) {
     var preview = card.querySelector('.preview');
     if (!preview) return;
     var isActive = btn.classList.toggle('active');
-    if (isActive) {
-        // Find paragraph for this font
-        var fontObj = fonts.find(function(f){ return f.name === fontName; });
-        var paraText = (fontObj && fontObj.paragraph && fontObj.paragraph.trim()) ? fontObj.paragraph.trim() : DEFAULT_PARA_TEXT;
-        // Apply lineHeight from fonts.json if available
-        var lineH = (fontObj && fontObj.lineHeight != null) ? fontObj.lineHeight : 2;
-        preview.dataset.originalText = preview.textContent;
-        preview.dataset.originalStyle = preview.getAttribute('style') || '';
-        preview.textContent = paraText;
-        preview.classList.add('para-mode');
-        // Set CSS variable for line-height on the element
-        preview.style.setProperty('--para-line-height', lineH);
-        preview.style.lineHeight = lineH;
-        preview.style.textAlign = 'justify';
-        preview.style.direction = 'rtl';
-        // Keep current slider font size — don't override to 1.1rem
-    } else {
-        // Restore original
-        var orig = preview.dataset.originalText || (function(){
-            var fo = fonts.find(function(f){ return f.name === fontName; });
-            return fo ? (fo.preview || 'فۆنتەکانی یونی‌قەیدار') : 'فۆنتەکانی یونی‌قەیدار';
-        })();
-        preview.textContent = orig;
-        preview.classList.remove('para-mode');
-        // Restore original inline style
-        var origStyle = preview.dataset.originalStyle || '';
-        if (origStyle) {
-            preview.setAttribute('style', origStyle);
+
+    // ── Flip-out first, swap content, then flip-in ──
+    card.classList.remove('para-expand-anim', 'para-flip-in', 'para-flip-out');
+    var oldOverlay = card.querySelector('.para-shimmer-overlay');
+    if (oldOverlay) oldOverlay.remove();
+    void card.offsetWidth;
+
+    // Phase 1: flip out
+    card.classList.add('para-flip-out');
+
+    setTimeout(function() {
+        card.classList.remove('para-flip-out');
+
+        // ── Swap content ──
+        if (isActive) {
+            var fontObj = fonts.find(function(f){ return f.name === fontName; });
+            var paraText = (fontObj && fontObj.paragraph && fontObj.paragraph.trim()) ? fontObj.paragraph.trim() : DEFAULT_PARA_TEXT;
+            var lineH = (fontObj && fontObj.lineHeight != null) ? fontObj.lineHeight : 2;
+            preview.dataset.originalText = preview.textContent;
+            preview.dataset.originalStyle = preview.getAttribute('style') || '';
+            preview.textContent = paraText;
+            preview.classList.add('para-mode');
+            preview.style.setProperty('--para-line-height', lineH);
+            preview.style.lineHeight = lineH;
+            preview.style.textAlign = 'justify';
+            preview.style.direction = 'rtl';
         } else {
-            preview.removeAttribute('style');
+            var orig = preview.dataset.originalText || (function(){
+                var fo = fonts.find(function(f){ return f.name === fontName; });
+                return fo ? (fo.preview || 'فۆنتەکانی یونی‌قەیدار') : 'فۆنتەکانی یونی‌قەیدار';
+            })();
+            preview.textContent = orig;
+            preview.classList.remove('para-mode');
+            var origStyle = preview.dataset.originalStyle || '';
+            if (origStyle) {
+                preview.setAttribute('style', origStyle);
+            } else {
+                preview.removeAttribute('style');
+            }
+            delete preview.dataset.originalText;
+            delete preview.dataset.originalStyle;
         }
-        delete preview.dataset.originalText;
-        delete preview.dataset.originalStyle;
-    }
+
+        // Phase 2: flip in + shimmer wave simultaneously
+        void card.offsetWidth;
+        card.classList.add('para-flip-in');
+        card.classList.add('para-expand-anim');
+
+        // Inject shimmer overlay
+        var overlay = document.createElement('div');
+        overlay.className = 'para-shimmer-overlay';
+        card.appendChild(overlay);
+
+        setTimeout(function() {
+            card.classList.remove('para-flip-in');
+            card.classList.remove('para-expand-anim');
+            if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        }, 900);
+
+    }, 220); // wait for flip-out to complete
 }
 
 </script>
-    <!-- Hidden SEO Keywords Section for Search Engines -->
-    <div id="seo-keywords-container" class="seo-keywords-hidden" aria-hidden="true">
-        فۆنتی کوردی · داگرتنی فۆنتی کوردی · فۆنتی کوردی بە خۆڕایی · فۆنتی کوردی سۆرانی · باشترین فۆنتی کوردی · نوێترین فۆنتی کوردی · جوانترین فۆنتی کوردی · فۆنت کوردی جوان · داگرتنی فۆنت · فۆنتی کوردی بۆ داگرتن · باشترین فۆنتەکانی ٢٠٢٦ · کۆمەڵە فۆنتی کوردی · پاکی فۆنتی کوردی · کۆکراوەی فۆنتی کوردی · فۆنتەکانی یونی قەیدار · داگرتنی فۆنتەکانی قەیدار · فۆنتەکانی qaidar rahim · فۆنتی کوردی یونیکۆد · فۆنتی یونیکۆد کوردی · داگرتنی فۆنتی کوردی TTF · فۆنتی کوردی OTF · فۆنتی کوردی TTF · گۆڕینی فۆنتی عەلی بۆ یونیکۆد · وەرگێڕی فۆنتی کوردی · فۆنتی کوردی بۆ کێپکات · فۆنتی کوردی بۆ کاپکەت · چارەسەری فۆنتی کوردی کێپکات · فۆنتی کوردی بۆ ئەلایت مۆشن · فێرکاری فۆنتی کوردی بۆ ئەلایت مۆشن · زیادکردنی فۆنتی کوردی بۆ ئەلایت مۆشن · فۆنتی کوردی بۆ ئینشۆت · دابەزاندنی فۆنت بۆ ئینشۆت · فۆنتی کوردی بۆ پیکس ئارت · فۆنتی کوردی بۆ ئینستاگرام · فۆنتی کوردی بۆ تیک تۆک · فۆنتی کوردی بۆ فۆتۆشۆپ · چارەسەری فۆنتی کوردی لە فۆتۆشۆپ · فۆنتی کوردی بۆ وۆرد · فۆنتی کوردی بۆ ئێکسڵ · فۆنتی کوردی بۆ پریمیەر · فۆنتی کوردی بۆ ویندۆز · فۆنتی کوردی بۆ ماک · فۆنتی کوردی بۆ لینوکس · فۆنتی کوردی بۆ ئەندرۆید · فۆنتی کوردی بۆ ئایفۆن · فۆنتی کوردی بۆ ژێرنووس · باشترین فۆنت بۆ ژێرنووس · فۆنتی مۆدێرن بۆ ڤیدیۆ · فۆنتی کوردی بۆ لۆگۆ · فۆنتی تایبەت بۆ لۆگۆ · فۆنتی کوردی بۆ دیزاین · فۆنتی هەواڵ · فۆنتی کەناڵی ڕووداو · فۆنتی کەناڵی کوردستان ٢٤ · فۆنتی کوردی بۆ کاتنامە · فۆنت بۆ کارتی بانگهێشت · فۆنتی جوانترین بۆ ناو ئەکاونت · فۆنتی کوردی بۆڵد · فۆنتی کوردی قەڵەو · فۆنتی بۆڵد بۆ ناونیشان · فۆنتی کوردی تەنک · فۆنتی کوردی نازک · فۆنتی کوردی سادە · فۆنتی کوردی ڕێک و سادە · فۆنتی دەستنووس · فۆنتی کوردی دەستنووس · فۆنتی خەتخۆشی کوردی · فۆنتی کوردی مۆدێرن · فۆنتی کوردی کۆن · فۆنتی کوردی ئیسلامی · فۆنتی شێوە کۆن · Kurdish font · Kurdish fonts · Sorani font · Sorani Kurdish font · Kurdish font download · Kurdish fonts free download · Kurdish font pack · Kurdish font bundle · best Kurdish fonts 2026 · Kurdish font TTF · Kurdish font OTF · Kurdish Unicode font · Kurdish font for Photoshop · Kurdish font for Word · Kurdish font for Premiere · Kurdish font Windows · Kurdish font Mac · Kurdish font Android · Kurdish font iPhone · Kurdish font for subtitles · Kurdish font for CapCut · Kurdish font for Alight Motion · Kurdish font for logo · Kurdish calligraphy font · Kurdish handwriting font · Kurdish bold font · Kurdish modern font · Kurdish Islamic font · Kurdish news font · download Kurdish fonts · Kurdish font collection · Kurdish font library · uniqaidar font · uniqaidar Kurdish font · UniQaidar Fonts · Qaidar Rahim font · arabic fonts · typography
-    </div>
 <script>
 // Fallback: fetch sizes from GitHub API only for fonts that don't have size in fonts.json yet
 (function() {
@@ -4014,6 +4817,56 @@ function toggleParaPreview(btn, fontName) {
             })
             .catch(function() {});
     });
+})();
+</script>
+<script>
+// ── Back-to-top: ring+button from first scroll; arrow only past 400px ──
+// Standalone — runs immediately, never blocked by fonts.json or any fetch.
+(function() {
+    var circumference = 2 * Math.PI * 22; // r=22 → 138.23 px
+
+    function updateBTT() {
+        var wrap     = document.getElementById('back-to-top-wrap');
+        var ring     = document.getElementById('btt-progress-ring');
+        var ringFill = document.getElementById('btt-ring-fill');
+        var btn      = document.getElementById('back-to-top');
+        var arr      = document.getElementById('btt-arrow');
+        if (!wrap || !ring || !ringFill || !btn) return;
+
+        var scrollTop = window.scrollY || document.documentElement.scrollTop;
+        var docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+
+        // Fill ring from 0% (top) to 100% (bottom)
+        var pct = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0;
+        ringFill.style.strokeDashoffset = circumference * (1 - pct);
+
+        if (scrollTop > 0) {
+            // First scroll: show ring + orange button, no arrow yet
+            ring.style.opacity       = '1';
+            btn.style.display        = '';
+            btn.style.pointerEvents  = 'auto';
+            wrap.style.pointerEvents = 'auto';
+        } else {
+            // Back at top: hide everything
+            ring.style.opacity       = '0';
+            btn.style.display        = 'none';
+            btn.style.pointerEvents  = 'none';
+            wrap.style.pointerEvents = 'none';
+        }
+
+        // Arrow: only when past 400px
+        if (arr) arr.style.display = scrollTop > 400 ? '' : 'none';
+    }
+
+    // Run on scroll
+    window.addEventListener('scroll', updateBTT, { passive: true });
+
+    // Run once on DOM ready to set initial state
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateBTT);
+    } else {
+        updateBTT();
+    }
 })();
 </script>
 </body>
