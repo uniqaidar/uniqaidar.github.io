@@ -466,7 +466,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
 <header>
     <h1><a href="https://uniqaidar.pages.dev/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">⚙️ پانێلی UniQaidar</a></h1>
     <div class="header-right">
-        <span id="sul-clock" title="کاتی سلێمانی (UTC+3)">⏱ —</span>
+        <span id="sul-clock" dir="ltr" title="کاتی سلێمانی (UTC+3)">⏱ —</span>
         <span id="rbadge" class="repo-badge">پەیوەند نەکراوە</span>
         <div id="sdot" class="status-dot"></div>
         <button class="btn btn-ghost" onclick="restoreBackup()" style="font-size:0.78rem;padding:6px 12px;" title="گەڕاندنەوەی دوایین نوێکردنەوەی پاراستراو">↩ گەڕاندنەوەی باکئەپ</button>
@@ -4461,6 +4461,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('city')">شار</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('source')">Source</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('device')">Device</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('url')">پەیج</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('ts')">بەروار — کات (سلێمانی)</th>
               </tr></thead>
               <tbody id="v-log-tbody"></tbody>
@@ -4479,12 +4480,56 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;">ناو / کاتێگۆری</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;">وڵات</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;">Source</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;">Device</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;">کات</th>
               </tr></thead>
               <tbody id="v-viral-tbody"></tbody>
             </table>
             <div id="v-viral-footer" style="margin-top:8px;font-size:0.75rem;color:var(--muted);text-align:center;"></div>
             <div id="v-viral-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
+          </div>
+
+          <!-- SEARCH KEYWORDS TABLE -->
+          <div class="section-label" style="margin-bottom:8px;margin-top:20px;">🔎 کەلیمەی گەڕان (Search Keywords)</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;">
+            <input type="text" id="search-q-filter" placeholder="فلتەر بەدوای کەلیمە..." oninput="renderSearchTable()" style="max-width:260px;direction:rtl;">
+            <input type="date" id="search-date-from" onchange="renderSearchTable()" style="direction:ltr;color-scheme:dark;max-width:150px;">
+            <input type="date" id="search-date-to"   onchange="renderSearchTable()" style="direction:ltr;color-scheme:dark;max-width:150px;">
+            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 10px;" onclick="clearSearchFilters()">پاکردنەوەی فلتەر</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:14px;">
+            <div style="background:var(--bg);border:1px solid rgba(41,182,246,0.3);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:1.4rem;font-weight:bold;color:#29b6f6;" id="sq-total">—</div><div style="font-size:0.72rem;color:var(--muted);margin-top:3px;">کۆی گەڕانەکان</div></div>
+            <div style="background:var(--bg);border:1px solid rgba(41,182,246,0.3);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:1.4rem;font-weight:bold;color:#29b6f6;" id="sq-unique">—</div><div style="font-size:0.72rem;color:var(--muted);margin-top:3px;">کەلیمەی جیاواز</div></div>
+            <div style="background:var(--bg);border:1px solid rgba(41,182,246,0.3);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:1.4rem;font-weight:bold;color:#29b6f6;" id="sq-today">—</div><div style="font-size:0.72rem;color:var(--muted);margin-top:3px;">گەڕانی ئەمڕۆ</div></div>
+          </div>
+          <div style="overflow-x:auto;margin-bottom:20px;">
+            <div class="section-label" style="font-size:0.75rem;margin-bottom:6px;color:var(--muted);">زۆرترین کەلیمەی گەڕان</div>
+            <table style="width:100%;border-collapse:collapse;font-size:0.82rem;min-width:400px;">
+              <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;">#</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortSqBy('query')">کەلیمە ▼</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortSqBy('count')">ژمارە</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;">دوایین گەڕان</th>
+              </tr></thead>
+              <tbody id="sq-summary-tbody"></tbody>
+            </table>
+            <div id="sq-summary-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
+          </div>
+          <div style="overflow-x:auto;">
+            <div class="section-label" style="font-size:0.75rem;margin-bottom:6px;color:var(--muted);">تەواوی ئەرشیفی گەڕانەکان</div>
+            <table style="width:100%;border-collapse:collapse;font-size:0.8rem;min-width:600px;">
+              <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;">#</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;">کەلیمەی گەڕان</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;">وڵات</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;">Source</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;">Device</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;">کات</th>
+              </tr></thead>
+              <tbody id="sq-log-tbody"></tbody>
+            </table>
+            <div id="sq-log-footer" style="margin-top:8px;font-size:0.75rem;color:var(--muted);text-align:center;"></div>
+            <div id="sq-log-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
         </div>
       </div>
@@ -6593,7 +6638,7 @@ let VT_DATA = [], VT_TIMER = null;
 let STATS_LOADED = false;
 
 // Pagination state for all 4 tables
-const PG = { vcountry:1, vlog:1, dlfont:1, dllog:1 };
+const PG = { vcountry:1, vlog:1, vviral:1, dlfont:1, dllog:1, sqsummary:1, sqlog:1 };
 const PG_SIZE = 25;
 
 // Sort state for visit tables
@@ -6644,7 +6689,7 @@ const STATS_API_BASE = 'https://uniqaidar.pages.dev';
 // Load both downloads + visits in one request from /api/stats
 async function loadAllStats(force) {
     if (!force && STATS_LOADED) {
-        updateDlSummary(); renderDlTable(); renderVisitStats(); return;
+        updateDlSummary(); renderDlTable(); renderVisitStats(); renderSearchTable(); renderSearchTable(); return;
     }
     const alDl = document.getElementById('dl-stats-alert');
     const alVt = document.getElementById('v-alert');
@@ -6674,7 +6719,7 @@ async function loadAllStats(force) {
         document.getElementById('dl-last-refresh').textContent    = ts;
         document.getElementById('visit-last-refresh').textContent = ts;
 
-        updateDlSummary(); renderDlTable(); renderVisitStats();
+        updateDlSummary(); renderDlTable(); renderVisitStats(); renderSearchTable();
 
         // ── Auto-sync Trending Manager with freshest Cloudflare data ──
         // Compute top-25 silently and update the trending list view if it hasn't been manually edited
@@ -6760,6 +6805,7 @@ function renderVisitStats() {
         if (VT_LOG_SORT==='city')   { va=a.city||''; vb=b.city||''; }
         if (VT_LOG_SORT==='source') { va=a.source||''; vb=b.source||''; }
         if (VT_LOG_SORT==='device') { va=a.device||''; vb=b.device||''; }
+        if (VT_LOG_SORT==='url')    { va=a.url||''; vb=b.url||''; }
         return va<vb ? VT_LOG_DIR : va>vb ? -VT_LOG_DIR : 0;
     });
     const vlTotal = vtSorted.length;
@@ -6769,17 +6815,25 @@ function renderVisitStats() {
     if (ltbody) {
         ltbody.innerHTML = '';
         if (!vlSlice.length) {
-            ltbody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
+            ltbody.innerHTML = '<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
         } else {
             vlSlice.forEach((ev,i) => {
                 const tr = document.createElement('tr');
-                tr.style.cssText = 'border-bottom:1px solid var(--border);';
+                const _src = (ev.source||'Direct').toLowerCase();
+                const _isSocial = ['facebook','instagram','telegram','twitter','tiktok','linkedin','reddit','whatsapp','youtube'].some(s=>_src.includes(s));
+                const _isSearch = ['google','bing','yahoo','duckduckgo'].some(s=>_src.includes(s));
+                const _rowBg = _isSocial ? 'rgba(225,48,108,0.05)' : _isSearch ? 'rgba(46,204,113,0.05)' : 'rgba(100,116,139,0.04)';
+                const _rowHover = _isSocial ? 'rgba(225,48,108,0.11)' : _isSearch ? 'rgba(46,204,113,0.11)' : 'rgba(100,116,139,0.09)';
+                tr.style.cssText = `border-bottom:1px solid var(--border);background:${_rowBg};`;
+                tr.onmouseover = ()=>tr.style.background=_rowHover;
+                tr.onmouseout  = ()=>tr.style.background=_rowBg;
                 tr.innerHTML = `
                     <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${(vlPage-1)*PG_SIZE+i+1}</td>
                     <td style="padding:6px 10px;text-align:center;font-size:0.75rem;color:var(--green);">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
                     <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);">${ev.city||'—'}</td>
                     <td style="padding:6px 10px;text-align:center;">${sourceBadge(ev.source)}</td>
                     <td style="padding:6px 10px;text-align:center;">${deviceIcon(ev.device)}</td>
+                    <td style="padding:6px 10px;font-size:0.72rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" dir="ltr">${ev.url ? '<a href="'+ev.url+'" target="_blank" style="color:var(--purple);text-decoration:none;" title="'+ev.url+'">'+ev.url.replace(/^https?:\/\//,'').slice(0,40)+(ev.url.length>50?'…':'')+'</a>' : '<span style="color:var(--muted);">—</span>'}</td>
                     <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
                 ltbody.appendChild(tr);
             });
@@ -6799,13 +6853,21 @@ function renderVisitStats() {
     if (vtbody) {
         vtbody.innerHTML = '';
         if (!vvSlice.length) {
-            vtbody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
+            vtbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
         } else {
             const evtColors = { copy_font: '#74b9ff', copy_category: '#a29bfe', copy_bulk_modal: '#fd79a8' };
             const evtLabels = { copy_font: '🔗 فۆنت', copy_category: '📁 کاتێگۆری', copy_bulk_modal: '📦 Modal' };
             vvSlice.forEach((ev,i) => {
                 const tr = document.createElement('tr');
-                tr.style.cssText = 'border-bottom:1px solid var(--border);';
+                const _evRowBg = ev.event==='copy_font' ? 'rgba(116,185,255,0.05)'
+                               : ev.event==='copy_category' ? 'rgba(162,155,254,0.05)'
+                               : 'rgba(253,121,168,0.05)';
+                const _evRowHover = ev.event==='copy_font' ? 'rgba(116,185,255,0.12)'
+                                  : ev.event==='copy_category' ? 'rgba(162,155,254,0.12)'
+                                  : 'rgba(253,121,168,0.12)';
+                tr.style.cssText = `border-bottom:1px solid var(--border);background:${_evRowBg};`;
+                tr.onmouseover = ()=>tr.style.background=_evRowHover;
+                tr.onmouseout  = ()=>tr.style.background=_evRowBg;
                 const evColor = evtColors[ev.event] || '#dfe6e9';
                 const evLabel = evtLabels[ev.event] || ev.event;
                 tr.innerHTML = `
@@ -6814,6 +6876,7 @@ function renderVisitStats() {
                     <td style="padding:6px 10px;font-family:var(--mono);font-size:0.74rem;color:var(--yellow);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${ev.font||''}">${ev.font||'—'}</td>
                     <td style="padding:6px 10px;text-align:center;font-size:0.75rem;color:var(--green);">${fullCountryName(ev.country||'')} (${ev.country||'—'})</td>
                     <td style="padding:6px 10px;text-align:center;">${sourceBadge(ev.source)}</td>
+                    <td style="padding:6px 10px;text-align:center;">${deviceIcon(ev.device)}</td>
                     <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
                 vtbody.appendChild(tr);
             });
@@ -6823,6 +6886,103 @@ function renderVisitStats() {
     const vvFooter = document.getElementById('v-viral-footer');
     if (vvFooter) vvFooter.textContent = `کۆی ${vvTotal} تۆمار`;
     renderPgBar('v-viral-pg', vvPage, vvTotal, PG_SIZE, (p)=>{ PG.vviral=p; renderVisitStats(); });
+}
+
+// ── SEARCH KEYWORDS ──────────────────────────
+let SQ_SORT = 'count', SQ_SORT_DIR = -1;
+function sortSqBy(col) { if(SQ_SORT===col) SQ_SORT_DIR*=-1; else { SQ_SORT=col; SQ_SORT_DIR=-1; } renderSearchTable(); }
+function clearSearchFilters() {
+    ['search-q-filter','search-date-from','search-date-to'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+    renderSearchTable();
+}
+
+function renderSearchTable() {
+    const q  = (document.getElementById('search-q-filter')?.value||'').trim().toLowerCase();
+    const df = document.getElementById('search-date-from')?.value||'';
+    const dt = document.getElementById('search-date-to')?.value||'';
+    const today = todaySUL();
+
+    const allSearch = DL_DATA.filter(ev => {
+        if (ev.event !== 'search') return false;
+        const kw = (ev.font || ev.search || '').toLowerCase();
+        if (q && !kw.includes(q)) return false;
+        if (df && (ev.date||'') < df) return false;
+        if (dt && (ev.date||'') > dt) return false;
+        return true;
+    });
+
+    // summary stats
+    const sqTodayCount = allSearch.filter(ev => {
+        const d = ev.ts ? new Date(ev.ts).toLocaleDateString('en-CA',{timeZone:'Asia/Baghdad'}) : ev.date;
+        return d === today;
+    }).length;
+    const sqEl = document.getElementById('sq-total');   if(sqEl) sqEl.textContent = allSearch.length;
+    const sqU  = document.getElementById('sq-unique');  if(sqU)  sqU.textContent = new Set(allSearch.map(e=>e.font||e.search||'')).size;
+    const sqT  = document.getElementById('sq-today');   if(sqT)  sqT.textContent = sqTodayCount;
+
+    // per-keyword summary
+    const kwMap = {};
+    allSearch.forEach(ev => {
+        const k = ev.font || ev.search || '?';
+        if (!kwMap[k]) kwMap[k] = { query:k, count:0, last:'' };
+        kwMap[k].count++;
+        if ((ev.ts||ev.date||'') > kwMap[k].last) kwMap[k].last = ev.ts||ev.date||'';
+    });
+    const kwArr = Object.values(kwMap).sort((a,b)=>{
+        let va=a[SQ_SORT]||'', vb=b[SQ_SORT]||'';
+        if(SQ_SORT==='count'){va=a.count;vb=b.count;}
+        return va<vb?SQ_SORT_DIR:va>vb?-SQ_SORT_DIR:0;
+    });
+    const sqSumBody = document.getElementById('sq-summary-tbody');
+    if (sqSumBody) {
+        const SQ_PG_SIZE = 15;
+        if (!PG.sqsummary) PG.sqsummary = 1;
+        const sqSTotal = kwArr.length;
+        const sqSSlice = kwArr.slice((PG.sqsummary-1)*SQ_PG_SIZE, PG.sqsummary*SQ_PG_SIZE);
+        sqSumBody.innerHTML = sqSSlice.length
+            ? sqSSlice.map((item,i) => `
+                <tr style="border-bottom:1px solid var(--border);background:rgba(41,182,246,0.04);"
+                    onmouseover="this.style.background='rgba(41,182,246,0.1)'"
+                    onmouseout="this.style.background='rgba(41,182,246,0.04)'">
+                    <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${(PG.sqsummary-1)*SQ_PG_SIZE+i+1}</td>
+                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.8rem;color:#29b6f6;" dir="rtl">${item.query}</td>
+                    <td style="padding:6px 10px;text-align:center;"><span style="background:rgba(41,182,246,0.15);color:#29b6f6;padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${item.count}</span></td>
+                    <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.72rem;color:var(--muted);" dir="ltr">${fmtSUL(item.last)}</td>
+                </tr>`).join('')
+            : '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ گەڕانێک نییە</td></tr>';
+        renderPgBar('sq-summary-pg', PG.sqsummary, sqSTotal, SQ_PG_SIZE, (p)=>{ PG.sqsummary=p; renderSearchTable(); });
+    }
+
+    // full log
+    const logSorted = [...allSearch].sort((a,b)=>((b.ts||b.date||'')>(a.ts||a.date||''))?1:-1);
+    const sqTotal = logSorted.length;
+    if (!PG.sqlog) PG.sqlog = 1;
+    const sqSlice = logSorted.slice((PG.sqlog-1)*PG_SIZE, PG.sqlog*PG_SIZE);
+    const sqLogBody = document.getElementById('sq-log-tbody');
+    if (sqLogBody) {
+        sqLogBody.innerHTML = '';
+        if (!sqSlice.length) {
+            sqLogBody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
+        } else {
+            sqSlice.forEach((ev,i) => {
+                const tr = document.createElement('tr');
+                tr.style.cssText = 'border-bottom:1px solid var(--border);background:rgba(41,182,246,0.03);';
+                tr.onmouseover = ()=>tr.style.background='rgba(41,182,246,0.09)';
+                tr.onmouseout  = ()=>tr.style.background='rgba(41,182,246,0.03)';
+                tr.innerHTML = `
+                    <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${(PG.sqlog-1)*PG_SIZE+i+1}</td>
+                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.8rem;color:#29b6f6;" dir="rtl">${ev.font||ev.search||'?'}</td>
+                    <td style="padding:6px 10px;text-align:center;font-size:0.75rem;color:var(--green);">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
+                    <td style="padding:6px 10px;text-align:center;">${sourceBadge(ev.source)}</td>
+                    <td style="padding:6px 10px;text-align:center;">${deviceIcon(ev.device)}</td>
+                    <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
+                sqLogBody.appendChild(tr);
+            });
+        }
+    }
+    const sqLogFooter = document.getElementById('sq-log-footer');
+    if (sqLogFooter) sqLogFooter.textContent = `کۆی ${sqTotal} تۆمار`;
+    renderPgBar('sq-log-pg', PG.sqlog, sqTotal, PG_SIZE, (p)=>{ PG.sqlog=p; renderSearchTable(); });
 }
 
 // ── DOWNLOADS ──────────────────────────
@@ -6843,6 +7003,7 @@ function getFilteredEvents() {
     const df   = document.getElementById('dl-date-from')?.value||'';
     const dt   = document.getElementById('dl-date-to')?.value||'';
     return DL_DATA.filter(ev => {
+        if (ev.event === 'search') return false;  // search queries are shown in their own table
         if (q    && !(ev.font||'').toLowerCase().includes(q)) return false;
         if (typeF !== 'all') {
             const fontName = ev.font || '';
@@ -7085,34 +7246,55 @@ function alert2(el, msg, type) { el.textContent=msg; el.className=`alert ${type}
 
 // ── Source Badge renderer ──
 function sourceBadge(source) {
-    const src = (source || 'Direct').trim();
+    let src = (source || 'Direct').trim();
+    // Normalize raw URLs/referrers into clean source names
+    if (src.includes('facebook.com') || src.includes('fb.com'))   src = 'Facebook';
+    else if (src.includes('instagram.com') || src.includes('ig.me')) src = 'Instagram';
+    else if (src.includes('t.me') || src.includes('telegram'))    src = 'Telegram';
+    else if (src.includes('twitter.com') || src.includes('x.com')) src = 'Twitter/X';
+    else if (src.includes('youtube.com') || src.includes('youtu.be')) src = 'YouTube';
+    else if (src.includes('tiktok.com'))                           src = 'TikTok';
+    else if (src.includes('linkedin.com'))                         src = 'LinkedIn';
+    else if (src.includes('reddit.com'))                           src = 'Reddit';
+    else if (src.includes('whatsapp.com') || src.includes('wa.me')) src = 'WhatsApp';
+    else if (src.includes('google.'))                              src = 'Google Search';
+    else if (src.includes('bing.com'))                             src = 'Bing';
+    else if (src.includes('yahoo.com'))                            src = 'Yahoo';
+    else if (src.includes('duckduckgo.com'))                       src = 'DuckDuckGo';
+    else if (src === '' || src === 'undefined' || src === 'null')  src = 'Direct';
     const palettes = {
-        'Facebook':     ['#1877f2','#e7f0ff'],
-        'Instagram':    ['#e1306c','#fce4ec'],
-        'Twitter/X':    ['#000000','#f0f0f0'],
-        'Telegram':     ['#0088cc','#e3f5ff'],
-        'YouTube':      ['#ff0000','#fff0f0'],
-        'Google Search':['#34a853','#eafaf1'],
-        'Bing':         ['#008272','#e0f7f5'],
-        'Yahoo':        ['#6001d2','#f3e8ff'],
-        'DuckDuckGo':   ['#de5833','#fdf0ee'],
-        'TikTok':       ['#010101','#f0f0f0'],
-        'LinkedIn':     ['#0077b5','#e1f0f8'],
-        'Reddit':       ['#ff4500','#fff2ed'],
-        'WhatsApp':     ['#25d366','#e8fdf1'],
-        'Direct':       ['#636e72','#f0f0f0'],
-        'Other':        ['#b2bec3','#f5f5f5']
+        'Facebook':     ['#1877f2','#1a2a4a'],
+        'Instagram':    ['#e1306c','#3a1525'],
+        'Twitter/X':    ['#e8e8e8','#1a1a2e'],
+        'Telegram':     ['#29b6f6','#0d2233'],
+        'YouTube':      ['#ff1744','#2a0a0a'],
+        'Google Search':['#34a853','#0d2318'],
+        'Bing':         ['#00b4d8','#0d2030'],
+        'Yahoo':        ['#a855f7','#1e0d3a'],
+        'DuckDuckGo':   ['#de5833','#2a140e'],
+        'TikTok':       ['#f0f0f0','#1a1a1a'],
+        'LinkedIn':     ['#0ea5e9','#0d1e2e'],
+        'Reddit':       ['#ff6b35','#2a1508'],
+        'WhatsApp':     ['#25d366','#0d2a1a'],
+        'Direct':       ['#94a3b8','#1e2433'],
+        'Other':        ['#f59e0b','#2a1e0a']
     };
     const [fg, bg] = palettes[src] || palettes['Other'];
-    return `<span style="background:${bg};color:${fg};border:1px solid ${fg}44;padding:2px 8px;border-radius:12px;font-size:0.7rem;white-space:nowrap;font-weight:bold;">${src}</span>`;
+    const label = palettes[src] ? src : '🔗 ' + (src.length > 30 ? src.slice(0,28)+'…' : src);
+    return `<span style="background:${bg};color:${fg};border:1px solid ${fg}55;padding:2px 9px;border-radius:12px;font-size:0.7rem;white-space:nowrap;font-weight:bold;">${label}</span>`;
 }
 
 // ── Device Icon renderer ──
 function deviceIcon(device) {
-    const d = (device || '').toLowerCase();
-    if (d === 'mobile') return '<span title="Mobile" style="font-size:1rem;">📱</span>';
-    if (d === 'pc')     return '<span title="PC" style="font-size:1rem;">🖥️</span>';
-    return '<span style="color:var(--muted);font-size:0.75rem;">—</span>';
+    const d = (device || '').toLowerCase().trim();
+    if (!d || d === 'unknown' || d === '—' || d === '-') return '<span style="color:var(--muted);font-size:0.75rem;" title="نەزانراو">?</span>';
+    if (d === 'mobile' || d.includes('mob') || d.includes('phone') || d.includes('android') || d.includes('iphone'))
+        return '<span title="Mobile" style="font-size:1rem;">📱</span>';
+    if (d === 'tablet' || d.includes('ipad') || d.includes('tab'))
+        return '<span title="Tablet" style="font-size:1rem;">📟</span>';
+    if (d === 'pc' || d === 'desktop' || d.includes('win') || d.includes('mac') || d.includes('linux'))
+        return '<span title="PC / Desktop" style="font-size:1rem;">🖥️</span>';
+    return '<span style="color:var(--accent);font-size:0.72rem;font-family:var(--mono);">' + device + '</span>';
 }
 
 // ══════════════════════════════════════════
