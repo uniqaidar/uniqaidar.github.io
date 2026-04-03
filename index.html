@@ -41,7 +41,14 @@
     <meta name="robots" content="index, follow">
     <meta name="author" content="Qaidar Rahim">
     <meta name="theme-color" content="#1a1a1a">
-    <link rel="canonical" href="https://uniqaidar.pages.dev/">
+    <link rel="canonical" id="dynamic-canonical" href="https://uniqaidar.pages.dev/">
+    <script>
+    // Dynamic canonical: set immediately before any crawler sees the page
+    (function(){
+        var c = document.getElementById('dynamic-canonical');
+        if (c) c.href = window.location.href;
+    })();
+    </script>
     
     <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
@@ -3354,26 +3361,112 @@ var _currentCatId  = '';   // current active category ID
 var _trendingSort  = 'rank'; // 'rank' | 'name' | 'date' — sort for Trending category
 var _uqInitDone    = false; // true after applyUrlParams — suppresses replaceState during init
 
-// ── ئەستێنەری داگرتن: تۆمارکردنی داگرتن بۆ Google Analytics ──
-function trackFontDownload(fontName, type) {
-    try {
-        fetch('/api/track', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ font: fontName, type: type || 'single' })
-        }).catch(function(){});
-    } catch(e) {}
-}
-
-// ── تۆمارکردنی سەردانی پەڕە ──
+// ══════════════════════════════════════════════════════════
+// UNIVERSAL RADAR — enriched tracking engine
+// ══════════════════════════════════════════════════════════
 (function() {
+    // ── Device detection ──
+    function detectDevice() {
+        return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 'Mobile' : 'PC';
+    }
+
+    // ── Referrer → source name ──
+    function detectSource() {
+        try {
+            var ref = document.referrer;
+            if (!ref) return 'Direct';
+            var host = new URL(ref).hostname.replace(/^www\./, '').toLowerCase();
+            var map = {
+                'facebook.com':  'Facebook',
+                'fb.com':        'Facebook',
+                'm.facebook.com':'Facebook',
+                'l.facebook.com':'Facebook',
+                'instagram.com': 'Instagram',
+                't.co':          'Twitter/X',
+                'twitter.com':   'Twitter/X',
+                'x.com':         'Twitter/X',
+                'telegram.org':  'Telegram',
+                't.me':          'Telegram',
+                'youtube.com':   'YouTube',
+                'youtu.be':      'YouTube',
+                'google.com':    'Google Search',
+                'google.iq':     'Google Search',
+                'bing.com':      'Bing',
+                'yahoo.com':     'Yahoo',
+                'duckduckgo.com':'DuckDuckGo',
+                'tiktok.com':    'TikTok',
+                'linkedin.com':  'LinkedIn',
+                'reddit.com':    'Reddit',
+                'whatsapp.com':  'WhatsApp',
+                'web.whatsapp.com':'WhatsApp'
+            };
+            for (var k in map) { if (host === k || host.endsWith('.' + k)) return map[k]; }
+            return host || 'Other';
+        } catch(e) { return 'Direct'; }
+    }
+
+    var _uqDevice = detectDevice();
+    var _uqSource = detectSource();
+    var _uqUrl    = window.location.href;
+
+    // ── Page visit ──
     try {
         fetch('/api/visit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ts: new Date().toISOString() })
+            body: JSON.stringify({ device: _uqDevice, source: _uqSource, url: _uqUrl })
         }).catch(function(){});
     } catch(e) {}
+
+    // ── Download tracker ──
+    window.trackFontDownload = function(fontName, type) {
+        try {
+            fetch('/api/track', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    font: fontName, type: type || 'single',
+                    device: _uqDevice, source: _uqSource, url: _uqUrl,
+                    event: 'download'
+                })
+            }).catch(function(){});
+        } catch(e) {}
+    };
+
+    // ── Viral event tracker (copy_font, copy_category, copy_bulk_modal) ──
+    window.trackViralEvent = function(eventType, label) {
+        try {
+            fetch('/api/track', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    font: label || '', type: 'single',
+                    device: _uqDevice, source: _uqSource, url: _uqUrl,
+                    event: eventType
+                })
+            }).catch(function(){});
+        } catch(e) {}
+    };
+
+    // ── Search keyword tracker (1s debounce) ──
+    var _searchTimer = null;
+    window.trackSearch = function(query) {
+        clearTimeout(_searchTimer);
+        _searchTimer = setTimeout(function() {
+            if (!query || !query.trim()) return;
+            try {
+                fetch('/api/track', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        font: query.trim(), type: 'single',
+                        device: _uqDevice, source: _uqSource, url: _uqUrl,
+                        event: 'search', search: query.trim()
+                    })
+                }).catch(function(){});
+            } catch(e) {}
+        }, 1000);
+    };
 })();
 
 // ── نیشاندانی کارتەکان ──────────────────────────────────
@@ -3740,6 +3833,8 @@ function filterFonts(category, btn) {
 // کاتێک بەکارهێنەر دەنووسێت، تەنها پریڤیوی کارتەکان نوێ دەبێتەوە (فلتەر ناکات)
 // ── Live font preview: typing updates card preview text only (no filtering) ──────────
 input.addEventListener('input', function() {
+    // Track search keywords with 1s debounce
+    if (typeof trackSearch === 'function') trackSearch(input.value);
     // Only update the preview text shown in each visible card — do NOT filter fonts
     var q = input.value;
     var previews = document.querySelectorAll('#font-grid .preview');
@@ -3978,6 +4073,7 @@ function copyLink(url, btn, emoji) {
 function copyCatLink(catId, btn) {
     const url = location.origin + location.pathname + '?cat=' + encodeURIComponent(catId);
     copyLink(url, btn, '🔗');
+    if (typeof trackViralEvent === 'function') trackViralEvent('copy_category', catId);
 }
 
 function copyDmLink(btn) {
@@ -3985,6 +4081,7 @@ function copyDmLink(btn) {
     params.set('dm', '1');
     var url = location.origin + location.pathname + '?' + params.toString();
     copyLink(url, btn, '🔗');
+    if (typeof trackViralEvent === 'function') trackViralEvent('copy_bulk_modal', 'bulk-download-modal');
 }
 
 function copyFontLink(fontName, catId, btn) {
@@ -3992,6 +4089,7 @@ function copyFontLink(fontName, catId, btn) {
         '?cat=' + encodeURIComponent(catId) +
         '&font=' + encodeURIComponent(fontName);
     copyLink(url, btn, '🔗');
+    if (typeof trackViralEvent === 'function') trackViralEvent('copy_font', fontName);
 }
 
 // ── Read URL params on load and apply ──────────────────
@@ -4189,9 +4287,12 @@ async function loadFontsAndInit() {
         });
     } catch(e) {
         console.error('fonts.json بارنەکرا:', e);
-        // show error notice in grid
         var g = document.getElementById('font-grid');
-        if (g) g.innerHTML = '<div style="color:#ff5700;text-align:center;padding:40px;direction:rtl;font-size:1rem;">⚠️ فۆنتەکان بارنەبوون. تکایە پەڕەکە نوێ بکەرەوە.</div>';
+        if (g) g.innerHTML = '<div style="color:#ff5700;text-align:center;padding:60px 20px;direction:rtl;font-size:1rem;">' +
+            '<div style="font-size:2.5rem;margin-bottom:12px;">⚠️</div>' +
+            '<div style="margin-bottom:16px;line-height:2;">فۆنتەکان بارنەبوون. تکایە پەیوەندی ئینتەرنێتەکەت پشکنی.</div>' +
+            '<button onclick="location.reload()" style="background:#ff5700;color:#fff;border:none;padding:12px 28px;border-radius:10px;cursor:pointer;font-size:1rem;font-family:Tahoma,Arial,sans-serif;">🔄 دووبارە هەوڵ بدە</button>' +
+            '</div>';
         return;
     }
     // ── Dynamic SEO: if ?font=Name is in URL, update <title> & <meta description> ──────────────

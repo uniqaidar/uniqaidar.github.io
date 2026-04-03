@@ -53,6 +53,20 @@ header { background: #1a1a1a; border-bottom: 2px solid rgba(255,87,0,0.5); paddi
 header h1 { font-size: 0.95rem; font-weight: bold; color: var(--accent); }
 .header-right { display: flex; align-items: center; gap: 10px; }
 .repo-badge { font-family: var(--mono); font-size: 0.7rem; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; color: var(--yellow); }
+/* Live Sulaymaniyah clock */
+#sul-clock {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--green);
+    background: var(--bg);
+    border: 1px solid rgba(46,204,113,0.3);
+    border-radius: 6px;
+    padding: 4px 11px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    min-width: 220px;
+    text-align: center;
+}
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
 .status-dot.on { background: var(--green); box-shadow: 0 0 6px var(--green); }
 
@@ -452,6 +466,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
 <header>
     <h1><a href="https://uniqaidar.pages.dev/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">⚙️ پانێلی UniQaidar</a></h1>
     <div class="header-right">
+        <span id="sul-clock" title="کاتی سلێمانی (UTC+3)">⏱ —</span>
         <span id="rbadge" class="repo-badge">پەیوەند نەکراوە</span>
         <div id="sdot" class="status-dot"></div>
         <button class="btn btn-ghost" onclick="restoreBackup()" style="font-size:0.78rem;padding:6px 12px;" title="گەڕاندنەوەی دوایین نوێکردنەوەی پاراستراو">↩ گەڕاندنەوەی باکئەپ</button>
@@ -943,8 +958,15 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 </div>
                 <div id="sitemap-alert" class="alert"></div>
                 <div class="btn-row">
-                    <button class="btn btn-primary" onclick="regenerateSitemapManual()" id="sitemap-btn">🗺 دروستکردن و پۆشکردنی sitemap.xml</button>
+                    <button class="btn btn-green" onclick="runAtomicSave()" id="atomic-save-btn" title="یەک کلیک — fonts.json + index.html + sitemap.xml + robots.txt پاشکەوت دەکرێن">⚡ Atomic Save</button>
+                    <button class="btn btn-primary" onclick="regenerateSitemapManual()" id="sitemap-btn">🗺 دروستکردنی sitemap.xml</button>
+                    <button class="btn btn-ghost" onclick="repairRobotsTxt()" id="robots-btn" style="border-color:var(--yellow);color:var(--yellow);">🤖 چاکسازی robots.txt</button>
+                    <button class="btn btn-ghost" onclick="runHealthCheck()" id="health-btn" style="border-color:var(--purple);color:var(--purple);">🏥 Health Check فۆنتەکان</button>
                 </div>
+                <div id="atomic-save-alert" class="alert" style="margin-top:10px;"></div>
+                <div id="robots-alert" class="alert" style="margin-top:10px;"></div>
+                <div id="health-alert" class="alert" style="margin-top:10px;"></div>
+                <div id="health-results" style="display:none;margin-top:12px;max-height:300px;overflow-y:auto;"></div>
             </div>
         </div>
     </div>
@@ -2581,19 +2603,38 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
         ok ? alert2(al,'✅ Links saved!','ok') : alert2(al,'❌ Save failed.','err');
     }
 
-    // ── Save: SEO ────────────────────────────────────────
+    // ── DOM Engine helper: parse RAW HTML, mutate via DOM, serialize back ──
+    function domMutate(htmlStr, mutatorFn) {
+        const parser = new DOMParser();
+        const doc    = parser.parseFromString(htmlStr, 'text/html');
+        mutatorFn(doc);
+        return new XMLSerializer().serializeToString(doc);
+    }
+
+    // ── Save: SEO (DOM Engine — no regex) ────────────────
     async function pvbSaveSEO() {
-        const al = document.getElementById('pvb-seo-alert');
-        const title = document.getElementById('pvb-meta-title').value;
-        const desc  = document.getElementById('pvb-meta-desc').value;
-        const ogImg = document.getElementById('pvb-og-image').value;
-        let next = RAW;
-        if (title) next = next.replace(/(<title>)[^<]*(<\/title>)/i, `$1${title}$2`);
-        if (desc)  next = next.replace(/(<meta\s+name="description"\s+content=")[^"]*"/i, `$1${desc}"`);
-        if (ogImg) next = next.replace(/(<meta\s+property="og:image"\s+content=")[^"]*"/i, `$1${ogImg}"`);
-        if (next===RAW) return alert2(al,'⚠️ No change.','inf');
+        const al    = document.getElementById('pvb-seo-alert');
+        const title = document.getElementById('pvb-meta-title').value.trim();
+        const desc  = document.getElementById('pvb-meta-desc').value.trim();
+        const ogImg = document.getElementById('pvb-og-image').value.trim();
+        if (!title && !desc && !ogImg) return alert2(al,'⚠️ No change.','inf');
         alert2(al,'Saving...','inf');
-        const ok = await ghPut(next,'Update: SEO meta');
+        const next = domMutate(RAW, doc => {
+            if (title) {
+                const t = doc.querySelector('title');
+                if (t) t.textContent = title;
+            }
+            if (desc) {
+                const m = doc.querySelector('meta[name="description"]');
+                if (m) m.setAttribute('content', desc);
+            }
+            if (ogImg) {
+                doc.querySelectorAll('meta[property="og:image"], meta[property="og:image:secure_url"]')
+                   .forEach(m => m.setAttribute('content', ogImg));
+            }
+        });
+        if (next === RAW) return alert2(al,'⚠️ No change.','inf');
+        const ok = await ghPut(next,'Update: SEO meta (DOM engine)');
         ok ? alert2(al,'✅ SEO saved!','ok') : alert2(al,'❌ Save failed.','err');
     }
 
@@ -4418,12 +4459,32 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;font-family:var(--mono);">#</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('country')">وڵات ▼</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('city')">شار</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('source')">Source</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('device')">Device</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('ts')">بەروار — کات (سلێمانی)</th>
               </tr></thead>
               <tbody id="v-log-tbody"></tbody>
             </table>
             <div id="v-log-footer" style="margin-top:8px;font-size:0.75rem;color:var(--muted);text-align:center;"></div>
             <div id="v-log-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
+          </div>
+
+          <!-- Virality table -->
+          <div class="section-label" style="margin-bottom:8px;margin-top:20px;">🔗 ئامارەکانی کۆپیکردنی لینک (Virality)</div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.8rem;">
+              <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;">#</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;">جۆری کۆپی</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;">ناو / کاتێگۆری</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;">وڵات</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;">Source</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;">کات</th>
+              </tr></thead>
+              <tbody id="v-viral-tbody"></tbody>
+            </table>
+            <div id="v-viral-footer" style="margin-top:8px;font-size:0.75rem;color:var(--muted);text-align:center;"></div>
+            <div id="v-viral-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
         </div>
       </div>
@@ -4478,12 +4539,14 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
           </div>
           <div class="section-label" style="margin-bottom:10px;">تەواوی ئەرشیفی داگرتنەکان</div>
           <div style="overflow-x:auto;">
-            <table style="width:100%;border-collapse:collapse;font-size:0.8rem;min-width:520px;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.8rem;min-width:700px;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;font-family:var(--mono);">#</th>
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('font')">ناوی فۆنت ▼</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('type')">جۆر</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('country')">وڵات</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('source')">Source</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('device')">Device</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('ts')">بەروار — کات (سلێمانی)</th>
               </tr></thead>
               <tbody id="dl-log-tbody"></tbody>
@@ -4791,6 +4854,121 @@ async function ghGet() {
     return r.json();
 }
 
+// ══════════════════════════════════════════
+// DOM ENGINE — safe HTML manipulation via DOMParser + XMLSerializer
+// Replaces all regex-based meta/ID injection with structured DOM operations
+// ══════════════════════════════════════════
+function domSetMeta(htmlStr, selector, attr, value) {
+    // Safely update a <meta> or <link> attribute using DOMParser
+    try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlStr, 'text/html');
+        const el = doc.querySelector(selector);
+        if (el) {
+            el.setAttribute(attr, value);
+            return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+        }
+    } catch(e) {}
+    return htmlStr; // passthrough on failure
+}
+
+function domSetElementId(htmlStr, oldId, newId) {
+    try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlStr, 'text/html');
+        const el = doc.getElementById(oldId);
+        if (el) {
+            el.id = newId;
+            return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+        }
+    } catch(e) {}
+    return htmlStr;
+}
+
+function domUpdateElementText(htmlStr, selector, text) {
+    try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlStr, 'text/html');
+        const el = doc.querySelector(selector);
+        if (el) {
+            el.textContent = text;
+            return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+        }
+    } catch(e) {}
+    return htmlStr;
+}
+
+// ── ATOMIC SAVE — one click commits fonts.json + index.html + sitemap.xml + robots.txt ──
+async function atomicSave(fontsArray, htmlContent, commitMessage) {
+    const results = { fonts: false, html: false, sitemap: false, robots: false };
+    if (!TOKEN || !USER || !REPO) return results;
+
+    // 1. fonts.json
+    try { results.fonts = await ghPutFonts(fontsArray, commitMessage + ' [fonts.json]'); } catch(e) {}
+
+    // 2. index.html
+    try { results.html = await ghPut(htmlContent, commitMessage + ' [index.html]'); } catch(e) {}
+
+    // 3. sitemap.xml
+    try {
+        const sitemapXml = buildSitemapXml(fontsArray);
+        // Self-heal XML: strip control chars, ensure absolute URLs, trim whitespace
+        const healed = healSitemapXml(sitemapXml);
+        results.sitemap = await ghPutSitemap(healed, commitMessage + ' [sitemap.xml]');
+    } catch(e) {}
+
+    // 4. robots.txt
+    try { results.robots = await ensureRobotsHasSitemap(); } catch(e) {}
+
+    return results;
+}
+
+// ── SITEMAP SELF-HEALER ──
+function healSitemapXml(xml) {
+    // Strip control characters (except tab, newline, carriage return)
+    let out = xml.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+    // Ensure all <loc> URLs are absolute
+    out = out.replace(/<loc>(?!https?:\/\/)([^<]+)<\/loc>/g, '<loc>https://uniqaidar.pages.dev/$1</loc>');
+    // Trim whitespace from each line
+    out = out.split('\n').map(l => l.trimEnd()).join('\n');
+    return out;
+}
+
+// ── ROBOTS.TXT ensure Sitemap line ──
+async function ensureRobotsHasSitemap() {
+    const ROBOTS_FILE    = 'robots.txt';
+    const CORRECT_SITEMAP = 'Sitemap: https://uniqaidar.pages.dev/sitemap.xml';
+    try {
+        const r = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/${ROBOTS_FILE}?ref=${BRANCH}`,
+            { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+        );
+        let content = 'User-agent: *\nAllow: /\n' + CORRECT_SITEMAP;
+        let sha = undefined;
+        if (r.ok) {
+            const d = await r.json();
+            sha = d.sha;
+            content = decodeURIComponent(escape(atob(d.content.replace(/\s/g, ''))));
+        }
+        const lines = content.split('\n').map(l => l.trimEnd());
+        const idx   = lines.findIndex(l => l.toLowerCase().startsWith('sitemap:'));
+        if (idx === -1) lines.push(CORRECT_SITEMAP);
+        else lines[idx] = CORRECT_SITEMAP;
+        const newContent = lines.join('\n');
+        const body = JSON.stringify({
+            message: 'Auto: ensure robots.txt Sitemap URL',
+            content: btoa(unescape(encodeURIComponent(newContent))),
+            branch:  BRANCH,
+            ...(sha ? { sha } : {})
+        });
+        const wr = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/${ROBOTS_FILE}`,
+            { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body }
+        );
+        return wr.ok;
+    } catch(e) { return false; }
+}
+
 async function ghPut(content, message) {
     // ── Auto-backup before every save ──
     try { localStorage.setItem('uq_backup', RAW); localStorage.setItem('uq_backup_time', new Date().toISOString()); } catch(e) {}
@@ -4947,6 +5125,145 @@ async function regenerateSitemapManual() {
     } else {
         alert2(al, '❌ پۆشکردنی sitemap.xml سەرنەکەوت — دووبارە هەوڵ بدەرەوە.', 'err');
     }
+}
+
+// ── ATOMIC SAVE runner — commits all 4 files in one operation ──
+async function runAtomicSave() {
+    const al  = document.getElementById('atomic-save-alert');
+    const btn = document.getElementById('atomic-save-btn');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە پێش ئەم کارە پەیوەندی بکە بە GitHub!', 'err');
+    if (!FONTS_RAW || !FONTS_RAW.length) return alert2(al, '❌ fonts.json بارنەکراوە.', 'err');
+    if (!RAW) return alert2(al, '❌ index.html بارنەکراوە.', 'err');
+    btn.disabled = true;
+    alert2(al, '⏳ Atomic Save دەستپێکرد — 4 فایل پاشکەوت دەکرێن...', 'inf');
+    try {
+        const res = await atomicSave(FONTS_RAW, RAW, 'UniQaidar Admin: Atomic Save');
+        const parts = [];
+        if (res.fonts)   parts.push('✅ fonts.json');
+        else             parts.push('❌ fonts.json');
+        if (res.html)    parts.push('✅ index.html');
+        else             parts.push('❌ index.html');
+        if (res.sitemap) parts.push('✅ sitemap.xml');
+        else             parts.push('❌ sitemap.xml');
+        if (res.robots)  parts.push('✅ robots.txt');
+        else             parts.push('❌ robots.txt');
+        const allOk = res.fonts && res.html && res.sitemap && res.robots;
+        alert2(al, (allOk ? '⚡ Atomic Save تەواو! ' : '⚠️ Partial Save: ') + parts.join(' | '), allOk ? 'ok' : 'err');
+    } catch(e) {
+        alert2(al, '❌ هەڵە: ' + e.message, 'err');
+    }
+    btn.disabled = false;
+}
+
+// ══════════════════════════════════════════
+// robots.txt — Auto-repair to ensure correct Sitemap URL
+// ══════════════════════════════════════════
+async function repairRobotsTxt() {
+    const al  = document.getElementById('robots-alert');
+    const btn = document.getElementById('robots-btn');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە پێش ئەم کارە پەیوەندی بکە بە GitHub!', 'err');
+    alert2(al, '⏳ robots.txt پشکنیت دەکرێت...', 'inf');
+    btn.disabled = true;
+    try {
+        const ROBOTS_FILE = 'robots.txt';
+        const CORRECT_SITEMAP = 'Sitemap: https://uniqaidar.pages.dev/sitemap.xml';
+        // Fetch existing robots.txt
+        const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${ROBOTS_FILE}?ref=${BRANCH}`,
+            { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' }});
+        let existingContent = 'User-agent: *\nAllow: /\n' + CORRECT_SITEMAP;
+        let robotsSha = undefined;
+        if (r.ok) {
+            const d = await r.json();
+            robotsSha = d.sha;
+            existingContent = decodeURIComponent(escape(atob(d.content.replace(/\s/g, ''))));
+        }
+        // Check if sitemap line is correct
+        const lines = existingContent.split('\n').map(l => l.trimEnd());
+        const sitemapIdx = lines.findIndex(l => l.toLowerCase().startsWith('sitemap:'));
+        let changed = false;
+        if (sitemapIdx === -1) {
+            lines.push(CORRECT_SITEMAP);
+            changed = true;
+        } else if (lines[sitemapIdx].trim() !== CORRECT_SITEMAP) {
+            lines[sitemapIdx] = CORRECT_SITEMAP;
+            changed = true;
+        }
+        if (!changed) {
+            alert2(al, '✅ robots.txt تەواوە — Sitemap URL دروستە، هیچ گۆڕینێک پێویست نییە.', 'ok');
+            btn.disabled = false;
+            return;
+        }
+        const newContent = lines.join('\n');
+        const body = JSON.stringify({
+            message: 'Fix robots.txt: ensure correct Sitemap URL',
+            content: btoa(unescape(encodeURIComponent(newContent))),
+            branch: BRANCH,
+            ...(robotsSha ? { sha: robotsSha } : {})
+        });
+        const wr = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${ROBOTS_FILE}`,
+            { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body });
+        if (wr.ok) {
+            alert2(al, '✅ robots.txt چاکسرایەوە و Sitemap URL نوێکرایەوە.', 'ok');
+        } else {
+            alert2(al, '❌ robots.txt نوێکردنەوەی سەرنەکەوت.', 'err');
+        }
+    } catch(e) {
+        alert2(al, '❌ هەڵە: ' + e.message, 'err');
+    }
+    btn.disabled = false;
+}
+
+// ══════════════════════════════════════════
+// Health Check — scan fonts.json for missing .ttf files on GitHub
+// ══════════════════════════════════════════
+async function runHealthCheck() {
+    const al      = document.getElementById('health-alert');
+    const results = document.getElementById('health-results');
+    const btn     = document.getElementById('health-btn');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە پێش ئەم کارە پەیوەندی بکە بە GitHub!', 'err');
+    if (!FONTS_RAW || FONTS_RAW.length === 0) return alert2(al, '❌ fonts.json بارنەکراوە — پەیوەندی بکە.', 'err');
+    alert2(al, `⏳ پشکنینی ${FONTS_RAW.length} فۆنت لەسەر GitHub...`, 'inf');
+    btn.disabled = true;
+    results.style.display = 'none';
+    results.innerHTML = '';
+    try {
+        // Fetch directory listing of UniQaidarFonts/
+        const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/UniQaidarFonts?ref=${BRANCH}`,
+            { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' }});
+        if (!r.ok) throw new Error('GitHub API: ' + r.status);
+        const files = await r.json();
+        if (!Array.isArray(files)) throw new Error('Unexpected response from GitHub contents API');
+        // Build a set of existing filenames
+        const existingFiles = new Set(files.map(f => f.name));
+        // Cross-check against fonts.json
+        const missing = [];
+        const sizesMismatch = [];
+        FONTS_RAW.forEach(function(font) {
+            const filename = (font.path || '').split('/').pop();
+            const decoded  = decodeURIComponent(filename);
+            if (!filename) { missing.push({ name: font.name, issue: 'ناوی path نییە' }); return; }
+            const found = existingFiles.has(decoded) || existingFiles.has(filename);
+            if (!found) missing.push({ name: font.name, file: decoded, issue: 'فایلەکە نەدۆزرایەوە لە GitHub' });
+        });
+        // Report
+        if (missing.length === 0) {
+            alert2(al, `✅ هەموو ${FONTS_RAW.length} فۆنت سەلامەتن — هیچ فایلێکی کەم نییە.`, 'ok');
+        } else {
+            alert2(al, `⚠️ ${missing.length} فۆنت کێشەیان هەیە — تەفاسیل لە خوارەوە بپشکنە.`, 'err');
+            const rows = missing.map((m, i) => `
+                <div style="display:flex;gap:10px;align-items:center;padding:7px 10px;background:var(--bg);border:1px solid rgba(225,112,85,0.3);border-radius:6px;margin-bottom:6px;flex-wrap:wrap;">
+                    <span style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);min-width:28px;">${i+1}</span>
+                    <span style="font-family:var(--mono);font-size:0.76rem;color:var(--yellow);flex:1;">${m.name || '—'}</span>
+                    <span style="font-size:0.74rem;color:var(--muted);flex:1;">${m.file || ''}</span>
+                    <span style="font-size:0.73rem;color:var(--red);">${m.issue}</span>
+                </div>`).join('');
+            results.innerHTML = `<div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;font-family:var(--mono);">کێشەکان (${missing.length}):</div>` + rows;
+            results.style.display = 'block';
+        }
+    } catch(e) {
+        alert2(al, '❌ هەڵە: ' + e.message, 'err');
+    }
+    btn.disabled = false;
 }
 
 
@@ -6030,6 +6347,47 @@ async function saveAbout() {
 // ══════════════════════════════════════════
 // Save: SEO
 // ══════════════════════════════════════════
+// ══════════════════════════════════════════
+// DOM-based HTML mutation engine
+// Uses DOMParser + XMLSerializer to safely update meta tags, IDs, and attributes.
+// Falls back to string operations ONLY for script tag content (not parseable by DOMParser).
+// ══════════════════════════════════════════
+function domUpdateMeta(htmlStr, updates) {
+    // updates: [ { selector, attr, value }, ... ]
+    // For <title>: selector='title', attr=null, value=text
+    try {
+        const parser = new DOMParser();
+        const doc    = parser.parseFromString(htmlStr, 'text/html');
+        updates.forEach(function(u) {
+            if (!u.value && u.value !== '') return;
+            if (u.selector === 'title') {
+                const el = doc.querySelector('title');
+                if (el) el.textContent = u.value;
+            } else {
+                const el = doc.querySelector(u.selector);
+                if (el) el.setAttribute(u.attr, u.value);
+            }
+        });
+        // XMLSerializer reconstructs the full HTML — preserve DOCTYPE
+        const serial = new XMLSerializer();
+        let out = serial.serializeToString(doc);
+        // XMLSerializer adds xmlns attributes — strip them to keep index.html clean
+        out = out
+            .replace(/ xmlns="http:\/\/www\.w3\.org\/1999\/xhtml"/g, '')
+            .replace(/<html /g, '<html lang="ku" dir="rtl" ')
+            .replace(/lang="ku" dir="rtl" lang="ku" dir="rtl"/g, 'lang="ku" dir="rtl"');
+        // Restore <!DOCTYPE html> if stripped
+        if (!out.startsWith('<!DOCTYPE') && !out.startsWith('<!doctype')) {
+            out = '<!DOCTYPE html>\n' + out;
+        }
+        return out;
+    } catch(e) {
+        // Fallback: return original if DOM parsing fails
+        console.warn('[DOM Engine] Parse failed, returning raw:', e);
+        return htmlStr;
+    }
+}
+
 async function saveSEO() {
     const al = document.getElementById('seo-alert');
     let next = RAW;
@@ -6043,13 +6401,19 @@ async function saveSEO() {
     const ogUrl    = v('seo-og-url');
     const gaId     = v('seo-ga-id');
 
-    if (title)   next = next.replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`);
-    if (desc)    next = next.replace(/(<meta name="description" content=")[^"]*"/, `$1${desc}"`);
-    if (kw)      next = next.replace(/(<meta name="keywords" content=")[^"]*"/, `$1${kw}"`);
-    if (ogTitle) next = next.replace(/(<meta property="og:title" content=")[^"]*"/, `$1${ogTitle}"`);
-    if (ogDesc)  next = next.replace(/(<meta property="og:description" content=")[^"]*"/, `$1${ogDesc}"`);
-    if (ogImg)   next = next.replace(/(<meta property="og:image" content=")[^"]*"/, `$1${ogImg}"`);
-    if (ogUrl)   next = next.replace(/(<meta property="og:url" content=")[^"]*"/, `$1${ogUrl}"`);
+    // ── DOM-based updates for all meta tags ──
+    const updates = [];
+    if (title)   updates.push({ selector: 'title', value: title });
+    if (desc)    updates.push({ selector: 'meta[name="description"]',        attr: 'content', value: desc });
+    if (kw)      updates.push({ selector: 'meta[name="keywords"]',           attr: 'content', value: kw });
+    if (ogTitle) updates.push({ selector: 'meta[property="og:title"]',       attr: 'content', value: ogTitle });
+    if (ogDesc)  updates.push({ selector: 'meta[property="og:description"]', attr: 'content', value: ogDesc });
+    if (ogImg)   updates.push({ selector: 'meta[property="og:image"]',       attr: 'content', value: ogImg });
+    if (ogUrl)   updates.push({ selector: 'meta[property="og:url"]',         attr: 'content', value: ogUrl });
+
+    if (updates.length) next = domUpdateMeta(next, updates);
+
+    // GA ID lives inside <script> tags — string replace is safe here (no HTML structure)
     if (gaId) {
         next = next.replace(/(gtag\.js\?id=)[^"&]+/, `$1${gaId}`);
         next = next.replace(/(gtag\('config',\s*')[^']*'/, `$1${gaId}'`);
@@ -6394,6 +6758,8 @@ function renderVisitStats() {
         let va = (a[VT_LOG_SORT]||a.ts||a.date||''), vb = (b[VT_LOG_SORT]||b.ts||b.date||'');
         if (VT_LOG_SORT==='country'){ va=fullCountryName(a.country||''); vb=fullCountryName(b.country||''); }
         if (VT_LOG_SORT==='city')   { va=a.city||''; vb=b.city||''; }
+        if (VT_LOG_SORT==='source') { va=a.source||''; vb=b.source||''; }
+        if (VT_LOG_SORT==='device') { va=a.device||''; vb=b.device||''; }
         return va<vb ? VT_LOG_DIR : va>vb ? -VT_LOG_DIR : 0;
     });
     const vlTotal = vtSorted.length;
@@ -6403,7 +6769,7 @@ function renderVisitStats() {
     if (ltbody) {
         ltbody.innerHTML = '';
         if (!vlSlice.length) {
-            ltbody.innerHTML = '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
+            ltbody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
         } else {
             vlSlice.forEach((ev,i) => {
                 const tr = document.createElement('tr');
@@ -6412,6 +6778,8 @@ function renderVisitStats() {
                     <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${(vlPage-1)*PG_SIZE+i+1}</td>
                     <td style="padding:6px 10px;text-align:center;font-size:0.75rem;color:var(--green);">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
                     <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);">${ev.city||'—'}</td>
+                    <td style="padding:6px 10px;text-align:center;">${sourceBadge(ev.source)}</td>
+                    <td style="padding:6px 10px;text-align:center;">${deviceIcon(ev.device)}</td>
                     <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
                 ltbody.appendChild(tr);
             });
@@ -6420,6 +6788,41 @@ function renderVisitStats() {
     const vtFooter = document.getElementById('v-log-footer');
     if (vtFooter) vtFooter.textContent = `کۆی ${vlTotal} تۆمار`;
     renderPgBar('v-log-pg', vlPage, vlTotal, PG_SIZE, (p)=>{ PG.vlog=p; renderVisitStats(); });
+
+    // ── Virality table: copy_font | copy_category | copy_bulk_modal ──
+    const viralEvents = DL_DATA.filter(ev => ['copy_font','copy_category','copy_bulk_modal'].includes(ev.event||''));
+    const viralSorted = [...viralEvents].sort((a,b)=>((b.ts||b.date||'')>(a.ts||a.date||''))?1:-1);
+    const vvTotal = viralSorted.length;
+    const vvPage  = PG.vviral || 1;
+    const vvSlice = viralSorted.slice((vvPage-1)*PG_SIZE, vvPage*PG_SIZE);
+    const vtbody  = document.getElementById('v-viral-tbody');
+    if (vtbody) {
+        vtbody.innerHTML = '';
+        if (!vvSlice.length) {
+            vtbody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
+        } else {
+            const evtColors = { copy_font: '#74b9ff', copy_category: '#a29bfe', copy_bulk_modal: '#fd79a8' };
+            const evtLabels = { copy_font: '🔗 فۆنت', copy_category: '📁 کاتێگۆری', copy_bulk_modal: '📦 Modal' };
+            vvSlice.forEach((ev,i) => {
+                const tr = document.createElement('tr');
+                tr.style.cssText = 'border-bottom:1px solid var(--border);';
+                const evColor = evtColors[ev.event] || '#dfe6e9';
+                const evLabel = evtLabels[ev.event] || ev.event;
+                tr.innerHTML = `
+                    <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${(vvPage-1)*PG_SIZE+i+1}</td>
+                    <td style="padding:6px 10px;"><span style="background:${evColor}22;color:${evColor};border:1px solid ${evColor}55;padding:2px 8px;border-radius:12px;font-size:0.72rem;white-space:nowrap;">${evLabel}</span></td>
+                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.74rem;color:var(--yellow);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${ev.font||''}">${ev.font||'—'}</td>
+                    <td style="padding:6px 10px;text-align:center;font-size:0.75rem;color:var(--green);">${fullCountryName(ev.country||'')} (${ev.country||'—'})</td>
+                    <td style="padding:6px 10px;text-align:center;">${sourceBadge(ev.source)}</td>
+                    <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
+                vtbody.appendChild(tr);
+            });
+        }
+    }
+    if (!PG.vviral) PG.vviral = 1;
+    const vvFooter = document.getElementById('v-viral-footer');
+    if (vvFooter) vvFooter.textContent = `کۆی ${vvTotal} تۆمار`;
+    renderPgBar('v-viral-pg', vvPage, vvTotal, PG_SIZE, (p)=>{ PG.vviral=p; renderVisitStats(); });
 }
 
 // ── DOWNLOADS ──────────────────────────
@@ -6590,7 +6993,13 @@ function renderDlTable() {
                 <td style="padding:6px 10px;font-family:var(--mono);font-size:0.78rem;direction:ltr;"><a href="${evFontLink}" target="_blank" style="color:var(--accent);text-decoration:none;">${ev.font||'?'} ${evLinkIcon}</a></td>
                 <td style="padding:6px 10px;text-align:center;">${lbl}</td>
                 <td style="padding:6px 10px;text-align:center;font-size:0.75rem;color:var(--green);">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
+                <td style="padding:6px 10px;text-align:center;">${sourceBadge(ev.source)}</td>
+                <td style="padding:6px 10px;text-align:center;">${deviceIcon(ev.device)}</td>
                 <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${evSUL}</td>`;
+            // Row background color by type: Single=orange tint, Bulk=green tint, Cat=teal tint
+            tr.style.background = isCatBulk ? 'rgba(162,155,254,0.06)' : isBulk ? 'rgba(46,204,113,0.06)' : 'rgba(255,87,0,0.04)';
+            tr.onmouseover = ()=>tr.style.background = isCatBulk ? 'rgba(162,155,254,0.13)' : isBulk ? 'rgba(46,204,113,0.13)' : 'rgba(255,87,0,0.10)';
+            tr.onmouseout  = ()=>tr.style.background = isCatBulk ? 'rgba(162,155,254,0.06)' : isBulk ? 'rgba(46,204,113,0.06)' : 'rgba(255,87,0,0.04)';
             ltbody.appendChild(tr);
         });
     }
@@ -6625,6 +7034,32 @@ function exportDlCsv() {
 }
 
 // ── Sulaymaniyah timezone helper (Asia/Baghdad = UTC+3) ──
+// ── LIVE SULAYMANIYAH CLOCK (ticks every second) ──
+(function startSulClock() {
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    function tick() {
+        var el = document.getElementById('sul-clock');
+        if (!el) return;
+        var now = new Date();
+        // Convert to Asia/Baghdad (UTC+3)
+        var sul = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Baghdad' }));
+        var h   = sul.getHours();
+        var m   = sul.getMinutes();
+        var s   = sul.getSeconds();
+        var ampm= h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        var hh  = String(h).padStart(2,'0');
+        var mm  = String(m).padStart(2,'0');
+        var ss  = String(s).padStart(2,'0');
+        var day = sul.getDate();
+        var mon = months[sul.getMonth()];
+        var yr  = sul.getFullYear();
+        el.textContent = hh + ':' + mm + ':' + ss + ' ' + ampm + ' — ' + day + ' ' + mon + ' ' + yr;
+    }
+    tick();
+    setInterval(tick, 1000);
+})();
+
 function nowSUL() {
     return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Baghdad' }));
 }
@@ -6647,6 +7082,38 @@ function thisMonthSUL() {
 
 
 function alert2(el, msg, type) { el.textContent=msg; el.className=`alert ${type} show`; }
+
+// ── Source Badge renderer ──
+function sourceBadge(source) {
+    const src = (source || 'Direct').trim();
+    const palettes = {
+        'Facebook':     ['#1877f2','#e7f0ff'],
+        'Instagram':    ['#e1306c','#fce4ec'],
+        'Twitter/X':    ['#000000','#f0f0f0'],
+        'Telegram':     ['#0088cc','#e3f5ff'],
+        'YouTube':      ['#ff0000','#fff0f0'],
+        'Google Search':['#34a853','#eafaf1'],
+        'Bing':         ['#008272','#e0f7f5'],
+        'Yahoo':        ['#6001d2','#f3e8ff'],
+        'DuckDuckGo':   ['#de5833','#fdf0ee'],
+        'TikTok':       ['#010101','#f0f0f0'],
+        'LinkedIn':     ['#0077b5','#e1f0f8'],
+        'Reddit':       ['#ff4500','#fff2ed'],
+        'WhatsApp':     ['#25d366','#e8fdf1'],
+        'Direct':       ['#636e72','#f0f0f0'],
+        'Other':        ['#b2bec3','#f5f5f5']
+    };
+    const [fg, bg] = palettes[src] || palettes['Other'];
+    return `<span style="background:${bg};color:${fg};border:1px solid ${fg}44;padding:2px 8px;border-radius:12px;font-size:0.7rem;white-space:nowrap;font-weight:bold;">${src}</span>`;
+}
+
+// ── Device Icon renderer ──
+function deviceIcon(device) {
+    const d = (device || '').toLowerCase();
+    if (d === 'mobile') return '<span title="Mobile" style="font-size:1rem;">📱</span>';
+    if (d === 'pc')     return '<span title="PC" style="font-size:1rem;">🖥️</span>';
+    return '<span style="color:var(--muted);font-size:0.75rem;">—</span>';
+}
 
 // ══════════════════════════════════════════
 // Trending: Top 25 most downloaded single fonts → popular.json
