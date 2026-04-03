@@ -587,6 +587,30 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                         <label>H2 Categories سەردێڕی جۆرەکان</label>
                         <input type="text" id="pvb-wlc-cats-h2" style="direction:rtl;">
                     </div>
+                    <div class="form-group full">
+                        <label>🔵 جۆرەکان — بەند ١</label>
+                        <textarea id="pvb-wlc-cat-1" style="direction:rtl;height:72px;"></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>🔵 جۆرەکان — بەند ٢</label>
+                        <textarea id="pvb-wlc-cat-2" style="direction:rtl;height:72px;"></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>🔵 جۆرەکان — بەند ٣</label>
+                        <textarea id="pvb-wlc-cat-3" style="direction:rtl;height:72px;"></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>🔵 جۆرەکان — بەند ٤</label>
+                        <textarea id="pvb-wlc-cat-4" style="direction:rtl;height:72px;"></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>🔵 جۆرەکان — بەند ٥</label>
+                        <textarea id="pvb-wlc-cat-5" style="direction:rtl;height:72px;"></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>🔵 جۆرەکان — بەند ٦</label>
+                        <textarea id="pvb-wlc-cat-6" style="direction:rtl;height:72px;"></textarea>
+                    </div>
                     <div class="form-group">
                         <label>H2 Apps سەردێڕی بەرنامەکان</label>
                         <input type="text" id="pvb-wlc-apps-h2" style="direction:rtl;">
@@ -595,9 +619,41 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                         <label>پەراگرافی بەرنامەکان (Apps Lead)</label>
                         <textarea id="pvb-wlc-apps-lead" style="direction:rtl;height:56px;"></textarea>
                     </div>
+                    <div class="form-group full">
+                        <label>🟢 بەرنامەکان — بەند ١</label>
+                        <textarea id="pvb-wlc-app-1" style="direction:rtl;height:72px;"></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>🟢 بەرنامەکان — بەند ٢</label>
+                        <textarea id="pvb-wlc-app-2" style="direction:rtl;height:72px;"></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>🟢 بەرنامەکان — بەند ٣</label>
+                        <textarea id="pvb-wlc-app-3" style="direction:rtl;height:72px;"></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>🟢 بەرنامەکان — بەند ٤</label>
+                        <textarea id="pvb-wlc-app-4" style="direction:rtl;height:72px;"></textarea>
+                    </div>
                     <div class="form-group">
                         <label>H2 Features سەردێڕی تایبەتمەندییەکان</label>
                         <input type="text" id="pvb-wlc-feats-h2" style="direction:rtl;">
+                    </div>
+                    <div class="form-group full">
+                        <label>🟠 تایبەتمەندییەکان — بەند ١</label>
+                        <textarea id="pvb-wlc-feat-1" style="direction:rtl;height:72px;"></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>🟠 تایبەتمەندییەکان — بەند ٢</label>
+                        <textarea id="pvb-wlc-feat-2" style="direction:rtl;height:72px;"></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>🟠 تایبەتمەندییەکان — بەند ٣</label>
+                        <textarea id="pvb-wlc-feat-3" style="direction:rtl;height:72px;"></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>🟠 تایبەتمەندییەکان — بەند ٤</label>
+                        <textarea id="pvb-wlc-feat-4" style="direction:rtl;height:72px;"></textarea>
                     </div>
                     <div class="form-group full">
                         <label>دەقی داخستن (Closing)</label>
@@ -2595,13 +2651,17 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
         if (!RAW) return alert2(al, '❌ RAW not loaded yet.', 'err');
         var loaded = 0;
         _pvbWelcomeFields.forEach(function(cfg) {
-            // Match content between id sentinel and closing tag, across single elements
-            var re = new RegExp('id="' + cfg.id + '"[^>]*>([\\s\\S]*?)</', 'i');
+            // Match full element content: stop at the closing tag of the SAME element type
+            // Determine tag by looking at what element has this id
+            var tagRe = new RegExp('<(h[1-6]|p|div|span|li)[^>]*id="' + cfg.id + '"', 'i');
+            var tagM  = RAW.match(tagRe);
+            var tag   = tagM ? tagM[1].toLowerCase() : 'p';
+            var re = new RegExp('id="' + cfg.id + '"[^>]*>([\\s\\S]*?)<\\/' + tag + '>', 'i');
             var m = RAW.match(re);
             var inp = document.getElementById(cfg.field);
             if (m && inp) {
-                // Strip inner HTML tags for plain text display
-                inp.value = m[1].replace(/<strong>/gi,'').replace(/<\/strong>/gi,'').trim();
+                // Strip all inner HTML tags for plain text display
+                inp.value = m[1].replace(/<[^>]+>/g, '').trim();
                 loaded++;
             }
         });
@@ -2611,6 +2671,24 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             var m = RAW.match(re);
             var inp = document.getElementById(t[0]);
             if(m && inp){ inp.value = m[1].trim(); loaded++; }
+        });
+        // Load list items (data-pvb li items — strip all inner tags for display)
+        [
+            ['pvb-wlc-cat-1','cat-1'],['pvb-wlc-cat-2','cat-2'],['pvb-wlc-cat-3','cat-3'],
+            ['pvb-wlc-cat-4','cat-4'],['pvb-wlc-cat-5','cat-5'],['pvb-wlc-cat-6','cat-6'],
+            ['pvb-wlc-app-1','app-1'],['pvb-wlc-app-2','app-2'],
+            ['pvb-wlc-app-3','app-3'],['pvb-wlc-app-4','app-4'],
+            ['pvb-wlc-feat-1','feat-1'],['pvb-wlc-feat-2','feat-2'],
+            ['pvb-wlc-feat-3','feat-3'],['pvb-wlc-feat-4','feat-4']
+        ].forEach(function(t){
+            var re = new RegExp('<li[^>]*data-pvb="'+t[1]+'"[^>]*>([\\s\\S]*?)<\\/li>','i');
+            var m = RAW.match(re);
+            var inp = document.getElementById(t[0]);
+            if(m && inp){
+                // Strip ALL inner HTML tags, preserve text content only
+                inp.value = m[1].replace(/<[^>]+>/g, '').trim();
+                loaded++;
+            }
         });
         alert2(al, loaded > 0 ? ('✅ بارکرا — ' + loaded + ' بەند') : '⚠️ هیچ بەندێک نەدۆزرایەوە — کانڤاس بارکە یاخود RAW بوەرگرە', loaded > 0 ? 'ok' : 'inf');
     }
@@ -2625,9 +2703,11 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             var inp = document.getElementById(cfg.field);
             if (!inp || !inp.value.trim()) return;
             var newVal = inp.value.trim();
-            // Replace inner content of the element with this id
-            // Pattern captures: (id="X"[attrs]>)(old content)(</)
-            var re = new RegExp('(id="' + cfg.id + '"[^>]*>)([\\s\\S]*?)(<\/)', 'i');
+            // Determine tag type from RAW
+            var tagRe = new RegExp('<(h[1-6]|p|div|span|li)[^>]*id="' + cfg.id + '"', 'i');
+            var tagM  = next.match(tagRe);
+            var tag   = tagM ? tagM[1].toLowerCase() : 'p';
+            var re = new RegExp('(id="' + cfg.id + '"[^>]*>)([\\s\\S]*?)(<\\/' + tag + '>)', 'i');
             if (re.test(next)) {
                 next = next.replace(re, '$1' + newVal + '$3');
                 changed++;
@@ -2639,6 +2719,21 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             if(!inp || !inp.value.trim()) return;
             var newVal = inp.value.trim();
             var re = new RegExp('(data-pvb="'+t[1]+'"[^>]*>)([^<]*)(<)','i');
+            if(re.test(next)){ next = next.replace(re,'$1'+newVal+'$3'); changed++; }
+        });
+        // Save list items (data-pvb li items)
+        [
+            ['pvb-wlc-cat-1','cat-1'],['pvb-wlc-cat-2','cat-2'],['pvb-wlc-cat-3','cat-3'],
+            ['pvb-wlc-cat-4','cat-4'],['pvb-wlc-cat-5','cat-5'],['pvb-wlc-cat-6','cat-6'],
+            ['pvb-wlc-app-1','app-1'],['pvb-wlc-app-2','app-2'],
+            ['pvb-wlc-app-3','app-3'],['pvb-wlc-app-4','app-4'],
+            ['pvb-wlc-feat-1','feat-1'],['pvb-wlc-feat-2','feat-2'],
+            ['pvb-wlc-feat-3','feat-3'],['pvb-wlc-feat-4','feat-4']
+        ].forEach(function(t){
+            var inp = document.getElementById(t[0]);
+            if(!inp || !inp.value.trim()) return;
+            var newVal = inp.value.trim();
+            var re = new RegExp('(<li[^>]*data-pvb="'+t[1]+'"[^>]*>)([\\s\\S]*?)(<\\/li>)','i');
             if(re.test(next)){ next = next.replace(re,'$1'+newVal+'$3'); changed++; }
         });
         if (next === RAW) return alert2(al, '⚠️ هیچ گۆڕانکارییەک نەبوو.', 'inf');
@@ -3561,7 +3656,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
         setItem('pvb-cl-canvas',    _pvbLoaded,                                   'Canvas loaded');
         setItem('pvb-cl-github',    !!(TOKEN && USER && REPO),                    'GitHub connected');
         setItem('pvb-cl-analytics', !!(RAW && RAW.includes('G-44N8KGCV21')),     'Analytics ID present');
-        setItem('pvb-cl-seo',       !!(RAW && RAW.includes('seo-keywords-container')), 'SEO container present');
+        setItem('pvb-cl-seo',       !!(RAW && RAW.includes('uq-welcome-section')), 'SEO container present');
     }
 
     // ── Download Snapshot ────────────────────────────────
@@ -4242,9 +4337,9 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 captured = captured.replace(/(font-family:\s*\')[^\']+(\',[\s]*Tahoma,[\s]*Arial,[\s]*sans-serif\s*!important)/g,`$1${nf}$2`);
             }
             // SEO sync
-            const metaTitle = document.getElementById('pvb-meta-title').value;
-            const metaDesc  = document.getElementById('pvb-meta-desc').value;
-            const ogImg     = document.getElementById('pvb-og-image').value;
+            const metaTitle = (document.getElementById('pvb-meta-title') || {}).value || '';
+            const metaDesc  = (document.getElementById('pvb-meta-desc')  || {}).value || '';
+            const ogImg     = (document.getElementById('pvb-og-image')   || {}).value || '';
             if (metaTitle) captured = captured.replace(/(<title>)[^<]*(<\/title>)/i, `$1${metaTitle}$2`);
             if (metaDesc)  captured = captured.replace(/(<meta\s+name="description"\s+content=")[^"]*/i, `$1${metaDesc}`);
             if (ogImg)     captured = captured.replace(/(<meta\s+property="og:image"\s+content=")[^"]*/i, `$1${ogImg}`);
@@ -4252,8 +4347,8 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             // Integrity checks
             if (!captured.includes('G-44N8KGCV21'))
                 throw new Error('Integrity: Analytics ID G-44N8KGCV21 missing! Aborting.');
-            if (RAW.includes('seo-keywords-container') && !captured.includes('seo-keywords-container'))
-                throw new Error('Integrity: SEO keywords container missing!');
+            if (RAW.includes('uq-welcome-section') && !captured.includes('uq-welcome-section'))
+                throw new Error('Integrity: SEO welcome section missing!');
             if (RAW.includes('FONTS_PER_PAGE') && !captured.includes('FONTS_PER_PAGE'))
                 throw new Error('Integrity: FONTS_PER_PAGE missing!');
 
@@ -5762,6 +5857,11 @@ function loadAllSettings() {
         const el = document.getElementById(id);
         if (el) el.disabled = false;
     });
+
+    // ── Also populate welcome section editor fields ──
+    if (typeof pvbWelcomeLoad === 'function') {
+        setTimeout(pvbWelcomeLoad, 120);
+    }
 }
 
 // ══════════════════════════════════════════
