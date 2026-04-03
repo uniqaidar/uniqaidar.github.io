@@ -1,5 +1,5 @@
 // functions/api/visit.js
-// Tracks page visits using Cloudflare KV — hourly buckets to stay under 25MB limit
+// Tracks page visits with rich metadata — hourly KV buckets
 // KV binding: UQDATA
 
 export async function onRequestPost(context) {
@@ -13,19 +13,26 @@ export async function onRequestPost(context) {
         const { UQDATA } = context.env;
         if (!UQDATA) return new Response(JSON.stringify({ ok:false, error:'KV not bound' }), { status:500, headers:cors });
 
+        const body      = await context.request.json().catch(() => ({}));
+        const device    = (body.device  || 'Unknown').slice(0, 20);
+        const source    = (body.source  || 'Direct').slice(0, 80);
+        const landingUrl= (body.url     || '').slice(0, 300);
+
         const now     = new Date();
-        const sulDate = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });       // YYYY-MM-DD
-        const sulHour = now.toLocaleString('en-GB',    { timeZone: 'Asia/Baghdad', hour: '2-digit', hour12: false }).replace(/,.*/, '').padStart(2,'0');
+        const sulDate = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });
+        const sulHour = now.toLocaleString('en-GB', { timeZone: 'Asia/Baghdad', hour: '2-digit', hour12: false }).replace(/,.*/, '').padStart(2,'0');
         const sulTime = now.toLocaleTimeString('en-GB', { timeZone: 'Asia/Baghdad', hour:'2-digit', minute:'2-digit', second:'2-digit' });
         const country = context.request.cf?.country || '';
         const city    = context.request.cf?.city    || '';
-        const event   = { date: sulDate, time: sulTime, ts: now.toISOString(), country, city };
 
-        // Use hourly buckets: "vt:YYYY-MM-DD:HH" — keeps each value small (max ~few hundred events/hour)
+        const event = {
+            date: sulDate, time: sulTime, ts: now.toISOString(),
+            country, city, device, source, url: landingUrl
+        };
+
         const key      = `vt:${sulDate}:${sulHour}`;
         const existing = await UQDATA.get(key, { type: 'json' }) || [];
         existing.push(event);
-        // Safety cap per hour bucket: 2000 events max
         if (existing.length > 2000) existing.splice(0, existing.length - 2000);
         await UQDATA.put(key, JSON.stringify(existing));
 

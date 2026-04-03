@@ -1,8 +1,6 @@
 // functions/api/stats.js
-// Admin panel reads ALL stats from KV
-// Uses KV list() to discover only keys that actually exist —
-// avoids the "Too many API requests" error caused by guessing millions of date-range keys.
-// Supports BOTH old daily keys (dl:YYYY-MM-DD, vt:YYYY-MM-DD)
+// Admin panel reads ALL stats from KV — returns full rich metadata objects
+// Supports both old daily keys (dl:YYYY-MM-DD, vt:YYYY-MM-DD)
 // AND new hourly keys (dl:YYYY-MM-DD:HH, vt:YYYY-MM-DD:HH)
 // KV binding: UQDATA
 
@@ -17,7 +15,6 @@ export async function onRequestGet(context) {
         const { UQDATA, ADMIN_TOKEN } = context.env;
         if (!UQDATA) return new Response(JSON.stringify({ ok:false, error:'KV not bound' }), { status:500, headers:cors });
 
-        // Optional token auth
         if (ADMIN_TOKEN) {
             const auth = context.request.headers.get('Authorization') || '';
             if (auth !== `Bearer ${ADMIN_TOKEN}`) {
@@ -28,8 +25,6 @@ export async function onRequestGet(context) {
         const url  = new URL(context.request.url);
         const type = url.searchParams.get('type') || 'both';
 
-        // ── Step 1: List all existing keys using KV list() ──────────────────
-        // This only touches keys that actually exist, not millions of guessed keys.
         async function listAllKeys(prefix) {
             const keys = [];
             let cursor = undefined;
@@ -43,11 +38,10 @@ export async function onRequestGet(context) {
             return keys;
         }
 
-        // ── Step 2: Fetch values for all discovered keys in batches ──────────
         async function fetchKeys(keys) {
             const results = [];
             for (let i = 0; i < keys.length; i += 50) {
-                const batch = keys.slice(i, i + 50);
+                const batch  = keys.slice(i, i + 50);
                 const chunks = await Promise.all(batch.map(k => UQDATA.get(k, { type: 'json' })));
                 results.push(...chunks);
             }
