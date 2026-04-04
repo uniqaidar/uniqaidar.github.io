@@ -3376,6 +3376,7 @@ var _uqInitDone    = false; // true after applyUrlParams — suppresses replaceS
             var ref = document.referrer;
             if (!ref) return 'Direct';
             var host = new URL(ref).hostname.replace(/^www\./, '').toLowerCase();
+            if (host === 'uniqaidar.pages.dev' || host === 'uniqaidar.github.io') return 'Direct';
             var map = {
                 'facebook.com':  'Facebook',
                 'fb.com':        'Facebook',

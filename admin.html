@@ -5018,7 +5018,7 @@ async function ghPut(content, message) {
     // ── Auto-backup before every save ──
     try { localStorage.setItem('uq_backup', RAW); localStorage.setItem('uq_backup_time', new Date().toISOString()); } catch(e) {}
 
-    const body = JSON.stringify({ message, content: btoa(unescape(encodeURIComponent(content))), sha: SHA, branch: BRANCH });
+    const body = JSON.stringify({ message, content: btoa(unescape(encodeURIComponent(content))), sha: SHA || undefined, branch: BRANCH });
     const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${FILE}`,
         { method:'PUT', headers:{ Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' }, body });
     if (!r.ok) return false;
@@ -6606,6 +6606,8 @@ function go(id, btn) {
     const el = document.getElementById(id);
     if (el) el.classList.add('active');
     btn.classList.add('active');
+    // Reset all pagination to page 1 on every tab switch
+    Object.keys(PG).forEach(k => PG[k] = 1);
     if (id==='t-arc')     renderArcFull();
     if (id==='t-visual')  pvbInit();
     if (id==='t-site')    { if (typeof pvbPopulateLogic === 'function') pvbPopulateLogic(); if (typeof loadAllSettings === 'function') loadAllSettings(); }
@@ -6689,7 +6691,7 @@ const STATS_API_BASE = 'https://uniqaidar.pages.dev';
 // Load both downloads + visits in one request from /api/stats
 async function loadAllStats(force) {
     if (!force && STATS_LOADED) {
-        updateDlSummary(); renderDlTable(); renderVisitStats(); renderSearchTable(); renderSearchTable(); return;
+        updateDlSummary(); renderDlTable(); renderVisitStats(); renderSearchTable(); return;
     }
     const alDl = document.getElementById('dl-stats-alert');
     const alVt = document.getElementById('v-alert');
@@ -6726,6 +6728,7 @@ async function loadAllStats(force) {
         try {
             const singleEvs = DL_DATA.filter(ev => {
                 if (ev.type !== 'single') return false;
+                if (ev.event && ev.event !== 'download') return false;
                 const fn = ev.font || '';
                 return !fn.includes('داگرتنی کاتێگۆری') && !fn.includes('داگرتنی تەواوی');
             });
@@ -6815,7 +6818,7 @@ function renderVisitStats() {
     if (ltbody) {
         ltbody.innerHTML = '';
         if (!vlSlice.length) {
-            ltbody.innerHTML = '<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
+            ltbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
         } else {
             vlSlice.forEach((ev,i) => {
                 const tr = document.createElement('tr');
@@ -6882,7 +6885,6 @@ function renderVisitStats() {
             });
         }
     }
-    if (!PG.vviral) PG.vviral = 1;
     const vvFooter = document.getElementById('v-viral-footer');
     if (vvFooter) vvFooter.textContent = `کۆی ${vvTotal} تۆمار`;
     renderPgBar('v-viral-pg', vvPage, vvTotal, PG_SIZE, (p)=>{ PG.vviral=p; renderVisitStats(); });
@@ -6989,12 +6991,13 @@ function renderSearchTable() {
 function updateDlSummary() {
     const today = todaySUL();
     const month = thisMonthSUL();
-    document.getElementById('dl-total-count').textContent  = DL_DATA.length;
-    document.getElementById('dl-single-count').textContent = DL_DATA.filter(e=>e.type==='single').length;
-    document.getElementById('dl-bulk-count').textContent   = DL_DATA.filter(e=>e.type==='bulk'||e.type==='cat-bulk'||(e.font||'').includes('داگرتنی کاتێگۆری')).length;
-    document.getElementById('dl-unique-fonts').textContent = new Set(DL_DATA.filter(e=>e.type==='single').map(e=>e.font)).size;
-    document.getElementById('dl-today-count').textContent  = DL_DATA.filter(e=>e.date===today).length;
-    document.getElementById('dl-this-month').textContent   = DL_DATA.filter(e=>(e.date||'').startsWith(month)).length;
+    const realDl = DL_DATA.filter(e => !e.event || e.event === 'download');
+    document.getElementById('dl-total-count').textContent  = realDl.length;
+    document.getElementById('dl-single-count').textContent = realDl.filter(e=>e.type==='single').length;
+    document.getElementById('dl-bulk-count').textContent   = realDl.filter(e=>e.type==='bulk'||e.type==='cat-bulk'||(e.font||'').includes('داگرتنی کاتێگۆری')).length;
+    document.getElementById('dl-unique-fonts').textContent = new Set(realDl.filter(e=>e.type==='single').map(e=>e.font)).size;
+    document.getElementById('dl-today-count').textContent  = realDl.filter(e=>e.date===today).length;
+    document.getElementById('dl-this-month').textContent   = realDl.filter(e=>(e.date||'').startsWith(month)).length;
 }
 
 function getFilteredEvents() {
@@ -7003,7 +7006,7 @@ function getFilteredEvents() {
     const df   = document.getElementById('dl-date-from')?.value||'';
     const dt   = document.getElementById('dl-date-to')?.value||'';
     return DL_DATA.filter(ev => {
-        if (ev.event === 'search') return false;  // search queries are shown in their own table
+        if (ev.event && ev.event !== 'download') return false;  // exclude search, copy_font, copy_category, copy_bulk_modal
         if (q    && !(ev.font||'').toLowerCase().includes(q)) return false;
         if (typeF !== 'all') {
             const fontName = ev.font || '';
@@ -7118,7 +7121,7 @@ function renderDlTable() {
     const ltbody = document.getElementById('dl-log-tbody');
     ltbody.innerHTML = '';
     if (!dlSlice.length) {
-        ltbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
+        ltbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
     } else {
         dlSlice.forEach((ev,i) => {
             const tr  = document.createElement('tr');
@@ -7126,11 +7129,11 @@ function renderDlTable() {
             const isCatBulk = ev.type==='cat-bulk' || (ev.font||'').includes('داگرتنی کاتێگۆری');
             const isBulk    = !isCatBulk && (ev.type==='bulk' || (ev.font||'').includes('داگرتنی تەواوی'));
             const lbl = isCatBulk
-                ? '<span style="background:var(--purple);color:#fff;padding:1px 7px;border-radius:10px;font-size:0.72rem;">کاتێگۆری</span>'
+                ? '<span style="background:var(--purple);color:#fff;padding:2px 10px;border-radius:10px;font-size:0.72rem;display:inline-block;white-space:nowrap;unicode-bidi:plaintext;">کاتێگۆری</span>'
                 : isBulk
-                ? '<span style="background:var(--green);color:#000;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تەواوی</span>'
-                : '<span style="background:var(--accent);color:#fff;padding:1px 7px;border-radius:10px;font-size:0.72rem;">تاکە</span>';
-            const evSUL = fmtSUL(ev.ts);
+                ? '<span style="background:var(--green);color:#000;padding:2px 10px;border-radius:10px;font-size:0.72rem;display:inline-block;white-space:nowrap;unicode-bidi:plaintext;">تەواوی</span>'
+                : '<span style="background:var(--accent);color:#fff;padding:2px 10px;border-radius:10px;font-size:0.72rem;display:inline-block;white-space:nowrap;unicode-bidi:plaintext;">تاکە</span>';
+            const evSUL = fmtSUL(ev.ts||ev.date||'');
             let evFontLink, evLinkIcon;
             if (isBulk) {
                 evFontLink = 'https://uniqaidar.pages.dev/?dm=1';
@@ -7152,7 +7155,7 @@ function renderDlTable() {
             tr.innerHTML = `
                 <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${(dlPage-1)*PG_SIZE+i+1}</td>
                 <td style="padding:6px 10px;font-family:var(--mono);font-size:0.78rem;direction:ltr;"><a href="${evFontLink}" target="_blank" style="color:var(--accent);text-decoration:none;">${ev.font||'?'} ${evLinkIcon}</a></td>
-                <td style="padding:6px 10px;text-align:center;">${lbl}</td>
+                <td style="padding:6px 10px;text-align:center;" dir="rtl">${lbl}</td>
                 <td style="padding:6px 10px;text-align:center;font-size:0.75rem;color:var(--green);">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
                 <td style="padding:6px 10px;text-align:center;">${sourceBadge(ev.source)}</td>
                 <td style="padding:6px 10px;text-align:center;">${deviceIcon(ev.device)}</td>
@@ -7261,6 +7264,7 @@ function sourceBadge(source) {
     else if (src.includes('bing.com'))                             src = 'Bing';
     else if (src.includes('yahoo.com'))                            src = 'Yahoo';
     else if (src.includes('duckduckgo.com'))                       src = 'DuckDuckGo';
+    else if (src.includes('uniqaidar.pages.dev') || src.includes('uniqaidar.github.io')) src = 'Direct';
     else if (src === '' || src === 'undefined' || src === 'null')  src = 'Direct';
     const palettes = {
         'Facebook':     ['#1877f2','#1a2a4a'],
@@ -7287,7 +7291,7 @@ function sourceBadge(source) {
 // ── Device Icon renderer ──
 function deviceIcon(device) {
     const d = (device || '').toLowerCase().trim();
-    if (!d || d === 'unknown' || d === '—' || d === '-') return '<span style="color:var(--muted);font-size:0.75rem;" title="نەزانراو">?</span>';
+    if (!d || d === 'unknown' || d === '—' || d === '-') return '<span style="color:var(--muted);font-size:0.75rem;" title="نەزانراو">—</span>';
     if (d === 'mobile' || d.includes('mob') || d.includes('phone') || d.includes('android') || d.includes('iphone'))
         return '<span title="Mobile" style="font-size:1rem;">📱</span>';
     if (d === 'tablet' || d.includes('ipad') || d.includes('tab'))
@@ -7306,6 +7310,7 @@ async function updateTrending() {
     // Get only clean single-font downloads (using same strict filter as Task 4 fix)
     const singleEvents = DL_DATA.filter(ev => {
         if (ev.type !== 'single') return false;
+        if (ev.event && ev.event !== 'download') return false;
         const fn = ev.font || '';
         if (fn.includes('داگرتنی کاتێگۆری')) return false;
         if (fn.includes('داگرتنی تەواوی')) return false;
@@ -7400,8 +7405,9 @@ function autoFillTrending() {
     }
     const singleEvents = DL_DATA.filter(ev => {
         if (ev.type !== 'single') return false;
+        if (ev.event && ev.event !== 'download') return false;
         const fn = ev.font || '';
-        return !fn.includes('\u062f\u0627\u06af\u0631\u062a\u0646\u06cc \u06a9\u0627\u062a\u06ce\u06af\u06c6\u0631\u06cc') && !fn.includes('\u062f\u0627\u06af\u0631\u062a\u0646\u06cc \u062a\u06d5\u0648\u0627\u0648\u06cc');
+        return !fn.includes('داگرتنی کاتێگۆری') && !fn.includes('داگرتنی تەواوی');
     });
     const countMap = {};
     singleEvents.forEach(ev => { const k = ev.font || '?'; countMap[k] = (countMap[k] || 0) + 1; });
