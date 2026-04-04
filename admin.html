@@ -958,7 +958,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 </div>
                 <div id="sitemap-alert" class="alert"></div>
                 <div class="btn-row">
-                    <button class="btn btn-green" onclick="runAtomicSave()" id="atomic-save-btn" title="یەک کلیک — fonts.json + index.html + sitemap.xml + robots.txt پاشکەوت دەکرێن">⚡ Atomic Save</button>
+                    <button class="btn btn-green" onclick="runAtomicSave()" id="atomic-save-btn" title="یەک کلیک — fonts.json + index.html + sitemap.xml + robots.txt + _headers پاشکەوت دەکرێن">⚡ Atomic Save</button>
                     <button class="btn btn-primary" onclick="regenerateSitemapManual()" id="sitemap-btn">🗺 دروستکردنی sitemap.xml</button>
                     <button class="btn btn-ghost" onclick="repairRobotsTxt()" id="robots-btn" style="border-color:var(--yellow);color:var(--yellow);">🤖 چاکسازی robots.txt</button>
                     <button class="btn btn-ghost" onclick="runHealthCheck()" id="health-btn" style="border-color:var(--purple);color:var(--purple);">🏥 Health Check فۆنتەکان</button>
@@ -4713,6 +4713,9 @@ let FONTS_SHA = '', FONTS_RAW = [];
 // ── sitemap.xml state ──
 const SITEMAP_FILE = 'sitemap.xml';
 let SITEMAP_SHA = '';
+// ── _headers state ──
+const HEADERS_FILE = '_headers';
+let HEADERS_SHA = '';
 
 const LS_KEY = 'uqadmin_cfg';
 
@@ -4943,9 +4946,9 @@ function domUpdateElementText(htmlStr, selector, text) {
     return htmlStr;
 }
 
-// ── ATOMIC SAVE — one click commits fonts.json + index.html + sitemap.xml + robots.txt ──
+// ── ATOMIC SAVE — one click commits fonts.json + index.html + sitemap.xml + robots.txt + _headers ──
 async function atomicSave(fontsArray, htmlContent, commitMessage) {
-    const results = { fonts: false, html: false, sitemap: false, robots: false };
+    const results = { fonts: false, html: false, sitemap: false, robots: false, headers: false };
     if (!TOKEN || !USER || !REPO) return results;
 
     // 1. fonts.json
@@ -4964,6 +4967,9 @@ async function atomicSave(fontsArray, htmlContent, commitMessage) {
 
     // 4. robots.txt
     try { results.robots = await ensureRobotsHasSitemap(); } catch(e) {}
+
+    // 5. _headers (fixes Google "Sitemap could not be read" — sets correct Content-Type)
+    try { results.headers = await ghPutHeaders(commitMessage + ' [_headers]'); } catch(e) {}
 
     return results;
 }
@@ -5087,6 +5093,46 @@ async function ghPutSitemap(xmlContent, message) {
 }
 
 // ══════════════════════════════════════════
+// GitHub API — _headers
+// ══════════════════════════════════════════
+async function ghPutHeaders(message) {
+    const HEADERS_CONTENT =
+`# UniQaidar — Cloudflare Pages headers
+# Fixes Google Search Console "Sitemap could not be read" error
+
+/sitemap.xml
+  Content-Type: text/xml; charset=utf-8
+  X-Robots-Tag: noindex
+
+/robots.txt
+  Content-Type: text/plain; charset=utf-8
+`;
+    try {
+        if (!HEADERS_SHA) {
+            const r = await fetch(
+                `https://api.github.com/repos/${USER}/${REPO}/contents/${HEADERS_FILE}?ref=${BRANCH}`,
+                { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+            );
+            if (r.ok) { const d = await r.json(); HEADERS_SHA = d.sha || ''; }
+        }
+        const body = JSON.stringify({
+            message,
+            content: btoa(unescape(encodeURIComponent(HEADERS_CONTENT))),
+            branch: BRANCH,
+            ...(HEADERS_SHA ? { sha: HEADERS_SHA } : {})
+        });
+        const r = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/${HEADERS_FILE}`,
+            { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body }
+        );
+        if (!r.ok) return false;
+        const d = await r.json();
+        HEADERS_SHA = d.content ? d.content.sha : '';
+        return true;
+    } catch(e) { return false; }
+}
+
+// ══════════════════════════════════════════
 // Sitemap Generator
 // ══════════════════════════════════════════
 function buildSitemapXml(fontsArray) {
@@ -5180,7 +5226,7 @@ async function runAtomicSave() {
     if (!FONTS_RAW || !FONTS_RAW.length) return alert2(al, '❌ fonts.json بارنەکراوە.', 'err');
     if (!RAW) return alert2(al, '❌ index.html بارنەکراوە.', 'err');
     btn.disabled = true;
-    alert2(al, '⏳ Atomic Save دەستپێکرد — 4 فایل پاشکەوت دەکرێن...', 'inf');
+    alert2(al, '⏳ Atomic Save دەستپێکرد — 5 فایل پاشکەوت دەکرێن...', 'inf');
     try {
         const res = await atomicSave(FONTS_RAW, RAW, 'UniQaidar Admin: Atomic Save');
         const parts = [];
@@ -5192,7 +5238,9 @@ async function runAtomicSave() {
         else             parts.push('❌ sitemap.xml');
         if (res.robots)  parts.push('✅ robots.txt');
         else             parts.push('❌ robots.txt');
-        const allOk = res.fonts && res.html && res.sitemap && res.robots;
+        if (res.headers) parts.push('✅ _headers');
+        else             parts.push('❌ _headers');
+        const allOk = res.fonts && res.html && res.sitemap && res.robots && res.headers;
         alert2(al, (allOk ? '⚡ Atomic Save تەواو! ' : '⚠️ Partial Save: ') + parts.join(' | '), allOk ? 'ok' : 'err');
     } catch(e) {
         alert2(al, '❌ هەڵە: ' + e.message, 'err');

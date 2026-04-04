@@ -1,0 +1,9 @@
+# UniQaidar — Cloudflare Pages headers
+# Fixes Google Search Console "Sitemap could not be read" error
+
+/sitemap.xml
+  Content-Type: text/xml; charset=utf-8
+  X-Robots-Tag: noindex
+
+/robots.txt
+  Content-Type: text/plain; charset=utf-8
