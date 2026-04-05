@@ -5191,6 +5191,369 @@ function toggleParaPreview(btn, fontName) {
 })();
 </script>
 <script>
+// ══════════════════════════════════════════════════════════════════════════
+//  UniQaidar Kurdish Predictive Text Engine  v1.0
+//  • uqNormalize   – keyboard-fix (C4Kurd / standard unification)
+//  • Ghost-text    – RTL-aware suggestion overlay (Tab / → to accept)
+//  • Dual-logic    – preview updates live; grid filter only on Enter / 🔍
+//  • Adaptive      – user words stored in localStorage and used first
+// ══════════════════════════════════════════════════════════════════════════
+(function () {
+    'use strict';
+
+    // ── 1. Normalization map ──────────────────────────────────────────────
+    //  Unifies common Kurdish/Arabic keyboard variants so C4Kurd, standard
+    //  Iraqi, and Arabic keyboards all produce the same search tokens.
+    var UQ_NORM_MAP = {
+        '\u06A9': '\u06A9', // ک  → ک  (keep Central Kurdish Kaf)
+        '\u0643': '\u06A9', // ك  → ک  (Arabic Kaf)
+        '\u06CC': '\u06CC', // ی  → ی  (keep Farsi Ye)
+        '\u064A': '\u06CC', // ي  → ی  (Arabic Ye)
+        '\u0649': '\u06CC', // ى  → ی  (Alef Maqsura)
+        '\u06BE': '\u0647', // ھ  → ه  (Dotless He)
+        '\u0629': '\u0647', // ة  → ه  (Ta Marbuta)
+        '\u0622': '\u0627', // آ  → ا
+        '\u0623': '\u0627', // أ  → ا
+        '\u0625': '\u0627', // إ  → ا
+        '\u0671': '\u0627', // ٱ  → ا
+        '\u0648': '\u0648', // و  (keep)
+        '\u06C6': '\u06C6', // ۆ  (keep)
+        '\u06C4': '\u06C6', // ۄ  → ۆ
+    };
+
+    window.uqNormalize = function (str) {
+        if (!str) return '';
+        var out = '';
+        for (var i = 0; i < str.length; i++) {
+            var c = str[i];
+            out += UQ_NORM_MAP[c] !== undefined ? UQ_NORM_MAP[c] : c;
+        }
+        return out;
+    };
+
+    // ── 2. Kurdish word dictionary ────────────────────────────────────────
+    var UQ_DICT = [
+        // Common Kurdish words / phrases for live testing
+        'فۆنتەکانی یونی‌قەیدار',
+        'فۆنتەکانی یونی قەیدار',
+        'کوردستان',
+        'سلێمانی',
+        'هەولێر',
+        'کرکووک',
+        'دهۆک',
+        'زاخۆ',
+        'چومان',
+        'ڕانیە',
+        'قەڵادزێ',
+        'کەلار',
+        'حەڵەبجە',
+        'شارەزوور',
+        'مەریوان',
+        'سنە',
+        'کوردی',
+        'عەرەبی',
+        'فارسی',
+        'ئینگلیزی',
+        'دیزاین',
+        'فۆنت',
+        'فۆنتی کوردی',
+        'نووسین',
+        'پەیام',
+        'خۆش',
+        'باش',
+        'زۆر باش',
+        'بێژە',
+        'کتێب',
+        'ئینستاگرام',
+        'فەیسبووک',
+        'تێلیگرام',
+        'یوتیوب',
+        'تیکتۆک',
+        'داگرتن',
+        'داگرتنی فۆنت',
+        'هەمووان',
+        'بەخۆڕایی',
+        'بە خۆڕایی',
+        'یونی قەیدار',
+        'قەیدار ڕەحیم',
+        'تاقیکردنەوە',
+        'پیشاندان',
+        'نووسەر',
+        'شاعیر',
+        'گرافیک',
+        'پۆستەر',
+        'بانەر',
+        'لووگۆ',
+        'ئایکۆن',
+        'جوان',
+        'رووناک',
+        'تاریک',
+        'ڕووکار',
+        'ئاسمان',
+        'زەمین',
+        'خۆر',
+        'مانگ',
+        'ئەستێرە',
+        'شەو',
+        'بەیانی',
+        'ئێوارە',
+        'نیوەڕۆ',
+        'ئامادەیی',
+        'کاری باش',
+        'ئایا',
+        'بەڵێ',
+        'نەخێر',
+        'ئەوە',
+        'ئەمە',
+        'بۆ',
+        'لە',
+        'لەگەڵ',
+        'بۆچی',
+        'چۆن',
+        'کێ',
+        'چی',
+        'کاتێ',
+        'هەر',
+        'تەنها',
+        'گشت',
+        'ئەم',
+        'ئەو',
+        'من',
+        'تۆ',
+        'ئەو',
+        'ئێمە',
+        'ئێوە',
+        'ئەوان',
+        'پاشتر',
+        'پێشتر',
+        'ئێستا',
+        'ئایندە',
+        'رابردوو',
+        'زمانی کوردی',
+        'خوێندن',
+        'خوێندنگا',
+        'مەکتەب',
+        'زانکۆ',
+        'مامۆستا',
+        'قوتابی',
+        'خەریک',
+        'کارکردن',
+        'یارمەتی',
+        'سوپاس',
+        'خوازراوی',
+        'بە سەلامەتی',
+        'رووی باش',
+        'خاتر خوا',
+    ];
+
+    // ── 3. Adaptive learning (localStorage) ──────────────────────────────
+    var LS_KEY = 'uq_learned_words';
+    function loadLearned() {
+        try {
+            return JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+        } catch(e) { return []; }
+    }
+    function saveLearned(words) {
+        try { localStorage.setItem(LS_KEY, JSON.stringify(words.slice(-200))); } catch(e) {}
+    }
+    function learnWord(word) {
+        if (!word || word.length < 2) return;
+        var learned = loadLearned();
+        if (learned.indexOf(word) === -1) {
+            learned.push(word);
+            saveLearned(learned);
+        }
+    }
+
+    // ── 4. Suggestion engine ─────────────────────────────────────────────
+    function getSuggestion(typed) {
+        if (!typed) return '';
+        var norm = uqNormalize(typed.toLowerCase());
+
+        // Helper: normalise + lowercase a candidate
+        function nc(s) { return uqNormalize((s || '').toLowerCase()); }
+
+        // Build candidate pool: learned words first, then static dict, then font names
+        var learned = loadLearned();
+        var fontNames = (typeof fonts !== 'undefined' && Array.isArray(fonts))
+            ? fonts.map(function(f){ return f.name; }) : [];
+        var pool = learned.concat(UQ_DICT).concat(fontNames);
+
+        // Find first candidate that *starts with* the typed text
+        for (var i = 0; i < pool.length; i++) {
+            var cand = pool[i];
+            if (!cand) continue;
+            var candNorm = nc(cand);
+            if (candNorm.startsWith(norm) && cand.length > typed.length) {
+                // Return only the TAIL (the ghost part)
+                return cand.slice(typed.length);
+            }
+        }
+        // Second pass: look for a WORD in a multi-word phrase that starts with last word typed
+        var lastWord = typed.split(/\s+/).pop();
+        if (lastWord.length >= 1) {
+            var lastNorm = uqNormalize(lastWord.toLowerCase());
+            for (var j = 0; j < pool.length; j++) {
+                var ph = pool[j];
+                if (!ph) continue;
+                var phNorm = nc(ph);
+                if (phNorm.startsWith(lastNorm) && ph.length > lastWord.length) {
+                    return ph.slice(lastWord.length);
+                }
+            }
+        }
+        return '';
+    }
+
+    // ── 5. Ghost-text overlay ─────────────────────────────────────────────
+    //  RTL strategy: the ghost <span> sits BEFORE (in DOM, which is visually
+    //  after for LTR but before for RTL) the input value, rendered as a
+    //  sibling element positioned absolutely inside the input wrapper.
+    //  We measure the text width and position it to the left of the caret
+    //  (which in an RTL input means visually to the right-end — the continuation
+    //  direction for Arabic/Kurdish script).
+
+    var inputEl = document.getElementById('test-input');
+    if (!inputEl) return;  // safety guard
+
+    var wrapper = inputEl.parentElement;
+    if (!wrapper) return;
+    // Wrapper needs position:relative (it already has it per existing CSS)
+
+    // Create ghost element
+    var ghost = document.createElement('span');
+    ghost.id = 'uq-ghost-text';
+    ghost.setAttribute('aria-hidden', 'true');
+    ghost.style.cssText = [
+        'position:absolute',
+        'pointer-events:none',
+        'color:rgba(128,128,128,0.5)',
+        'white-space:pre',
+        'overflow:hidden',
+        'font-family:inherit',
+        'font-size:inherit',
+        'line-height:inherit',
+        'letter-spacing:inherit',
+        'border:none',
+        'background:transparent',
+        'z-index:5',
+        'top:50%',
+        'transform:translateY(-50%)',
+        // RTL: ghost starts at the LEFT edge (visually, the text-end direction)
+        'left:60px',           // same left-padding as #search-btn area
+        'direction:rtl',
+        'text-align:right',
+        'max-width:calc(100% - 120px)',
+        'display:none',
+    ].join(';');
+    wrapper.appendChild(ghost);
+
+    var _currentSuggestion = '';
+
+    function showGhost(tail) {
+        if (!tail) {
+            ghost.style.display = 'none';
+            ghost.textContent = '';
+            _currentSuggestion = '';
+            return;
+        }
+        _currentSuggestion = tail;
+        ghost.textContent = tail;
+        ghost.style.display = 'block';
+    }
+
+    function hideGhost() {
+        ghost.style.display = 'none';
+        ghost.textContent = '';
+        _currentSuggestion = '';
+    }
+
+    function acceptSuggestion() {
+        if (!_currentSuggestion) return false;
+        inputEl.value = inputEl.value + _currentSuggestion;
+        learnWord(inputEl.value.trim());
+        hideGhost();
+        // Fire input event so card previews update
+        inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+        return true;
+    }
+
+    // ── 6. Patch the existing input listener ─────────────────────────────
+    //  The existing code already handles live preview on 'input'.
+    //  We ADD our ghost-text logic on top via another listener.
+    inputEl.addEventListener('input', function () {
+        var val = inputEl.value;
+        if (!val.trim()) { hideGhost(); return; }
+        var tail = getSuggestion(val);
+        showGhost(tail);
+    });
+
+    // Tab or → accepts the suggestion
+    inputEl.addEventListener('keydown', function (e) {
+        if ((e.key === 'Tab' || e.key === 'ArrowRight') && _currentSuggestion) {
+            e.preventDefault();
+            acceptSuggestion();
+            return;
+        }
+        // Escape clears ghost
+        if (e.key === 'Escape') {
+            hideGhost();
+        }
+        // On Enter: learn the current typed word before doSearch runs
+        if (e.key === 'Enter') {
+            var typed = inputEl.value.trim();
+            if (typed) learnWord(typed);
+            hideGhost();
+            // doSearch() is wired separately in the existing keydown listener
+        }
+    });
+
+    // Hide ghost when input blurs
+    inputEl.addEventListener('blur', function () {
+        hideGhost();
+    });
+
+    // Also patch doSearch to learn the query
+    if (typeof window.doSearch === 'function') {
+        var _origDoSearch = window.doSearch;
+        window.doSearch = function () {
+            var typed = inputEl.value.trim();
+            if (typed) learnWord(typed);
+            hideGhost();
+            _origDoSearch.apply(this, arguments);
+        };
+    }
+
+    // ── 7. Patch uqNormalize into existing doSearch for keyboard-fix ─────
+    //  The existing doSearch uses input.value.trim().toLowerCase().
+    //  We wrap it so it also normalises the query, fixing C4Kurd keyboard.
+    //  (Already done above — the learnWord call is safe; full filter
+    //   remains in the original doSearch which we've overridden above.)
+    //
+    //  Additionally patch the normalize into the existing filter comparison:
+    //  We override filterFonts' search results in doSearch so normalized
+    //  queries match normalized font names.
+    var _origDoSearch2 = window.doSearch;
+    window.doSearch = function () {
+        var rawQ    = inputEl.value.trim();
+        var normQ   = uqNormalize(rawQ.toLowerCase());
+
+        // If the normalized form differs from raw (keyboard fix triggered),
+        // temporarily swap input value so the existing doSearch sees it.
+        var swapped = false;
+        if (normQ !== rawQ.toLowerCase() && normQ.length) {
+            inputEl.value = normQ;
+            swapped = true;
+        }
+        _origDoSearch2.apply(this, arguments);
+        if (swapped) {
+            // Restore display value so user sees what they typed
+            inputEl.value = rawQ;
+        }
+    };
+
+})();
+
 // ── Back-to-top: ring+button from first scroll; arrow only past 400px ──
 // Standalone — runs immediately, never blocked by fonts.json or any fetch.
 (function() {
