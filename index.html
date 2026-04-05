@@ -5405,125 +5405,134 @@ function toggleParaPreview(btn, fontName) {
         return '';
     }
 
-    // ── 5. Ghost-text overlay ─────────────────────────────────────────────
-    //  RTL fix: In a RTL input, text grows from the RIGHT inward toward LEFT.
-    //  The caret sits at the LEFT edge of the typed text.
-    //  The ghost (suggestion tail) must appear immediately to the LEFT of the
-    //  caret — i.e. right where the next character would be typed.
+    // ── 5. Ghost-text overlay — MIRROR DIV approach ───────────────────────
     //
-    //  Strategy:
-    //    1. Measure the pixel width of the typed text using an off-screen ruler.
-    //    2. The input's right-padding is ~25px (the placeholder padding).
-    //       The input's left-padding is ~50px (where the search button sits).
-    //    3. In RTL, text starts at (inputWidth - rightPad) and grows left.
-    //       So the caret's left position ≈ inputWidth - rightPad - textWidth.
-    //    4. Place ghost.style.left = caretLeft (pixels from wrapper left).
+    //  The input has text-align:center + direction:rtl.
+    //  No absolute-positioned span can track the caret in a centered input
+    //  reliably across browsers. The only correct solution:
+    //
+    //  • Make the real input's TEXT COLOR transparent (caret still shows).
+    //  • Place a MIRROR DIV exactly on top of the input (same size/font/padding).
+    //  • The mirror renders: <span typed-text</span><span ghost-tail</span>
+    //    both inline, centered together — so ghost tail appears glued to the
+    //    right of the caret, exactly as expected in RTL Kurdish text.
+    //  • The real input still receives all events; the mirror is pointer-none.
 
     var inputEl = document.getElementById('test-input');
-    if (!inputEl) return;  // safety guard
+    if (!inputEl) return;
 
     var wrapper = inputEl.parentElement;
     if (!wrapper) return;
 
-    // ── Off-screen text ruler ──
-    // Mirrors the input's font so canvas measurement is accurate.
-    var _ruler = document.createElement('canvas').getContext('2d');
-    function _measureText(text) {
-        var cs = window.getComputedStyle(inputEl);
-        _ruler.font = cs.fontStyle + ' ' + cs.fontVariant + ' ' + cs.fontWeight +
-                      ' ' + cs.fontSize + ' ' + cs.fontFamily;
-        return _ruler.measureText(text).width;
-    }
+    // ── Build the mirror div ──
+    var mirror = document.createElement('div');
+    mirror.id  = 'uq-mirror';
+    mirror.setAttribute('aria-hidden', 'true');
 
-    // Create ghost element — initially hidden, no fixed left
-    var ghost = document.createElement('span');
-    ghost.id = 'uq-ghost-text';
-    ghost.setAttribute('aria-hidden', 'true');
-    ghost.style.cssText = [
+    // Copy every visual property that affects text layout from the input
+    var _cs = window.getComputedStyle(inputEl);
+    mirror.style.cssText = [
         'position:absolute',
+        'top:0', 'left:0', 'right:0', 'bottom:0',
         'pointer-events:none',
-        'color:rgba(150,150,150,0.55)',
-        'white-space:pre',
-        'overflow:visible',
-        'font-family:inherit',
-        'font-size:inherit',
-        'line-height:inherit',
-        'letter-spacing:inherit',
-        'border:none',
-        'background:transparent',
-        'z-index:5',
-        'top:50%',
-        'transform:translateY(-50%)',
+        'overflow:hidden',
+        'white-space:pre',            // respect spaces
+        'display:flex',
+        'align-items:center',
+        'justify-content:center',     // matches text-align:center
         'direction:rtl',
-        'display:none',
+        'font-family:' + _cs.fontFamily,
+        'font-size:'   + _cs.fontSize,
+        'font-weight:' + _cs.fontWeight,
+        'letter-spacing:' + _cs.letterSpacing,
+        'padding:'     + _cs.padding,
+        'box-sizing:border-box',
+        'border-radius:' + _cs.borderRadius,
+        'z-index:4',                  // sits above input bg, below caret layer
+        'background:transparent',     // input bg shows through
     ].join(';');
-    wrapper.appendChild(ghost);
+
+    // Typed-text span — same color as input text so it looks normal
+    var mirrorTyped = document.createElement('span');
+    mirrorTyped.id = 'uq-mirror-typed';
+    mirrorTyped.style.cssText = 'color:' + (_cs.color || '#333') + ';white-space:pre;';
+
+    // Ghost tail span — grey
+    var mirrorGhost = document.createElement('span');
+    mirrorGhost.id = 'uq-mirror-ghost';
+    mirrorGhost.style.cssText = [
+        'color:rgba(140,140,140,0.6)',
+        'white-space:pre',
+    ].join(';');
+
+    // RTL: typed text is on the RIGHT (first in visual RTL order),
+    // ghost continuation is to its LEFT — so DOM order is ghost then typed
+    // inside a RTL flex container.
+    // In RTL flex: first child → rightmost visual position.
+    // We want: [typed][ghost] visually → DOM: typed first, ghost second
+    // RTL flex reverses visual order from DOM order automatically.
+    mirror.appendChild(mirrorTyped);
+    mirror.appendChild(mirrorGhost);
+    wrapper.appendChild(mirror);
+
+    // ── Make the real input's text invisible (caret remains) ──
+    // We do this ONLY when a suggestion is active, so normal typing looks fine.
+    function _hideInputText() {
+        inputEl.style.color = 'transparent';
+        inputEl.style.caretColor = _cs.color || '#333';
+    }
+    function _showInputText() {
+        inputEl.style.color = '';
+        inputEl.style.caretColor = '';
+        mirrorTyped.textContent = '';
+        mirrorGhost.textContent = '';
+    }
 
     var _currentSuggestion = '';
 
-    // Compute where the ghost should sit (left px from wrapper left edge)
-    function _positionGhost() {
-        var val = inputEl.value;
-        if (!val) return;
-
-        var cs      = window.getComputedStyle(inputEl);
-        var padRight = parseFloat(cs.paddingRight) || 25;  // RTL text starts here
-        var padLeft  = parseFloat(cs.paddingLeft)  || 50;  // search btn side
-        var inputW   = inputEl.offsetWidth;
-
-        // Width of the typed text in pixels
-        var textW = _measureText(val);
-
-        // In RTL the text block's LEFT edge (= caret position) is:
-        //   inputRight - padRight - textWidth
-        // But we want position relative to the wrapper (same as inputEl's left):
-        var inputOffsetLeft = inputEl.offsetLeft || 0;
-        var caretLeft = inputOffsetLeft + inputW - padRight - textW;
-
-        // Clamp so ghost never overlaps the search button on the left
-        var minLeft = inputOffsetLeft + padLeft + 4;
-        caretLeft = Math.max(caretLeft, minLeft);
-
-        ghost.style.left = caretLeft + 'px';
-    }
-
-    function showGhost(tail) {
+    function showGhost(typed, tail) {
         if (!tail) {
-            ghost.style.display = 'none';
-            ghost.textContent = '';
-            _currentSuggestion = '';
+            hideGhost();
             return;
         }
         _currentSuggestion = tail;
-        ghost.textContent = tail;
-        _positionGhost();
-        ghost.style.display = 'block';
+        mirrorTyped.textContent = typed;
+        mirrorGhost.textContent = tail;
+        _hideInputText();
     }
 
     function hideGhost() {
-        ghost.style.display = 'none';
-        ghost.textContent = '';
         _currentSuggestion = '';
+        _showInputText();
     }
 
     function acceptSuggestion() {
         if (!_currentSuggestion) return false;
-        inputEl.value = inputEl.value + _currentSuggestion;
-        learnWord(inputEl.value.trim());
+        var accepted = inputEl.value + _currentSuggestion;
         hideGhost();
-        // Fire input event so card previews update
+        inputEl.value = accepted;
+        learnWord(accepted.trim());
         inputEl.dispatchEvent(new Event('input', { bubbles: true }));
         return true;
     }
 
+    function _syncMirrorFont() {
+        var cs = window.getComputedStyle(inputEl);
+        mirror.style.fontFamily    = cs.fontFamily;
+        mirror.style.fontSize      = cs.fontSize;
+        mirror.style.fontWeight    = cs.fontWeight;
+        mirror.style.letterSpacing = cs.letterSpacing;
+        mirror.style.padding       = cs.padding;
+        mirrorTyped.style.color    = cs.color || '#333';
+    }
+
     // ── 6. Patch the existing input listener ─────────────────────────────
-    //  The existing code already handles live preview on 'input'.
-    //  We ADD our ghost-text logic on top via another listener.
     inputEl.addEventListener('input', function () {
         var val = inputEl.value;
         if (!val.trim()) { hideGhost(); return; }
+        _syncMirrorFont();
         var tail = getSuggestion(val);
-        showGhost(tail);
+        showGhost(val, tail);
     });
 
     // Tab or → accepts the suggestion
