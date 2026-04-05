@@ -966,11 +966,18 @@ footer strong {
 .filter-container {
     width: 100%;
     box-sizing: border-box;
-    background: #1a1a1a;
+    background: #111;
     padding: 0;
     position: sticky;
     top: 0;
     z-index: 1000;
+}
+/* Top orange fade line on filter bar */
+.filter-container::before {
+    content: '';
+    display: block;
+    height: 2px;
+    background: linear-gradient(to left, #ff5700 0%, rgba(255,149,0,0.45) 40%, rgba(255,87,0,0) 100%);
 }
 
 /* ── Desktop: dropdown (same as mobile) ── */
@@ -1005,7 +1012,8 @@ footer strong {
     background: #0070e4;
     border-color: #0070e4;
     color: #fff;
-    font-size: 1.05rem;
+    font-size: 1.2rem;
+    font-weight: normal;
     box-shadow: 0 3px 10px rgba(0,112,228,0.4);
 }
 
@@ -1360,8 +1368,8 @@ a:active, button:active {
     }
 
     /* تۆگڵی کاتیگۆری — مۆبایل */
-    .filter-mobile-toggle { font-size: 1.1rem !important; }
-    .filter-mobile-toggle .toggle-label span#mobile-active-label { font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif !important; font-weight: normal !important; white-space: nowrap !important; }
+    .filter-mobile-toggle { font-size: 1.2rem !important; background: transparent !important; min-width: 0 !important; }
+    #mobile-active-label { font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif !important; font-weight: normal !important; white-space: nowrap !important; overflow: visible !important; min-width: 0 !important; }
 
     /* بۆکسی تاقیکردنەوە */
     #test-input {
@@ -1379,9 +1387,9 @@ a:active, button:active {
     /* فلتەر بار — مۆبایل: dropdown */
     .filter-desktop { display: none !important; }
     .filter-mobile  { display: block !important; }
-    /* سلایدەری قەبارە لە مۆبایل */
-    #size-bar { padding: 6px 10px !important; gap: 6px !important; overflow: hidden !important; max-width: 100vw !important; box-sizing: border-box !important; }
-    #font-size-slider { width: 100px !important; max-width: 100px !important; min-width: 0 !important; flex-shrink: 1 !important; }
+    /* scaler lives in mob-filter-row2 */
+    #mob-filter-row2 { display: flex !important; }
+    #font-size-slider-mobile { width: auto !important; }
     /* کەمکردنەوەی بۆشایی نێوان لۆگۆ و باکسەکە */
     .search-container { margin-top: 6px !important; }
     .filter-mobile-panel .filter-btn {
@@ -1646,16 +1654,39 @@ a:active, button:active {
     box-shadow: 0 3px 10px rgba(255,87,0,0.3);
     transition: opacity 0.2s;
 }
+/* ── Desktop filter bar: compact sizing ── */
+#cat-dl-inline-wrap #cat-dl-btn {
+    padding: 0 14px !important;
+    font-size: 1.2rem !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    height: 42px !important;
+    line-height: 42px !important;
+}
+/* ── Mobile filter bar: compact sizing ── */
+#cat-dl-mobile-wrap #cat-dl-btn-mobile {
+    padding: 0 10px !important;
+    font-size: 0.82rem !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    height: 32px !important;
+    overflow: visible !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: normal !important;
+}
 #cat-dl-btn-mobile {
-    width: 100%;
-    font-size: 1rem;
-    padding: 10px 16px;
-    border-radius: 10px;
-    display: flex;
+    width: auto;
+    font-size: 0.78rem;
+    padding: 0 11px;
+    border-radius: 8px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: 5px;
     text-align: center;
+    overflow: visible;
 }
 #cat-dl-btn:disabled, #cat-dl-btn-mobile:disabled { opacity: 0.6; cursor: not-allowed; }
 #cat-dl-btn:hover:not(:disabled), #cat-dl-btn-mobile:hover:not(:disabled) { opacity: 0.88; }
@@ -2017,14 +2048,17 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     animation-delay: 2.5s;
     pointer-events:none;
 }
-#cat-dl-btn, #cat-dl-btn-mobile { position:relative; overflow:hidden; }
-#cat-dl-btn::after, #cat-dl-btn-mobile::after {
+#cat-dl-btn { position:relative; overflow:hidden; }
+#cat-dl-btn-mobile { position:relative; overflow:visible; }
+#cat-dl-btn::after {
     content:''; position:absolute; top:0; right:-100%; width:80%; height:100%;
     background: linear-gradient(-90deg, transparent, rgba(255,255,255,0.1), rgba(255,255,255,0.3), rgba(255,255,255,0.1), transparent);
     animation: liquidSweepRTL 4.0s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     animation-delay: 1.8s;
     pointer-events:none;
 }
+/* No ::after sweep on mobile — prevents horizontal page shift */
+#cat-dl-btn-mobile::after { display: none; }
 @keyframes liquidSweepRTL {
     0%   { right: -80%; }
     70%  { right: 150%; }
@@ -2536,7 +2570,7 @@ body.dark-mode .card-body {
             </div>
 
             <!-- Description -->
-            <p id="dm-desc" style="font-size:1rem;margin-bottom:24px;color:#111111;line-height:2;background:rgba(0,153,255,0.08);border-radius:12px;padding:14px 18px;border:1px solid rgba(0,153,255,0.3);text-align:justify;text-align-last:right;direction:rtl;">فەرموون لەگەڵ داگرتنی دوایین ئەپدەیتی تەواوی فۆنتەکانی یونی‌قەیدار بە شێوەی فایلی زیپ (ZIP) کە لە ئێستادا ژمارەی فۆنتەکان 424 فۆنتە:</p>
+            <p id="dm-desc" style="font-size:1rem;margin-bottom:24px;color:#111111;line-height:2;background:rgba(255,87,0,0.06);border-radius:12px;padding:14px 18px;border:1px solid rgba(255,87,0,0.25);text-align:justify;text-align-last:right;direction:rtl;">فەرموون لەگەڵ داگرتنی دوایین ئەپدەیتی تەواوی فۆنتەکانی یونی‌قەیدار بە شێوەی فایلی زیپ (ZIP) کە لە ئێستادا ژمارەی فۆنتەکان 424 فۆنتە:</p>
 
             <!-- Google Drive Button -->
             <div id="dm-btn-wrap" style="display:flex;justify-content:center;margin-bottom:12px;">
@@ -2700,30 +2734,32 @@ body.dark-mode .card-body {
      ═══════════════════════════════════════════════════════════════════ -->
 <section id="uq-welcome-section" dir="rtl" aria-label="دەربارەی ماڵپەڕی یونی‌قەیدار">
 
-    <!-- ── Animated Hero Banner (replaces the old toggle button) ── -->
+    <!-- ── Animated Hero Banner — Option D ── -->
     <div id="uq-welcome-hero">
-        <!-- Single row: [dots] [button] [tagline] -->
+        <div id="uq-welcome-top-line"></div>
         <div id="uq-welcome-title-wrap">
-            <!-- Decorative animated dots (RTL side) -->
-            <span class="uq-hero-dot" style="animation-delay:0s">•</span>
-            <span class="uq-hero-dot" style="animation-delay:0.3s">•</span>
-            <!-- Animated welcome button -->
-            <button id="uq-welcome-btn" class="uq-welcome-btn" onclick="uqExpandWelcome(this)" aria-expanded="false" title="کلیک بکە بۆ دەرکەوتنی دەقی تەواو">
+            <div class="uq-d-dots">
+                <span class="uq-d-dot" style="animation-delay:0s"></span>
+                <span class="uq-d-dot" style="animation-delay:0.4s"></span>
+                <span class="uq-d-dot" style="animation-delay:0.8s"></span>
+            </div>
+            <button id="uq-welcome-btn" class="uq-welcome-btn" onclick="uqExpandWelcome(this)" aria-expanded="false" title="کلیک بکە - بەخێربێیت">
                 <span class="uq-wbtn-short">بەخێربێن بۆ یونی‌قەیدار</span>
                 <span class="uq-wbtn-full" aria-hidden="true">بەخێربێن بۆ ماڵپەڕی فۆنتەکانی یونی‌قەیدار</span>
                 <span class="uq-wbtn-arrow">▾</span>
             </button>
-            <!-- Looping animated tagline inline -->
             <div id="uq-welcome-tagline-anim">
                 <span class="uq-tagline-item active" data-pvb="tagline-1">🎨 زیاتر لە ٤٢٠ فۆنتی کوردی بۆ داگرتن</span>
                 <span class="uq-tagline-item" data-pvb="tagline-2">✨ داگرتنی خێرا و ئاسان</span>
                 <span class="uq-tagline-item" data-pvb="tagline-3">🖋 فۆنتی پیشەیی بۆ هەموو بوارەکان</span>
                 <span class="uq-tagline-item" data-pvb="tagline-4">📱 گونجاو بۆ مۆبایل، کۆمپیوتەر و تابلێت</span>
             </div>
-            <!-- Decorative animated dot (LTR side) -->
-            <span class="uq-hero-dot" style="animation-delay:0.6s">•</span>
+            <div class="uq-d-dots" style="transform:scaleX(-1);">
+                <span class="uq-d-dot" style="animation-delay:0s"></span>
+                <span class="uq-d-dot" style="animation-delay:0.4s"></span>
+                <span class="uq-d-dot" style="animation-delay:0.8s"></span>
+            </div>
         </div>
-        <!-- Orange accent bar — full width -->
         <div id="uq-welcome-accent-bar"></div>
     </div>
 
@@ -2799,60 +2835,47 @@ body.dark-mode .card-body {
     box-sizing: border-box;
 }
 
-/* ══ HERO BANNER ══════════════════════════════════════════ */
+/* ══ HERO BANNER — Option D ══════════════════════════════ */
 #uq-welcome-hero {
     width: 100%;
     box-sizing: border-box;
-    background: #1a1a1a;
-    background-size: 300% 100%;
-    animation: heroBlueDarkShift 6s ease-in-out infinite alternate;
+    background: #111;
     position: relative;
-    overflow: hidden;
-    padding: 7px 16px;
-    text-align: center;
-    border-top: none;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 0;
-    flex-wrap: nowrap;
-    justify-content: center;
-    min-height: 0;
+    align-items: stretch;
+    border-top: 1px solid rgba(255,255,255,0.07);
 }
-@keyframes heroBlueDarkShift {
-    0%   { background-position: 0% center; }
-    100% { background-position: 100% center; }
-}
+#uq-welcome-hero::before,
+#uq-welcome-hero::after { display: none; }
 
-/* Moving top border line — smooth seamless RTL sweep */
-#uq-welcome-hero::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%;
+/* Top orange-to-amber fade line */
+#uq-welcome-top-line {
     height: 2px;
-    background: linear-gradient(90deg,
-        transparent 0%,
-        #0070e4 15%,
-        #00d2ff 30%,
-        #ffffff 50%,
-        #00d2ff 70%,
-        #0070e4 85%,
-        transparent 100%);
-    background-size: 200% 100%;
-    animation: heroBorderSweepRTL 3s linear infinite;
-    pointer-events: none;
-    z-index: 2;
-}
-@keyframes heroBorderSweepRTL {
-    0%   { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    width: 100%;
+    background: linear-gradient(to left, #ff5700 0%, rgba(255,149,0,0.55) 40%, rgba(255,87,0,0) 100%);
+    flex-shrink: 0;
 }
 
-/* Blue flowing gradient behind the welcome button — removed to match filter bar */
-#uq-welcome-hero::before {
-    content: '';
-    display: none;
+/* Pulsing triple dots */
+.uq-d-dots {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+.uq-d-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(255,87,0,0.55);
+    animation: uqDotPulse 2.4s ease-in-out infinite;
+}
+.uq-d-dots .uq-d-dot:nth-child(2) { background: rgba(255,149,0,0.5); }
+.uq-d-dots .uq-d-dot:nth-child(3) { background: rgba(255,255,255,0.2); }
+@keyframes uqDotPulse {
+    0%,100% { transform: scale(1);   opacity: 0.5; }
+    50%      { transform: scale(1.6); opacity: 1; }
 }
 
 /* Moving green gradient — used on download success label and Google Drive button */
@@ -2865,10 +2888,10 @@ body.dark-mode .card-body {
 .uq-welcome-btn {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    background: rgba(10, 20, 40, 0.72);
-    border: 1.5px solid rgba(0, 150, 255, 0.45);
-    border-radius: 16px;
+    gap: 7px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,87,0,0.4);
+    border-radius: 50px;
     padding: 5px 16px;
     cursor: pointer;
     color: #ffffff !important;
@@ -2879,44 +2902,31 @@ body.dark-mode .card-body {
     position: relative;
     z-index: 1;
     overflow: hidden;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+    transition: border-color 0.28s ease, background 0.28s ease, transform 0.18s ease, box-shadow 0.28s ease;
     direction: rtl;
     white-space: nowrap;
     flex-shrink: 0;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 0 18px rgba(0, 120, 255, 0.25), 0 2px 12px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
-    animation: uqBtnBluePulse 3s ease-in-out infinite;
 }
-@keyframes uqBtnBluePulse {
-    0%, 100% { box-shadow: 0 0 18px rgba(0,120,255,0.25), 0 2px 12px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08); border-color: rgba(0,150,255,0.45); }
-    50%       { box-shadow: 0 0 36px rgba(0,180,255,0.55), 0 4px 18px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.12); border-color: rgba(0,200,255,0.75); }
-}
-/* Blue shimmer sweep — RTL: starts from left, sweeps rightward (visually right→left in RTL) */
+/* RTL shimmer sweep — slides from left to right (RTL direction: right→left visually) */
 .uq-welcome-btn::before {
     content: '';
     position: absolute;
-    top: 0; right: -80%; width: 55%; height: 100%;
-    background: linear-gradient(270deg, transparent, rgba(80,180,255,0.22), rgba(180,230,255,0.28), rgba(80,180,255,0.22), transparent);
-    animation: uqBtnShimmerRTL 3.5s cubic-bezier(0.4,0,0.6,1) infinite;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to right, transparent, rgba(255,87,0,0.12), rgba(255,160,80,0.18), rgba(255,87,0,0.12), transparent);
+    transform: translateX(100%);
+    transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
     pointer-events: none;
-    border-radius: 16px;
 }
-@keyframes uqBtnShimmerRTL {
-    0%   { right: -80%; }
-    65%  { right: 130%; }
-    100% { right: 130%; }
-}
+.uq-welcome-btn:hover::before { transform: translateX(-100%); }
 .uq-welcome-btn::after { display: none; }
-
 .uq-welcome-btn:hover {
-    border-color: rgba(0, 210, 255, 0.9);
+    border-color: rgba(255,87,0,0.82);
+    background: rgba(255,87,0,0.1);
     color: #ffffff !important;
-    box-shadow: 0 0 42px rgba(0, 190, 255, 0.6), 0 4px 18px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12);
     transform: translateY(-2px) scale(1.02);
-    animation: none;
+    box-shadow: 0 0 22px rgba(255,87,0,0.25), 0 4px 14px rgba(0,0,0,0.45);
 }
-.uq-welcome-btn:active { transform: scale(0.97); animation: none; }
+.uq-welcome-btn:active { transform: scale(0.97); box-shadow: none; }
 
 /* Short text: always visible. Full text: hidden until expanded */
 .uq-wbtn-short {
@@ -2947,10 +2957,11 @@ body.dark-mode .card-body {
 .uq-welcome-btn[aria-expanded="true"] .uq-wbtn-full { display: inline; opacity: 1; }
 .uq-welcome-btn[aria-expanded="true"] .uq-wbtn-arrow { transform: rotate(180deg); color: #fff; }
 .uq-welcome-btn[aria-expanded="true"] {
-    border-color: rgba(0, 200, 255, 0.8);
+    border-color: rgba(255,87,0,0.85);
     border-radius: 16px;
     color: #ffffff !important;
-    box-shadow: 0 0 42px rgba(0, 190, 255, 0.55), 0 4px 18px rgba(0,0,0,0.5);
+    background: rgba(255,87,0,0.12);
+    box-shadow: 0 0 28px rgba(255,87,0,0.3), 0 4px 14px rgba(0,0,0,0.45);
     animation: none;
 }
 
@@ -2959,19 +2970,20 @@ body.dark-mode .card-body {
     100% { opacity: 1;   transform: translateX(-50%) scale(1.15); }
 }
 
-/* ── Title wrap — row: [dots] [button] [tagline] ── */
+/* ── Title wrap — Option D row ── */
 #uq-welcome-title-wrap {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    gap: 10px;
-    margin-bottom: 0;
+    gap: 12px;
+    padding: 6px 16px 8px;
     flex-wrap: nowrap;
     position: relative;
     z-index: 1;
     flex-shrink: 0;
     text-align: center;
+    box-sizing: border-box;
 }
 
 /* ── Main hero title ── */
@@ -2990,37 +3002,28 @@ body.dark-mode .card-body {
     50%       { text-shadow: 0 0 50px rgba(77,217,254,0.85), 0 4px 16px rgba(0,0,0,0.5); }
 }
 
-/* ── Animated dots beside title ── */
-.uq-hero-dot {
-    font-size: 1rem;
-    display: inline-block;
-    animation: uqDotBounce 1.2s ease-in-out infinite;
-    line-height: 1;
-}
-.uq-hero-dot:nth-child(1) { color: #FC6301; }
-.uq-hero-dot:nth-child(2) { color: #FEB301; animation-delay: 0.3s; }
-.uq-hero-dot:nth-child(3) { color: #4DD9FE; animation-delay: 0.6s; }
-@keyframes uqDotBounce {
-    0%, 100% { transform: translateY(0);    opacity: 1; }
-    50%       { transform: translateY(-6px); opacity: 0.5; }
-}
+/* ── Old hero dot styles removed — replaced by .uq-d-dot ── */
+.uq-hero-dot { display: none; }
 
 /* ── Looping tagline carousel ── */
 #uq-welcome-tagline-anim {
     position: relative;
     height: 28px;
-    overflow: visible;
+    overflow: hidden;
     margin-bottom: 0;
     z-index: 1;
-    clip-path: inset(0 -200px 0 -200px);
-    min-width: 160px;
+    min-width: 120px;
     max-width: 340px;
     flex: 1;
+    text-align: center;
+    direction: ltr;
 }
 .uq-tagline-item {
     position: absolute;
     width: 100%;
     text-align: center;
+    direction: ltr;
+    unicode-bidi: plaintext;
     font-family: 'UniQAIDAR_Peregraf 02', Tahoma, Arial, sans-serif !important;
     font-weight: normal !important;
     font-size: clamp(0.72rem, 1.8vw, 0.85rem);
@@ -3043,13 +3046,13 @@ body.dark-mode .card-body {
     transform: translateY(-18px);
 }
 
-/* ── Full-width complementary accent bar — hidden (incorporated into hero border) ── */
+/* ── Bottom hairline of hero ── */
 #uq-welcome-accent-bar {
-    display: none;
-}
-@keyframes uqAccentSlide {
-    0%   { background-position: 100% 0; }
-    100% { background-position: -100% 0; }
+    display: block;
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(to left, rgba(255,87,0,0) 0%, rgba(255,87,0,0.22) 40%, rgba(255,87,0,0) 100%);
+    flex-shrink: 0;
 }
 
 /* ══ BODY (always visible) ════════════════════════════════ */
@@ -3075,7 +3078,7 @@ body.dark-mode .card-body {
     font-family: 'UniQAIDAR_Peregraf 01', Tahoma, Arial, sans-serif !important;
     font-weight: normal !important;
     font-size: 1.35rem;
-    color: #016CE6;
+    color: #ff5700;
     margin: 0 0 8px;
     line-height: 1.6;
     text-align: right;
@@ -3084,7 +3087,7 @@ body.dark-mode .card-body {
     font-family: 'UniQAIDAR_Peregraf 01', Tahoma, Arial, sans-serif !important;
     font-weight: normal !important;
     font-size: 1rem;
-    color: #016CE6;
+    color: #ff5700;
     margin: 18px 0 8px;
     line-height: 1.6;
     text-align: right;
@@ -3159,7 +3162,7 @@ body:not(.dark-mode) #uq-welcome-section p,
 body:not(.dark-mode) #uq-welcome-section li { color: #e0e0e0; }
 body:not(.dark-mode) #uq-welcome-section strong { color: #FEB301; }
 body:not(.dark-mode) #uq-welcome-section h1,
-body:not(.dark-mode) #uq-welcome-section h2 { color: #5ba3ff; }
+body:not(.dark-mode) #uq-welcome-section h2 { color: #ff5700; }
 
 /* ── DARK MODE overrides for welcome section ── */
 body.dark-mode #uq-welcome-body {
@@ -3170,14 +3173,46 @@ body.dark-mode #uq-welcome-section p,
 body.dark-mode #uq-welcome-section li { color: #e0e0e0 !important; }
 body.dark-mode #uq-welcome-section strong { color: #FEB301 !important; }
 body.dark-mode #uq-welcome-section h1,
-body.dark-mode #uq-welcome-section h2 { color: #5ba3ff !important; }
+body.dark-mode #uq-welcome-section h2 { color: #ff6a20 !important; }
 
 /* ── MOBILE ── */
 @media (max-width: 600px) {
-    #uq-welcome-hero { padding: 5px 8px; }
-    #uq-welcome-title-wrap { flex-wrap: wrap; gap: 6px; }
-    #uq-welcome-tagline-anim { min-width: 100%; height: 20px; max-width: 100%; order: 3; }
-    .uq-tagline-item { font-size: 0.7rem; white-space: normal; }
+    #uq-welcome-hero { }
+    #uq-welcome-title-wrap {
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 5px 10px 6px;
+        justify-content: center;
+        align-items: center;
+    }
+    /* Dots + button sit on same first line, tagline wraps to its own row below */
+    .uq-d-dots { flex-shrink: 0; }
+    .uq-welcome-btn {
+        flex-shrink: 0 !important;
+        font-size: 0.78rem !important;
+        padding: 4px 12px !important;
+        max-width: calc(100vw - 90px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .uq-wbtn-short { display: inline !important; }
+    #uq-welcome-tagline-anim {
+        order: 10;
+        width: 100%;
+        max-width: 100%;
+        flex: none;
+        height: 22px;
+        text-align: center;
+        direction: ltr;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .uq-tagline-item { font-size: 0.68rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center !important; left: 0 !important; right: 0 !important; padding: 0 8px; }
+    .uq-d-dots { gap: 3px; }
+    .uq-d-dot { width: 4px; height: 4px; }
     #uq-welcome-section h1 { font-size: 1.05rem; }
     #uq-welcome-section h2 { font-size: 0.9rem; }
     #uq-welcome-section p,
@@ -3191,6 +3226,7 @@ body.dark-mode #uq-welcome-section h2 { color: #5ba3ff !important; }
 function uqExpandWelcome(btn) {
     var expanded = btn.getAttribute('aria-expanded') === 'true';
     btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    btn.title = expanded ? 'کلیک بکە - بەخێربێیت' : 'داخستن';
     var body = document.getElementById('uq-welcome-body');
     if (body) {
         if (expanded) {
@@ -3247,10 +3283,18 @@ function uqWelcomeToggle() {}
 
     <!-- Desktop: collapsible dropdown — populated dynamically from marquee-content -->
     <div class="filter-desktop" id="filter-desktop">
-        <div id="desktop-toggle" onclick="toggleDesktopCats()" style="width:100%;background:#1a1a1a;border:none;border-top:1px solid rgba(255,255,255,0.12);margin-top:0;border-bottom:1px solid rgba(255,255,255,0.1);color:#fff;padding:10px 20px;font-size:1.1rem;font-weight:normal;display:flex;align-items:center;direction:rtl;cursor:pointer;font-family:'UniQAIDAR_Peregraf 01',Tahoma,sans-serif;gap:10px;box-sizing:border-box;">
-            <span style="font-size:1rem;">&#9776;</span>
-            <span id="desktop-active-label" style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></span>
-            <span id="cat-dl-inline-wrap" style="display:none;align-items:center;gap:8px;flex-shrink:0;" onclick="event.stopPropagation()">
+        <div id="desktop-toggle" style="width:100%;background:#111;border:none;border-top:1px solid rgba(255,255,255,0.08);margin-top:0;border-bottom:1px solid rgba(255,255,255,0.08);color:#fff;padding:0;font-size:1.2rem;font-weight:normal;display:flex;align-items:center;direction:rtl;font-family:'UniQAIDAR_Peregraf 01',Tahoma,sans-serif;box-sizing:border-box;height:60px;">
+            <!-- Top orange fade line -->
+            <!-- Hamburger + label: clickable zone -->
+            <button onclick="toggleDesktopCats()" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;height:100%;background:transparent;border:none;color:#fff;padding:0 10px;cursor:pointer;direction:rtl;font-family:'UniQAIDAR_Peregraf 01',Tahoma,sans-serif;font-size:1.2rem;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
+                <span style="font-size:1.1rem;opacity:0.65;flex-shrink:0;">&#9776;</span>
+                <span id="desktop-active-label" style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;font-size:1.2rem;"></span>
+                <span class="toggle-arrow" style="transition:transform 0.25s;font-size:0.75rem;flex-shrink:0;opacity:0.5;margin-right:auto;">&#9660;</span>
+            </button>
+            <!-- Vertical divider -->
+            <span style="width:1px;height:22px;background:rgba(255,255,255,0.12);flex-shrink:0;align-self:center;"></span>
+            <!-- Cat download section -->
+            <span id="cat-dl-inline-wrap" style="display:none;align-items:center;gap:6px;flex-shrink:0;padding:0 12px;" onclick="event.stopPropagation()">
                 <button id="cat-dl-btn" onclick="event.stopPropagation();downloadCategoryFonts()" title="کلیک بکە">
                     <span class="modern-dl-icon">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -3260,34 +3304,61 @@ function uqWelcomeToggle() {}
                     </span>
                     <span id="cat-dl-btn-text">داگرتنی تەواوی فۆنتەکانی ئەم بەشە</span>
                 </button>
-                <span id="cat-dl-progress-inline" style="display:none;font-size:0.78rem;color:#ccc;background:rgba(0,5,20,0.95);border-radius:7px;padding:4px 10px;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis;"></span>
+                <span id="cat-dl-progress-inline" style="display:none;font-size:0.78rem;color:#ccc;background:rgba(0,5,20,0.95);border-radius:7px;padding:4px 10px;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis;"></span>
             </span>
-            <span class="toggle-arrow" style="transition:transform 0.25s;font-size:0.8rem;flex-shrink:0;">&#9660;</span>
+            <!-- Vertical divider 2 — separates scaler -->
+            <span id="uq-scaler-vd" style="width:1px;height:22px;background:rgba(255,255,255,0.12);flex-shrink:0;align-self:center;"></span>
+            <!-- Font size scaler -->
+            <span id="uq-scaler-wrap" style="display:flex;align-items:center;gap:7px;padding:0 12px;flex-shrink:0;height:100%;" onclick="event.stopPropagation()">
+                <span style="font-size:1.2rem;color:rgba(180,180,180,0.6);white-space:nowrap;flex-shrink:0;">قەبارەی فۆنت:</span>
+                <input type="range" id="font-size-slider" min="12" max="90" value="32"
+                    style="width:90px;cursor:pointer;flex-shrink:0;"
+                    oninput="changeFontSize(this.value);uqUpdateSliderFill(this);">
+                <span id="size-label" style="color:#ff5700;font-family:monospace;font-size:1.2rem;min-width:40px;direction:ltr;">32px</span>
+                <button id="size-reset-btn" onclick="changeFontSize(32);var sl=document.getElementById('font-size-slider');sl.value=32;uqUpdateSliderFill(sl);" title="ڕیسێتکردنی قەبارەی فۆنت"
+                    style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(200,200,200,0.7);border-radius:6px;padding:1px 10px;cursor:pointer;font-size:1.2rem;line-height:1;transition:background 0.2s,color 0.2s;white-space:nowrap;font-family:inherit;height:42px;box-sizing:border-box;">ڕیسێت</button>
+            </span>
         </div>
         <div class="filter-mobile-panel" id="desktop-panel"></div>
     </div>
 
     <!-- Mobile: collapsible dropdown — populated dynamically from marquee-content -->
     <div class="filter-mobile" id="filter-mobile">
-        <button class="filter-mobile-toggle" id="mobile-toggle" onclick="toggleMobileCats()">
-            <span class="toggle-label">
-                <span>&#9776;</span>
-                <span id="mobile-active-label">نوێ</span>
-            </span>
-            <span class="toggle-arrow">&#9660;</span>
-        </button>
-        <!-- Mobile cat-download bar: full-width, below toggle row -->
-        <div id="cat-dl-mobile-wrap" style="display:none;direction:rtl;background:#1a1a1a;padding:8px 14px;flex-direction:column;gap:6px;border-bottom:1px solid rgba(255,51,0,0.3);">
-            <button id="cat-dl-btn-mobile" onclick="downloadCategoryFonts()" title="کلیک بکە" style="width:100%;">
-                <span class="modern-dl-icon">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path class="base-part" d="M19 18H5V19H19V18Z" />
-                        <path class="arrow-part" d="M12 15L17 10H14V4H10V10H7L12 15Z" />
-                    </svg>
-                </span>
-                <span id="cat-dl-btn-text-mobile">داگرتنی تەواوی فۆنتەکانی ئەم بەشە</span>
+        <!-- Row 1: hamburger+label+arrow | divider | cat-download -->
+        <div id="mob-filter-row1" style="display:flex;align-items:center;height:54px;direction:rtl;background:#111;border-top:1px solid rgba(255,255,255,0.08);overflow:visible;">
+            <!-- Hamburger + label: full flex, min-width:0 so label can shrink -->
+            <button class="filter-mobile-toggle" id="mobile-toggle" onclick="toggleMobileCats()"
+                style="flex:1;min-width:0;height:100%;padding:0 11px;display:flex;align-items:center;gap:7px;border:none;background:transparent;color:#fff;cursor:pointer;direction:rtl;font-family:'UniQAIDAR_Peregraf 01',Tahoma,sans-serif;overflow:hidden;">
+                <span style="font-size:1rem;opacity:0.65;flex-shrink:0;">&#9776;</span>
+                <span id="mobile-active-label" style="flex:1;min-width:0;white-space:nowrap;overflow:visible;font-size:1.2rem;text-align:right;display:block;"></span>
+                <span class="toggle-arrow" style="font-size:0.72rem;opacity:0.5;flex-shrink:0;margin-right:4px;">&#9660;</span>
             </button>
-            <div id="cat-dl-progress-mobile" style="display:none;font-size:0.8rem;color:#ccc;background:rgba(0,5,20,0.95);border-radius:7px;padding:5px 10px;text-align:center;width:100%;box-sizing:border-box;"></div>
+            <!-- Divider -->
+            <span style="width:1px;height:22px;background:rgba(255,255,255,0.12);flex-shrink:0;align-self:center;"></span>
+            <!-- Cat download — compact, fixed width, no shrink -->
+            <span id="cat-dl-mobile-wrap" style="display:none;align-items:center;flex-shrink:0;padding:0 8px;" onclick="event.stopPropagation()">
+                <button id="cat-dl-btn-mobile" onclick="downloadCategoryFonts()" title="کلیک بکە"
+                    style="display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;max-width:52vw;overflow:visible;">
+                    <span class="modern-dl-icon" style="width:13px;height:13px;flex-shrink:0;">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path class="base-part" d="M19 18H5V19H19V18Z" />
+                            <path class="arrow-part" d="M12 15L17 10H14V4H10V10H7L12 15Z" />
+                        </svg>
+                    </span>
+                    <span id="cat-dl-btn-text-mobile" class="mob-dl-text">داگرتنی بەش</span>
+                </button>
+                <div id="cat-dl-progress-mobile" style="display:none;font-size:0.72rem;color:#ccc;background:rgba(0,5,20,0.95);border-radius:7px;padding:3px 7px;white-space:nowrap;max-width:100px;overflow:hidden;text-overflow:ellipsis;"></div>
+            </span>
+        </div>
+        <!-- Row 2: font size scaler — full width, always visible -->
+        <div id="mob-filter-row2" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:5px 12px;background:#0d0d0d;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.08);direction:rtl;" onclick="event.stopPropagation()">
+            <span style="font-size:0.72rem;color:rgba(170,170,170,0.65);white-space:nowrap;flex-shrink:0;">قەبارەی فۆنت:</span>
+            <input type="range" id="font-size-slider-mobile" min="12" max="90" value="32"
+                style="flex:1;max-width:150px;min-width:60px;cursor:pointer;"
+                oninput="changeFontSize(this.value);document.getElementById('font-size-slider').value=this.value;uqUpdateSliderFill(this);uqUpdateSliderFill(document.getElementById('font-size-slider'));">
+            <span id="size-label-mobile" style="color:#ff5700;font-family:monospace;font-size:0.72rem;min-width:28px;direction:ltr;flex-shrink:0;">32px</span>
+            <button onclick="changeFontSize(32);['font-size-slider','font-size-slider-mobile'].forEach(function(id){var s=document.getElementById(id);if(s){s.value=32;uqUpdateSliderFill(s);}});"
+                style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);color:rgba(190,190,190,0.7);border-radius:5px;padding:2px 7px;cursor:pointer;font-size:0.68rem;white-space:nowrap;font-family:inherit;flex-shrink:0;">ڕیسێت</button>
         </div>
         <div class="filter-mobile-panel" id="mobile-panel"></div>
     </div>
@@ -3295,31 +3366,51 @@ function uqWelcomeToggle() {}
 </div>
 
 
-<!-- ── سلایدەری قەبارەی فۆنت ── -->
-<div id="size-bar" style="
-    background:#1a1a1a; padding:8px 16px; display:flex;
-    align-items:center; gap:8px; justify-content:center;
-    flex-wrap:nowrap; direction:rtl; overflow:hidden;
-    max-width:100vw; box-sizing:border-box;
-    border-top:1px solid rgba(255,107,53,0.12);
-">
-    <span style="color:#aaa;font-size:0.82rem;white-space:nowrap">قەبارەی فۆنت:</span>
-    <input type="range" id="font-size-slider" min="12" max="90" value="32"
-        style="width:160px;accent-color:#ff5700;cursor:pointer"
-        oninput="changeFontSize(this.value)">
-    <span id="size-label" style="color:#ff5700;font-family:monospace;font-size:0.82rem;min-width:38px">32px</span>
-    <button id="size-reset-btn" onclick="changeFontSize(32); document.getElementById('font-size-slider').value=32;"
-        title="ڕیسێتکردنی قەبارەی فۆنت"
-        style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#ccc;
-        border-radius:12px;padding:3px 10px;cursor:pointer;font-size:0.75rem;transition:background 0.2s,color 0.2s;">ڕیسێت</button>
-</div>
-
+<!-- size-bar removed — scaler now lives inside filter-container toggle row -->
 <!-- Trending sort bar removed per update — category now auto-sorted by Cloudflare download stats -->
 <style>
 #size-reset-btn:hover, #size-reset-btn:active {
-    background: rgba(255,255,255,0.2) !important;
+    background: rgba(255,255,255,0.18) !important;
     color: #fff !important;
-    border-color: rgba(255,255,255,0.4) !important;
+    border-color: rgba(255,255,255,0.35) !important;
+}
+/* RTL-correct slider fill — fill from RIGHT for RTL */
+#font-size-slider, #font-size-slider-mobile {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 3px;
+    border-radius: 3px;
+    outline: none;
+    background: linear-gradient(to left, #ff5700 0%, #ff5700 var(--uq-sf, 26%), rgba(255,255,255,0.15) var(--uq-sf, 26%), rgba(255,255,255,0.15) 100%);
+}
+#font-size-slider::-webkit-slider-thumb,
+#font-size-slider-mobile::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #ff5700;
+    border: 2px solid #111;
+    cursor: pointer;
+    box-shadow: 0 0 0 3px rgba(255,87,0,0.28);
+}
+#font-size-slider::-moz-range-thumb,
+#font-size-slider-mobile::-moz-range-thumb {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #ff5700;
+    border: 2px solid #111;
+    cursor: pointer;
+}
+/* Mobile download button text */
+#cat-dl-btn-mobile {
+    max-width: 52vw;
+    overflow: visible;
+}
+.mob-dl-text {
+    overflow: visible;
+    white-space: nowrap;
+    direction: rtl;
+    line-height: 1.4;
 }
 </style>
 <!-- Hidden marker for admin panel to read/write category download button label -->
@@ -3344,26 +3435,38 @@ let fonts = []; // loaded async from fonts.json
 
 // ── سلایدەری قەبارەی فۆنت ──────────────────────────────
 function changeFontSize(val) {
-    document.getElementById('size-label').textContent = val + 'px';
+    var label = document.getElementById('size-label');
+    if (label) label.textContent = val + 'px';
+    var labelM = document.getElementById('size-label-mobile');
+    if (labelM) labelM.textContent = val + 'px';
     document.querySelectorAll('.preview').forEach(function(p) {
-        // Update ALL previews — headline and paragraph mode both scale with slider
         p.style.fontSize = val + 'px';
     });
     try { sessionStorage.setItem('uq_fontsize', val); } catch(e) {}
+}
+// RTL fill: percentage from RIGHT = (val-min)/(max-min)*100
+function uqUpdateSliderFill(sl) {
+    if (!sl) return;
+    var min = parseFloat(sl.min) || 12;
+    var max = parseFloat(sl.max) || 90;
+    var val = parseFloat(sl.value) || 32;
+    var pct = ((val - min) / (max - min) * 100).toFixed(1) + '%';
+    sl.style.setProperty('--uq-sf', pct);
 }
 
 // ── ئەلێمێنتە سەرەکییەکان ──────────────────────────────
 const grid  = document.getElementById('font-grid');
 const input = document.getElementById('test-input');
 
-// Restore saved font size
+// Restore saved font size and init slider fills
 (function() {
     try {
-        var saved = sessionStorage.getItem('uq_fontsize');
-        if (saved) {
-            var sl = document.getElementById('font-size-slider');
-            if (sl) { sl.value = saved; changeFontSize(saved); }
-        }
+        var saved = sessionStorage.getItem('uq_fontsize') || '32';
+        var sl  = document.getElementById('font-size-slider');
+        var slM = document.getElementById('font-size-slider-mobile');
+        if (sl)  { sl.value  = saved; uqUpdateSliderFill(sl); }
+        if (slM) { slM.value = saved; uqUpdateSliderFill(slM); }
+        changeFontSize(saved);
     } catch(e) {}
 })();
 
@@ -3937,7 +4040,7 @@ function updateCatDownloadBar(filtered, catId) {
     var textEl  = document.getElementById('cat-dl-btn-text');
     var textElM = document.getElementById('cat-dl-btn-text-mobile');
     if (textEl)  textEl.textContent  = labelTxt;
-    if (textElM) textElM.textContent = labelTxt;
+    if (textElM) textElM.textContent = 'داگرتنی بەش';
 
     if (filtered.length === 0) {
         if (wrap)       wrap.style.display = 'none';
@@ -3947,7 +4050,7 @@ function updateCatDownloadBar(filtered, catId) {
     if (prog)  { prog.textContent  = ''; prog.style.display  = 'none'; }
     if (progM) { progM.textContent = ''; progM.style.display = 'none'; }
     if (wrap)       wrap.style.display = 'flex';
-    if (mobileWrap) mobileWrap.style.display = 'flex';
+    if (mobileWrap) { mobileWrap.style.display = 'inline-flex'; mobileWrap.style.alignItems = 'center'; }
 }
 
 // ── Download all fonts of current category ───────────────
@@ -4246,42 +4349,75 @@ function applyUrlParams() {
 }
 
 // ── Auto-fit mobile category label font size ────────────
+// Strategy: use a real hidden DOM probe element so the actual loaded font
+// (UniQAIDAR_Peregraf 01) renders and gives true pixel widths — canvas
+// measureText falls back to system fonts and underestimates Kurdish text width.
 function fitMobileLabel() {
-    if (window.innerWidth > 768) return; // mobile only
+    if (window.innerWidth > 768) return;
     var toggle = document.getElementById('mobile-toggle');
     var label  = document.getElementById('mobile-active-label');
     if (!toggle || !label) return;
 
+    // Full text including count badge text (e.g. "فۆنتەکانی عەلی بە شێوازی یونیکۆد (18)")
     var text = label.textContent || '';
     if (!text.trim()) return;
 
-    // Measure actual widths from DOM for accuracy
+    // ── Step 1: measure available width ──────────────────
     var arrow     = toggle.querySelector('.toggle-arrow');
-    var hamburger = toggle.querySelector('.toggle-label > span:first-child');
-    var toggleW   = toggle.getBoundingClientRect().width;
-    var arrowW    = arrow     ? arrow.getBoundingClientRect().width     : 20;
-    var hambW     = hamburger ? hamburger.getBoundingClientRect().width : 20;
+    var hamburger = toggle.querySelector('span:first-child');
 
-    // Subtract: both icons + gaps + padding + 20px safety buffer so text never touches arrow
-    var available = toggleW - arrowW - hambW - 10 - 32 - 20;
-    if (available <= 0) return;
+    // Shrink label to nothing so it doesn't affect toggle's layout width
+    var prevSize = label.style.fontSize;
+    label.style.fontSize = '1px';
+    label.style.visibility = 'hidden';
 
-    var maxPx = 19;  // ~1.1rem — largest comfortable size
-    var minPx = 10;  // floor
+    var toggleW = toggle.getBoundingClientRect().width;
+    var arrowW  = arrow     ? arrow.getBoundingClientRect().width     : 18;
+    var hambW   = hamburger ? hamburger.getBoundingClientRect().width : 18;
 
-    // Use canvas to measure text width accurately (font-independent)
-    var canvas = fitMobileLabel._canvas || (fitMobileLabel._canvas = document.createElement('canvas'));
-    var ctx = canvas.getContext('2d');
+    label.style.fontSize = prevSize || '20px';
+    label.style.visibility = '';
 
-    // Binary search for the perfect size
+    // padding 11px each side + gap 7px after hamburger + gap 7px before arrow + 2px safety
+    var available = toggleW - hambW - arrowW - 11 - 11 - 7 - 7 - 2;
+    if (available <= 20) { label.style.fontSize = '9px'; return; }
+
+    // ── Step 2: probe element measures real rendered font width ──
+    var probe = fitMobileLabel._probe;
+    if (!probe) {
+        probe = document.createElement('span');
+        probe.style.cssText = [
+            'position:absolute',
+            'top:-9999px',
+            'left:-9999px',
+            'visibility:hidden',
+            'white-space:nowrap',
+            'font-family:"UniQAIDAR_Peregraf 01",Tahoma,sans-serif',
+            'font-weight:normal',
+            'pointer-events:none',
+            'padding:0',
+            'margin:0',
+            'border:0'
+        ].join(';');
+        document.body.appendChild(probe);
+        fitMobileLabel._probe = probe;
+    }
+    probe.textContent = text;
+
+    // ── Step 3: binary search using real DOM measurement ──
+    var maxPx = 20;
+    var minPx = 9;
     var lo = minPx, hi = maxPx;
+
     for (var i = 0; i < 20; i++) {
-        var mid = (lo + hi) / 2;
-        ctx.font = mid + 'px "UniQAIDAR_Peregraf 01", Tahoma, sans-serif';
-        var w = ctx.measureText(text).width;
+        var mid = Math.round((lo + hi) / 2 * 10) / 10;
+        probe.style.fontSize = mid + 'px';
+        var w = probe.getBoundingClientRect().width;
         if (w <= available) { lo = mid; } else { hi = mid; }
     }
-    label.style.fontSize = Math.min(lo, maxPx) + 'px';
+
+    // Floor to be safe, never round up
+    label.style.fontSize = Math.floor(lo) + 'px';
 }
 
 // Re-run fitMobileLabel after custom font is guaranteed loaded
@@ -4713,32 +4849,32 @@ window.addEventListener('click', function(e) {
             پڕۆژەی یونی‌قەیدار لە ساڵی ٢٠٠٩ دەستی پێکرد، کاتێک قەیدار ڕەحیم یەکەم گورزەی فۆنتەکانی کوردی بڵاوکردەوە. ئامانجەکە یەک بوو — دروستکردنی فۆنتی کوردی بەکوالیتی بەرز کە بتوانێت لەگەڵ سیستەمی یونیکۆد کار بکات و ئاسانکاری بۆ کارەکانی دیزاین و نووسینی کوردی بکات.
         </p>
 
-        <div id="about-features-box" style="background:linear-gradient(135deg,#f0f6ff,#e8f0fe);border-radius:16px;padding:20px 24px;margin:18px 0;text-align:right;">
-            <div id="about-features-title" style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;font-size:1rem;color:#1a56db;margin-bottom:14px;border-bottom:2px solid #c7d9ff;padding-bottom:8px;">
+        <div id="about-features-box" style="background:linear-gradient(135deg,#1a1008,#1f1208);border-radius:16px;padding:20px 24px;margin:18px 0;text-align:right;">
+            <div id="about-features-title" style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;font-size:1rem;color:#ff5700;margin-bottom:14px;border-bottom:1px solid rgba(255,87,0,0.3);padding-bottom:8px;">
                 ✦ تایبەتمەندییە سەرەکییەکان
             </div>
             <div style="display:flex;flex-direction:column;gap:10px;">
                 <div style="display:flex;align-items:flex-start;gap:10px;color:#2d3748;">
-                    <span id="about-feat1-icon" style="color:#1a56db;font-size:1.1rem;flex-shrink:0;">🎨</span>
+                    <span id="about-feat1-icon" style="color:#ff5700;font-size:1.1rem;flex-shrink:0;">🎨</span>
                     <span id="about-feat1-text" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;text-align:justify;text-align-last:right;direction:rtl;display:block;"><strong style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;">گونجاو بۆ گشت بوارەکان:</strong> لە دیزاینی گرافیکەوە تا نووسینی دەقی درێژ.</span>
                 </div>
                 <div style="display:flex;align-items:flex-start;gap:10px;color:#2d3748;">
-                    <span id="about-feat2-icon" style="color:#1a56db;font-size:1.1rem;flex-shrink:0;">✒️</span>
+                    <span id="about-feat2-icon" style="color:#ff5700;font-size:1.1rem;flex-shrink:0;">✒️</span>
                     <span id="about-feat2-text" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;text-align:justify;text-align-last:right;direction:rtl;display:block;"><strong style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;">دیزاینی مۆدێرن:</strong> هەر فۆنتێک بە وردی دیزاین کراوە بۆ ئەوەی لە شاشەی دیجیتاڵ و چاپدا جوان بکاتەوە.</span>
                 </div>
                 <div style="display:flex;align-items:flex-start;gap:10px;color:#2d3748;">
-                    <span id="about-feat3-icon" style="color:#1a56db;font-size:1.1rem;flex-shrink:0;">🌐</span>
+                    <span id="about-feat3-icon" style="color:#ff5700;font-size:1.1rem;flex-shrink:0;">🌐</span>
                     <span id="about-feat3-text" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;text-align:justify;text-align-last:right;direction:rtl;display:block;"><strong style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;">یونیکۆدی تەواو:</strong> هەموو فۆنتەکان Unicode TTF-ن و بەبێ کێشە لە هەموو ئامێر و بەرنامەکاندا کار دەکەن.</span>
                 </div>
                 <div style="display:flex;align-items:flex-start;gap:10px;color:#2d3748;">
-                    <span id="about-feat4-icon" style="color:#1a56db;font-size:1.1rem;flex-shrink:0;">🏆</span>
+                    <span id="about-feat4-icon" style="color:#ff5700;font-size:1.1rem;flex-shrink:0;">🏆</span>
                     <span id="about-feat4-text" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;text-align:justify;text-align-last:right;direction:rtl;display:block;">زیاتر لە <strong style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;">١٦ ساڵ</strong> مێژووی بەردەوامی دروستکردن و گەشەپێدانی فۆنتی کوردی.</span>
                 </div>
             </div>
         </div>
 
-        <div id="about-footer-bar" style="background:rgba(0,153,255,0.08);border-radius:12px;padding:14px 18px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border:1px solid rgba(0,153,255,0.2);">
-            <span id="about-launch-date" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;color:#111111;font-size:0.9rem;">🗓 یەکەم گورزە: مانگی ئابی ساڵی ٢٠٠٩</span>
+        <div id="about-footer-bar" style="background:rgba(255,87,0,0.07);border-radius:12px;padding:14px 18px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border:1px solid rgba(255,87,0,0.18);">
+            <span id="about-launch-date" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;color:#e0e0e0;font-size:0.9rem;">🗓 یەکەم گورزە: مانگی ئابی ساڵی ٢٠٠٩</span>
             <span id="about-developer" style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;color:#ff5700;font-size:0.9rem;">گەشەپێدەر: قەیدار ڕەحیم</span>
         </div>
         </div><!-- /modal-inner-scroll -->
