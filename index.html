@@ -5406,30 +5406,45 @@ function toggleParaPreview(btn, fontName) {
     }
 
     // ── 5. Ghost-text overlay ─────────────────────────────────────────────
-    //  RTL strategy: the ghost <span> sits BEFORE (in DOM, which is visually
-    //  after for LTR but before for RTL) the input value, rendered as a
-    //  sibling element positioned absolutely inside the input wrapper.
-    //  We measure the text width and position it to the left of the caret
-    //  (which in an RTL input means visually to the right-end — the continuation
-    //  direction for Arabic/Kurdish script).
+    //  RTL fix: In a RTL input, text grows from the RIGHT inward toward LEFT.
+    //  The caret sits at the LEFT edge of the typed text.
+    //  The ghost (suggestion tail) must appear immediately to the LEFT of the
+    //  caret — i.e. right where the next character would be typed.
+    //
+    //  Strategy:
+    //    1. Measure the pixel width of the typed text using an off-screen ruler.
+    //    2. The input's right-padding is ~25px (the placeholder padding).
+    //       The input's left-padding is ~50px (where the search button sits).
+    //    3. In RTL, text starts at (inputWidth - rightPad) and grows left.
+    //       So the caret's left position ≈ inputWidth - rightPad - textWidth.
+    //    4. Place ghost.style.left = caretLeft (pixels from wrapper left).
 
     var inputEl = document.getElementById('test-input');
     if (!inputEl) return;  // safety guard
 
     var wrapper = inputEl.parentElement;
     if (!wrapper) return;
-    // Wrapper needs position:relative (it already has it per existing CSS)
 
-    // Create ghost element
+    // ── Off-screen text ruler ──
+    // Mirrors the input's font so canvas measurement is accurate.
+    var _ruler = document.createElement('canvas').getContext('2d');
+    function _measureText(text) {
+        var cs = window.getComputedStyle(inputEl);
+        _ruler.font = cs.fontStyle + ' ' + cs.fontVariant + ' ' + cs.fontWeight +
+                      ' ' + cs.fontSize + ' ' + cs.fontFamily;
+        return _ruler.measureText(text).width;
+    }
+
+    // Create ghost element — initially hidden, no fixed left
     var ghost = document.createElement('span');
     ghost.id = 'uq-ghost-text';
     ghost.setAttribute('aria-hidden', 'true');
     ghost.style.cssText = [
         'position:absolute',
         'pointer-events:none',
-        'color:rgba(128,128,128,0.5)',
+        'color:rgba(150,150,150,0.55)',
         'white-space:pre',
-        'overflow:hidden',
+        'overflow:visible',
         'font-family:inherit',
         'font-size:inherit',
         'line-height:inherit',
@@ -5439,16 +5454,38 @@ function toggleParaPreview(btn, fontName) {
         'z-index:5',
         'top:50%',
         'transform:translateY(-50%)',
-        // RTL: ghost starts at the LEFT edge (visually, the text-end direction)
-        'left:60px',           // same left-padding as #search-btn area
         'direction:rtl',
-        'text-align:right',
-        'max-width:calc(100% - 120px)',
         'display:none',
     ].join(';');
     wrapper.appendChild(ghost);
 
     var _currentSuggestion = '';
+
+    // Compute where the ghost should sit (left px from wrapper left edge)
+    function _positionGhost() {
+        var val = inputEl.value;
+        if (!val) return;
+
+        var cs      = window.getComputedStyle(inputEl);
+        var padRight = parseFloat(cs.paddingRight) || 25;  // RTL text starts here
+        var padLeft  = parseFloat(cs.paddingLeft)  || 50;  // search btn side
+        var inputW   = inputEl.offsetWidth;
+
+        // Width of the typed text in pixels
+        var textW = _measureText(val);
+
+        // In RTL the text block's LEFT edge (= caret position) is:
+        //   inputRight - padRight - textWidth
+        // But we want position relative to the wrapper (same as inputEl's left):
+        var inputOffsetLeft = inputEl.offsetLeft || 0;
+        var caretLeft = inputOffsetLeft + inputW - padRight - textW;
+
+        // Clamp so ghost never overlaps the search button on the left
+        var minLeft = inputOffsetLeft + padLeft + 4;
+        caretLeft = Math.max(caretLeft, minLeft);
+
+        ghost.style.left = caretLeft + 'px';
+    }
 
     function showGhost(tail) {
         if (!tail) {
@@ -5459,6 +5496,7 @@ function toggleParaPreview(btn, fontName) {
         }
         _currentSuggestion = tail;
         ghost.textContent = tail;
+        _positionGhost();
         ghost.style.display = 'block';
     }
 
