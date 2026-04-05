@@ -972,13 +972,6 @@ footer strong {
     top: 0;
     z-index: 1000;
 }
-/* Top orange fade line on filter bar */
-.filter-container::before {
-    content: '';
-    display: block;
-    height: 2px;
-    background: linear-gradient(to left, #ff5700 0%, rgba(255,149,0,0.45) 40%, rgba(255,87,0,0) 100%);
-}
 
 /* ── Desktop: dropdown (same as mobile) ── */
 .filter-desktop {
@@ -1284,8 +1277,8 @@ footer strong {
 }
 
 .download-box {
-    background: rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(240, 247, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.06);
     border-radius: 18px;
     margin-top: 15px;
     padding: 20px 16px 24px;
@@ -1892,6 +1885,22 @@ body:not(.dark-mode) #about-launch-date { color: #444 !important; }
 body:not(.dark-mode) #about-developer { color: #ff5700 !important; }
 /* ── Light mode: main paragraph ── */
 body:not(.dark-mode) #about-content { color: #333 !important; }
+/* ── Light mode: blue-grey backgrounds for modal boxes ── */
+body:not(.dark-mode) #dm-desc {
+    background: #e4f1ff !important;
+    border: 1px solid #a8cfff !important;
+    color: #111 !important;
+}
+body:not(.dark-mode) #about-features-box {
+    background: #e4f1ff !important;
+    border: 1px solid #a8cfff !important;
+    color: #111 !important;
+}
+body:not(.dark-mode) #about-footer-bar {
+    background: #e4f1ff !important;
+    border: 1px solid #a8cfff !important;
+    color: #111 !important;
+}
 
 /* ── Dark mode: features box keeps its original dark bg ── */
 body.dark-mode #about-features-box {
@@ -1903,6 +1912,18 @@ body.dark-mode #about-feat1-text,
 body.dark-mode #about-feat2-text,
 body.dark-mode #about-feat3-text,
 body.dark-mode #about-feat4-text { color: #e0e0e0 !important; }
+body.dark-mode #dm-desc {
+    background: rgba(9, 132, 227, 0.12) !important;
+    border: 1px solid rgba(9, 132, 227, 0.45) !important;
+}
+body.dark-mode #about-features-box {
+    background: rgba(9, 132, 227, 0.12) !important;
+    border: 1px solid rgba(9, 132, 227, 0.45) !important;
+}
+body.dark-mode #about-footer-bar {
+    background: rgba(9, 132, 227, 0.12) !important;
+    border: 1px solid rgba(9, 132, 227, 0.45) !important;
+}
 body.dark-mode #pagination-bar { background: #0d0d0d !important; }
 
 #theme-toggle-btn {
@@ -2886,7 +2907,7 @@ body.dark-mode .card-body {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    border-top: 1px solid rgba(255,255,255,0.07);
+    border: none;
 }
 #uq-welcome-hero::before,
 #uq-welcome-hero::after { display: none; }
@@ -2990,6 +3011,12 @@ body.dark-mode .card-body {
     display: none;
     opacity: 0;
     transition: opacity 0.4s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    unicode-bidi: embed;
+    direction: rtl;
 }
 .uq-wbtn-arrow {
     display: inline-flex;
@@ -3102,9 +3129,9 @@ body.dark-mode .card-body {
 /* ── Bottom hairline of hero ── */
 #uq-welcome-accent-bar {
     display: block;
-    height: 1px;
+    height: 2px;
     width: 100%;
-    background: linear-gradient(to left, rgba(255,87,0,0) 0%, rgba(255,87,0,0.22) 25%, rgba(255,87,0,0.55) 50%, rgba(255,87,0,0.22) 75%, rgba(255,87,0,0) 100%);
+    background: linear-gradient(to left, rgba(255,87,0,0) 0%, rgba(255,149,0,0.55) 25%, #ff5700 50%, rgba(255,149,0,0.55) 75%, rgba(255,87,0,0) 100%);
     background-size: 200% 100%;
     flex-shrink: 0;
     animation: uqAccentBarSweep 3s linear infinite;
@@ -3211,7 +3238,6 @@ body:not(.dark-mode) #uq-welcome-hero {
 }
 body:not(.dark-mode) #uq-welcome-body {
     background: #1a1a1a;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 body:not(.dark-mode) #uq-welcome-section p,
 body:not(.dark-mode) #uq-welcome-section li { color: #e0e0e0; }
@@ -3222,7 +3248,6 @@ body:not(.dark-mode) #uq-welcome-section h2 { color: #ff5700; }
 /* ── DARK MODE overrides for welcome section ── */
 body.dark-mode #uq-welcome-body {
     background: #1a1a1a;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 body.dark-mode #uq-welcome-section p,
 body.dark-mode #uq-welcome-section li { color: #e0e0e0 !important; }
@@ -3252,6 +3277,8 @@ body.dark-mode #uq-welcome-section h2 { color: #ff6a20 !important; }
         text-overflow: ellipsis;
     }
     .uq-wbtn-short { display: inline !important; }
+    .uq-welcome-btn[aria-expanded="true"] .uq-wbtn-short { display: none !important; }
+    .uq-welcome-btn[aria-expanded="true"] .uq-wbtn-full { display: inline !important; opacity: 1 !important; }
     #uq-welcome-tagline-anim {
         order: 10;
         width: 100%;
@@ -3371,7 +3398,7 @@ function uqWelcomeToggle() {}
                     oninput="changeFontSize(this.value);uqUpdateSliderFill(this);">
                 <span id="size-label" style="color:#ff5700;font-family:monospace;font-size:1.2rem;min-width:40px;direction:ltr;">32px</span>
                 <button id="size-reset-btn" onclick="changeFontSize(32);var sl=document.getElementById('font-size-slider');sl.value=32;uqUpdateSliderFill(sl);" title="ڕیسێتکردنی قەبارەی فۆنت"
-                    style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffffff;border-radius:6px;padding:2px 8px;cursor:pointer;font-size:0.85rem;line-height:1;transition:background 0.2s,color 0.2s;white-space:nowrap;font-family:inherit;height:28px;box-sizing:border-box;">ڕیسێت</button>
+                    style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffffff;border-radius:6px;padding:3px 10px;cursor:pointer;font-size:0.92rem;line-height:1;transition:background 0.2s,color 0.2s;white-space:nowrap;font-family:inherit;height:30px;box-sizing:border-box;">ڕیسێت</button>
             </span>
         </div>
         <div class="filter-mobile-panel" id="desktop-panel"></div>
