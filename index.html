@@ -4358,7 +4358,7 @@ function fitMobileLabel() {
     var label  = document.getElementById('mobile-active-label');
     if (!toggle || !label) return;
 
-    // Full text including count badge text (e.g. "فۆنتەکانی عەلی بە شێوازی یونیکۆد (18)")
+    // Full text including count badge text
     var text = label.textContent || '';
     if (!text.trim()) return;
 
@@ -4366,20 +4366,23 @@ function fitMobileLabel() {
     var arrow     = toggle.querySelector('.toggle-arrow');
     var hamburger = toggle.querySelector('span:first-child');
 
-    // Shrink label to nothing so it doesn't affect toggle's layout width
-    var prevSize = label.style.fontSize;
+    // Shrink label to 1px so it doesn't affect layout widths during measurement
     label.style.fontSize = '1px';
     label.style.visibility = 'hidden';
 
-    var toggleW = toggle.getBoundingClientRect().width;
-    var arrowW  = arrow     ? arrow.getBoundingClientRect().width     : 18;
-    var hambW   = hamburger ? hamburger.getBoundingClientRect().width : 18;
+    // Read real rendered widths of all elements
+    var toggleRect = toggle.getBoundingClientRect();
+    var arrowRect  = arrow     ? arrow.getBoundingClientRect()     : {width: 12};
+    var hambRect   = hamburger ? hamburger.getBoundingClientRect() : {width: 18};
 
-    label.style.fontSize = prevSize || '20px';
+    label.style.fontSize = '';
     label.style.visibility = '';
 
-    // padding 11px each side + gap 7px after hamburger + gap 7px before arrow + 2px safety
-    var available = toggleW - hambW - arrowW - 11 - 11 - 7 - 7 - 2;
+    // available = toggle inner width minus hamburger and arrow actual widths minus the gap spacing
+    // toggle.getBoundingClientRect().width is the CONTENT+PADDING total
+    // button has padding:0 11px — the elements are positioned inside that padded space
+    // so: available = toggleWidth - leftPad(11) - rightPad(11) - hambW - gap(7) - arrowW - gap(7)
+    var available = toggleRect.width - 11 - 11 - hambRect.width - 7 - arrowRect.width - 7;
     if (available <= 20) { label.style.fontSize = '9px'; return; }
 
     // ── Step 2: probe element measures real rendered font width ──
@@ -4387,7 +4390,7 @@ function fitMobileLabel() {
     if (!probe) {
         probe = document.createElement('span');
         probe.style.cssText = [
-            'position:absolute',
+            'position:fixed',
             'top:-9999px',
             'left:-9999px',
             'visibility:hidden',
@@ -4404,20 +4407,20 @@ function fitMobileLabel() {
     }
     probe.textContent = text;
 
-    // ── Step 3: binary search using real DOM measurement ──
+    // ── Step 3: binary search using real DOM rendered width ──
     var maxPx = 20;
     var minPx = 9;
     var lo = minPx, hi = maxPx;
 
-    for (var i = 0; i < 20; i++) {
-        var mid = Math.round((lo + hi) / 2 * 10) / 10;
+    for (var i = 0; i < 24; i++) {
+        var mid = (lo + hi) / 2;
         probe.style.fontSize = mid + 'px';
         var w = probe.getBoundingClientRect().width;
         if (w <= available) { lo = mid; } else { hi = mid; }
     }
 
-    // Floor to be safe, never round up
-    label.style.fontSize = Math.floor(lo) + 'px';
+    // Use lo directly (it's the largest size that fits) — no floor, no extra shrink
+    label.style.fontSize = lo + 'px';
 }
 
 // Re-run fitMobileLabel after custom font is guaranteed loaded
