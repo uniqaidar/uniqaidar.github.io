@@ -1,7 +1,7 @@
 # UniQaidar — Cloudflare Pages headers
 
 /sitemap.xml
-  Content-Type: text/xml; charset=utf-8
+  Content-Type: application/xml; charset=utf-8
   X-Content-Type-Options: nosniff
 
 /robots.txt

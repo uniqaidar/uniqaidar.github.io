@@ -4720,6 +4720,25 @@ let HEADERS_SHA = '';
 const LS_KEY = 'uqadmin_cfg';
 
 // ══════════════════════════════════════════
+// Binary-safe UTF-8 ↔ Base64 utilities
+// Replaces ALL btoa(unescape(encodeURIComponent())) calls.
+// TextEncoder produces true UTF-8 bytes — no BOM, no mis-encoding.
+// ══════════════════════════════════════════
+function toBase64(str) {
+    const bytes = new TextEncoder().encode(str);
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+    return btoa(binary);
+}
+// Replaces ALL decodeURIComponent(escape(atob())) calls.
+function fromBase64(b64) {
+    const binary = atob(b64.replace(/\s/g, ''));
+    const bytes  = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return new TextDecoder('utf-8').decode(bytes);
+}
+
+// ══════════════════════════════════════════
 // Init
 // ══════════════════════════════════════════
 // ── Paragraph live preview helpers ──────────────────────
@@ -4976,12 +4995,19 @@ async function atomicSave(fontsArray, htmlContent, commitMessage) {
 
 // ── SITEMAP SELF-HEALER ──
 function healSitemapXml(xml) {
-    // Strip control characters (except tab, newline, carriage return)
-    let out = xml.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
-    // Ensure all <loc> URLs are absolute
+    let out = xml;
+    // 1. Strip ALL XML-illegal control chars: C0 except TAB/LF/CR, DEL, lone surrogates
+    out = out.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F\uD800-\uDFFF]/g, '');
+    // 2. Percent-encode any raw spaces that survived into <loc> values (illegal in URLs)
+    out = out.replace(/<loc>([^<]*)<\/loc>/g, function(_, url) {
+        return '<loc>' + url.replace(/ /g, '%20') + '</loc>';
+    });
+    // 3. Ensure all <loc> URLs are absolute
     out = out.replace(/<loc>(?!https?:\/\/)([^<]+)<\/loc>/g, '<loc>https://uniqaidar.pages.dev/$1</loc>');
-    // Trim whitespace from each line
+    // 4. Trim trailing whitespace per line
     out = out.split('\n').map(l => l.trimEnd()).join('\n');
+    // 5. THE BYTE-0 RULE: file must start exactly with '<' — strip any leading/trailing whitespace
+    out = out.trim();
     return out;
 }
 
@@ -4999,7 +5025,7 @@ async function ensureRobotsHasSitemap() {
         if (r.ok) {
             const d = await r.json();
             sha = d.sha;
-            content = decodeURIComponent(escape(atob(d.content.replace(/\s/g, ''))));
+            content = fromBase64(d.content);
         }
         const lines = content.split('\n').map(l => l.trimEnd());
         const idx   = lines.findIndex(l => l.toLowerCase().startsWith('sitemap:'));
@@ -5008,7 +5034,7 @@ async function ensureRobotsHasSitemap() {
         const newContent = lines.join('\n');
         const body = JSON.stringify({
             message: 'Auto: ensure robots.txt Sitemap URL',
-            content: btoa(unescape(encodeURIComponent(newContent))),
+            content: toBase64(newContent),
             branch:  BRANCH,
             ...(sha ? { sha } : {})
         });
@@ -5024,7 +5050,7 @@ async function ghPut(content, message) {
     // ── Auto-backup before every save ──
     try { localStorage.setItem('uq_backup', RAW); localStorage.setItem('uq_backup_time', new Date().toISOString()); } catch(e) {}
 
-    const body = JSON.stringify({ message, content: btoa(unescape(encodeURIComponent(content))), sha: SHA || undefined, branch: BRANCH });
+    const body = JSON.stringify({ message, content: toBase64(content), sha: SHA || undefined, branch: BRANCH });
     const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${FILE}`,
         { method:'PUT', headers:{ Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' }, body });
     if (!r.ok) return false;
@@ -5047,7 +5073,7 @@ async function ghGetFonts() {
 async function ghPutFonts(fontsArray, message) {
     try { localStorage.setItem('uq_fonts_backup', JSON.stringify(FONTS_RAW)); localStorage.setItem('uq_fonts_backup_time', new Date().toISOString()); } catch(e) {}
     const jsonStr = JSON.stringify(fontsArray, null, 2);
-    const body = JSON.stringify({ message, content: btoa(unescape(encodeURIComponent(jsonStr))), sha: FONTS_SHA || undefined, branch: BRANCH });
+    const body = JSON.stringify({ message, content: toBase64(jsonStr), sha: FONTS_SHA || undefined, branch: BRANCH });
     const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${FONTS_FILE}`,
         { method:'PUT', headers:{ Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' }, body });
     if (!r.ok) return false;
@@ -5078,7 +5104,7 @@ async function ghPutSitemap(xmlContent, message) {
     if (!SITEMAP_SHA) await ghGetSitemapSha();
     const body = JSON.stringify({
         message,
-        content: btoa(unescape(encodeURIComponent(xmlContent))),
+        content: toBase64(xmlContent),
         sha: SITEMAP_SHA || undefined,
         branch: BRANCH
     });
@@ -5100,7 +5126,7 @@ async function ghPutHeaders(message) {
 `# UniQaidar — Cloudflare Pages headers
 
 /sitemap.xml
-  Content-Type: text/xml; charset=utf-8
+  Content-Type: application/xml; charset=utf-8
   X-Content-Type-Options: nosniff
 
 /robots.txt
@@ -5116,7 +5142,7 @@ async function ghPutHeaders(message) {
         }
         const body = JSON.stringify({
             message,
-            content: btoa(unescape(encodeURIComponent(HEADERS_CONTENT))),
+            content: toBase64(HEADERS_CONTENT),
             branch: BRANCH,
             ...(HEADERS_SHA ? { sha: HEADERS_SHA } : {})
         });
@@ -5267,7 +5293,7 @@ async function repairRobotsTxt() {
         if (r.ok) {
             const d = await r.json();
             robotsSha = d.sha;
-            existingContent = decodeURIComponent(escape(atob(d.content.replace(/\s/g, ''))));
+            existingContent = fromBase64(d.content);
         }
         // Check if sitemap line is correct
         const lines = existingContent.split('\n').map(l => l.trimEnd());
@@ -5288,7 +5314,7 @@ async function repairRobotsTxt() {
         const newContent = lines.join('\n');
         const body = JSON.stringify({
             message: 'Fix robots.txt: ensure correct Sitemap URL',
-            content: btoa(unescape(encodeURIComponent(newContent))),
+            content: toBase64(newContent),
             branch: BRANCH,
             ...(robotsSha ? { sha: robotsSha } : {})
         });
@@ -5364,13 +5390,13 @@ async function loadIndex() {
         const d = await ghGet();
         if (!d) return false;
         SHA = d.sha;
-        RAW = decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))));
+        RAW = fromBase64(d.content);
 
         // Load fonts.json
         const fd = await ghGetFonts();
         if (fd) {
             FONTS_SHA = fd.sha;
-            try { FONTS_RAW = JSON.parse(decodeURIComponent(escape(atob(fd.content.replace(/\n/g,''))))); }
+            try { FONTS_RAW = JSON.parse(fromBase64(fd.content)); }
             catch(e2) { console.warn('fonts.json parse error:', e2); FONTS_RAW = []; }
         } else {
             FONTS_SHA = ''; FONTS_RAW = [];
@@ -7381,7 +7407,7 @@ async function updateTrending() {
 
     // Save to popular.json on GitHub
     const popularContent = JSON.stringify(top25, null, 2);
-    const encoded = btoa(unescape(encodeURIComponent(popularContent)));
+    const encoded = toBase64(popularContent);
 
     // Check if popular.json exists to get its SHA
     let popularSha = undefined;
@@ -7436,7 +7462,7 @@ async function loadPopularJson() {
         if (!r.ok) { alert2(al, '❌ popular.json نەدۆزرایەوە لە GitHub.', 'err'); return; }
         const d = await r.json();
         _popularJsonSha = d.sha;
-        const decoded = decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))));
+        const decoded = fromBase64(d.content);
         _trendingList = JSON.parse(decoded).filter(n => typeof n === 'string' && n.trim()).slice(0, 25);
         buildTrendingList();
         alert2(al, `✅ بارکرا! ${_trendingList.length} فۆنت.`, 'ok');
@@ -7526,7 +7552,7 @@ async function savePopularJson() {
     if (!_trendingList.length) return alert2(al, '⚠️ لیستەکە بووە. تکایە فۆنتی زیاد بکە.', 'inf');
     alert2(al, 'سەیڤ دەکرێت...', 'inf');
     const popularContent = JSON.stringify(_trendingList, null, 2);
-    const encoded = btoa(unescape(encodeURIComponent(popularContent)));
+    const encoded = toBase64(popularContent);
     if (!_popularJsonSha) {
         try {
             const chk = await fetch(
