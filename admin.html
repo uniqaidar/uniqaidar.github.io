@@ -970,6 +970,151 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 <div id="health-results" style="display:none;margin-top:12px;max-height:300px;overflow-y:auto;"></div>
             </div>
         </div>
+        <!-- ── Google "Couldn't Fetch" Nuclear Recovery Box ── -->
+        <div class="box" style="margin-top:18px;">
+            <div class="box-header"><div class="dot" style="background:#ea4335"></div> 🚨 Google Recovery — چارەسەری "Couldn't Fetch"</div>
+            <div class="box-body">
+
+                <p style="font-size:0.82rem;color:var(--muted);margin:0 0 14px;line-height:1.7;">
+                    هەموو ئەم کردارانە بەپێی ئەهەمیەتیان ریزبەندیکراون. هەر یەکێکی بکە بە ریز و لە نێوان هەر کردارێکدا چەند دەقەیەک چاوەڕوان بە.
+                </p>
+
+                <!-- STEP 1: Live HTTP Audit -->
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;">
+                    <div style="font-size:0.8rem;font-weight:bold;color:var(--accent);margin-bottom:6px;">① پشکنینی ژیوەی sitemap.xml (HTTP Audit)</div>
+                    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
+                        مووچەی ئەم دوگمەیە پەیوەندی ڕاستەوخۆ دەکات بە سایتەکەت و Content-Type، HTTP Status، و بایتی یەکەم پشکنی دەکات — تەنانەت Googlebot دەبینێت چی.
+                    </p>
+                    <div id="audit-alert" class="alert"></div>
+                    <div class="btn-row" style="margin-top:8px;">
+                        <button class="btn btn-primary" onclick="runLiveAudit()">🔍 پشکنینی ژیوە</button>
+                    </div>
+                    <div id="audit-results" style="display:none;margin-top:10px;font-family:var(--mono);font-size:0.75rem;line-height:1.9;background:var(--surface2);border-radius:6px;padding:12px;"></div>
+                </div>
+
+                <!-- STEP 2: Delete + Resubmit GSC -->
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;">
+                    <div style="font-size:0.8rem;font-weight:bold;color:#fbbc05;margin-bottom:6px;">② سڕینەوە و دووبارە نێردنی sitemap لە Google Search Console</div>
+                    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
+                        ئەمە بەهێزترین کردارەکەیە. Google کاشێی کۆنی "Couldn't fetch" دادەنێ و دووبارەی دەخوێنێتەوە لە سکراچ.
+                    </p>
+                    <div style="background:var(--surface2);border-radius:6px;padding:10px;font-size:0.78rem;line-height:2;color:var(--text);">
+                        <span style="color:var(--accent);">١.</span> بچۆ بۆ
+                        <a href="https://search.google.com/search-console/sitemaps?resource_id=sc-domain%3Auniqaidar.pages.dev" target="_blank" style="color:#4285f4;text-decoration:none;">Google Search Console → Sitemaps ↗</a><br>
+                        <span style="color:var(--accent);">٢.</span> کلیک لەسەر دوگمەی <strong style="color:var(--red);">⋮</strong> تەنیشت <code style="color:var(--yellow);font-size:0.72rem;">/sitemap.xml</code> و <strong>سڕینەوە</strong><br>
+                        <span style="color:var(--accent);">٣.</span> <strong>چاوەڕوان بە 30 چرکەیەک</strong><br>
+                        <span style="color:var(--accent);">٤.</span> لە باکسی "Add a new sitemap" بنووسە: <code style="color:var(--green);font-size:0.78rem;">sitemap.xml</code> و کلیکی <strong>SUBMIT</strong> بکە<br>
+                        <span style="color:var(--accent);">٥.</span> چاوەڕوان بە ٢٤ کاتژمێر
+                    </div>
+                </div>
+
+                <!-- STEP 3: URL Inspection -->
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;">
+                    <div style="font-size:0.8rem;font-weight:bold;color:var(--green);margin-bottom:6px;">③ URL Inspection — داواکاری ئیندێکسکردن بە دەستی</div>
+                    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
+                        ئەمە دووەم بەهێزترین ئامرازەکەیە. Google دەتوانێت URL بە تایبەتی بخوێنێتەوە، وەک مامەڵەی ئەوەی پێشوەخت دەکات.
+                    </p>
+                    <div style="background:var(--surface2);border-radius:6px;padding:10px;font-size:0.78rem;line-height:2;color:var(--text);">
+                        <span style="color:var(--accent);">١.</span> بچۆ بۆ
+                        <a href="https://search.google.com/search-console/inspect?resource_id=sc-domain%3Auniqaidar.pages.dev" target="_blank" style="color:#4285f4;text-decoration:none;">URL Inspection Tool ↗</a><br>
+                        <span style="color:var(--accent);">٢.</span> URL ی sitemap بنووسە: <code style="color:var(--green);font-size:0.78rem;">https://uniqaidar.pages.dev/sitemap.xml</code><br>
+                        <span style="color:var(--accent);">٣.</span> کلیک لەسەر <strong>"Test Live URL"</strong> بکە — ئەمە دەریدەخات Google ئایا دەتوانێت بیخوێنێتەوە<br>
+                        <span style="color:var(--accent);">٤.</span> ئەگەر سەرکەوتوو بوو، کلیکی <strong>"Request Indexing"</strong> بکە
+                    </div>
+                </div>
+
+                <!-- STEP 4: Cloudflare Cache Purge -->
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;">
+                    <div style="font-size:0.8rem;font-weight:bold;color:var(--purple);margin-bottom:6px;">④ پاككردنەوەی کاشی Cloudflare Pages</div>
+                    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
+                        Cloudflare لەوانەیە کۆپیی کۆنی sitemap.xml کاش بکات. پاككردنەوەی کاش دڵنیا دەکات Googlebot نوێترین فایلەکە دەبینێت.
+                    </p>
+                    <div style="background:var(--surface2);border-radius:6px;padding:10px;font-size:0.78rem;line-height:2;color:var(--text);">
+                        <span style="color:var(--accent);">١.</span> بچۆ بۆ
+                        <a href="https://dash.cloudflare.com/" target="_blank" style="color:#f6821f;text-decoration:none;">Cloudflare Dashboard ↗</a><br>
+                        <span style="color:var(--accent);">٢.</span> هەڵبژێرە: <strong>Pages → uniqaidar → Deployments</strong><br>
+                        <span style="color:var(--accent);">٣.</span> کلیک لەسەر دوایین deployment → <strong>"Purge Cache"</strong> یان دووبارە deploy بکە<br>
+                        <span style="color:var(--accent);">٤.</span> ئەگەر دۆمەینی خۆت داری (نەک .pages.dev)، بچۆ بۆ <strong>Caching → Cache Rules</strong> و کاشی sitemap.xml بیکوژێ
+                    </div>
+                </div>
+
+                <!-- STEP 5: Googlebot Simulation -->
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;">
+                    <div style="font-size:0.8rem;font-weight:bold;color:#34a853;margin-bottom:6px;">⑤ شێوازکردنی Googlebot — پشکنینی User-Agent</div>
+                    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
+                        تەست دەکات ئایا سایتەکەت Googlebot بلۆک دەکات. ئەگەر ئەم ئامرازە ناتوانێت sitemap بخوێنێتەوە — Google ناتوانێتیش.
+                    </p>
+                    <div id="bot-alert" class="alert"></div>
+                    <div class="btn-row" style="margin-top:8px;">
+                        <button class="btn" style="background:#34a853;color:#fff;" onclick="simulateGooglebot()">🤖 شێوازکردنی Googlebot</button>
+                    </div>
+                    <div id="bot-results" style="display:none;margin-top:10px;font-family:var(--mono);font-size:0.75rem;line-height:1.9;background:var(--surface2);border-radius:6px;padding:12px;"></div>
+                </div>
+
+                <!-- STEP 6: XML Validator -->
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;">
+                    <div style="font-size:0.8rem;font-weight:bold;color:var(--yellow);margin-bottom:6px;">⑥ Validate کردنی XML — بەخۆی پشکنینی sitemap</div>
+                    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
+                        دەقی sitemap.xml ی ئێستاکەت دادەمەزرێت و دەیپشکنێت بۆ هەڵەی XML، URLی نادروست، و کاراکتەری قەدەغەکراو.
+                    </p>
+                    <div id="xml-alert" class="alert"></div>
+                    <div class="btn-row" style="margin-top:8px;">
+                        <button class="btn" style="background:var(--yellow);color:#000;" onclick="validateSitemapXml()">✅ Validate XML</button>
+                        <a href="https://www.xml-sitemaps.com/validate-xml-sitemap.html" target="_blank" class="btn btn-ghost" style="font-size:0.8rem;">🌐 Validator دەرەکی</a>
+                    </div>
+                    <div id="xml-results" style="display:none;margin-top:10px;font-family:var(--mono);font-size:0.74rem;line-height:1.8;background:var(--surface2);border-radius:6px;padding:12px;max-height:220px;overflow-y:auto;"></div>
+                </div>
+
+                <!-- STEP 7: IndexNow -->
+                <div style="background:var(--bg);border:1px solid #0078d4;border-radius:8px;padding:14px;margin-bottom:12px;">
+                    <div style="font-size:0.8rem;font-weight:bold;color:#0078d4;margin-bottom:6px;">⑦ IndexNow — فێرستکردنی فوری بۆ Bing / Yandex / Naver</div>
+                    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
+                        IndexNow پرۆتۆکۆلی فێرستکردنی فوری Bing و Yandex و Naver و Amazon Bot ـە. یەک پینگ — هەموو ئینجینەکان ئاگادار دەکرێن. Google هێشتا پشتیوانی نەکردووە، بەڵام ئەگەر بکاتیش بەخۆی ئاگادار دەبێت.
+                    </p>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                        <div class="form-group">
+                            <label>🔑 IndexNow API Key (هێکس، ٣٢ کاراکتەر)</label>
+                            <input type="text" id="indexnow-key" placeholder="a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4" style="font-family:var(--mono);font-size:0.78rem;" oninput="indexNowKeyChanged()">
+                        </div>
+                        <div class="form-group" style="display:flex;flex-direction:column;justify-content:flex-end;">
+                            <button class="btn btn-ghost" onclick="generateIndexNowKey()" style="width:100%;">🎲 دروستکردنی کلیلی نوێ</button>
+                        </div>
+                    </div>
+
+                    <div id="indexnow-key-status" style="font-size:0.76rem;color:var(--muted);font-family:var(--mono);margin-bottom:10px;display:none;"></div>
+
+                    <div style="background:var(--surface2);border-radius:6px;padding:10px;font-size:0.78rem;line-height:2;color:var(--text);margin-bottom:10px;">
+                        <strong style="color:#0078d4;">ئەم ٣ هەنگاوە تەنها یەک جار پێویستە:</strong><br>
+                        <span style="color:var(--accent);">١.</span> کلیکی <strong>"دروستکردنی کلیلی نوێ"</strong> بکە یان کلیلی Bing خۆت بنووسە<br>
+                        <span style="color:var(--accent);">٢.</span> کلیکی <strong>"پاشکەوتکردنی فایلی کلیل"</strong> بکە — فایلێک دروست دەکات لە GitHub: <code style="color:var(--yellow);font-size:0.72rem;">/{key}.txt</code><br>
+                        <span style="color:var(--accent);">٣.</span> ئەمەی تەنها یەک جار بکە — پاشان <strong>"پینگ IndexNow"</strong> دەکات لە هەر بار Atomic Save دا
+                    </div>
+
+                    <div id="indexnow-alert" class="alert"></div>
+                    <div class="btn-row" style="margin-top:8px;flex-wrap:wrap;">
+                        <button class="btn" style="background:#0078d4;color:#fff;" id="indexnow-save-btn" onclick="saveIndexNowKeyFile()" disabled>💾 پاشکەوتکردنی فایلی کلیل بۆ GitHub</button>
+                        <button class="btn" style="background:#00b4d8;color:#fff;" id="indexnow-ping-btn" onclick="pingIndexNow(false)" disabled>📡 پینگی IndexNow (sitemap)</button>
+                        <button class="btn btn-ghost" id="indexnow-bulk-btn" onclick="pingIndexNow(true)" disabled style="border-color:#0078d4;color:#0078d4;">📦 پینگی تەواو (هەموو URLەکان)</button>
+                    </div>
+                    <div id="indexnow-results" style="display:none;margin-top:10px;font-family:var(--mono);font-size:0.74rem;line-height:1.8;background:var(--surface2);border-radius:6px;padding:12px;max-height:200px;overflow-y:auto;"></div>
+                </div>
+
+                <!-- STEP 8: Rich Results Test link -->
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;">
+                    <div style="font-size:0.8rem;font-weight:bold;color:var(--muted);margin-bottom:8px;">⑧ ئامرازە دەرەکییەکان — پشکنینی زیاتر</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                        <a href="https://search.google.com/test/rich-results?url=https://uniqaidar.pages.dev/" target="_blank" class="btn btn-ghost" style="font-size:0.75rem;">🔬 Rich Results Test</a>
+                        <a href="https://www.google.com/webmasters/tools/richsnippets?q=https://uniqaidar.pages.dev/" target="_blank" class="btn btn-ghost" style="font-size:0.75rem;">📊 Structured Data</a>
+                        <a href="https://validator.w3.org/feed/check.cgi?url=https%3A%2F%2Funiqaidar.pages.dev%2Fsitemap.xml" target="_blank" class="btn btn-ghost" style="font-size:0.75rem;">✅ W3C Sitemap Validator</a>
+                        <a href="https://www.bing.com/webmasters/about" target="_blank" class="btn btn-ghost" style="font-size:0.75rem;">🔵 Bing Webmaster Tools</a>
+                        <a href="https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap" target="_blank" class="btn btn-ghost" style="font-size:0.75rem;">📖 Google Sitemap Docs</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
     <!-- ══════════════════════════════════════════════════════ -->
@@ -4442,9 +4587,9 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;">#</th>
-                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortVtCountryBy('country')">وڵات ▼</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtCountryBy('count')">ژمارەی سەردان</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtCountryBy('last')">دوایین سەردان</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortVtCountryBy('country')">وڵات ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtCountryBy('count')">ژمارەی سەردان ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtCountryBy('last')">دوایین سەردان ↕</th>
               </tr></thead>
               <tbody id="v-country-tbody"></tbody>
             </table>
@@ -4458,12 +4603,12 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             <table style="width:100%;border-collapse:collapse;font-size:0.8rem;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;font-family:var(--mono);">#</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('country')">وڵات ▼</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('city')">شار</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('source')">Source</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('device')">Device</th>
-                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('url')">پەیج</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('ts')">بەروار — کات (سلێمانی)</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('country')">وڵات ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('city')">شار ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('source')">Source ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('device')">Device ↕</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('url')">پەیج ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('ts')">بەروار — کات ↕</th>
               </tr></thead>
               <tbody id="v-log-tbody"></tbody>
             </table>
@@ -4521,11 +4666,11 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             <table style="width:100%;border-collapse:collapse;font-size:0.8rem;min-width:600px;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;">#</th>
-                <th style="padding:7px 10px;text-align:right;font-weight:normal;">کەلیمەی گەڕان</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">وڵات</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">Source</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">Device</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">کات</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortSqLogBy('query')">کەلیمەی گەڕان ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortSqLogBy('country')">وڵات ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortSqLogBy('source')">Source ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortSqLogBy('device')">Device ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortSqLogBy('ts')">کات ↕</th>
               </tr></thead>
               <tbody id="sq-log-tbody"></tbody>
             </table>
@@ -4574,9 +4719,9 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             <table style="width:100%;border-collapse:collapse;font-size:0.82rem;min-width:500px;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:8px 12px;text-align:right;font-weight:normal;font-family:var(--mono);">#</th>
-                <th style="padding:8px 12px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortDlBy('font')">ناوی فۆنت ▼</th>
-                <th style="padding:8px 12px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlBy('count')">ژمارەی داگرتن</th>
-                <th style="padding:8px 12px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlBy('last')">دوایین داگرتن</th>
+                <th style="padding:8px 12px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortDlBy('font')">ناوی فۆنت ↕</th>
+                <th style="padding:8px 12px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlBy('count')">ژمارەی داگرتن ↕</th>
+                <th style="padding:8px 12px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlBy('last')">دوایین داگرتن ↕</th>
               </tr></thead>
               <tbody id="dl-font-tbody"></tbody>
             </table>
@@ -4588,12 +4733,13 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             <table style="width:100%;border-collapse:collapse;font-size:0.8rem;min-width:700px;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;font-family:var(--mono);">#</th>
-                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('font')">ناوی فۆنت ▼</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('type')">جۆر</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('country')">وڵات</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('source')">Source</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('device')">Device</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('ts')">بەروار — کات (سلێمانی)</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('font')">ناوی فۆنت ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('type')">جۆر ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('country')">وڵات ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('city')">شار ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('source')">Source ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('device')">Device ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('ts')">بەروار — کات ↕</th>
               </tr></thead>
               <tbody id="dl-log-tbody"></tbody>
             </table>
@@ -5268,9 +5414,11 @@ async function pingGoogle() {
 // Manual trigger from SEO tab UI
 async function pingGoogleManual() {
     const al = document.getElementById('sitemap-alert');
-    alert2(al, '⏳ Google و Bing ئاگاداری دەکرێن...', 'inf');
+    alert2(al, '⏳ Bing ئاگاداری دەکرێت...', 'inf');
     await pingGoogle();
-    alert2(al, '✅ Google و Bing ئاگادار کران — لە چەند دەقەیەکدا sitemap دەخوێننەوە.', 'ok');
+    // Google officially deprecated the public /ping endpoint in late 2024.
+    // Still sent for Bing (which still supports it). For Google, use Search Console → Sitemaps → Resubmit.
+    alert2(al, '✅ Bing ئاگادار کرا. ⚠️ Google لە 2024دا /ping کۆتایی پێهات — بۆ زووترین ئیندێکسکردن لە Google Search Console sitemap دووبارە بنێرەوە.', 'ok');
 }
 
 async function regenerateSitemapManual() {
@@ -6911,7 +7059,7 @@ function renderVisitStats() {
             <td style="padding:7px 10px;color:var(--muted);font-family:var(--mono);font-size:0.75rem;">${(vcPage-1)*PG_SIZE+i+1}</td>
             <td style="padding:7px 10px;font-size:0.82rem;color:var(--green);">${item.name} <span style="color:var(--muted);font-size:0.7rem;font-family:var(--mono);">(${item.code})</span></td>
             <td style="padding:7px 10px;text-align:center;"><span style="background:var(--border);padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${item.count}</span></td>
-            <td style="padding:7px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${fmtSUL(item.last)}</td>
+            <td style="padding:7px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);" dir="ltr">${fmtSUL(item.last)}</td>
         </tr>`).join('')
     : '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ داتایەک نییە</td></tr>';
     const vcFooter = document.getElementById('v-country-footer');
@@ -6954,7 +7102,7 @@ function renderVisitStats() {
                     <td style="padding:6px 10px;text-align:center;">${sourceBadge(ev.source)}</td>
                     <td style="padding:6px 10px;text-align:center;">${deviceIcon(ev.device)}</td>
                     <td style="padding:6px 10px;font-size:0.72rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" dir="ltr">${ev.url ? '<a href="'+ev.url+'" target="_blank" style="color:var(--purple);text-decoration:none;" title="'+ev.url+'">'+ev.url.replace(/^https?:\/\//,'').slice(0,40)+(ev.url.length>50?'…':'')+'</a>' : '<span style="color:var(--muted);">—</span>'}</td>
-                    <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
+                    <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
                 ltbody.appendChild(tr);
             });
         }
@@ -6997,7 +7145,7 @@ function renderVisitStats() {
                     <td style="padding:6px 10px;text-align:center;font-size:0.75rem;color:var(--green);">${fullCountryName(ev.country||'')} (${ev.country||'—'})</td>
                     <td style="padding:6px 10px;text-align:center;">${sourceBadge(ev.source)}</td>
                     <td style="padding:6px 10px;text-align:center;">${deviceIcon(ev.device)}</td>
-                    <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
+                    <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
                 vtbody.appendChild(tr);
             });
         }
@@ -7009,6 +7157,8 @@ function renderVisitStats() {
 
 // ── SEARCH KEYWORDS ──────────────────────────
 let SQ_SORT = 'count', SQ_SORT_DIR = -1;
+let SQ_LOG_SORT = 'ts', SQ_LOG_DIR = -1;
+function sortSqLogBy(col) { if(SQ_LOG_SORT===col) SQ_LOG_DIR*=-1; else { SQ_LOG_SORT=col; SQ_LOG_DIR=-1; } PG.sqlog=1; renderSearchTable(); }
 function sortSqBy(col) { if(SQ_SORT===col) SQ_SORT_DIR*=-1; else { SQ_SORT=col; SQ_SORT_DIR=-1; } renderSearchTable(); }
 function clearSearchFilters() {
     ['search-q-filter','search-date-from','search-date-to'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
@@ -7066,14 +7216,23 @@ function renderSearchTable() {
                     <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${(PG.sqsummary-1)*SQ_PG_SIZE+i+1}</td>
                     <td style="padding:6px 10px;font-family:var(--mono);font-size:0.8rem;color:#29b6f6;" dir="rtl">${item.query}</td>
                     <td style="padding:6px 10px;text-align:center;"><span style="background:rgba(41,182,246,0.15);color:#29b6f6;padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${item.count}</span></td>
-                    <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.72rem;color:var(--muted);" dir="ltr">${fmtSUL(item.last)}</td>
+                    <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.72rem;color:var(--text);" dir="ltr">${fmtSUL(item.last)}</td>
                 </tr>`).join('')
             : '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ گەڕانێک نییە</td></tr>';
         renderPgBar('sq-summary-pg', PG.sqsummary, sqSTotal, SQ_PG_SIZE, (p)=>{ PG.sqsummary=p; renderSearchTable(); });
     }
 
-    // full log
-    const logSorted = [...allSearch].sort((a,b)=>((b.ts||b.date||'')>(a.ts||a.date||''))?1:-1);
+    // full log — sortable by all columns
+    const logSorted = [...allSearch].sort((a,b)=>{
+        let va='', vb='';
+        if      (SQ_LOG_SORT==='ts')      { va=a.ts||a.date||''; vb=b.ts||b.date||''; }
+        else if (SQ_LOG_SORT==='query')   { va=a.font||a.search||''; vb=b.font||b.search||''; }
+        else if (SQ_LOG_SORT==='country') { va=fullCountryName(a.country||''); vb=fullCountryName(b.country||''); }
+        else if (SQ_LOG_SORT==='source')  { va=a.source||''; vb=b.source||''; }
+        else if (SQ_LOG_SORT==='device')  { va=a.device||''; vb=b.device||''; }
+        else { va=a.ts||a.date||''; vb=b.ts||b.date||''; }
+        return va<vb ? SQ_LOG_DIR : va>vb ? -SQ_LOG_DIR : 0;
+    });
     const sqTotal = logSorted.length;
     if (!PG.sqlog) PG.sqlog = 1;
     const sqSlice = logSorted.slice((PG.sqlog-1)*PG_SIZE, PG.sqlog*PG_SIZE);
@@ -7094,7 +7253,7 @@ function renderSearchTable() {
                     <td style="padding:6px 10px;text-align:center;font-size:0.75rem;color:var(--green);">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
                     <td style="padding:6px 10px;text-align:center;">${sourceBadge(ev.source)}</td>
                     <td style="padding:6px 10px;text-align:center;">${deviceIcon(ev.device)}</td>
-                    <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
+                    <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
                 sqLogBody.appendChild(tr);
             });
         }
@@ -7213,7 +7372,7 @@ function renderDlTable() {
                 <td style="padding:8px 12px;color:var(--muted);font-family:var(--mono);font-size:0.75rem;">${(dfPage-1)*PG_SIZE+i+1}</td>
                 <td style="padding:8px 12px;font-family:var(--mono);font-size:0.8rem;direction:ltr;"><a href="${fontLink}" target="_blank" style="color:var(--yellow);text-decoration:none;" title="کردنەوە لە وێبسایت">${linkLabel}</a></td>
                 <td style="padding:8px 12px;text-align:center;"><span style="background:${item.count>=5?'var(--green)':'var(--border)'};color:${item.count>=5?'#000':'var(--text)'};padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${item.count}</span></td>
-                <td style="padding:8px 12px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${lastSUL}</td>`;
+                <td style="padding:8px 12px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);" dir="ltr">${lastSUL}</td>`;
             ftbody.appendChild(tr);
         });
     }
@@ -7224,10 +7383,13 @@ function renderDlTable() {
     // ── Full event log — sortable + paginated ──
     const logSorted = [...filtered].sort((a,b)=>{
         let va = '', vb = '';
-        if (DL_LOG_SORT==='ts')           { va=a.ts||a.date||''; vb=b.ts||b.date||''; }
+        if      (DL_LOG_SORT==='ts')      { va=a.ts||a.date||''; vb=b.ts||b.date||''; }
         else if (DL_LOG_SORT==='font')    { va=a.font||''; vb=b.font||''; }
         else if (DL_LOG_SORT==='type')    { va=a.type||''; vb=b.type||''; }
         else if (DL_LOG_SORT==='country') { va=fullCountryName(a.country||''); vb=fullCountryName(b.country||''); }
+        else if (DL_LOG_SORT==='city')    { va=a.city||''; vb=b.city||''; }
+        else if (DL_LOG_SORT==='source')  { va=a.source||''; vb=b.source||''; }
+        else if (DL_LOG_SORT==='device')  { va=a.device||''; vb=b.device||''; }
         return va<vb ? DL_LOG_DIR : va>vb ? -DL_LOG_DIR : 0;
     });
 
@@ -7274,9 +7436,10 @@ function renderDlTable() {
                 <td style="padding:6px 10px;font-family:var(--mono);font-size:0.78rem;direction:ltr;"><a href="${evFontLink}" target="_blank" style="color:var(--accent);text-decoration:none;">${ev.font||'?'} ${evLinkIcon}</a></td>
                 <td style="padding:6px 10px;text-align:center;" dir="rtl">${lbl}</td>
                 <td style="padding:6px 10px;text-align:center;font-size:0.75rem;color:var(--green);">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
+                <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);">${ev.city||'—'}</td>
                 <td style="padding:6px 10px;text-align:center;">${sourceBadge(ev.source)}</td>
                 <td style="padding:6px 10px;text-align:center;">${deviceIcon(ev.device)}</td>
-                <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--muted);" dir="ltr">${evSUL}</td>`;
+                <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);" dir="ltr">${evSUL}</td>`;
             // Row background color by type: Single=orange tint, Bulk=green tint, Cat=teal tint
             tr.style.background = isCatBulk ? 'rgba(162,155,254,0.06)' : isBulk ? 'rgba(46,204,113,0.06)' : 'rgba(255,87,0,0.04)';
             tr.onmouseover = ()=>tr.style.background = isCatBulk ? 'rgba(162,155,254,0.13)' : isBulk ? 'rgba(46,204,113,0.13)' : 'rgba(255,87,0,0.10)';
@@ -7673,6 +7836,357 @@ async function backfillFontSizes() {
         btn.disabled = false;
     }
 }
+
+// ════════════════════════════════════════════════════════════
+// GOOGLE RECOVERY — Live HTTP Audit
+// ════════════════════════════════════════════════════════════
+async function runLiveAudit() {
+    const al  = document.getElementById('audit-alert');
+    const res = document.getElementById('audit-results');
+    alert2(al, '⏳ پشکنینی ژیوە...', 'inf');
+    res.style.display = 'none';
+    try {
+        const SITEMAP = 'https://uniqaidar.pages.dev/sitemap.xml';
+        const r = await fetch(SITEMAP, { cache: 'no-store' });
+        const ct  = r.headers.get('content-type') || '(نییە)';
+        const xco = r.headers.get('x-content-type-options') || '(نییە)';
+        const cc  = r.headers.get('cache-control') || '(نییە)';
+        const text = await r.text();
+        const firstChar = text.trimStart()[0] || '(بوش)';
+        const firstByte = text.charCodeAt(0);
+        const hasBOM = firstByte === 0xEF || firstByte === 0xFEFF;
+        const ctOk   = ct.includes('application/xml') || ct.includes('text/xml');
+        const appXml = ct.includes('application/xml');
+        const startOk= firstChar === '<';
+        const hasXmlDecl = text.trimStart().startsWith('<?xml');
+        const hasUrlset  = text.includes('<urlset');
+        const urlCount   = (text.match(/<url>/g) || []).length;
+        const hasSpaceInLoc = /<loc>[^<]* [^<]*<\/loc>/.test(text);
+        const ctrlChars = /[\x00-\x08\x0B\x0C\x0E-\x1F]/.test(text);
+
+        const row = (icon, label, val, ok) =>
+            `<div style="display:flex;gap:10px;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <span style="width:18px;text-align:center;">${ok===true?'✅':ok===false?'❌':'⚠️'}</span>
+                <span style="color:var(--muted);min-width:220px;">${label}</span>
+                <span style="color:${ok===true?'var(--green)':ok===false?'var(--red)':'var(--yellow)'};">${val}</span>
+            </div>`;
+
+        res.innerHTML =
+            row('', 'HTTP Status',          r.status + ' ' + r.statusText,           r.ok) +
+            row('', 'Content-Type',         ct,                                        appXml) +
+            row('', 'X-Content-Type-Options', xco,                                    xco.includes('nosniff')) +
+            row('', 'Cache-Control',        cc,                                        null) +
+            row('', 'یەکەم بایت',           `"${firstChar}" (0x${firstByte.toString(16).toUpperCase()})`, startOk) +
+            row('', 'BOM / کاراکتەری نادروست', hasBOM ? 'BOM دۆزرایەوە ❌' : 'نییە ✅', !hasBOM) +
+            row('', '<?xml دیکلەرەیشن',    hasXmlDecl ? 'هەیە ✅' : 'نییە ❌',        hasXmlDecl) +
+            row('', '<urlset xmlns=...>',   hasUrlset  ? 'هەیە ✅' : 'نییە ❌',        hasUrlset) +
+            row('', 'ژمارەی <url> تاگەکان', urlCount,                                 urlCount > 0) +
+            row('', 'بۆشایی لە <loc>',      hasSpaceInLoc ? 'دۆزرایەوە ❌' : 'نییە ✅', !hasSpaceInLoc) +
+            row('', 'کاراکتەری قەدەغەکراو', ctrlChars ? 'دۆزرایەوە ❌' : 'نییە ✅',   !ctrlChars) +
+            `<div style="margin-top:8px;font-size:0.7rem;color:var(--muted);">URL: ${SITEMAP}</div>`;
+
+        res.style.display = 'block';
+
+        const allOk = r.ok && appXml && startOk && !hasBOM && hasXmlDecl && hasUrlset && !hasSpaceInLoc && !ctrlChars;
+        if (allOk) {
+            alert2(al, '✅ هەموو شتێک باشە — پرۆبلەمەکە لەلایەن Google کاشێکەوەیە. بستێپ ② بکە.', 'ok');
+        } else if (!appXml) {
+            alert2(al, '❌ Content-Type هێشتا text/xml ـە — _headers فایلەکەت نوێنەکرایەوە! Atomic Save بکە.', 'err');
+        } else {
+            alert2(al, '⚠️ هەندێک پرۆبلەم دۆزرایەوە — سەرەوەکان بپشکنە.', 'err');
+        }
+    } catch(e) {
+        alert2(al, '❌ هەڵە: ' + e.message + ' — ئەمە دەبێت CORS بێت، ئامرازی دەرەکی بەکاربێنە.', 'err');
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// GOOGLE RECOVERY — Googlebot Simulation
+// ════════════════════════════════════════════════════════════
+async function simulateGooglebot() {
+    const al  = document.getElementById('bot-alert');
+    const res = document.getElementById('bot-results');
+    alert2(al, '⏳ شێوازکردنی Googlebot...', 'inf');
+    res.style.display = 'none';
+    try {
+        // Fetch via a CORS proxy that sets a Googlebot-like UA
+        // We use the no-cors trick — we can verify the file is reachable
+        const SITEMAP = 'https://uniqaidar.pages.dev/sitemap.xml';
+        const r = await fetch(SITEMAP, {
+            cache: 'no-store',
+            headers: { 'Accept': 'application/xml,text/xml,*/*' }
+        });
+        const ct   = r.headers.get('content-type') || '(نییە)';
+        const body = await r.text();
+        const urlCount = (body.match(/<url>/g) || []).length;
+
+        res.innerHTML =
+            `<div style="color:var(--green);">HTTP ${r.status} — ${r.ok ? 'دەستگەیشتنی باش' : 'هەڵە'}</div>` +
+            `<div>Content-Type: <span style="color:${ct.includes('application/xml')?'var(--green)':'var(--red)'};">${ct}</span></div>` +
+            `<div>ژمارەی URL: <span style="color:var(--yellow);">${urlCount}</span></div>` +
+            `<div style="margin-top:6px;color:var(--muted);font-size:0.7rem;">تێبینی: User-Agent ی ڕاستەقینەی Googlebot ناتوانرێت لە browser دا بنێرێت (سیکیۆریتی). ئەگەر HTTP 200 دەستت کەوت — دروستە. بۆ پشکنینی تەواو لە GSC → URL Inspection → Test Live URL بکە.</div>`;
+        res.style.display = 'block';
+
+        if (r.ok && ct.includes('application/xml')) {
+            alert2(al, '✅ سایتەکەت دەستپێدەگات و Content-Type دروستە. پرۆبلەمەکە لەلایەن Google کاشێکەوەیە — بستێپ ② بکە.', 'ok');
+        } else if (r.ok && !ct.includes('application/xml')) {
+            alert2(al, '❌ دەستپێدەگات بەڵام Content-Type هێشتا text/xml ـە — _headers فایلەکەت Atomic Save بکە.', 'err');
+        } else {
+            alert2(al, '❌ HTTP ' + r.status + ' — سایتەکەت کێشەی هەیە!', 'err');
+        }
+    } catch(e) {
+        alert2(al, '⚠️ CORS بلۆکی کرد — ئەمەی واتای ئەوە نییە مەشکڵێکە. لە GSC → URL Inspection → Test Live URL بکە.', 'inf');
+        document.getElementById('bot-results').innerHTML =
+            `<div style="color:var(--yellow);">CORS پەیوەندی بلۆک کرد — ئەمە باشە.\nبرۆزەرەکان دیفێنس ئەمەیان هەیە، Google نا.\nبۆ پشکنینی ڕاستەقینە: GSC → URL Inspection → Test Live URL.</div>`;
+        document.getElementById('bot-results').style.display = 'block';
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// GOOGLE RECOVERY — XML Validator
+// ════════════════════════════════════════════════════════════
+async function validateSitemapXml() {
+    const al  = document.getElementById('xml-alert');
+    const res = document.getElementById('xml-results');
+    alert2(al, '⏳ خوێندنەوەی sitemap و validate کردن...', 'inf');
+    res.style.display = 'none';
+    try {
+        const r    = await fetch('https://uniqaidar.pages.dev/sitemap.xml', { cache: 'no-store' });
+        const text = await r.text();
+        const errors = [];
+        const warns  = [];
+
+        // Parse with DOMParser
+        const parser = new DOMParser();
+        const doc    = parser.parseFromString(text, 'application/xml');
+        const parseErr = doc.querySelector('parsererror');
+        if (parseErr) {
+            errors.push('❌ XML Parse Error: ' + parseErr.textContent.slice(0, 120));
+        } else {
+            warns.push('✅ XML دروست parse کرا');
+        }
+
+        // Namespace check
+        const urlset = doc.querySelector('urlset');
+        if (!urlset) {
+            errors.push('❌ <urlset> تاگ نییە');
+        } else {
+            const ns = urlset.getAttribute('xmlns') || '';
+            if (ns === 'http://www.sitemaps.org/schemas/sitemap/0.9') {
+                warns.push('✅ xmlns namespace دروستە');
+            } else {
+                errors.push('❌ xmlns نادروستە: ' + (ns || '(بوش)'));
+            }
+        }
+
+        // Count URLs
+        const urls = doc.querySelectorAll('url');
+        warns.push(`✅ کۆی URL: ${urls.length}`);
+
+        // Check each <loc>
+        let spaceCount = 0, emptyCount = 0, relativeCount = 0, longCount = 0;
+        urls.forEach(u => {
+            const loc = u.querySelector('loc');
+            if (!loc || !loc.textContent.trim()) { emptyCount++; return; }
+            const v = loc.textContent;
+            if (v.includes(' '))            spaceCount++;
+            if (!v.startsWith('https://'))  relativeCount++;
+            if (v.length > 2048)            longCount++;
+        });
+        if (spaceCount)   errors.push(`❌ ${spaceCount} URL بۆشایی (space) تێدایە — پێویستە %20 بێت`);
+        if (emptyCount)   errors.push(`❌ ${emptyCount} <loc> بوشە`);
+        if (relativeCount) errors.push(`❌ ${relativeCount} URL نسبی (relative) ـە — پێویستە https:// بیت`);
+        if (longCount)    warns.push(`⚠️ ${longCount} URL زیاتر لە 2048 کاراکتەرە`);
+        if (!spaceCount && !emptyCount && !relativeCount) warns.push('✅ هەموو <loc> URLـەکان باشن');
+
+        // Byte-0 check
+        if (!text.trimStart().startsWith('<')) {
+            errors.push('❌ فایل بە کاراکتەری نادروست دەست دەکات — پێویستە < بێت');
+        } else {
+            warns.push('✅ فایل بە < دەست دەکات (Byte-0 Rule)');
+        }
+
+        // BOM check
+        if (text.charCodeAt(0) === 0xFEFF || (text.charCodeAt(0) === 0xEF)) {
+            errors.push('❌ BOM دۆزرایەوە لە سەرەوەی فایلەکە');
+        } else {
+            warns.push('✅ BOM نییە');
+        }
+
+        // Control chars
+        const ctrlMatch = text.match(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g);
+        if (ctrlMatch) {
+            errors.push(`❌ ${ctrlMatch.length} کاراکتەری کۆنترۆلی قەدەغەکراو دۆزرایەوە`);
+        } else {
+            warns.push('✅ کاراکتەری قەدەغەکراو نییە');
+        }
+
+        const all = [...errors, ...warns];
+        res.innerHTML = all.map(e =>
+            `<div style="color:${e.startsWith('❌')?'var(--red)':e.startsWith('⚠️')?'var(--yellow)':'var(--green)'};">${e}</div>`
+        ).join('');
+        res.style.display = 'block';
+
+        if (errors.length === 0) {
+            alert2(al, `✅ XML تەواو دروستە! ${warns.length} چاوەڕوانکاری. پرۆبلەمەکە لەلایەن Googlebot دژەوایی یان کاشێکەوەیە.`, 'ok');
+        } else {
+            alert2(al, `❌ ${errors.length} هەڵە دۆزرایەوە — Atomic Save بکە بۆ چاکسازی.`, 'err');
+        }
+    } catch(e) {
+        alert2(al, '❌ ' + e.message, 'err');
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// INDEXNOW — Key management + Ping
+// ════════════════════════════════════════════════════════════
+let INDEXNOW_KEY = '';
+let INDEXNOW_KEY_SHA = '';
+
+// Load saved key from localStorage on init
+(function loadIndexNowKey() {
+    try {
+        const saved = localStorage.getItem('uq_indexnow_key');
+        if (saved) {
+            INDEXNOW_KEY = saved;
+            setTimeout(() => {
+                const el = document.getElementById('indexnow-key');
+                if (el) { el.value = saved; indexNowKeyChanged(); }
+            }, 800);
+        }
+    } catch(e) {}
+})();
+
+function generateIndexNowKey() {
+    // Generate a 32-char lowercase hex key (valid IndexNow format)
+    const arr = new Uint8Array(16);
+    crypto.getRandomValues(arr);
+    const key = Array.from(arr).map(b => b.toString(16).padStart(2,'0')).join('');
+    document.getElementById('indexnow-key').value = key;
+    indexNowKeyChanged();
+    alert2(document.getElementById('indexnow-alert'), '🎲 کلیلی نوێ دروستکرا — تکایە فایلەکەی پاشکەوت بکە بۆ GitHub.', 'inf');
+}
+
+function indexNowKeyChanged() {
+    const key = (document.getElementById('indexnow-key')?.value || '').trim();
+    const valid = /^[0-9a-fA-F]{8,128}$/.test(key);
+    INDEXNOW_KEY = valid ? key.toLowerCase() : '';
+    const statusEl = document.getElementById('indexnow-key-status');
+    const saveBtn  = document.getElementById('indexnow-save-btn');
+    const pingBtn  = document.getElementById('indexnow-ping-btn');
+    const bulkBtn  = document.getElementById('indexnow-bulk-btn');
+    if (statusEl) {
+        statusEl.style.display = 'block';
+        if (valid) {
+            statusEl.style.color = 'var(--green)';
+            statusEl.textContent = '✅ کلیل دروستە — فایلی پێویست: /' + key.toLowerCase() + '.txt';
+            try { localStorage.setItem('uq_indexnow_key', key.toLowerCase()); } catch(e) {}
+        } else if (key.length > 0) {
+            statusEl.style.color = 'var(--red)';
+            statusEl.textContent = '❌ کلیل نادروستە — تەنها ئەژمارە و a-f ی پێویستە (هێکس)، ٨–١٢٨ کاراکتەر';
+        } else {
+            statusEl.style.display = 'none';
+        }
+    }
+    const en = valid && !!(TOKEN && USER && REPO);
+    if (saveBtn) saveBtn.disabled = !en;
+    if (pingBtn) pingBtn.disabled = !en;
+    if (bulkBtn) bulkBtn.disabled = !en;
+}
+
+async function saveIndexNowKeyFile() {
+    const al  = document.getElementById('indexnow-alert');
+    const btn = document.getElementById('indexnow-save-btn');
+    if (!INDEXNOW_KEY) return alert2(al, '❌ کلیل نادروستە.', 'err');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ پەیوەندی بکە بە GitHub پێش ئەم کارە.', 'err');
+    btn.disabled = true;
+    alert2(al, '⏳ پاشکەوتکردنی فایلی کلیل...', 'inf');
+    try {
+        const filename = INDEXNOW_KEY + '.txt';
+        // Check if file already exists
+        if (!INDEXNOW_KEY_SHA) {
+            const chk = await fetch(
+                `https://api.github.com/repos/${USER}/${REPO}/contents/${filename}?ref=${BRANCH}`,
+                { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+            );
+            if (chk.ok) { const d = await chk.json(); INDEXNOW_KEY_SHA = d.sha || ''; }
+        }
+        const body = JSON.stringify({
+            message: 'Add IndexNow key file: ' + filename,
+            content: toBase64(INDEXNOW_KEY),
+            branch:  BRANCH,
+            ...(INDEXNOW_KEY_SHA ? { sha: INDEXNOW_KEY_SHA } : {})
+        });
+        const r = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/${filename}`,
+            { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body }
+        );
+        if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
+        const d = await r.json();
+        INDEXNOW_KEY_SHA = d.content?.sha || '';
+        alert2(al, `✅ فایلی کلیل پاشکەوتکرا: /${filename}\nئێستا چاوەڕوان بە Cloudflare deploy بکات (١-٢ خولەک)، پاشان پینگ بکە.`, 'ok');
+    } catch(e) {
+        alert2(al, '❌ ' + e.message, 'err');
+    }
+    btn.disabled = false;
+}
+
+async function pingIndexNow(bulk = false) {
+    const al  = document.getElementById('indexnow-alert');
+    const res = document.getElementById('indexnow-results');
+    if (!INDEXNOW_KEY) return alert2(al, '❌ کلیل نادروستە.', 'err');
+    alert2(al, bulk ? '⏳ پینگی تەواو — هەموو URLەکان...' : '⏳ پینگ IndexNow...', 'inf');
+    res.style.display = 'none';
+
+    const BASE = 'https://uniqaidar.pages.dev/';
+    const KEYFILE = BASE + INDEXNOW_KEY + '.txt';
+    const HOST = 'uniqaidar.pages.dev';
+    const ENDPOINT = 'https://api.indexnow.org/indexnow';
+
+    let urlList;
+    if (bulk && FONTS_RAW && FONTS_RAW.length) {
+        // Submit home + all font URLs (max 10,000 per call)
+        urlList = [BASE];
+        FONTS_RAW.slice(0, 9999).forEach(f => {
+            if (f.name) urlList.push(BASE + '?font=' + encodeURIComponent(f.name));
+        });
+    } else {
+        // Submit just the main sitemap page + home
+        urlList = [BASE, BASE + 'sitemap.xml'];
+    }
+
+    const payload = { host: HOST, key: INDEXNOW_KEY, keyLocation: KEYFILE, urlList };
+
+    try {
+        const r = await fetch(ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json; charset=utf-8' },
+            body: JSON.stringify(payload),
+            mode: 'no-cors' // IndexNow doesn't send CORS headers
+        });
+        // With no-cors we get opaque response — treat as success if no throw
+        res.innerHTML =
+            `<div style="color:var(--green);">📡 پێدراوە — ${urlList.length} URL بۆ api.indexnow.org</div>` +
+            `<div style="color:var(--muted);font-size:0.7rem;">mode: no-cors (opaque response — ئەمە نریمالەیە بۆ IndexNow)</div>` +
+            `<div style="margin-top:4px;">URL سەرەوە: <span style="color:var(--yellow);">${urlList.slice(0,3).join(', ')}${urlList.length>3?' ...':''}</span></div>` +
+            `<div style="margin-top:6px;color:var(--muted);">پشکنینی encasing: <a href="https://www.bing.com/webmasters" target="_blank" style="color:#0078d4;">Bing Webmaster Tools ↗</a></div>`;
+        res.style.display = 'block';
+        alert2(al, `✅ IndexNow پینگکرا! ${urlList.length} URL نێردرا بۆ Bing/Yandex/Naver/Amazon. لە چەند خولەکدا فێرست دەکرێن.`, 'ok');
+    } catch(e) {
+        alert2(al, '❌ ' + e.message, 'err');
+    }
+}
+
+// Wire IndexNow auto-ping into atomicSave (after successful save)
+const _origAtomicSave = atomicSave;
+atomicSave = async function(fontsArray, htmlContent, commitMessage) {
+    const results = await _origAtomicSave(fontsArray, htmlContent, commitMessage);
+    // Auto-ping IndexNow if key is set
+    if (INDEXNOW_KEY) {
+        try { await pingIndexNow(false); } catch(e) {}
+    }
+    return results;
+};
 </script>
 
 <script>
