@@ -5405,168 +5405,132 @@ function toggleParaPreview(btn, fontName) {
         return '';
     }
 
-    // ── 5. Ghost-text overlay — MIRROR DIV approach ───────────────────────
+    // ── 5 & 6. Predictive suggestion — SELECTION v2.1 ───────────────────────────────────────────────────
     //
-    //  The input has text-align:center + direction:rtl.
-    //  No absolute-positioned span can track the caret in a centered input
-    //  reliably across browsers. The only correct solution:
+    //  All mirror/overlay approaches (v1.0–v3.0) failed because no <div> can
+    //  replicate how a browser renders text inside a native <input> element.
+    //  They share no common internal text-layout engine.
     //
-    //  • Make the real input's TEXT COLOR transparent (caret still shows).
-    //  • Place a MIRROR DIV exactly on top of the input (same size/font/padding).
-    //  • The mirror renders: <span typed-text</span><span ghost-tail</span>
-    //    both inline, centered together — so ghost tail appears glued to the
-    //    right of the caret, exactly as expected in RTL Kurdish text.
-    //  • The real input still receives all events; the mirror is pointer-none.
+    //  v2.1 — SELECTION approach (no overlay, no mirror, no color tricks):
+    //  When a suggestion exists:
+    //    • input.value  = typed + tail
+    //    • setSelectionRange(typed.length, typed.length + tail.length)
+    //    • The tail appears as a native text selection inside the real input
+    //    • #test-input::selection styled grey so it looks like a ghost hint,
+    //      not a jarring blue highlight
+    //
+    //  Backspace: intercepted in keydown — if a suggestion is showing,
+    //    Backspace first dismisses the tail (restores input to typed-only),
+    //    then on the NEXT natural keydown the browser deletes one typed char.
+    //    No extra logic needed — feels completely natural.
+    //
+    //  Tab / → : accept suggestion (cursor moves to end)
+    //  Escape    : dismiss suggestion
+    //  Any char  : browser replaces selected tail with new char (works natively)
+    //  Enter     : dismiss + doSearch runs normally
 
     var inputEl = document.getElementById('test-input');
     if (!inputEl) return;
 
-    var wrapper = inputEl.parentElement;
-    if (!wrapper) return;
-
-    // ── Build the mirror div ──
-    var mirror = document.createElement('div');
-    mirror.id  = 'uq-mirror';
-    mirror.setAttribute('aria-hidden', 'true');
-
-    // Copy every visual property that affects text layout from the input
-    var _cs = window.getComputedStyle(inputEl);
-    mirror.style.cssText = [
-        'position:absolute',
-        'top:0', 'left:0', 'right:0', 'bottom:0',
-        'pointer-events:none',
-        'overflow:hidden',
-        'white-space:pre',            // respect spaces
-        'display:flex',
-        'align-items:center',
-        'justify-content:center',     // matches text-align:center
-        'direction:rtl',
-        'font-family:' + _cs.fontFamily,
-        'font-size:'   + _cs.fontSize,
-        'font-weight:' + _cs.fontWeight,
-        'letter-spacing:' + _cs.letterSpacing,
-        'padding:'     + _cs.padding,
-        'box-sizing:border-box',
-        'border-radius:' + _cs.borderRadius,
-        'z-index:4',                  // sits above input bg, below caret layer
-        'background:transparent',     // input bg shows through
-    ].join(';');
-
-    // Typed-text span — same color as input text so it looks normal
-    var mirrorTyped = document.createElement('span');
-    mirrorTyped.id = 'uq-mirror-typed';
-    mirrorTyped.style.cssText = 'color:' + (_cs.color || '#333') + ';white-space:pre;';
-
-    // Ghost tail span — grey
-    var mirrorGhost = document.createElement('span');
-    mirrorGhost.id = 'uq-mirror-ghost';
-    mirrorGhost.style.cssText = [
-        'color:rgba(140,140,140,0.6)',
-        'white-space:pre',
-    ].join(';');
-
-    // RTL: typed text is on the RIGHT (first in visual RTL order),
-    // ghost continuation is to its LEFT — so DOM order is ghost then typed
-    // inside a RTL flex container.
-    // In RTL flex: first child → rightmost visual position.
-    // We want: [typed][ghost] visually → DOM: typed first, ghost second
-    // RTL flex reverses visual order from DOM order automatically.
-    mirror.appendChild(mirrorTyped);
-    mirror.appendChild(mirrorGhost);
-    wrapper.appendChild(mirror);
-
-    // ── Make the real input's text invisible (caret remains) ──
-    // We do this ONLY when a suggestion is active, so normal typing looks fine.
-    function _hideInputText() {
-        inputEl.style.color = 'transparent';
-        inputEl.style.caretColor = _cs.color || '#333';
-    }
-    function _showInputText() {
-        inputEl.style.color = '';
-        inputEl.style.caretColor = '';
-        mirrorTyped.textContent = '';
-        mirrorGhost.textContent = '';
-    }
+    // Style the selection to look like a subtle grey ghost hint
+    (function() {
+        var s = document.createElement('style');
+        s.textContent = '#test-input::selection { background: rgba(180,180,180,0.18); color: inherit; }';
+        document.head.appendChild(s);
+    })();
 
     var _currentSuggestion = '';
+    var _typedValue        = '';
 
     function showGhost(typed, tail) {
-        if (!tail) {
-            hideGhost();
-            return;
-        }
+        if (!tail) { hideGhost(); return; }
+        _typedValue        = typed;
         _currentSuggestion = tail;
-        mirrorTyped.textContent = typed;
-        mirrorGhost.textContent = tail;
-        _hideInputText();
+        inputEl.value      = typed + tail;
+        inputEl.setSelectionRange(typed.length, typed.length + tail.length);
     }
 
     function hideGhost() {
+        if (_currentSuggestion) {
+            inputEl.value = _typedValue;
+            var len = _typedValue.length;
+            inputEl.setSelectionRange(len, len);
+        }
         _currentSuggestion = '';
-        _showInputText();
+        _typedValue        = '';
     }
 
     function acceptSuggestion() {
         if (!_currentSuggestion) return false;
-        var accepted = inputEl.value + _currentSuggestion;
-        hideGhost();
-        inputEl.value = accepted;
+        var accepted       = _typedValue + _currentSuggestion;
+        _currentSuggestion = '';
+        _typedValue        = '';
+        inputEl.value      = accepted;
+        inputEl.setSelectionRange(accepted.length, accepted.length);
         learnWord(accepted.trim());
         inputEl.dispatchEvent(new Event('input', { bubbles: true }));
         return true;
     }
 
-    function _syncMirrorFont() {
-        var cs = window.getComputedStyle(inputEl);
-        mirror.style.fontFamily    = cs.fontFamily;
-        mirror.style.fontSize      = cs.fontSize;
-        mirror.style.fontWeight    = cs.fontWeight;
-        mirror.style.letterSpacing = cs.letterSpacing;
-        mirror.style.padding       = cs.padding;
-        mirrorTyped.style.color    = cs.color || '#333';
-    }
+    function _syncMirrorFont() {} // no-op — kept for compat
 
-    // ── 6. Patch the existing input listener ─────────────────────────────
+    // ── 6. Input listener ─────────────────────────────────────────────────────────────────────────────────────
     inputEl.addEventListener('input', function () {
-        var val = inputEl.value;
+        // input.value after a keystroke = only what the user typed:
+        // if a suggestion was selected and user typed a char, the browser
+        // replaced the selection with the new char, so value = typed + newChar.
+        // We read up to selectionStart which is right after the new char.
+        var cursor = inputEl.selectionStart;
+        var val    = inputEl.value.slice(0, cursor) || inputEl.value;
+        _currentSuggestion = '';
+        _typedValue        = val;
         if (!val.trim()) { hideGhost(); return; }
-        _syncMirrorFont();
         var tail = getSuggestion(val);
         showGhost(val, tail);
     });
 
-    // Tab or → accepts the suggestion
     inputEl.addEventListener('keydown', function (e) {
+        // Backspace: if suggestion showing, dismiss it first.
+        // The browser will then process backspace on the NEXT event naturally.
+        if (e.key === 'Backspace' && _currentSuggestion) {
+            e.preventDefault();
+            hideGhost();
+            return;
+        }
+        // Tab or → accepts
         if ((e.key === 'Tab' || e.key === 'ArrowRight') && _currentSuggestion) {
             e.preventDefault();
             acceptSuggestion();
             return;
         }
-        // Escape clears ghost
         if (e.key === 'Escape') {
             hideGhost();
         }
-        // On Enter: learn the current typed word before doSearch runs
         if (e.key === 'Enter') {
-            var typed = inputEl.value.trim();
+            var typed = _typedValue || inputEl.value.trim();
             if (typed) learnWord(typed);
-            hideGhost();
-            // doSearch() is wired separately in the existing keydown listener
+            if (_currentSuggestion) {
+                inputEl.value = _typedValue;
+                _currentSuggestion = '';
+                _typedValue = '';
+            }
         }
     });
 
-    // Hide ghost when input blurs
     inputEl.addEventListener('blur', function () {
         hideGhost();
     });
 
-    // Also patch doSearch to learn the query
     if (typeof window.doSearch === 'function') {
         var _origDoSearch = window.doSearch;
         window.doSearch = function () {
-            var typed = inputEl.value.trim();
+            var typed = (_typedValue || inputEl.value).trim();
             if (typed) learnWord(typed);
-            hideGhost();
+            if (_currentSuggestion) {
+                inputEl.value = _typedValue;
+                _currentSuggestion = '';
+                _typedValue = '';
+            }
             _origDoSearch.apply(this, arguments);
         };
     }
