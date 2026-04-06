@@ -960,6 +960,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 <div class="btn-row">
                     <button class="btn btn-green" onclick="runAtomicSave()" id="atomic-save-btn" title="یەک کلیک — fonts.json + index.html + sitemap.xml + robots.txt + _headers پاشکەوت دەکرێن">⚡ Atomic Save</button>
                     <button class="btn btn-primary" onclick="regenerateSitemapManual()" id="sitemap-btn">🗺 دروستکردنی sitemap.xml</button>
+                    <button class="btn" style="background:#4285f4;color:#fff;" onclick="pingGoogleManual()" title="Google و Bing ئاگاداری دەکەن کە sitemap نوێکرایەوە">🔔 Ping Google</button>
                     <button class="btn btn-ghost" onclick="repairRobotsTxt()" id="robots-btn" style="border-color:var(--yellow);color:var(--yellow);">🤖 چاکسازی robots.txt</button>
                     <button class="btn btn-ghost" onclick="runHealthCheck()" id="health-btn" style="border-color:var(--purple);color:var(--purple);">🏥 Health Check فۆنتەکان</button>
                 </div>
@@ -4725,7 +4726,9 @@ const LS_KEY = 'uqadmin_cfg';
 // TextEncoder produces true UTF-8 bytes — no BOM, no mis-encoding.
 // ══════════════════════════════════════════
 function toBase64(str) {
-    const bytes = new TextEncoder().encode(str);
+    // Normalize to Unix LF before encoding — prevents CRLF in GitHub-committed files
+    const normalized = str.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    const bytes = new TextEncoder().encode(normalized);
     let binary = '';
     for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
     return btoa(binary);
@@ -4996,6 +4999,8 @@ async function atomicSave(fontsArray, htmlContent, commitMessage) {
 // ── SITEMAP SELF-HEALER ──
 function healSitemapXml(xml) {
     let out = xml;
+    // 0. Normalize line endings to Unix LF — CRLF in XML/headers causes Cloudflare issues
+    out = out.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
     // 1. Strip ALL XML-illegal control chars: C0 except TAB/LF/CR, DEL, lone surrogates
     out = out.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F\uD800-\uDFFF]/g, '');
     // 2. Percent-encode any raw spaces that survived into <loc> values (illegal in URLs)
@@ -5100,8 +5105,9 @@ async function ghGetSitemapSha() {
 }
 
 async function ghPutSitemap(xmlContent, message) {
-    // Always fetch the latest SHA before writing to avoid conflicts
-    if (!SITEMAP_SHA) await ghGetSitemapSha();
+    // ALWAYS force-refresh SHA before every write — stale SHA causes 409 conflicts
+    SITEMAP_SHA = '';
+    await ghGetSitemapSha();
     const body = JSON.stringify({
         message,
         content: toBase64(xmlContent),
@@ -5128,18 +5134,32 @@ async function ghPutHeaders(message) {
 /sitemap.xml
   Content-Type: application/xml; charset=utf-8
   X-Content-Type-Options: nosniff
+  Cache-Control: public, max-age=3600
+  X-Robots-Tag: all
+  Access-Control-Allow-Origin: *
 
 /robots.txt
   Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=3600
+  X-Robots-Tag: all
+
+/fonts.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=3600
+  Access-Control-Allow-Origin: *
+
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
 `;
     try {
-        if (!HEADERS_SHA) {
-            const r = await fetch(
-                `https://api.github.com/repos/${USER}/${REPO}/contents/${HEADERS_FILE}?ref=${BRANCH}`,
-                { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
-            );
-            if (r.ok) { const d = await r.json(); HEADERS_SHA = d.sha || ''; }
-        }
+        // ALWAYS force-refresh SHA to avoid 409 stale conflicts
+        HEADERS_SHA = '';
+        const rSha = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/${HEADERS_FILE}?ref=${BRANCH}`,
+            { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+        );
+        if (rSha.ok) { const dSha = await rSha.json(); HEADERS_SHA = dSha.sha || ''; }
         const body = JSON.stringify({
             message,
             content: toBase64(HEADERS_CONTENT),
@@ -5225,10 +5245,34 @@ async function generateAndPushSitemap(fontsArray, triggerMsg) {
     const xml = buildSitemapXml(fontsArray);
     const msg = triggerMsg || 'Auto-update sitemap.xml';
     const ok = await ghPutSitemap(xml, msg);
+    if (ok) {
+        // Give Cloudflare Pages 8 seconds to deploy, then ping Google
+        setTimeout(pingGoogle, 8000);
+    }
     return ok;
 }
 
+// ── Ping Google to re-index the sitemap immediately after save ──
+async function pingGoogle() {
+    const SITEMAP_URL = encodeURIComponent('https://uniqaidar.pages.dev/sitemap.xml');
+    try {
+        // Google's sitemap ping endpoint (no-auth, public)
+        await fetch('https://www.google.com/ping?sitemap=' + SITEMAP_URL, { mode: 'no-cors' });
+    } catch(e) {}
+    // Also ping Bing
+    try {
+        await fetch('https://www.bing.com/ping?sitemap=' + SITEMAP_URL, { mode: 'no-cors' });
+    } catch(e) {}
+}
+
 // Manual trigger from SEO tab UI
+async function pingGoogleManual() {
+    const al = document.getElementById('sitemap-alert');
+    alert2(al, '⏳ Google و Bing ئاگاداری دەکرێن...', 'inf');
+    await pingGoogle();
+    alert2(al, '✅ Google و Bing ئاگادار کران — لە چەند دەقەیەکدا sitemap دەخوێننەوە.', 'ok');
+}
+
 async function regenerateSitemapManual() {
     const al = document.getElementById('sitemap-alert');
     if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە پەیوەندی بکە بە GitHub پێش ئەم کارە!', 'err');
