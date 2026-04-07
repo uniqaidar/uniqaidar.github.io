@@ -4179,16 +4179,23 @@ async function downloadCategoryFonts() {
     var files = _filteredFonts.map(function(f) { return f.path; });
     if (!files.length) return;
 
-    // Telegram in-app browser silently swallows the ZIP blob — detect and warn
+    // ── Telegram in-app browser detection ────────────────────────────────
     var ua = navigator.userAgent || '';
     var isTelegram = /Telegram|TelegramBot|TelegramWebview|tv\.danke/i.test(ua)
-                  || (typeof window.TelegramWebviewProxy !== 'undefined');
+                  || (typeof window.TelegramWebviewProxy !== 'undefined')
+                  || (typeof window.TelegramWebAppProxy !== 'undefined');
     if (isTelegram) {
         function setProgress(html) {
             if (prog)  { prog.innerHTML  = html; prog.style.display  = html ? 'inline-block' : 'none'; }
             if (progM) { progM.innerHTML = html; progM.style.display = html ? 'block' : 'none'; }
         }
-        setProgress('⚠️ براوزەری تێلیگرام پشتیوانی داونلۆدکردنی فایلی زیپ ناکات. تکایە وێبسایتەکە لە براوزەرێکی دیکەی مۆبایلەکەتدا بکەرەوە.');
+        var _pgUrl = window.location.href;
+        var _isAndroid = /Android/i.test(ua);
+        var _intentUrl = 'intent://' + _pgUrl.replace(/^https?:\/\//, '') + '#Intent;scheme=https;action=android.intent.action.VIEW;package=com.android.chrome;end';
+        var _openBtn = _isAndroid
+            ? '<a href="' + _intentUrl + '" style="display:inline-block;margin-top:8px;padding:6px 14px;background:#ff5700;color:#fff;border-radius:8px;text-decoration:none;font-size:0.85rem;">🌐 کردنەوە لە Chrome</a>'
+            : '<div style="margin-top:5px;font-size:0.8rem;opacity:0.8;">لینکەکە لە Safari یان Chrome بکەرەوە.</div>';
+        setProgress('⚠️ براوزەری تێلیگرام پشتیوانی داونلۆدکردنی فایلی زیپ ناکات.' + _openBtn);
         return;
     }
 
@@ -5019,13 +5026,20 @@ async function downloadFontsDirectly() {
     const progressDiv = document.getElementById('zip-progress');
     const progressText = document.getElementById('zip-progress-text');
 
-    // Telegram in-app browser silently swallows the ZIP blob — detect and warn
+    // ── Telegram in-app browser detection ────────────────────────────────
     var ua = navigator.userAgent || '';
     var isTelegram = /Telegram|TelegramBot|TelegramWebview|tv\.danke/i.test(ua)
-                  || (typeof window.TelegramWebviewProxy !== 'undefined');
+                  || (typeof window.TelegramWebviewProxy !== 'undefined')
+                  || (typeof window.TelegramWebAppProxy !== 'undefined');
     if (isTelegram) {
+        var _pgUrl2 = window.location.href;
+        var _isAndroid2 = /Android/i.test(ua);
+        var _intentUrl2 = 'intent://' + _pgUrl2.replace(/^https?:\/\//, '') + '#Intent;scheme=https;action=android.intent.action.VIEW;package=com.android.chrome;end';
+        var _openBtn2 = _isAndroid2
+            ? '<a href="' + _intentUrl2 + '" style="display:inline-block;margin-top:8px;padding:6px 14px;background:#ff5700;color:#fff;border-radius:8px;text-decoration:none;font-size:0.85rem;">🌐 کردنەوە لە Chrome</a>'
+            : '<div style="margin-top:5px;font-size:0.8rem;opacity:0.8;">لینکەکە لە Safari یان Chrome بکەرەوە.</div>';
         progressDiv.style.display = 'block';
-        progressText.innerHTML = '⚠️ براوزەری تێلیگرام پشتیوانی داونلۆدکردنی فایلی زیپ ناکات.<br>تکایە وێبسایتەکە لە براوزەرێکی دیکەی مۆبایلەکەتدا بکەرەوە.';
+        progressText.innerHTML = '⚠️ براوزەری تێلیگرام پشتیوانی داونلۆدکردنی فایلی زیپ ناکات.' + _openBtn2;
         return;
     }
 
@@ -5488,6 +5502,17 @@ function toggleParaPreview(btn, fontName) {
         var tail = getSuggestion(val);
         showGhost(val, tail);
     });
+
+    // Mobile virtual keyboards don't reliably fire keydown for Backspace.
+    // Instead they fire an 'input' event with inputType='deleteContentBackward'.
+    // We intercept that here so ghost-suggestions are dismissed on mobile too.
+    inputEl.addEventListener('input', function (e) {
+        if (_currentSuggestion && (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteWordBackward')) {
+            // The character was already deleted by the browser; just clear the ghost.
+            hideGhost();
+            _typedValue = inputEl.value;
+        }
+    }, true); // capture phase so it runs before the main input handler
 
     inputEl.addEventListener('keydown', function (e) {
         // Backspace: if suggestion showing, dismiss it first.
