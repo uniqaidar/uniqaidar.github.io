@@ -18,7 +18,7 @@
     --yellow:   #FEB301;
     --purple:   #a29bfe;
     --text:     #e8e8e8;
-    --muted:    #555555;
+    --muted:    #8a8a8a;  /* was #555555 — bumped for WCAG AA readability on dark bg */
     --mono:     'IBM Plex Mono', monospace;
 }
 
@@ -192,7 +192,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
 .modal-footer { display: flex; gap: 9px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
 
 /* section divider */
-.section-label { font-size: 0.7rem; color: var(--muted); font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.section-label { font-size: 0.7rem; color: #b0b0b0; font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
 
 @media (max-width: 580px) {
     .form-grid { grid-template-columns: 1fr; }
@@ -419,6 +419,24 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
     .pvb-stabs { grid-template-columns: repeat(3, 1fr); }
     .pvb-stab { font-size: 0.5rem; padding: 6px 1px; }
 }
+
+/* ── Bilingual interface: English mode ── */
+body.lang-en [data-ku]  { display: none !important; }
+body.lang-en [data-en]  { display: inline !important; }
+body:not(.lang-en) [data-en] { display: none !important; }
+body:not(.lang-en) [data-ku] { display: inline !important; }
+/* LTR text direction for English spans */
+[data-en] { direction: ltr; unicode-bidi: embed; }
+[data-ku] { direction: rtl; unicode-bidi: embed; }
+/* EN mode: switch layout to LTR */
+body.lang-en { direction: ltr; }
+body.lang-en header, body.lang-en main, body.lang-en .box-header,
+body.lang-en .btn-row, body.lang-en .tabs { direction: ltr; }
+/* Keep content input fields always RTL (Sorani text) */
+body.lang-en input[dir="rtl"], body.lang-en textarea[dir="rtl"],
+body.lang-en .preview-box, body.lang-en [style*="direction:rtl"],
+body.lang-en .cat-pills, body.lang-en #arc-full-list,
+body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
 </style>
 </head>
 <body>
@@ -464,13 +482,14 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
 
 <!-- هێدەر -->
 <header>
-    <h1><a href="https://uniqaidar.pages.dev/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">⚙️ پانێلی UniQaidar</a></h1>
+    <h1><a href="https://uniqaidar.pages.dev/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;"><span data-ku>⚙️ پانێلی UniQaidar</span><span data-en style="display:none">⚙️ UniQaidar Admin</span></a></h1>
     <div class="header-right">
         <span id="sul-clock" dir="ltr" title="کاتی سلێمانی (UTC+3)">⏱ —</span>
         <span id="rbadge" class="repo-badge">پەیوەند نەکراوە</span>
         <div id="sdot" class="status-dot"></div>
-        <button class="btn btn-ghost" onclick="restoreBackup()" style="font-size:0.78rem;padding:6px 12px;" title="گەڕاندنەوەی دوایین نوێکردنەوەی پاراستراو">↩ گەڕاندنەوەی باکئەپ</button>
-        <button class="btn btn-ghost" onclick="showSetup()" style="font-size:0.78rem;padding:6px 12px;">⚙ گۆڕین</button>
+        <button class="btn btn-ghost" onclick="restoreBackup()" style="font-size:0.78rem;padding:6px 12px;" title="گەڕاندنەوەی دوایین نوێکردنەوەی پاراستراو"><span data-ku>↩ گەڕاندنەوەی باکئەپ</span><span data-en style="display:none">↩ Restore Backup</span></button>
+        <button class="btn btn-ghost" onclick="showSetup()" style="font-size:0.78rem;padding:6px 12px;"><span data-ku>⚙ گۆڕین</span><span data-en style="display:none">⚙ Settings</span></button>
+        <button class="btn btn-ghost" id="lang-toggle-btn" onclick="uqToggleLang()" style="font-size:0.78rem;padding:6px 12px;font-family:monospace;letter-spacing:0.02em;" title="Switch interface language">🌐 EN</button>
     </div>
 </header>
 
@@ -583,99 +602,99 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 </div>
                 <div class="form-grid">
                     <div class="form-group full">
-                        <label>H1 — سەردێڕی سەرەکی</label>
+                        <label><span data-ku>H1 — سەردێڕی سەرەکی</span><span data-en style="display:none">H1 — Main Heading</span></label>
                         <input type="text" id="pvb-wlc-h1" style="direction:rtl;" placeholder="بەخێربێن بۆ ماڵپەڕی...">
                     </div>
                     <div class="form-group full">
-                        <label>ناردەی سەرەکی (Lead)</label>
+                        <label><span data-ku>ناردەی سەرەکی (Lead)</span><span data-en style="display:none">Main Lead Text</span></label>
                         <textarea id="pvb-wlc-lead" style="direction:rtl;height:48px;"></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>پەراگرافی دەستپێکردن (Intro)</label>
+                        <label><span data-ku>پەراگرافی دەستپێکردن (Intro)</span><span data-en style="display:none">Intro Paragraph</span></label>
                         <textarea id="pvb-wlc-intro" style="direction:rtl;height:72px;"></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>پەراگرافی سەکۆ (Platform)</label>
+                        <label><span data-ku>پەراگرافی سەکۆ (Platform)</span><span data-en style="display:none">Platform Paragraph</span></label>
                         <textarea id="pvb-wlc-platform" style="direction:rtl;height:56px;"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>H2 Categories سەردێڕی جۆرەکان</label>
+                        <label><span data-ku>H2 Categories سەردێڕی جۆرەکان</span><span data-en style="display:none">H2 Categories Heading</span></label>
                         <input type="text" id="pvb-wlc-cats-h2" style="direction:rtl;">
                     </div>
                     <div class="form-group full">
-                        <label>🔵 جۆرەکان — بەند ١</label>
+                        <label><span data-ku>🔵 جۆرەکان — بەند ١</span><span data-en style="display:none">🔵 Categories — Paragraph 1</span></label>
                         <textarea id="pvb-wlc-cat-1" style="direction:rtl;height:72px;"></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>🔵 جۆرەکان — بەند ٢</label>
+                        <label><span data-ku>🔵 جۆرەکان — بەند ٢</span><span data-en style="display:none">🔵 Categories — Paragraph 2</span></label>
                         <textarea id="pvb-wlc-cat-2" style="direction:rtl;height:72px;"></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>🔵 جۆرەکان — بەند ٣</label>
+                        <label><span data-ku>🔵 جۆرەکان — بەند ٣</span><span data-en style="display:none">🔵 Categories — Paragraph 3</span></label>
                         <textarea id="pvb-wlc-cat-3" style="direction:rtl;height:72px;"></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>🔵 جۆرەکان — بەند ٤</label>
+                        <label><span data-ku>🔵 جۆرەکان — بەند ٤</span><span data-en style="display:none">🔵 Categories — Paragraph 4</span></label>
                         <textarea id="pvb-wlc-cat-4" style="direction:rtl;height:72px;"></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>🔵 جۆرەکان — بەند ٥</label>
+                        <label><span data-ku>🔵 جۆرەکان — بەند ٥</span><span data-en style="display:none">🔵 Categories — Paragraph 5</span></label>
                         <textarea id="pvb-wlc-cat-5" style="direction:rtl;height:72px;"></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>🔵 جۆرەکان — بەند ٦</label>
+                        <label><span data-ku>🔵 جۆرەکان — بەند ٦</span><span data-en style="display:none">🔵 Categories — Paragraph 6</span></label>
                         <textarea id="pvb-wlc-cat-6" style="direction:rtl;height:72px;"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>H2 Apps سەردێڕی بەرنامەکان</label>
+                        <label><span data-ku>H2 Apps سەردێڕی بەرنامەکان</span><span data-en style="display:none">H2 Apps Heading</span></label>
                         <input type="text" id="pvb-wlc-apps-h2" style="direction:rtl;">
                     </div>
                     <div class="form-group full">
-                        <label>پەراگرافی بەرنامەکان (Apps Lead)</label>
+                        <label><span data-ku>پەراگرافی بەرنامەکان (Apps Lead)</span><span data-en style="display:none">Apps Lead Paragraph</span></label>
                         <textarea id="pvb-wlc-apps-lead" style="direction:rtl;height:56px;"></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>🟢 بەرنامەکان — بەند ١</label>
+                        <label><span data-ku>🟢 بەرنامەکان — بەند ١</span><span data-en style="display:none">🟢 Apps — Paragraph 1</span></label>
                         <textarea id="pvb-wlc-app-1" style="direction:rtl;height:72px;"></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>🟢 بەرنامەکان — بەند ٢</label>
+                        <label><span data-ku>🟢 بەرنامەکان — بەند ٢</span><span data-en style="display:none">🟢 Apps — Paragraph 2</span></label>
                         <textarea id="pvb-wlc-app-2" style="direction:rtl;height:72px;"></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>🟢 بەرنامەکان — بەند ٣</label>
+                        <label><span data-ku>🟢 بەرنامەکان — بەند ٣</span><span data-en style="display:none">🟢 Apps — Paragraph 3</span></label>
                         <textarea id="pvb-wlc-app-3" style="direction:rtl;height:72px;"></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>🟢 بەرنامەکان — بەند ٤</label>
+                        <label><span data-ku>🟢 بەرنامەکان — بەند ٤</span><span data-en style="display:none">🟢 Apps — Paragraph 4</span></label>
                         <textarea id="pvb-wlc-app-4" style="direction:rtl;height:72px;"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>H2 Features سەردێڕی تایبەتمەندییەکان</label>
+                        <label><span data-ku>H2 Features سەردێڕی تایبەتمەندییەکان</span><span data-en style="display:none">H2 Features Heading</span></label>
                         <input type="text" id="pvb-wlc-feats-h2" style="direction:rtl;">
                     </div>
                     <div class="form-group full">
-                        <label>🟠 تایبەتمەندییەکان — بەند ١</label>
+                        <label><span data-ku>🟠 تایبەتمەندییەکان — بەند ١</span><span data-en style="display:none">🟠 Features — Paragraph 1</span></label>
                         <textarea id="pvb-wlc-feat-1" style="direction:rtl;height:72px;"></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>🟠 تایبەتمەندییەکان — بەند ٢</label>
+                        <label><span data-ku>🟠 تایبەتمەندییەکان — بەند ٢</span><span data-en style="display:none">🟠 Features — Paragraph 2</span></label>
                         <textarea id="pvb-wlc-feat-2" style="direction:rtl;height:72px;"></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>🟠 تایبەتمەندییەکان — بەند ٣</label>
+                        <label><span data-ku>🟠 تایبەتمەندییەکان — بەند ٣</span><span data-en style="display:none">🟠 Features — Paragraph 3</span></label>
                         <textarea id="pvb-wlc-feat-3" style="direction:rtl;height:72px;"></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>🟠 تایبەتمەندییەکان — بەند ٤</label>
+                        <label><span data-ku>🟠 تایبەتمەندییەکان — بەند ٤</span><span data-en style="display:none">🟠 Features — Paragraph 4</span></label>
                         <textarea id="pvb-wlc-feat-4" style="direction:rtl;height:72px;"></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>دەقی داخستن (Closing)</label>
+                        <label><span data-ku>دەقی داخستن (Closing)</span><span data-en style="display:none">Closing Text</span></label>
                         <textarea id="pvb-wlc-close" style="direction:rtl;height:56px;"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>دەقی دوگمەی گواستنەوە</label>
+                        <label><span data-ku>دەقی دوگمەی گواستنەوە</span><span data-en style="display:none">Toggle Button Text</span></label>
                         <input type="text" id="pvb-wlc-toggle-lbl" style="direction:rtl;" placeholder="بەخێربێن بۆ یونی‌قەیدار">
                     </div>
                     <div class="form-group">
@@ -697,11 +716,11 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 </div>
                 <div id="pvb-wlc-alert" class="alert" style="margin-top:10px;"></div>
                 <div class="btn-row">
-                    <button class="btn btn-ghost" onclick="pvbWelcomeLoad()">↺ بارکردن</button>
+                    <button class="btn btn-ghost" onclick="pvbWelcomeLoad()"><span data-ku>↺ بارکردن</span><span data-en style="display:none">↺ Load</span></button>
                     <button class="btn btn-primary" onclick="pvbWelcomeSave()">💾 Save to GitHub</button>
                 </div>
                 <div style="margin-top:10px;">
-                    <button class="btn btn-ghost" style="width:100%;" onclick="go('t-visual', document.querySelector('.tab[onclick*=t-visual]')); setTimeout(pvbOpenWelcomeInCanvas, 500);">🖱 دەستکاری لە کانڤاسەکەدا (تەنها لە Visual Builder)</button>
+                    <button class="btn btn-ghost" style="width:100%;" onclick="go('t-visual', document.querySelector('.tab[onclick*=t-visual]')); setTimeout(pvbOpenWelcomeInCanvas, 500);"><span data-ku>🖱 دەستکاری لە کانڤاسەکەدا (تەنها لە Visual Builder)</span><span data-en style="display:none">🖱 Edit in Canvas (Visual Builder only)</span></button>
                 </div>
             </div>
         </div>
@@ -732,7 +751,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
     <!-- ══════════════════════════════════════════════════════ -->
     <div id="t-fonts" class="tab-content active">
         <div class="box">
-            <div class="box-header"><div class="dot" style="background:var(--accent)"></div> زیادکردنی فۆنتی نوێ لە UniQaidarFonts/</div>
+            <div class="box-header"><div class="dot" style="background:var(--accent)"></div> <span data-ku>زیادکردنی فۆنتی نوێ لە UniQaidarFonts/</span><span data-en style="display:none">Add New Font to UniQaidarFonts/</span></div>
             <div class="box-body">
 
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap">
@@ -742,25 +761,25 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
 
                 <div class="form-grid">
                     <div class="form-group full">
-                        <label>هەڵبژێرنی فایلی .ttf — تەنها فۆنتی نوێ کە لە وێبسایت نییە نیشان دەدرێت</label>
+                        <label><span data-ku>هەڵبژێرنی فایلی .ttf — تەنها فۆنتی نوێ کە لە وێبسایت نییە نیشان دەدرێت</span><span data-en style="display:none">Select .ttf File — Only new fonts not on the website are shown</span></label>
                         <select id="f-select" onchange="onFontSelect()" style="font-family:var(--mono);font-size:0.85rem">
                             <option value="">— یەکەم Scan بکە —</option>
                         </select>
                     </div>
                     <div class="form-group full">
-                        <label>ناوی کارتی فۆنت (ئینگلیزی) — ئەمە ناوێکە کە لەسەر کارتەکە دەردەکەوێت، دەتوانرێت جیاواز بێت لە ناوی فایل</label>
+                        <label><span data-ku>ناوی کارتی فۆنت (ئینگلیزی) — ئەمە ناوێکە کە لەسەر کارتەکە دەردەکەوێت، دەتوانرێت جیاواز بێت لە ناوی فایل</span><span data-en style="display:none">Font Card Name (English) — This is what appears on the card, can differ from file name</span></label>
                         <input id="f-displayname" type="text" dir="ltr" placeholder="مەسەلەن: UniQAIDAR_MyFont 001" style="font-family:var(--mono);font-size:0.85rem;direction:ltr;">
                     </div>
                     <div class="form-group full">
-                        <label>دەقی پیشاندان</label>
+                        <label><span data-ku>دەقی پیشاندان</span><span data-en style="display:none">Preview Text</span></label>
                         <input id="f-prev" type="text" placeholder="فۆنتەکانی یونی‌قەیدار - فۆنتی کوردی" oninput="updateFontPreview()">
                     </div>
                     <div class="form-group full">
-                        <label>دەقی پەرەگراف</label>
+                        <label><span data-ku>دەقی پەرەگراف</span><span data-en style="display:none">Paragraph Text</span></label>
                         <textarea id="f-paragraph" dir="rtl" rows="3" placeholder="فۆنتەکانی یونی قەیدار کۆکراوەی کۆمەڵێک فۆنتی کوردین..." oninput="updateAddParaPreview()"></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>پیشاندانی ڕاستەقینەی پەرەگراف</label>
+                        <label><span data-ku>پیشاندانی ڕاستەقینەی پەرەگراف</span><span data-en style="display:none">Live Paragraph Preview</span></label>
                         <div id="add-para-preview-box" dir="rtl" style="
                             min-height:80px; background:#111; border:1px solid #333;
                             border-radius:8px; padding:14px 18px; font-size:1.1rem;
@@ -771,14 +790,14 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                         </div>
                     </div>
                     <div class="form-group full">
-                        <label>مەودای نێوان دێڕەکان — <span id="f-lh-display" style="font-family:var(--mono);color:var(--accent);">1.8</span></label>
+                        <label><span data-ku>مەودای نێوان دێڕەکان</span><span data-en style="display:none">Line Height</span> — <span id="f-lh-display" style="font-family:var(--mono);color:var(--accent);">1.8</span></label>
                         <input type="range" id="f-lineheight" min="0.1" max="6.0" step="0.1" value="1.8"
                             style="width:100%;accent-color:var(--accent);cursor:pointer;"
                             oninput="updateAddLhPreview()">
                         <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);margin-top:2px;font-family:var(--mono);"><span>0.1</span><span>6.0</span></div>
                     </div>
                     <div class="form-group full">
-                        <label>پیشاندانی ڕاستەقینە</label>
+                        <label><span data-ku>پیشاندانی ڕاستەقینە</span><span data-en style="display:none">Live Preview</span></label>
                         <div id="live-preview-box" dir="rtl" style="
                             min-height:80px; background:#111; border:1px solid #333;
                             border-radius:8px; padding:14px 18px; font-size:2.2rem;
@@ -789,14 +808,14 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>بەرواری زیادکردن (YYYY-MM-DD)</label>
+                        <label><span data-ku>بەرواری زیادکردن (YYYY-MM-DD)</span><span data-en style="display:none">Date Added (YYYY-MM-DD)</span></label>
                         <input type="date" id="f-date" style="direction:ltr;color-scheme:dark;">
                     </div>
                     <div class="form-group">
                         <!-- spacer -->
                     </div>
                     <div class="form-group full">
-                        <label>کاتێگۆریەکان — یەک یان زیاتر هەڵبژێرە</label>
+                        <label><span data-ku>کاتێگۆریەکان — یەک یان زیاتر هەڵبژێرە</span><span data-en style="display:none">Categories — Select one or more</span></label>
                         <div id="f-cat-pills" class="cat-pills" style="margin-top:6px;"></div>
                         <input type="hidden" id="f-cats">
                     </div>
@@ -804,18 +823,18 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
 
                 <div id="fadd-alert" class="alert"></div>
                 <div class="btn-row">
-                    <button class="btn btn-ghost" onclick="clearFont()">پاکردنەوە</button>
-                    <button id="fbtn" class="btn btn-primary" onclick="addFont()" disabled>💾 زیادکردن و پۆشکردن بۆ GitHub</button>
+                    <button class="btn btn-ghost" onclick="clearFont()"><span data-ku>پاکردنەوە</span><span data-en style="display:none">Clear</span></button>
+                    <button id="fbtn" class="btn btn-primary" onclick="addFont()" disabled><span data-ku>💾 زیادکردن و پۆشکردن بۆ GitHub</span><span data-en style="display:none">💾 Add &amp; Push to GitHub</span></button>
                 </div>
             </div>
         </div>
 
         <div class="box">
-            <div class="box-header"><div class="dot" style="background:var(--yellow)"></div> گەڕان بەدوای فۆنت بۆ دەستکاری / سڕینەوە</div>
+            <div class="box-header"><div class="dot" style="background:var(--yellow)"></div> <span data-ku>گەڕان بەدوای فۆنت بۆ دەستکاری / سڕینەوە</span><span data-en style="display:none">Search Font to Edit / Delete</span></div>
             <div class="box-body">
                 <div class="form-grid">
                     <div class="form-group full">
-                        <label>گەڕان بەدوای ناوی فۆنت</label>
+                        <label><span data-ku>گەڕان بەدوای ناوی فۆنت</span><span data-en style="display:none">Search by Font Name</span></label>
                         <input type="text" id="arc-search" placeholder="UniQAIDAR_..." oninput="renderArc()">
                     </div>
                 </div>
@@ -824,7 +843,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
         </div>
 
         <div class="box">
-            <div class="box-header"><div class="dot" style="background:var(--green)"></div> یەک جار بەکارهێنە — پڕکردنەوەی قەبارەی فۆنتەکان لە fonts.json</div>
+            <div class="box-header"><div class="dot" style="background:var(--green)"></div> <span data-ku>یەک جار بەکارهێنە — پڕکردنەوەی قەبارەی فۆنتەکان لە fonts.json</span><span data-en style="display:none">One-Time Use — Backfill Font Sizes in fonts.json</span></div>
             <div class="box-body">
                 <p style="font-size:0.83rem;color:var(--muted);margin-bottom:16px;line-height:1.8;">
                     ئەم دوگمەیە یەک جار بەکارهێنرێت. قەبارەی ڕاستەقینەی هەموو فۆنتەکان لە GitHub دەخوێنێتەوە و بە شێوەی دایمی لە <code style="color:var(--yellow);font-family:var(--mono)">fonts.json</code> پاشکەوت دەکات. دوای ئەمەش ماڵپەڕەکە هیچ کات داواکاری سایز لە GitHub ناکات.
@@ -839,7 +858,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 </div>
                 <div id="backfill-alert" class="alert"></div>
                 <div class="btn-row">
-                    <button id="backfill-btn" class="btn btn-green" onclick="backfillFontSizes()">&#9889; پڕکردنەوەی قەبارەی هەموو فۆنتەکان — یەک جار بەکارهێنە</button>
+                    <button id="backfill-btn" class="btn btn-green" onclick="backfillFontSizes()"><span data-ku>&#9889; پڕکردنەوەی قەبارەی هەموو فۆنتەکان — یەک جار بەکارهێنە</span><span data-en style="display:none">&#9889; Backfill All Font Sizes — One-Time Use</span></button>
                 </div>
             </div>
         </div>
@@ -850,27 +869,27 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
     <!-- ══════════════════════════════════════════════════════ -->
     <div id="t-cats" class="tab-content">
         <div class="box">
-            <div class="box-header"><div class="dot" style="background:var(--green)"></div> زیادکردنی کاتێگۆری نوێ</div>
+            <div class="box-header"><div class="dot" style="background:var(--green)"></div> <span data-ku>زیادکردنی کاتێگۆری نوێ</span><span data-en style="display:none">Add New Category</span></div>
             <div class="box-body">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>ناوی کاتێگۆری (کوردی/عەرەبی)</label>
+                        <label><span data-ku>ناوی کاتێگۆری (کوردی/عەرەبی)</span><span data-en style="display:none">Category Name (Kurdish/Arabic)</span></label>
                         <input type="text" id="new-cat-label" placeholder="فۆنتی نوێ">
                     </div>
                     <div class="form-group">
-                        <label>ID (ئینگلیزی، بێ بۆشایی)</label>
+                        <label><span data-ku>ID (ئینگلیزی، بێ بۆشایی)</span><span data-en style="display:none">ID (English, no spaces)</span></label>
                         <input type="text" id="new-cat-id" placeholder="Nwe">
                     </div>
                 </div>
                 <div id="cadd-alert" class="alert"></div>
                 <div class="btn-row">
-                    <button id="cbtn" class="btn btn-primary" onclick="addCat()" disabled>➕ زیادکردن و سەیڤ</button>
+                    <button id="cbtn" class="btn btn-primary" onclick="addCat()" disabled><span data-ku>➕ زیادکردن و سەیڤ</span><span data-en style="display:none">➕ Add &amp; Save</span></button>
                 </div>
             </div>
         </div>
 
         <div class="box">
-            <div class="box-header"><div class="dot" style="background:var(--yellow)"></div> کاتێگۆریەکانی ئێستا</div>
+            <div class="box-header"><div class="dot" style="background:var(--yellow)"></div> <span data-ku>کاتێگۆریەکانی ئێستا</span><span data-en style="display:none">Current Categories</span></div>
             <div class="box-body">
                 <div style="background:rgba(9,132,227,0.1);border:1px solid rgba(9,132,227,0.3);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:0.8rem;color:var(--accent);line-height:1.7;">
                     💡 <strong>تێبینی:</strong> کاتێگۆری <strong>🔥 زۆرترین داونلۆکراوەکان</strong> ئەمەش دەتوانرێت بگوازرێتەوە بە ▲▼ — مەسەلەن بردنەوەی تەنیشت <strong>فۆنتی دەستنووس</strong> یان هەر شوێنێکی تر. پاشکەوتکردنی ڕیزبەندی نوێ بکە بۆ پەڕەی سەرەکی.
@@ -892,9 +911,9 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
     <!-- ══════════════════════════════════════════════════════ -->
     <div id="t-seo" class="tab-content">
         <div class="box">
-            <div class="box-header"><div class="dot" style="background:var(--green)"></div> SEO و مێتا</div>
+            <div class="box-header"><div class="dot" style="background:var(--green)"></div> <span data-ku>SEO و مێتا</span><span data-en style="display:none">SEO &amp; Meta</span></div>
             <div class="box-body">
-                <div class="section-label">سەردێڕ و وەسفی پەڕە</div>
+                <div class="section-label"><span data-ku>سەردێڕ و وەسفی پەڕە</span><span data-en style="display:none">Page Title &amp; Description</span></span><span data-en style="display:none">Page Title &amp; Description</span></div>
                 <div class="form-grid">
                     <div class="form-group full">
                         <label>Title (title tag)</label>
@@ -940,14 +959,14 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
 
                 <div id="seo-alert" class="alert"></div>
                 <div class="btn-row">
-                    <button id="seo-btn" class="btn btn-primary" onclick="saveSEO()" disabled>💾 سەیڤ</button>
+                    <button id="seo-btn" class="btn btn-primary" onclick="saveSEO()" disabled><span data-ku>💾 سەیڤ</span><span data-en style="display:none">💾 Save</span></button>
                 </div>
             </div>
         </div>
 
         <!-- ── Sitemap Generator Box ── -->
         <div class="box" style="margin-top:18px;">
-            <div class="box-header"><div class="dot" style="background:var(--accent)"></div> 🗺 Sitemap.xml — نوێکردنەوەی ئۆتۆماتیکی</div>
+            <div class="box-header"><div class="dot" style="background:var(--accent)"></div> <span data-ku>🗺 Sitemap.xml — نوێکردنەوەی ئۆتۆماتیکی</span><span data-en style="display:none">🗺 Sitemap.xml — Auto Update</span></div>
             <div class="box-body">
                 <p style="font-size:0.83rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
                     sitemap.xml بەخۆی نوێ دەکرێتەوە کاتێک فۆنتێک زیاد یان سڕایەوە.<br>
@@ -959,10 +978,10 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 <div id="sitemap-alert" class="alert"></div>
                 <div class="btn-row">
                     <button class="btn btn-green" onclick="runAtomicSave()" id="atomic-save-btn" title="یەک کلیک — fonts.json + index.html + sitemap.xml + robots.txt + _headers پاشکەوت دەکرێن">⚡ Atomic Save</button>
-                    <button class="btn btn-primary" onclick="regenerateSitemapManual()" id="sitemap-btn">🗺 دروستکردنی sitemap.xml</button>
+                    <button class="btn btn-primary" onclick="regenerateSitemapManual()" id="sitemap-btn"><span data-ku>🗺 دروستکردنی sitemap.xml</span><span data-en style="display:none">🗺 Generate sitemap.xml</span></button>
                     <button class="btn" style="background:#4285f4;color:#fff;" onclick="pingGoogleManual()" title="Google و Bing ئاگاداری دەکەن کە sitemap نوێکرایەوە">🔔 Ping Google</button>
-                    <button class="btn btn-ghost" onclick="repairRobotsTxt()" id="robots-btn" style="border-color:var(--yellow);color:var(--yellow);">🤖 چاکسازی robots.txt</button>
-                    <button class="btn btn-ghost" onclick="runHealthCheck()" id="health-btn" style="border-color:var(--purple);color:var(--purple);">🏥 Health Check فۆنتەکان</button>
+                    <button class="btn btn-ghost" onclick="repairRobotsTxt()" id="robots-btn" style="border-color:var(--yellow);color:var(--yellow);"><span data-ku>🤖 چاکسازی robots.txt</span><span data-en style="display:none">🤖 Repair robots.txt</span></button>
+                    <button class="btn btn-ghost" onclick="runHealthCheck()" id="health-btn" style="border-color:var(--purple);color:var(--purple);"><span data-ku>🏥 Health Check فۆنتەکان</span><span data-en style="display:none">🏥 Font Health Check</span></button>
                 </div>
                 <div id="atomic-save-alert" class="alert" style="margin-top:10px;"></div>
                 <div id="robots-alert" class="alert" style="margin-top:10px;"></div>
@@ -972,7 +991,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
         </div>
         <!-- ── Google "Couldn't Fetch" Nuclear Recovery Box ── -->
         <div class="box" style="margin-top:18px;">
-            <div class="box-header"><div class="dot" style="background:#ea4335"></div> 🚨 Google Recovery — چارەسەری "Couldn't Fetch"</div>
+            <div class="box-header"><div class="dot" style="background:#ea4335"></div> <span data-ku>🚨 Google Recovery — چارەسەری "Couldn't Fetch"</span><span data-en style="display:none">🚨 Google Recovery — Fix "Couldn't Fetch"</span></div>
             <div class="box-body">
 
                 <p style="font-size:0.82rem;color:var(--muted);margin:0 0 14px;line-height:1.7;">
@@ -987,7 +1006,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                     </p>
                     <div id="audit-alert" class="alert"></div>
                     <div class="btn-row" style="margin-top:8px;">
-                        <button class="btn btn-primary" onclick="runLiveAudit()">🔍 پشکنینی ژیوە</button>
+                        <button class="btn btn-primary" onclick="runLiveAudit()"><span data-ku>🔍 پشکنینی ژیوە</span><span data-en style="display:none">🔍 Live Audit</span></button>
                     </div>
                     <div id="audit-results" style="display:none;margin-top:10px;font-family:var(--mono);font-size:0.75rem;line-height:1.9;background:var(--surface2);border-radius:6px;padding:12px;"></div>
                 </div>
@@ -1074,11 +1093,11 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
 
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
                         <div class="form-group">
-                            <label>🔑 IndexNow API Key (هێکس، ٣٢ کاراکتەر)</label>
+                            <label><span data-ku>🔑 IndexNow API Key (هێکس، ٣٢ کاراکتەر)</span><span data-en style="display:none">🔑 IndexNow API Key (hex, 32 chars)</span></label>
                             <input type="text" id="indexnow-key" placeholder="a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4" style="font-family:var(--mono);font-size:0.78rem;" oninput="indexNowKeyChanged()">
                         </div>
                         <div class="form-group" style="display:flex;flex-direction:column;justify-content:flex-end;">
-                            <button class="btn btn-ghost" onclick="generateIndexNowKey()" style="width:100%;">🎲 دروستکردنی کلیلی نوێ</button>
+                            <button class="btn btn-ghost" onclick="generateIndexNowKey()" style="width:100%;"><span data-ku>🎲 دروستکردنی کلیلی نوێ</span><span data-en style="display:none">🎲 Generate New Key</span></button>
                         </div>
                     </div>
 
@@ -1095,7 +1114,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                     <div class="btn-row" style="margin-top:8px;flex-wrap:wrap;">
                         <button class="btn" style="background:#0078d4;color:#fff;" id="indexnow-save-btn" onclick="saveIndexNowKeyFile()" disabled>💾 پاشکەوتکردنی فایلی کلیل بۆ GitHub</button>
                         <button class="btn" style="background:#00b4d8;color:#fff;" id="indexnow-ping-btn" onclick="pingIndexNow(false)" disabled>📡 پینگی IndexNow (sitemap)</button>
-                        <button class="btn btn-ghost" id="indexnow-bulk-btn" onclick="pingIndexNow(true)" disabled style="border-color:#0078d4;color:#0078d4;">📦 پینگی تەواو (هەموو URLەکان)</button>
+                        <button class="btn btn-ghost" id="indexnow-bulk-btn" onclick="pingIndexNow(true)" disabled style="border-color:#0078d4;color:#0078d4;"><span data-ku>📦 پینگی تەواو (هەموو URLەکان)</span><span data-en style="display:none">📦 Bulk Ping (All URLs)</span></button>
                     </div>
                     <div id="indexnow-results" style="display:none;margin-top:10px;font-family:var(--mono);font-size:0.74rem;line-height:1.8;background:var(--surface2);border-radius:6px;padding:12px;max-height:200px;overflow-y:auto;"></div>
                 </div>
@@ -1122,7 +1141,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
     <!-- ══════════════════════════════════════════════════════ -->
     <div id="t-arc" class="tab-content">
         <div class="box">
-            <div class="box-header"><div class="dot" style="background:var(--yellow)"></div> هەموو فۆنتەکان (<span id="arc-count">0</span>)</div>
+            <div class="box-header"><div class="dot" style="background:var(--yellow)"></div> <span data-ku>هەموو فۆنتەکان (<span id="arc-count">0</span>)</span><span data-en style="display:none">All Fonts (<span id="arc-count">0</span>)</span></div>
             <div class="box-body">
                 <div style="display:flex;gap:10px;margin-bottom:13px;flex-wrap:wrap;align-items:center;">
                     <input id="arc-full-search" type="text" placeholder="گەڕان بەدوای ناوی فۆنت..." oninput="renderArcFull()" style="max-width:260px;">
@@ -1285,7 +1304,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                             <div style="font-size:0.68rem;color:var(--yellow);font-family:var(--mono);margin:6px 0 4px;">⚠ لیستەکان (li) لە کانڤاسەکە بە ڕاستەوخۆ دووجار کلیک بکە بۆ دەستکاریکردن</div>
                             <div id="_pvb_pvb-wlc-alert" class="alert"></div>
                             <div style="display:flex;gap:6px;margin-top:8px;">
-                                <button class="pvb-btn pvb-btn-sm" style="flex:1;" onclick="pvbWelcomeLoad()">↺ بارکردن</button>
+                                <button class="pvb-btn pvb-btn-sm" style="flex:1;" onclick="pvbWelcomeLoad()"><span data-ku>↺ بارکردن</span><span data-en style="display:none">↺ Load</span></button>
                                 <button class="pvb-btn pvb-btn-sm" style="flex:1;" onclick="pvbWelcomeSave()">💾 Save to GitHub</button>
                             </div>
                             <div style="margin-top:6px;">
@@ -1871,6 +1890,13 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                         </div>
                         <button class="pvb-btn pvb-btn-sm pvb-btn-ghost" onclick="pvbRunChecklist()" style="width:100%;margin-bottom:10px;">🔍 Run Pre-publish Check</button>
 
+                        <!-- ⚠️ Mobile safety warning -->
+                        <div style="background:rgba(255,87,0,0.1);border:1px solid rgba(255,87,0,0.4);border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:0.76rem;color:#ff9a6c;line-height:1.7;direction:ltr;text-align:left;">
+                            <strong>⚠️ Desktop-only tool.</strong> Visual Builder reads and writes the <em>desktop</em> layout of <code>index.html</code>.
+                            If you resize the canvas to a mobile width and publish, any mobile-specific CSS (inside <code>@media</code> breakpoints)
+                            that was modified will overwrite the real mobile layout. <strong>Always review and test on a real phone after publishing.</strong>
+                            Do <strong>not</strong> use the mobile-sized canvas view as a substitute for editing mobile styles directly in the HTML.
+                        </div>
                         <button class="pvb-btn pvb-btn-publish" onclick="pvbPublish()" id="pvb-publish-btn">🚀 Publish to GitHub</button>
 
                         <!-- Preview diff before publish -->
@@ -2806,7 +2832,26 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 next = next.replace(/<!-- pvb:inject:body -->[\s\S]*?<!-- \/pvb:inject:body -->/,
                     `${bodySentinel}\n${body}\n<!-- /pvb:inject:body -->`);
             } else {
-                next = next.replace(/<\/body>/i, `${bodySentinel}\n${body}\n<!-- /pvb:inject:body -->\n</body>`);
+                next = next.replace(/<\/body>/i, `${bodySentinel}\n${body}\n<!-- /pvb:inject:body -->\n
+\u003cscript\u003e
+// ── UniQaidar Admin — Bilingual EN/KU interface ──────────────────────
+(function() {
+    var LANG_KEY = 'uq_admin_lang';
+    window.uqToggleLang = function() {
+        var isEn = document.body.classList.toggle('lang-en');
+        localStorage.setItem(LANG_KEY, isEn ? 'en' : 'ku');
+        var btn = document.getElementById('lang-toggle-btn');
+        if (btn) btn.textContent = isEn ? '🌐 KU' : '🌐 EN';
+    };
+    // Restore saved preference
+    if (localStorage.getItem(LANG_KEY) === 'en') {
+        document.body.classList.add('lang-en');
+        var btn = document.getElementById('lang-toggle-btn');
+        if (btn) btn.textContent = '🌐 KU';
+    }
+})();
+<\/script>
+<\/body>`);
             }
         }
         if (next===RAW) return alert2(al,'⚠️ No code provided.','inf');
@@ -4558,8 +4603,6 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
         }
     }
     </script>
-
-
     <!-- ══════════════════════════════════════════════════════ -->
     <!-- TAB: Downloads Statistics                             -->
     <!-- ══════════════════════════════════════════════════════ -->
@@ -4571,15 +4614,15 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
           <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--green)"></div><span>🌍 سەردانەکانی وێبسایت</span></div>
           <div style="display:flex;align-items:center;gap:8px;">
             <span id="visit-last-refresh" style="font-size:0.72rem;color:var(--muted);font-family:var(--mono);">نەنوێکراوەتەوە</span>
-            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadVisitStats(true)">🔄 نوێکردنەوە</button>
+            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadVisitStats(true)"><span data-ku>🔄 نوێکردنەوە</span><span data-en style="display:none">🔄 Refresh</span></button>
           </div>
         </div>
         <div class="box-body">
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:16px;">
-            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--green);" id="v-total">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">کۆی سەردانەکان</div></div>
-            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--red);" id="v-today">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">سەردانی ئەمڕۆ</div></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--green);" id="v-total">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>کۆی سەردانەکان</span><span data-en style="display:none">Total Visits</span></div></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--red);" id="v-today">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>سەردانی ئەمڕۆ</span><span data-en style="display:none">Today's Visits</span></div></div>
             <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--accent);" id="v-month">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">سەردانی ئەم مانگە</div></div>
-            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--yellow);" id="v-countries">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">وڵاتی جیاواز</div></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--yellow);" id="v-countries">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>وڵاتی جیاواز</span><span data-en style="display:none">Unique Countries</span></div></div>
           </div>
           <div id="v-alert" class="alert"></div>
           <div class="section-label" style="margin-bottom:8px;">سەردانەکان بەپێی وڵات</div>
@@ -4587,13 +4630,13 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;">#</th>
-                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortVtCountryBy('country')">وڵات ↕</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtCountryBy('count')">ژمارەی سەردان ↕</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtCountryBy('last')">دوایین سەردان ↕</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortVtCountryBy('country')"><span data-ku>وڵات</span><span data-en style="display:none">Country</span> ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtCountryBy('count')"><span data-ku>ژمارەی سەردان</span><span data-en style="display:none">Visit Count</span> ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtCountryBy('last')"><span data-ku>دوایین سەردان</span><span data-en style="display:none">Last Visit</span> ↕</th>
               </tr></thead>
               <tbody id="v-country-tbody"></tbody>
             </table>
-            <div id="v-country-footer" style="margin-top:8px;font-size:0.75rem;color:var(--muted);text-align:center;"></div>
+            <div id="v-country-footer" style="margin-top:8px;font-size:0.75rem;color:#aaa;text-align:center;"></div>
             <div id="v-country-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
 
@@ -4603,78 +4646,78 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             <table style="width:100%;border-collapse:collapse;font-size:0.8rem;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;font-family:var(--mono);">#</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('country')">وڵات ↕</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('city')">شار ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('country')"><span data-ku>وڵات</span><span data-en style="display:none">Country</span> ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('city')"><span data-ku>شار</span><span data-en style="display:none">City</span> ↕</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('source')">Source ↕</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('device')">Device ↕</th>
-                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('url')">پەیج ↕</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('ts')">بەروار — کات ↕</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('url')"><span data-ku>پەیج</span><span data-en style="display:none">Page</span> ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortVtLogBy('ts')"><span data-ku>بەروار — کات</span><span data-en style="display:none">Date — Time</span> ↕</th>
               </tr></thead>
               <tbody id="v-log-tbody"></tbody>
             </table>
-            <div id="v-log-footer" style="margin-top:8px;font-size:0.75rem;color:var(--muted);text-align:center;"></div>
+            <div id="v-log-footer" style="margin-top:8px;font-size:0.75rem;color:#aaa;text-align:center;"></div>
             <div id="v-log-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
 
           <!-- Virality table -->
-          <div class="section-label" style="margin-bottom:8px;margin-top:20px;">🔗 ئامارەکانی کۆپیکردنی لینک (Virality)</div>
+          <div class="section-label" style="margin-bottom:8px;margin-top:20px;"><span data-ku>🔗 ئامارەکانی کۆپیکردنی لینک (Virality)</span><span data-en style="display:none">🔗 Copy Link Stats (Virality)</span></div>
           <div style="overflow-x:auto;">
             <table style="width:100%;border-collapse:collapse;font-size:0.8rem;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;">#</th>
-                <th style="padding:7px 10px;text-align:right;font-weight:normal;">جۆری کۆپی</th>
-                <th style="padding:7px 10px;text-align:right;font-weight:normal;">ناو / کاتێگۆری</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">وڵات</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">Source</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">Device</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">کات</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortViralBy('event')"><span data-ku>جۆری کۆپی</span><span data-en style="display:none">Copy Type</span> ↕</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortViralBy('font')"><span data-ku>ناو / کاتێگۆری</span><span data-en style="display:none">Name / Category</span> ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortViralBy('country')"><span data-ku>وڵات</span><span data-en style="display:none">Country</span> ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortViralBy('source')">Source ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortViralBy('device')">Device ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortViralBy('ts')"><span data-ku>کات</span><span data-en style="display:none">Time</span> ↕</th>
               </tr></thead>
               <tbody id="v-viral-tbody"></tbody>
             </table>
-            <div id="v-viral-footer" style="margin-top:8px;font-size:0.75rem;color:var(--muted);text-align:center;"></div>
+            <div id="v-viral-footer" style="margin-top:8px;font-size:0.75rem;color:#aaa;text-align:center;"></div>
             <div id="v-viral-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
 
           <!-- SEARCH KEYWORDS TABLE -->
-          <div class="section-label" style="margin-bottom:8px;margin-top:20px;">🔎 کەلیمەی گەڕان (Search Keywords)</div>
+          <div class="section-label" style="margin-bottom:8px;margin-top:20px;"><span data-ku>🔎 کەلیمەی گەڕان (Search Keywords)</span><span data-en style="display:none">🔎 Search Keywords</span></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;">
             <input type="text" id="search-q-filter" placeholder="فلتەر بەدوای کەلیمە..." oninput="renderSearchTable()" style="max-width:260px;direction:rtl;">
             <input type="date" id="search-date-from" onchange="renderSearchTable()" style="direction:ltr;color-scheme:dark;max-width:150px;">
             <input type="date" id="search-date-to"   onchange="renderSearchTable()" style="direction:ltr;color-scheme:dark;max-width:150px;">
-            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 10px;" onclick="clearSearchFilters()">پاکردنەوەی فلتەر</button>
+            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 10px;" onclick="clearSearchFilters()"><span data-ku>پاکردنەوەی فلتەر</span><span data-en style="display:none">Clear Filters</span></button>
           </div>
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:14px;">
-            <div style="background:var(--bg);border:1px solid rgba(41,182,246,0.3);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:1.4rem;font-weight:bold;color:#29b6f6;" id="sq-total">—</div><div style="font-size:0.72rem;color:var(--muted);margin-top:3px;">کۆی گەڕانەکان</div></div>
-            <div style="background:var(--bg);border:1px solid rgba(41,182,246,0.3);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:1.4rem;font-weight:bold;color:#29b6f6;" id="sq-unique">—</div><div style="font-size:0.72rem;color:var(--muted);margin-top:3px;">کەلیمەی جیاواز</div></div>
-            <div style="background:var(--bg);border:1px solid rgba(41,182,246,0.3);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:1.4rem;font-weight:bold;color:#29b6f6;" id="sq-today">—</div><div style="font-size:0.72rem;color:var(--muted);margin-top:3px;">گەڕانی ئەمڕۆ</div></div>
+            <div style="background:var(--bg);border:1px solid rgba(41,182,246,0.3);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:1.4rem;font-weight:bold;color:#29b6f6;" id="sq-total">—</div><div style="font-size:0.72rem;color:var(--muted);margin-top:3px;"><span data-ku>کۆی گەڕانەکان</span><span data-en style="display:none">Total Searches</span></div></div>
+            <div style="background:var(--bg);border:1px solid rgba(41,182,246,0.3);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:1.4rem;font-weight:bold;color:#29b6f6;" id="sq-unique">—</div><div style="font-size:0.72rem;color:var(--muted);margin-top:3px;"><span data-ku>کەلیمەی جیاواز</span><span data-en style="display:none">Unique Keywords</span></div></div>
+            <div style="background:var(--bg);border:1px solid rgba(41,182,246,0.3);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:1.4rem;font-weight:bold;color:#29b6f6;" id="sq-today">—</div><div style="font-size:0.72rem;color:var(--muted);margin-top:3px;"><span data-ku>گەڕانی ئەمڕۆ</span><span data-en style="display:none">Today's Searches</span></div></div>
           </div>
           <div style="overflow-x:auto;margin-bottom:20px;">
-            <div class="section-label" style="font-size:0.75rem;margin-bottom:6px;color:var(--muted);">زۆرترین کەلیمەی گەڕان</div>
+            <div class="section-label" style="font-size:0.75rem;margin-bottom:6px;color:#aaa;">زۆرترین کەلیمەی گەڕان</div>
             <table style="width:100%;border-collapse:collapse;font-size:0.82rem;min-width:400px;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;">#</th>
-                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortSqBy('query')">کەلیمە ▼</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortSqBy('query')"><span data-ku>کەلیمە</span><span data-en style="display:none">Keyword</span> ▼</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortSqBy('count')">ژمارە</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;">دوایین گەڕان</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortSqBy('last')"><span data-ku>دوایین گەڕان</span><span data-en style="display:none">Last Search</span> ↕</th>
               </tr></thead>
               <tbody id="sq-summary-tbody"></tbody>
             </table>
             <div id="sq-summary-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
           <div style="overflow-x:auto;">
-            <div class="section-label" style="font-size:0.75rem;margin-bottom:6px;color:var(--muted);">تەواوی ئەرشیفی گەڕانەکان</div>
+            <div class="section-label" style="font-size:0.75rem;margin-bottom:6px;color:#aaa;">تەواوی ئەرشیفی گەڕانەکان</div>
             <table style="width:100%;border-collapse:collapse;font-size:0.8rem;min-width:600px;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;">#</th>
-                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortSqLogBy('query')">کەلیمەی گەڕان ↕</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortSqLogBy('country')">وڵات ↕</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortSqLogBy('query')"><span data-ku>کەلیمەی گەڕان</span><span data-en style="display:none">Search Query</span> ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortSqLogBy('country')"><span data-ku>وڵات</span><span data-en style="display:none">Country</span> ↕</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortSqLogBy('source')">Source ↕</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortSqLogBy('device')">Device ↕</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortSqLogBy('ts')">کات ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortSqLogBy('ts')"><span data-ku>کات</span><span data-en style="display:none">Time</span> ↕</th>
               </tr></thead>
               <tbody id="sq-log-tbody"></tbody>
             </table>
-            <div id="sq-log-footer" style="margin-top:8px;font-size:0.75rem;color:var(--muted);text-align:center;"></div>
+            <div id="sq-log-footer" style="margin-top:8px;font-size:0.75rem;color:#aaa;text-align:center;"></div>
             <div id="sq-log-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
         </div>
@@ -4683,21 +4726,21 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
       <!-- DOWNLOADS BOX -->
       <div class="box">
         <div class="box-header" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
-          <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--yellow)"></div><span>📊 ئامارەکانی داگرتنی فۆنت</span></div>
+          <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--yellow)"></div><span><span data-ku>📊 ئامارەکانی داگرتنی فۆنت</span><span data-en style="display:none">📊 Font Download Stats</span></span></div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <span id="dl-last-refresh" style="font-size:0.72rem;color:var(--muted);font-family:var(--mono);">نەنوێکراوەتەوە</span>
-            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadDlStats(true)">🔄 نوێکردنەوە</button>
+            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadDlStats(true)"><span data-ku>🔄 نوێکردنەوە</span><span data-en style="display:none">🔄 Refresh</span></button>
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="exportDlCsv()">📥 Export CSV</button>
-            <button class="btn btn-red" style="font-size:0.78rem;padding:5px 12px;" onclick="clearDlStats()">🗑 سڕینەوەی هەموو ئامارەکان</button>
-            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="updateTrending()" title="Top 25 زۆرترین داونلۆکراوەکان بنووسە بۆ popular.json">🔄 نوێکردنەوەی زۆرترین داونلۆکراوەکان</button>
+            <button class="btn btn-red" style="font-size:0.78rem;padding:5px 12px;" onclick="clearDlStats()"><span data-ku>🗑 سڕینەوەی هەموو ئامارەکان</span><span data-en style="display:none">🗑 Clear All Stats</span></button>
+            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="updateTrending()" title="Top 25 زۆرترین داونلۆکراوەکان بنووسە بۆ popular.json"><span data-ku>🔄 نوێکردنەوە</span><span data-en style="display:none">🔄 Refresh</span>ی زۆرترین داونلۆکراوەکان</button>
           </div>
         </div>
         <div class="box-body">
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px;">
-            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--yellow);" id="dl-total-count">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">کۆی داگرتنەکان</div></div>
-            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--accent);" id="dl-single-count">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">داگرتنی تاکەکە</div></div>
-            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--green);" id="dl-bulk-count">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">داگرتنی تەواوی</div></div>
-            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--purple);" id="dl-unique-fonts">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">فۆنتی جیاواز</div></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--yellow);" id="dl-total-count">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>کۆی داگرتنەکان</span><span data-en style="display:none">Total Downloads</span></div></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--accent);" id="dl-single-count">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>داگرتنی تاکەکە</span><span data-en style="display:none">Single Downloads</span></div></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--green);" id="dl-bulk-count">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>داگرتنی تەواوی</span><span data-en style="display:none">Bulk Downloads</span></div></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--purple);" id="dl-unique-fonts">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>فۆنتی جیاواز</span><span data-en style="display:none">Unique Fonts</span></div></div>
             <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.1rem;font-weight:bold;color:var(--red);font-family:var(--mono);" id="dl-today-count">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">داگرتنی ئەمڕۆ</div></div>
             <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.1rem;font-weight:bold;color:var(--accent);font-family:var(--mono);" id="dl-this-month">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">داگرتنی ئەم مانگە</div></div>
           </div>
@@ -4711,7 +4754,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             </select>
             <input type="date" id="dl-date-from" onchange="renderDlTable()" style="direction:ltr;color-scheme:dark;max-width:150px;">
             <input type="date" id="dl-date-to" onchange="renderDlTable()" style="direction:ltr;color-scheme:dark;max-width:150px;">
-            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 10px;" onclick="clearDlFilters()">پاکردنەوەی فلتەر</button>
+            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 10px;" onclick="clearDlFilters()"><span data-ku>پاکردنەوەی فلتەر</span><span data-en style="display:none">Clear Filters</span></button>
           </div>
           <div id="dl-stats-alert" class="alert"></div>
           <div class="section-label" style="margin-bottom:10px;">داگرتنەکان بەپێی فۆنت</div>
@@ -4719,13 +4762,13 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             <table style="width:100%;border-collapse:collapse;font-size:0.82rem;min-width:500px;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:8px 12px;text-align:right;font-weight:normal;font-family:var(--mono);">#</th>
-                <th style="padding:8px 12px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortDlBy('font')">ناوی فۆنت ↕</th>
-                <th style="padding:8px 12px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlBy('count')">ژمارەی داگرتن ↕</th>
-                <th style="padding:8px 12px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlBy('last')">دوایین داگرتن ↕</th>
+                <th style="padding:8px 12px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortDlBy('font')"><span data-ku>ناوی فۆنت</span><span data-en style="display:none">Font Name</span> ↕</th>
+                <th style="padding:8px 12px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlBy('count')"><span data-ku>ژمارەی داگرتن</span><span data-en style="display:none">Downloads</span> ↕</th>
+                <th style="padding:8px 12px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlBy('last')"><span data-ku>دوایین داگرتن</span><span data-en style="display:none">Last Download</span> ↕</th>
               </tr></thead>
               <tbody id="dl-font-tbody"></tbody>
             </table>
-            <div id="dl-font-footer" style="margin-top:8px;font-size:0.75rem;color:var(--muted);text-align:center;"></div>
+            <div id="dl-font-footer" style="margin-top:8px;font-size:0.75rem;color:#aaa;text-align:center;"></div>
             <div id="dl-font-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
           <div class="section-label" style="margin-bottom:10px;">تەواوی ئەرشیفی داگرتنەکان</div>
@@ -4733,17 +4776,17 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
             <table style="width:100%;border-collapse:collapse;font-size:0.8rem;min-width:700px;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;font-family:var(--mono);">#</th>
-                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('font')">ناوی فۆنت ↕</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('type')">جۆر ↕</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('country')">وڵات ↕</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('city')">شار ↕</th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('font')"><span data-ku>ناوی فۆنت</span><span data-en style="display:none">Font Name</span> ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('type')"><span data-ku>جۆر</span><span data-en style="display:none">Type</span> ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('country')"><span data-ku>وڵات</span><span data-en style="display:none">Country</span> ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('city')"><span data-ku>شار</span><span data-en style="display:none">City</span> ↕</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('source')">Source ↕</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('device')">Device ↕</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('ts')">بەروار — کات ↕</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortDlLogBy('ts')"><span data-ku>بەروار — کات</span><span data-en style="display:none">Date — Time</span> ↕</th>
               </tr></thead>
               <tbody id="dl-log-tbody"></tbody>
             </table>
-            <div id="dl-log-footer" style="margin-top:8px;font-size:0.75rem;color:var(--muted);text-align:center;"></div>
+            <div id="dl-log-footer" style="margin-top:8px;font-size:0.75rem;color:#aaa;text-align:center;"></div>
             <div id="dl-log-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
         </div>
@@ -4805,7 +4848,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 <input type="text" id="edit-file" dir="ltr" style="font-family:var(--mono);font-size:0.85rem;direction:ltr;" readonly>
             </div>
             <div class="form-group">
-                <label>بەرواری زیادکردن (YYYY-MM-DD)</label>
+                <label><span data-ku>بەرواری زیادکردن (YYYY-MM-DD)</span><span data-en style="display:none">Date Added (YYYY-MM-DD)</span></label>
                 <input type="date" id="edit-date" style="direction:ltr;color-scheme:dark;">
             </div>
             <div class="form-group full">
@@ -4813,11 +4856,11 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 <input type="text" id="edit-preview">
             </div>
             <div class="form-group full">
-                <label>دەقی پەرەگراف</label>
+                <label><span data-ku>دەقی پەرەگراف</span><span data-en style="display:none">Paragraph Text</span></label>
                 <textarea id="edit-paragraph" dir="rtl" rows="3" placeholder="فۆنتەکانی یونی قەیدار کۆکراوەی کۆمەڵێک فۆنتی کوردین..." oninput="updateEditParaPreview()"></textarea>
             </div>
             <div class="form-group full">
-                <label>پیشاندانی ڕاستەقینەی پەرەگراف</label>
+                <label><span data-ku>پیشاندانی ڕاستەقینەی پەرەگراف</span><span data-en style="display:none">Live Paragraph Preview</span></label>
                 <div id="edit-para-preview-box" dir="rtl" style="
                     min-height:80px; background:#111; border:1px solid #333;
                     border-radius:8px; padding:14px 18px; font-size:1.1rem;
@@ -4828,22 +4871,22 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
                 </div>
             </div>
             <div class="form-group full">
-                <label>مەودای نێوان دێڕەکان — <span id="edit-lh-display" style="font-family:var(--mono);color:var(--accent);">1.8</span></label>
+                <label><span data-ku>مەودای نێوان دێڕەکان</span><span data-en style="display:none">Line Height</span> — <span id="edit-lh-display" style="font-family:var(--mono);color:var(--accent);">1.8</span></label>
                 <input type="range" id="edit-lineheight" min="0.1" max="6.0" step="0.1" value="1.8"
                     style="width:100%;accent-color:var(--accent);cursor:pointer;"
                     oninput="updateEditLhPreview()">
                 <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);margin-top:2px;font-family:var(--mono);"><span>0.1</span><span>6.0</span></div>
             </div>
             <div class="form-group full">
-                <label>کاتێگۆریەکان — یەک یان زیاتر هەڵبژێرە</label>
+                <label><span data-ku>کاتێگۆریەکان — یەک یان زیاتر هەڵبژێرە</span><span data-en style="display:none">Categories — Select one or more</span></label>
                 <div id="edit-cat-pills" class="cat-pills" style="margin-top:6px;"></div>
                 <input type="hidden" id="edit-cats">
             </div>
         </div>
         <div id="edit-alert" class="alert"></div>
         <div class="modal-footer">
-            <button class="btn btn-ghost" onclick="closeEditModal()">کانسڵ</button>
-            <button class="btn btn-primary" onclick="saveEditFont()">💾 سەیڤ</button>
+            <button class="btn btn-ghost" onclick="closeEditModal()"><span data-ku>کانسڵ</span><span data-en style="display:none">Cancel</span></button>
+            <button class="btn btn-primary" onclick="saveEditFont()"><span data-ku>💾 سەیڤ</span><span data-en style="display:none">💾 Save</span></button>
         </div>
     </div>
 </div>
@@ -4865,6 +4908,34 @@ const HEADERS_FILE = '_headers';
 let HEADERS_SHA = '';
 
 const LS_KEY = 'uqadmin_cfg';
+
+// ══════════════════════════════════════════
+// Bilingual EN/KU interface toggle
+// ══════════════════════════════════════════
+(function() {
+    var LANG_KEY = 'uq_admin_lang';
+    window.uqToggleLang = function() {
+        var isEn = document.body.classList.toggle('lang-en');
+        localStorage.setItem(LANG_KEY, isEn ? 'en' : 'ku');
+        var btn = document.getElementById('lang-toggle-btn');
+        if (btn) btn.textContent = isEn ? '🌐 KU' : '🌐 EN';
+    };
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem(LANG_KEY) === 'en') {
+                document.body.classList.add('lang-en');
+                var btn = document.getElementById('lang-toggle-btn');
+                if (btn) btn.textContent = '🌐 KU';
+            }
+        });
+    } else {
+        if (localStorage.getItem(LANG_KEY) === 'en') {
+            document.body.classList.add('lang-en');
+            var btn = document.getElementById('lang-toggle-btn');
+            if (btn) btn.textContent = '🌐 KU';
+        }
+    }
+})();
 
 // ══════════════════════════════════════════
 // Binary-safe UTF-8 ↔ Base64 utilities
@@ -4962,8 +5033,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
     if (TOKEN && USER && REPO) {
         try {
-            // 15s timeout — prevents loading screen hanging forever if GitHub is unreachable
-            const timeout = new Promise(resolve => setTimeout(() => resolve(false), 15000));
+            // 8s timeout — prevents loading screen hanging forever if GitHub is unreachable
+            const timeout = new Promise(resolve => setTimeout(() => resolve(false), 8000));
             const ok = await Promise.race([loadIndex(), timeout]);
             if (ok) { setReady(true); hideLoading(); }
             else     { hideLoading(); showSetup(); }
@@ -5053,7 +5124,7 @@ async function doSetup() {
 // ══════════════════════════════════════════
 async function ghGet() {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 12000);
+    const timer = setTimeout(() => controller.abort(), 7000);
     let r;
     try {
         r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${FILE}?ref=${BRANCH}`,
@@ -5609,8 +5680,7 @@ async function loadIndex() {
         return true;
     } catch(e){ console.error(e); return false; }
 }
-
-// ── Local-disk fallback: auto-load index.html from same folder ──────────────
+// ── auto-load index.html from same folder ──────────────
 // Fires on DOMContentLoaded when opened from file:// or when GitHub is not yet
 // configured, so Site Settings fields are always pre-filled automatically.
 (function() {
@@ -5760,8 +5830,8 @@ function buildCatList() {
             <input id="inp-id-${i}" value="${c.id}" style="display:none;width:90px;font-family:var(--mono);font-size:0.75rem;background:var(--bg);border:1px solid var(--yellow);color:var(--yellow);border-radius:5px;padding:4px 8px" placeholder="ئینگلیزی-ID">
             <span class="cnt">${count} فۆنت</span>
             <button class="btn btn-ghost" style="padding:5px 10px;font-size:0.75rem;" onclick="startCatEdit(${i})">✏️ گۆڕینی ناو</button>
-            <button id="savebtn-${i}" class="btn btn-primary" style="display:none;padding:5px 10px;font-size:0.75rem;" onclick="saveCatName(${i})">💾 سەیڤ</button>
-            <button id="cancelbtn-${i}" class="btn btn-ghost" style="display:none;padding:5px 10px;font-size:0.75rem;" onclick="cancelCatEdit(${i})">کانسڵ</button>
+            <button id="savebtn-${i}" class="btn btn-primary" style="display:none;padding:5px 10px;font-size:0.75rem;" onclick="saveCatName(${i})"><span data-ku>💾 سەیڤ</span><span data-en style="display:none">💾 Save</span></button>
+            <button id="cancelbtn-${i}" class="btn btn-ghost" style="display:none;padding:5px 10px;font-size:0.75rem;" onclick="cancelCatEdit(${i})"><span data-ku>کانسڵ</span><span data-en style="display:none">Cancel</span></button>
             <button class="btn btn-red" style="padding:5px 10px;font-size:0.75rem;" onclick="deleteCat(${i})">🗑</button>`;
         el.appendChild(row);
     });
@@ -6995,7 +7065,7 @@ async function loadAllStats(force) {
                 if (ev.type !== 'single') return false;
                 if (ev.event && ev.event !== 'download') return false;
                 const fn = ev.font || '';
-                return !fn.includes('داگرتنی کاتێگۆری') && !fn.includes('داگرتنی تەواوی');
+                return !fn.includes('داگرتنی کاتێگۆری') && !fn.includes('<span data-ku>داگرتنی تەواوی</span><span data-en style="display:none">Bulk Downloads</span>');
             });
             const cfCountMap = {};
             singleEvs.forEach(ev => { const k = ev.font||'?'; cfCountMap[k] = (cfCountMap[k]||0)+1; });
@@ -7113,7 +7183,10 @@ function renderVisitStats() {
 
     // ── Virality table: copy_font | copy_category | copy_bulk_modal ──
     const viralEvents = DL_DATA.filter(ev => ['copy_font','copy_category','copy_bulk_modal'].includes(ev.event||''));
-    const viralSorted = [...viralEvents].sort((a,b)=>((b.ts||b.date||'')>(a.ts||a.date||''))?1:-1);
+    const viralSorted = [...viralEvents].sort((a,b)=>{
+        const va = a[VIRAL_SORT]||'', vb = b[VIRAL_SORT]||'';
+        return va < vb ? VIRAL_SORT_DIR : va > vb ? -VIRAL_SORT_DIR : 0;
+    });
     const vvTotal = viralSorted.length;
     const vvPage  = PG.vviral || 1;
     const vvSlice = viralSorted.slice((vvPage-1)*PG_SIZE, vvPage*PG_SIZE);
@@ -7153,6 +7226,14 @@ function renderVisitStats() {
     const vvFooter = document.getElementById('v-viral-footer');
     if (vvFooter) vvFooter.textContent = `کۆی ${vvTotal} تۆمار`;
     renderPgBar('v-viral-pg', vvPage, vvTotal, PG_SIZE, (p)=>{ PG.vviral=p; renderVisitStats(); });
+}
+
+// ── Viral / CopyLink sort state ──────────────────────────────────────
+let VIRAL_SORT = 'ts', VIRAL_SORT_DIR = -1;
+function sortViralBy(col) {
+    if (VIRAL_SORT === col) VIRAL_SORT_DIR *= -1;
+    else { VIRAL_SORT = col; VIRAL_SORT_DIR = -1; }
+    renderVisitStats();
 }
 
 // ── SEARCH KEYWORDS ──────────────────────────
@@ -7287,7 +7368,7 @@ function getFilteredEvents() {
         if (typeF !== 'all') {
             const fontName = ev.font || '';
             const isCatBulkEntry = ev.type === 'cat-bulk' || fontName.includes('داگرتنی کاتێگۆری');
-            const isTotalBulk    = fontName.includes('داگرتنی تەواوی');
+            const isTotalBulk    = fontName.includes('<span data-ku>داگرتنی تەواوی</span><span data-en style="display:none">Bulk Downloads</span>');
             if (typeF === 'cat-bulk') {
                 // cat-bulk: only entries that are category downloads
                 if (!isCatBulkEntry) return false;
@@ -7302,7 +7383,7 @@ function getFilteredEvents() {
                 if (isTotalBulk) return false;
                 const _fn = (ev.font || '');
                 if (_fn.includes('داگرتنی کاتێگۆری')) return false;
-                if (_fn.includes('داگرتنی تەواوی')) return false;
+                if (_fn.includes('<span data-ku>داگرتنی تەواوی</span><span data-en style="display:none">Bulk Downloads</span>')) return false;
             } else {
                 if (ev.type !== typeF) return false;
             }
@@ -7348,7 +7429,7 @@ function renderDlTable() {
             tr.onmouseover = ()=>tr.style.background='var(--surface2)';
             tr.onmouseout  = ()=>tr.style.background='';
             const lastSUL = item.last ? fmtSUL(item.last) : '—';
-            const isBulkEntry    = item.type==='bulk' || item.font.includes('داگرتنی تەواوی');
+            const isBulkEntry    = item.type==='bulk' || item.font.includes('<span data-ku>داگرتنی تەواوی</span><span data-en style="display:none">Bulk Downloads</span>');
             const isCatBulkEntry = item.type==='cat-bulk' || item.font.includes('داگرتنی کاتێگۆری');
             let fontLink, linkLabel;
             if (isBulkEntry) {
@@ -7406,7 +7487,7 @@ function renderDlTable() {
             const tr  = document.createElement('tr');
             tr.style.cssText = 'border-bottom:1px solid var(--border);';
             const isCatBulk = ev.type==='cat-bulk' || (ev.font||'').includes('داگرتنی کاتێگۆری');
-            const isBulk    = !isCatBulk && (ev.type==='bulk' || (ev.font||'').includes('داگرتنی تەواوی'));
+            const isBulk    = !isCatBulk && (ev.type==='bulk' || (ev.font||'').includes('<span data-ku>داگرتنی تەواوی</span><span data-en style="display:none">Bulk Downloads</span>'));
             const lbl = isCatBulk
                 ? '<span style="background:var(--purple);color:#fff;padding:2px 10px;border-radius:10px;font-size:0.72rem;display:inline-block;white-space:nowrap;unicode-bidi:plaintext;">کاتێگۆری</span>'
                 : isBulk
@@ -7593,7 +7674,7 @@ async function updateTrending() {
         if (ev.event && ev.event !== 'download') return false;
         const fn = ev.font || '';
         if (fn.includes('داگرتنی کاتێگۆری')) return false;
-        if (fn.includes('داگرتنی تەواوی')) return false;
+        if (fn.includes('<span data-ku>داگرتنی تەواوی</span><span data-en style="display:none">Bulk Downloads</span>')) return false;
         return true;
     });
 
@@ -7680,14 +7761,14 @@ async function loadPopularJson() {
 function autoFillTrending() {
     const al = document.getElementById('trending-alert');
     if (!DL_DATA || !DL_DATA.length) {
-        alert2(al, '❌ تکایە یەکەم ئامارەکانی داگرتن بارکە (🔄 نوێکردنەوە).', 'err');
+        alert2(al, '❌ تکایە یەکەم ئامارەکانی داگرتن بارکە (<span data-ku>🔄 نوێکردنەوە</span><span data-en style="display:none">🔄 Refresh</span>).', 'err');
         return;
     }
     const singleEvents = DL_DATA.filter(ev => {
         if (ev.type !== 'single') return false;
         if (ev.event && ev.event !== 'download') return false;
         const fn = ev.font || '';
-        return !fn.includes('داگرتنی کاتێگۆری') && !fn.includes('داگرتنی تەواوی');
+        return !fn.includes('داگرتنی کاتێگۆری') && !fn.includes('<span data-ku>داگرتنی تەواوی</span><span data-en style="display:none">Bulk Downloads</span>');
     });
     const countMap = {};
     singleEvents.forEach(ev => { const k = ev.font || '?'; countMap[k] = (countMap[k] || 0) + 1; });
