@@ -1180,6 +1180,42 @@ footer strong {
     30%       { transform: scale(1); outline: 0px solid transparent; outline-offset: 0px; }
 }
 
+.close-telegram-modal {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 100;
+    transition: background-color 0.3s, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+    animation: uqClosePulse 3s infinite ease-in-out;
+    line-height: 1;
+}
+.close-telegram-modal i {
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.close-telegram-modal:hover,
+.close-telegram-modal:active {
+    background-color: #a71d2a;
+    transform: scale(1.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    animation: none;
+}
+.close-telegram-modal:hover i,
+.close-telegram-modal:active i {
+    transform: rotate(360deg);
+}
+
 .modal-content h2 {
     color: #339cff; 
     margin-bottom: 20px;
@@ -1877,6 +1913,10 @@ body.dark-mode #dm-desc { color: #ffffff !important; }
 body.dark-mode #about-content { color: #fff !important; }
 body.dark-mode #about-launch-date { color: #ffffff !important; }
 body.dark-mode #about-developer { color: #ff5700 !important; }
+body.dark-mode #tg-modal-title { color: #5ba3ff !important; }
+body.dark-mode #tg-modal-body { color: #ffffff !important; }
+body:not(.dark-mode) #tg-modal-title { color: #339cff !important; }
+body:not(.dark-mode) #tg-modal-body { color: #333 !important; }
 /* About modal features box — always dark bg so text always white */
 /* About features box — always white text: the box has a hardcoded dark bg */
 #about-feat1-text, #about-feat2-text, #about-feat3-text, #about-feat4-text { color: #e0e0e0; }
@@ -4185,17 +4225,13 @@ async function downloadCategoryFonts() {
                   || (typeof window.TelegramWebviewProxy !== 'undefined')
                   || (typeof window.TelegramWebAppProxy !== 'undefined');
     if (isTelegram) {
-        function setProgress(html) {
-            if (prog)  { prog.innerHTML  = html; prog.style.display  = html ? 'inline-block' : 'none'; }
-            if (progM) { progM.innerHTML = html; progM.style.display = html ? 'block' : 'none'; }
-        }
         var _pgUrl = window.location.href;
         var _isAndroid = /Android/i.test(ua);
         var _intentUrl = 'intent://' + _pgUrl.replace(/^https?:\/\//, '') + '#Intent;scheme=https;action=android.intent.action.VIEW;package=com.android.chrome;end';
         var _openBtn = _isAndroid
             ? '<a href="' + _intentUrl + '" style="display:inline-block;margin-top:8px;padding:6px 14px;background:#ff5700;color:#fff;border-radius:8px;text-decoration:none;font-size:0.85rem;">🌐 کردنەوە لە Chrome</a>'
             : '<div style="margin-top:5px;font-size:0.8rem;opacity:0.8;">لینکەکە لە Safari یان Chrome بکەرەوە.</div>';
-        setProgress('⚠️ براوزەری تێلیگرام پشتیوانی داونلۆدکردنی فایلی زیپ ناکات.' + _openBtn);
+        openTelegramModal(_openBtn);
         return;
     }
 
@@ -5006,6 +5042,17 @@ window.addEventListener('click', function(e) {
     </div>
 </div>
 
+<div id="telegramModal" class="modal">
+    <div class="modal-content" style="max-width:480px;">
+        <div class="modal-inner-scroll" style="padding-top:54px;">
+        <button class="close-telegram-modal" aria-label="داخستن" title="داخستن"><i class="fas fa-times"></i></button>
+        <h2 id="tg-modal-title" style="font-size:1.4rem;letter-spacing:0.02em;font-weight:normal;">⚠️ براوزەری تێلیگرام</h2>
+        <p id="tg-modal-body" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;font-size:1rem;color:#333;text-align:center;line-height:2;">براوزەری تێلیگرام پشتیوانی داونلۆدکردنی فایلی زیپ ناکات.</p>
+        <div id="tg-modal-btn-wrap" style="margin-top:12px;"></div>
+        </div>
+    </div>
+</div>
+
 <script>
 const aboutModal = document.getElementById('aboutModal');
 document.getElementById('aboutBtn').onclick = function(e) {
@@ -5018,6 +5065,19 @@ document.querySelector('.close-btn').onclick = function() {
 window.addEventListener('click', function(e) {
     if (e.target === aboutModal) closeModal(aboutModal);
 });
+</script>
+<script>
+const telegramModal = document.getElementById('telegramModal');
+document.querySelector('.close-telegram-modal').onclick = function() {
+    closeModal(telegramModal);
+};
+window.addEventListener('click', function(e) {
+    if (e.target === telegramModal) closeModal(telegramModal);
+});
+function openTelegramModal(openBtnHtml) {
+    document.getElementById('tg-modal-btn-wrap').innerHTML = openBtnHtml || '';
+    openModal(telegramModal);
+}
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
@@ -5038,8 +5098,7 @@ async function downloadFontsDirectly() {
         var _openBtn2 = _isAndroid2
             ? '<a href="' + _intentUrl2 + '" style="display:inline-block;margin-top:8px;padding:6px 14px;background:#ff5700;color:#fff;border-radius:8px;text-decoration:none;font-size:0.85rem;">🌐 کردنەوە لە Chrome</a>'
             : '<div style="margin-top:5px;font-size:0.8rem;opacity:0.8;">لینکەکە لە Safari یان Chrome بکەرەوە.</div>';
-        progressDiv.style.display = 'block';
-        progressText.innerHTML = '⚠️ براوزەری تێلیگرام پشتیوانی داونلۆدکردنی فایلی زیپ ناکات.' + _openBtn2;
+        openTelegramModal(_openBtn2);
         return;
     }
 
