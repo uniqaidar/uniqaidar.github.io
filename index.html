@@ -4226,11 +4226,7 @@ async function downloadCategoryFonts() {
                   || (typeof window.TelegramWebAppProxy !== 'undefined');
     if (isTelegram) {
         var _pgUrl = window.location.href;
-        var _isAndroid = /Android/i.test(ua);
-        var _openBtn = _isAndroid
-            ? '<a href="' + _pgUrl + '" target="_blank" style="display:inline-block;margin-top:8px;padding:6px 14px;background:#ff5700;color:#fff;border-radius:8px;text-decoration:none;font-size:0.85rem;">🌐 کردنەوەی لە براوزەرێکی دیکەی مۆبایلەکەت</a>'
-            : '<div style="margin-top:5px;font-size:0.8rem;opacity:0.8;">لینکەکە لە براوزەرێکی دیکەی مۆبایلەکەتدا بکەرەوە.</div>';
-        openTelegramModal(_openBtn);
+        openTelegramModal(_pgUrl);
         return;
     }
 
@@ -5073,8 +5069,49 @@ document.querySelector('.close-telegram-modal').onclick = function() {
 window.addEventListener('click', function(e) {
     if (e.target === telegramModal) closeModal(telegramModal);
 });
-function openTelegramModal(openBtnHtml) {
-    document.getElementById('tg-modal-btn-wrap').innerHTML = openBtnHtml || '';
+function openTelegramModal(pageUrl) {
+    var ua = navigator.userAgent || '';
+    var isAndroid = /Android/i.test(ua);
+    var wrap = document.getElementById('tg-modal-btn-wrap');
+    wrap.innerHTML = '';
+
+    if (isAndroid) {
+        // intent:// without package= → Android shows full installed-browser chooser
+        var intentUrl = 'intent://' + pageUrl.replace(/^https?:\/\//, '') + '#Intent;scheme=https;action=android.intent.action.VIEW;end';
+        var a = document.createElement('a');
+        a.href = intentUrl;
+        a.style.cssText = 'display:inline-block;margin-top:8px;padding:8px 18px;background:#ff5700;color:#fff;border-radius:8px;text-decoration:none;font-size:0.9rem;font-family:inherit;';
+        a.textContent = '🌐 کردنەوەی وێبسایتەکە لە براوزەرێکی دیکەی مۆبایلەکەت';
+        wrap.appendChild(a);
+    } else {
+        // iOS / other: copy URL to clipboard, show confirmation
+        var btn = document.createElement('button');
+        btn.style.cssText = 'display:inline-block;margin-top:8px;padding:8px 18px;background:#ff5700;color:#fff;border-radius:8px;border:none;cursor:pointer;font-size:0.9rem;font-family:inherit;';
+        btn.textContent = '📋 کۆپیکردنی لینکەکە';
+        btn.onclick = function() {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(pageUrl).then(function() {
+                    btn.textContent = '✅ لینکەکە کۆپی کرا — لە براوزەرەکەتدا جێبەجێ بکە';
+                    btn.style.background = '#27ae60';
+                });
+            } else {
+                // Fallback for older iOS
+                var ta = document.createElement('textarea');
+                ta.value = pageUrl;
+                ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+                document.body.appendChild(ta);
+                ta.focus(); ta.select();
+                try { document.execCommand('copy'); btn.textContent = '✅ لینکەکە کۆپی کرا — لە براوزەرەکەتدا جێبەجێ بکە'; btn.style.background = '#27ae60'; } catch(e) {}
+                document.body.removeChild(ta);
+            }
+        };
+        wrap.appendChild(btn);
+        var hint = document.createElement('div');
+        hint.style.cssText = 'margin-top:8px;font-size:0.8rem;opacity:0.75;font-family:inherit;';
+        hint.textContent = 'لینکەکە کۆپی بکە و لە Safari یان براوزەرێکی دیکەدا بیکەرەوە.';
+        wrap.appendChild(hint);
+    }
+
     openModal(telegramModal);
 }
 </script>
@@ -5092,11 +5129,7 @@ async function downloadFontsDirectly() {
                   || (typeof window.TelegramWebAppProxy !== 'undefined');
     if (isTelegram) {
         var _pgUrl2 = window.location.href;
-        var _isAndroid2 = /Android/i.test(ua);
-        var _openBtn2 = _isAndroid2
-            ? '<a href="' + _pgUrl2 + '" target="_blank" style="display:inline-block;margin-top:8px;padding:6px 14px;background:#ff5700;color:#fff;border-radius:8px;text-decoration:none;font-size:0.85rem;">🌐 کردنەوەی لە براوزەرێکی دیکەی مۆبایلەکەت</a>'
-            : '<div style="margin-top:5px;font-size:0.8rem;opacity:0.8;">لینکەکە لە براوزەرێکی دیکەی مۆبایلەکەتدا بکەرەوە.</div>';
-        openTelegramModal(_openBtn2);
+        openTelegramModal(_pgUrl2);
         return;
     }
 
