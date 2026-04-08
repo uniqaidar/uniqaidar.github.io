@@ -4227,10 +4227,9 @@ async function downloadCategoryFonts() {
     if (isTelegram) {
         var _pgUrl = window.location.href;
         var _isAndroid = /Android/i.test(ua);
-        var _intentUrl = 'intent://' + _pgUrl.replace(/^https?:\/\//, '') + '#Intent;scheme=https;action=android.intent.action.VIEW;package=com.android.chrome;end';
         var _openBtn = _isAndroid
-            ? '<a href="' + _intentUrl + '" style="display:inline-block;margin-top:8px;padding:6px 14px;background:#ff5700;color:#fff;border-radius:8px;text-decoration:none;font-size:0.85rem;">🌐 کردنەوە لە Chrome</a>'
-            : '<div style="margin-top:5px;font-size:0.8rem;opacity:0.8;">لینکەکە لە Safari یان Chrome بکەرەوە.</div>';
+            ? '<a href="' + _pgUrl + '" target="_blank" style="display:inline-block;margin-top:8px;padding:6px 14px;background:#ff5700;color:#fff;border-radius:8px;text-decoration:none;font-size:0.85rem;">🌐 کردنەوەی لە براوزەرێکی دیکەی مۆبایلەکەت</a>'
+            : '<div style="margin-top:5px;font-size:0.8rem;opacity:0.8;">لینکەکە لە براوزەرێکی دیکەی مۆبایلەکەتدا بکەرەوە.</div>';
         openTelegramModal(_openBtn);
         return;
     }
@@ -5046,8 +5045,8 @@ window.addEventListener('click', function(e) {
     <div class="modal-content" style="max-width:480px;">
         <div class="modal-inner-scroll" style="padding-top:54px;">
         <button class="close-telegram-modal" aria-label="داخستن" title="داخستن"><i class="fas fa-times"></i></button>
-        <h2 id="tg-modal-title" style="font-size:1.4rem;letter-spacing:0.02em;font-weight:normal;">⚠️ براوزەری تێلیگرام</h2>
-        <p id="tg-modal-body" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;font-size:1rem;color:#333;text-align:center;line-height:2;">براوزەری تێلیگرام پشتیوانی داونلۆدکردنی فایلی زیپ ناکات.</p>
+        <h2 id="tg-modal-title" style="font-size:1.4rem;letter-spacing:0.02em;font-weight:normal;">⚠️ ئاگاداری</h2>
+        <p id="tg-modal-body" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;font-size:1rem;color:#333;text-align:justify;line-height:2;">براوزەری تێلیگرام پشتیوانی داونلۆدکردنی فایلی زیپ ناکات. بۆ داگرتنی هەموو فۆنتەکان یاخود تەواوی فۆنتەکانی بەشێکی دیاریکراو پێویستە بە شێوەی زیپ بێت. لەبەر ئەو هۆکارە، تکایە وێبسایتەکە لە براوزەرێکی دیکەی مۆبایلەکەتدا بکەرەوە ئەگەر دەتەوێت زیاتر لە یەک فۆنت داونلۆد بکەیت بەیەک جار.</p>
         <div id="tg-modal-btn-wrap" style="margin-top:12px;"></div>
         </div>
     </div>
@@ -5094,10 +5093,9 @@ async function downloadFontsDirectly() {
     if (isTelegram) {
         var _pgUrl2 = window.location.href;
         var _isAndroid2 = /Android/i.test(ua);
-        var _intentUrl2 = 'intent://' + _pgUrl2.replace(/^https?:\/\//, '') + '#Intent;scheme=https;action=android.intent.action.VIEW;package=com.android.chrome;end';
         var _openBtn2 = _isAndroid2
-            ? '<a href="' + _intentUrl2 + '" style="display:inline-block;margin-top:8px;padding:6px 14px;background:#ff5700;color:#fff;border-radius:8px;text-decoration:none;font-size:0.85rem;">🌐 کردنەوە لە Chrome</a>'
-            : '<div style="margin-top:5px;font-size:0.8rem;opacity:0.8;">لینکەکە لە Safari یان Chrome بکەرەوە.</div>';
+            ? '<a href="' + _pgUrl2 + '" target="_blank" style="display:inline-block;margin-top:8px;padding:6px 14px;background:#ff5700;color:#fff;border-radius:8px;text-decoration:none;font-size:0.85rem;">🌐 کردنەوەی لە براوزەرێکی دیکەی مۆبایلەکەت</a>'
+            : '<div style="margin-top:5px;font-size:0.8rem;opacity:0.8;">لینکەکە لە براوزەرێکی دیکەی مۆبایلەکەتدا بکەرەوە.</div>';
         openTelegramModal(_openBtn2);
         return;
     }
