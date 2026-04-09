@@ -980,10 +980,14 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     <button class="btn btn-green" onclick="runAtomicSave()" id="atomic-save-btn" title="یەک کلیک — fonts.json + index.html + sitemap.xml + robots.txt + _headers پاشکەوت دەکرێن">⚡ Atomic Save</button>
                     <button class="btn btn-primary" onclick="regenerateSitemapManual()" id="sitemap-btn"><span data-ku>🗺 دروستکردنی sitemap.xml</span><span data-en style="display:none">🗺 Generate sitemap.xml</span></button>
                     <button class="btn" style="background:#4285f4;color:#fff;" onclick="pingGoogleManual()" title="Google و Bing ئاگاداری دەکەن کە sitemap نوێکرایەوە">🔔 Ping Google</button>
+                    <button class="btn" style="background:#0078d4;color:#fff;" onclick="submitBingSitemap()" id="bing-sitemap-btn" title="Submit sitemap directly to Bing Webmaster Tools via API">🔵 Bing Sitemap</button>
+                    <button class="btn" style="background:#00b050;color:#fff;" onclick="emergencyCRLFFix()" id="crlf-fix-btn" title="پاككردنەوەی CRLF لە sitemap.xml — چارەسەری مۆسکەی ئەم کێشەیە">🛠 Fix CRLF Now</button>
                     <button class="btn btn-ghost" onclick="repairRobotsTxt()" id="robots-btn" style="border-color:var(--yellow);color:var(--yellow);"><span data-ku>🤖 چاکسازی robots.txt</span><span data-en style="display:none">🤖 Repair robots.txt</span></button>
                     <button class="btn btn-ghost" onclick="runHealthCheck()" id="health-btn" style="border-color:var(--purple);color:var(--purple);"><span data-ku>🏥 Health Check فۆنتەکان</span><span data-en style="display:none">🏥 Font Health Check</span></button>
                 </div>
                 <div id="atomic-save-alert" class="alert" style="margin-top:10px;"></div>
+                <div id="bing-sitemap-alert" class="alert" style="margin-top:10px;"></div>
+                <div id="crlf-fix-alert" class="alert" style="margin-top:10px;"></div>
                 <div id="robots-alert" class="alert" style="margin-top:10px;"></div>
                 <div id="health-alert" class="alert" style="margin-top:10px;"></div>
                 <div id="health-results" style="display:none;margin-top:12px;max-height:300px;overflow-y:auto;"></div>
@@ -1120,13 +1124,41 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     <div id="indexnow-results" style="display:none;margin-top:10px;font-family:var(--mono);font-size:0.74rem;line-height:1.8;background:var(--surface2);border-radius:6px;padding:12px;max-height:200px;overflow-y:auto;"></div>
                 </div>
 
-                <!-- STEP 8: Rich Results Test link -->
+                <!-- STEP 8: Bing Webmaster Tools Sitemap -->
+                <div style="background:var(--bg);border:1px solid #0078d4;border-radius:8px;padding:14px;margin-bottom:12px;">
+                    <div style="font-size:0.8rem;font-weight:bold;color:#0078d4;margin-bottom:6px;">⑧ Bing Webmaster Tools — Submit sitemap بۆ Bing</div>
+                    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
+                        Bing سیتمێپ بە جیاوازی Google بەڕێوە دەبات. Bing Webmaster Tools API Key بنووسە بۆ submit کردنی ڕاستەوخۆ.<br>
+                        <strong style="color:var(--yellow);">Key وەرگرتن:</strong>
+                        <a href="https://www.bing.com/webmasters/home" target="_blank" style="color:#0078d4;">Bing Webmaster Tools ↗</a>
+                        → Settings → API Access → Generate API Key
+                    </p>
+                    <div style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px;align-items:end;">
+                        <div class="form-group" style="margin:0;">
+                            <label>Bing Webmaster API Key</label>
+                            <input type="password" id="bing-api-key" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" style="font-family:var(--mono);font-size:0.78rem;"
+                                oninput="try{localStorage.setItem('uq_bing_key',this.value)}catch(e){}">
+                        </div>
+                        <button class="btn" style="background:#0078d4;color:#fff;white-space:nowrap;" onclick="submitBingSitemapFull()">📤 Submit to Bing</button>
+                    </div>
+                    <div id="bing-submit-alert" class="alert"></div>
+                    <div style="background:var(--surface2);border-radius:6px;padding:10px;font-size:0.78rem;line-height:2;color:var(--text);margin-top:8px;">
+                        <strong style="color:#0078d4;">ئەگەر API Key نەتت:</strong> بە دەستی بکە:<br>
+                        <span style="color:var(--accent);">١.</span> بچۆ بۆ <a href="https://www.bing.com/webmasters/sitemaps" target="_blank" style="color:#0078d4;">Bing Webmaster → Sitemaps ↗</a><br>
+                        <span style="color:var(--accent);">٢.</span> کلیکی <strong>"Add Sitemap"</strong> بکە<br>
+                        <span style="color:var(--accent);">٣.</span> بنووسە: <code style="color:var(--green);">https://uniqaidar.pages.dev/sitemap.xml</code><br>
+                        <span style="color:var(--accent);">٤.</span> دووبارە زیاد بکە: <code style="color:var(--yellow);">https://uniqaidar.pages.dev/sitemap_index.xml</code>
+                    </div>
+                </div>
+
+                <!-- STEP 9: External Tools -->
                 <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;">
-                    <div style="font-size:0.8rem;font-weight:bold;color:var(--muted);margin-bottom:8px;">⑧ ئامرازە دەرەکییەکان — پشکنینی زیاتر</div>
+                    <div style="font-size:0.8rem;font-weight:bold;color:var(--muted);margin-bottom:8px;">⑨ ئامرازە دەرەکییەکان — پشکنینی زیاتر</div>
                     <div style="display:flex;flex-wrap:wrap;gap:8px;">
                         <a href="https://search.google.com/test/rich-results?url=https://uniqaidar.pages.dev/" target="_blank" class="btn btn-ghost" style="font-size:0.75rem;">🔬 Rich Results Test</a>
-                        <a href="https://www.google.com/webmasters/tools/richsnippets?q=https://uniqaidar.pages.dev/" target="_blank" class="btn btn-ghost" style="font-size:0.75rem;">📊 Structured Data</a>
-                        <a href="https://validator.w3.org/feed/check.cgi?url=https%3A%2F%2Funiqaidar.pages.dev%2Fsitemap.xml" target="_blank" class="btn btn-ghost" style="font-size:0.75rem;">✅ W3C Sitemap Validator</a>
+                        <a href="https://www.bing.com/webmasters/sitemaps" target="_blank" class="btn btn-ghost" style="font-size:0.75rem;border-color:#0078d4;color:#0078d4;">🔵 Bing Sitemaps</a>
+                        <a href="https://www.bing.com/webmasters/urlinspection" target="_blank" class="btn btn-ghost" style="font-size:0.75rem;border-color:#0078d4;color:#0078d4;">🔍 Bing URL Inspection</a>
+                        <a href="https://www.xml-sitemaps.com/validate-xml-sitemap.html" target="_blank" class="btn btn-ghost" style="font-size:0.75rem;">✅ XML Sitemap Validator</a>
                         <a href="https://www.bing.com/webmasters/about" target="_blank" class="btn btn-ghost" style="font-size:0.75rem;">🔵 Bing Webmaster Tools</a>
                         <a href="https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap" target="_blank" class="btn btn-ghost" style="font-size:0.75rem;">📖 Google Sitemap Docs</a>
                     </div>
@@ -5520,11 +5552,14 @@ function buildSitemapXml(fontsArray) {
 
 async function generateAndPushSitemap(fontsArray, triggerMsg) {
     if (!TOKEN || !USER || !REPO) return false; // not connected
-    const xml = buildSitemapXml(fontsArray);
-    const msg = triggerMsg || 'Auto-update sitemap.xml';
-    const ok = await ghPutSitemap(xml, msg);
+    const xml  = buildSitemapXml(fontsArray);
+    const healed = healSitemapXml(xml); // ALWAYS heal — strips CRLF, spaces in loc, BOM
+    const msg  = triggerMsg || 'Auto-update sitemap.xml';
+    const ok   = await ghPutSitemap(healed, msg);
     if (ok) {
-        // Give Cloudflare Pages 8 seconds to deploy, then ping Google
+        // Also push sitemap_index.xml (alternative GSC/Bing entry point)
+        try { await ghPutSitemapIndex(msg + ' [index]'); } catch(e) {}
+        // Give Cloudflare Pages 8 seconds to deploy, then ping
         setTimeout(pingGoogle, 8000);
     }
     return ok;
@@ -8334,6 +8369,142 @@ atomicSave = async function(fontsArray, htmlContent, commitMessage) {
     }
     return results;
 };
+
+// Load Bing API key from localStorage
+(function loadBingKey() {
+    try {
+        const k = localStorage.getItem('uq_bing_key');
+        if (k) setTimeout(() => { const el = document.getElementById('bing-api-key'); if(el) el.value = k; }, 800);
+    } catch(e) {}
+})();
+
+// ════════════════════════════════════════════════════════════
+// EMERGENCY CRLF FIX — fetches live sitemap, strips CRLF, re-pushes
+// This is the one-click fix for the root cause of "Couldn't fetch"
+// ════════════════════════════════════════════════════════════
+async function emergencyCRLFFix() {
+    const al  = document.getElementById('crlf-fix-alert');
+    const btn = document.getElementById('crlf-fix-btn');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە پەیوەندی بکە بە GitHub پێش ئەم کارە!', 'err');
+    btn.disabled = true;
+    alert2(al, '⏳ خوێندنەوەی sitemap.xml ی ئێستا لە GitHub...', 'inf');
+    try {
+        // Fetch current sitemap from GitHub (raw bytes)
+        const r = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/sitemap.xml?ref=${BRANCH}`,
+            { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+        );
+        if (!r.ok) throw new Error('GitHub API سەرنەکەوت: ' + r.status);
+        const d   = await r.json();
+        const raw = fromBase64(d.content);  // decode current content
+
+        // Apply full healing: CRLF→LF, trim, strip control chars, spaces in loc
+        const healed = healSitemapXml(raw);
+
+        // Verify it actually changed
+        const wasCRLF = raw.includes('\r\n');
+        if (!wasCRLF) {
+            alert2(al, '✅ sitemap.xml پێشتر پاکە — CRLF نییە. پێویست نییە دووبارە بنێریت.', 'ok');
+            btn.disabled = false;
+            return;
+        }
+
+        // Push cleaned version
+        const crlfCount = (raw.match(/\r\n/g) || []).length;
+        const body = JSON.stringify({
+            message: 'Emergency fix: strip CRLF from sitemap.xml (' + crlfCount + ' occurrences)',
+            content: toBase64(healed),
+            sha:     d.sha,
+            branch:  BRANCH
+        });
+        const wr = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/sitemap.xml`,
+            { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body }
+        );
+        if (!wr.ok) { const e = await wr.json(); throw new Error(e.message || wr.status); }
+        SITEMAP_SHA = (await wr.json()).content?.sha || '';
+
+        // Also fix sitemap_index.xml
+        try {
+            const ri = await fetch(
+                `https://api.github.com/repos/${USER}/${REPO}/contents/sitemap_index.xml?ref=${BRANCH}`,
+                { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+            );
+            if (ri.ok) {
+                const di  = await ri.json();
+                const rawi = fromBase64(di.content);
+                const healedi = rawi.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+                if (rawi.includes('\r\n')) {
+                    const bi = JSON.stringify({ message: 'Fix CRLF in sitemap_index.xml', content: toBase64(healedi), sha: di.sha, branch: BRANCH });
+                    await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/sitemap_index.xml`,
+                        { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body: bi });
+                }
+            }
+        } catch(e) {}
+
+        alert2(al, `✅ CRLF چاکسرایەوە! ${crlfCount} CRLF سڕایەوە لە sitemap.xml دا. ئێستا Cloudflare deploy دەکات (١-٢ خولەک). پاشان GSC → Sitemaps → دووبارە بنێرە.`, 'ok');
+    } catch(e) {
+        alert2(al, '❌ هەڵە: ' + e.message, 'err');
+    }
+    btn.disabled = false;
+}
+
+// ════════════════════════════════════════════════════════════
+// BING SITEMAP SUBMIT — via Bing Webmaster Tools API
+// ════════════════════════════════════════════════════════════
+async function submitBingSitemap() {
+    // Quick button from main SEO box — opens Bing sitemaps page
+    const al = document.getElementById('bing-sitemap-alert');
+    alert2(al, '⏳ IndexNow پینگ دەکرێت بۆ Bing و سیتمێپ دەنێردرێت...', 'inf');
+    try {
+        // First ping IndexNow (Bing supports it)
+        const SITEMAP = 'https://uniqaidar.pages.dev/sitemap.xml';
+        const SMAP_ENC = encodeURIComponent(SITEMAP);
+        await fetch('https://www.bing.com/ping?sitemap=' + SMAP_ENC, { mode: 'no-cors' });
+
+        // If we have IndexNow key, use it
+        if (INDEXNOW_KEY) {
+            await pingIndexNow(false);
+            alert2(al, '✅ IndexNow پینگکرا بۆ Bing/Yandex/Naver! لە ٣٠ خولەکدا فێرست دەکرێن.', 'ok');
+        } else {
+            alert2(al, '✅ Bing ئاگادار کرا. بۆ submit کردنی ڕاستەوخۆ: SEO Tab → Google Recovery → ⑧ Bing Webmaster Tools', 'ok');
+        }
+    } catch(e) {
+        alert2(al, '⚠️ ' + e.message + ' — بە دەستی بکە: Bing Webmaster Tools → Sitemaps', 'inf');
+    }
+}
+
+async function submitBingSitemapFull() {
+    const al     = document.getElementById('bing-submit-alert');
+    const apiKey = (document.getElementById('bing-api-key')?.value || '').trim();
+    if (!apiKey) return alert2(al, '❌ تکایە Bing API Key بنووسە.', 'err');
+
+    alert2(al, '⏳ Submit کردن بۆ Bing Webmaster Tools...', 'inf');
+
+    const sitemaps = [
+        'https://uniqaidar.pages.dev/sitemap.xml',
+        'https://uniqaidar.pages.dev/sitemap_index.xml'
+    ];
+    const results = [];
+
+    for (const sm of sitemaps) {
+        try {
+            // Bing Webmaster API: POST /webmaster/api.svc/json/AddSitemap
+            const r = await fetch(
+                `https://ssl.bing.com/webmaster/api.svc/json/AddSitemap?apikey=${encodeURIComponent(apiKey)}&siteUrl=https://uniqaidar.pages.dev/&sitemap=${encodeURIComponent(sm)}`,
+                { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: '{}' }
+            );
+            results.push('📤 ' + sm.split('/').pop() + ' → نێردرا (no-cors opaque)');
+        } catch(e) {
+            results.push('⚠️ ' + sm.split('/').pop() + ': ' + e.message);
+        }
+    }
+
+    // Also ping IndexNow for good measure
+    if (INDEXNOW_KEY) { try { await pingIndexNow(false); results.push('📡 IndexNow پینگکرا'); } catch(e) {} }
+
+    alert2(al, results.join(' | ') + ' — بۆ دووپاتکردن بچۆ Bing Webmaster → Sitemaps', 'ok');
+}
 </script>
 
 <script>
