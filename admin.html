@@ -1022,8 +1022,9 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                         <a href="https://search.google.com/search-console/sitemaps?resource_id=sc-domain%3Auniqaidar.pages.dev" target="_blank" style="color:#4285f4;text-decoration:none;">Google Search Console → Sitemaps ↗</a><br>
                         <span style="color:var(--accent);">٢.</span> کلیک لەسەر دوگمەی <strong style="color:var(--red);">⋮</strong> تەنیشت <code style="color:var(--yellow);font-size:0.72rem;">/sitemap.xml</code> و <strong>سڕینەوە</strong><br>
                         <span style="color:var(--accent);">٣.</span> <strong>چاوەڕوان بە 30 چرکەیەک</strong><br>
-                        <span style="color:var(--accent);">٤.</span> لە باکسی "Add a new sitemap" بنووسە: <code style="color:var(--green);font-size:0.78rem;">sitemap.xml</code> و کلیکی <strong>SUBMIT</strong> بکە<br>
-                        <span style="color:var(--accent);">٥.</span> چاوەڕوان بە ٢٤ کاتژمێر
+                        <span style="color:var(--accent);">٤.</span> لە باکسی "Add a new sitemap" بنووسە: <code style="color:var(--green);font-size:0.78rem;">sitemap.xml</code> کلیکی <strong>SUBMIT</strong> بکە<br>
+                        <span style="color:var(--accent);">٥.</span> دووبارە submit بکە بۆ: <code style="color:var(--yellow);font-size:0.78rem;">sitemap_index.xml</code> (ئەمەش زیاد بکە — دوو entry دەبن)<br>
+                        <span style="color:var(--accent);">٦.</span> چاوەڕوان بە ٢٤ کاتژمێر
                     </div>
                 </div>
 
@@ -5207,8 +5208,16 @@ async function atomicSave(fontsArray, htmlContent, commitMessage) {
     // 4. robots.txt
     try { results.robots = await ensureRobotsHasSitemap(); } catch(e) {}
 
-    // 5. _headers (fixes Google "Sitemap could not be read" — sets correct Content-Type)
+    // 5. _headers — LF-only, no-cache, application/xml
     try { results.headers = await ghPutHeaders(commitMessage + ' [_headers]'); } catch(e) {}
+
+    // 6. sitemap_index.xml — alternative GSC entry point (helps with Cloudflare Pages fetcher bug)
+    try { await ghPutSitemapIndex(commitMessage + ' [sitemap_index.xml]'); } catch(e) {}
+
+    // 7. IndexNow key file (if key is set in admin)
+    if (INDEXNOW_KEY) {
+        try { await saveIndexNowKeyFile(); } catch(e) {}
+    }
 
     return results;
 }
@@ -5342,33 +5351,85 @@ async function ghPutSitemap(xmlContent, message) {
 }
 
 // ══════════════════════════════════════════
+// GitHub API — sitemap_index.xml
+// ══════════════════════════════════════════
+async function ghPutSitemapIndex(message) {
+    const today = new Date().toISOString().slice(0, 10);
+    // LF-only, clean XML — alternative GSC submission target
+    const xml = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+        '  <sitemap>',
+        '    <loc>https://uniqaidar.pages.dev/sitemap.xml</loc>',
+        '    <lastmod>' + today + '</lastmod>',
+        '  </sitemap>',
+        '</sitemapindex>',
+        '',
+    ].join('\n');
+    try {
+        const FILE_IDX = 'sitemap_index.xml';
+        let sha = '';
+        const chk = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/${FILE_IDX}?ref=${BRANCH}`,
+            { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+        );
+        if (chk.ok) { const d = await chk.json(); sha = d.sha || ''; }
+        const body = JSON.stringify({
+            message,
+            content: toBase64(xml),
+            branch: BRANCH,
+            ...(sha ? { sha } : {})
+        });
+        const r = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/${FILE_IDX}`,
+            { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body }
+        );
+        return r.ok;
+    } catch(e) { return false; }
+}
+
+// ══════════════════════════════════════════
 // GitHub API — _headers
 // ══════════════════════════════════════════
 async function ghPutHeaders(message) {
-    const HEADERS_CONTENT =
-`# UniQaidar — Cloudflare Pages headers
-
-/sitemap.xml
-  Content-Type: application/xml; charset=utf-8
-  X-Content-Type-Options: nosniff
-  Cache-Control: public, max-age=3600
-  X-Robots-Tag: all
-  Access-Control-Allow-Origin: *
-
-/robots.txt
-  Content-Type: text/plain; charset=utf-8
-  Cache-Control: public, max-age=3600
-  X-Robots-Tag: all
-
-/fonts.json
-  Content-Type: application/json; charset=utf-8
-  Cache-Control: public, max-age=3600
-  Access-Control-Allow-Origin: *
-
-/*
-  X-Frame-Options: SAMEORIGIN
-  X-Content-Type-Options: nosniff
-`;
+    // CRITICAL: Use LF-only line endings — CRLF in _headers breaks Cloudflare Pages header application
+    // Build with explicit \n to guarantee LF regardless of JS engine/OS
+    const lines = [
+        '# UniQaidar — Cloudflare Pages headers',
+        '',
+        '/sitemap.xml',
+        '  Content-Type: application/xml; charset=utf-8',
+        '  X-Content-Type-Options: nosniff',
+        '  Cache-Control: no-cache, no-store, must-revalidate',
+        '  Pragma: no-cache',
+        '  Expires: 0',
+        '  Access-Control-Allow-Origin: *',
+        '',
+        '/sitemap_index.xml',
+        '  Content-Type: application/xml; charset=utf-8',
+        '  X-Content-Type-Options: nosniff',
+        '  Cache-Control: no-cache, no-store, must-revalidate',
+        '  Access-Control-Allow-Origin: *',
+        '',
+        '/robots.txt',
+        '  Content-Type: text/plain; charset=utf-8',
+        '  Cache-Control: no-cache, no-store, must-revalidate',
+        '',
+        '/fonts.json',
+        '  Content-Type: application/json; charset=utf-8',
+        '  Cache-Control: public, max-age=3600',
+        '  Access-Control-Allow-Origin: *',
+        '',
+        '/*.txt',
+        '  Cache-Control: public, max-age=86400',
+        '  Access-Control-Allow-Origin: *',
+        '',
+        '/*',
+        '  X-Frame-Options: SAMEORIGIN',
+        '  X-Content-Type-Options: nosniff',
+        '',
+    ];
+    const HEADERS_CONTENT = lines.join('\n');  // GUARANTEED LF — never CRLF
     try {
         // ALWAYS force-refresh SHA to avoid 409 stale conflicts
         HEADERS_SHA = '';
@@ -7968,9 +8029,14 @@ async function runLiveAudit() {
 
         res.style.display = 'block';
 
-        const allOk = r.ok && appXml && startOk && !hasBOM && hasXmlDecl && hasUrlset && !hasSpaceInLoc && !ctrlChars;
+        const hasCRLF = text.includes('\r\n');
+        res.innerHTML +=
+            row('', 'CRLF لە فایلەکەدا (مۆسکەی ئەم کێشەیە)', hasCRLF ? 'بەڵێ ❌ — Cloudflare هێدەرەکان نادەستکاری' : 'نییە ✅', !hasCRLF);
+        const allOk = r.ok && appXml && startOk && !hasBOM && hasXmlDecl && hasUrlset && !hasSpaceInLoc && !ctrlChars && !hasCRLF;
         if (allOk) {
-            alert2(al, '✅ هەموو شتێک باشە — پرۆبلەمەکە لەلایەن Google کاشێکەوەیە. بستێپ ② بکە.', 'ok');
+            alert2(al, '✅ هەموو شتێک باشە — تکایە بستێپ ② بکە (سڕین و دووبارە نێردن لە GSC).', 'ok');
+        } else if (hasCRLF) {
+            alert2(al, '❌ مۆسکەی ئەم کێشەیە دۆزرایەوە: CRLF لە _headers ـدا — Atomic Save بکە تا چاک بکرێتەوە!', 'err');
         } else if (!appXml) {
             alert2(al, '❌ Content-Type هێشتا text/xml ـە — _headers فایلەکەت نوێنەکرایەوە! Atomic Save بکە.', 'err');
         } else {
