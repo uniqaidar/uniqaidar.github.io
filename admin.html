@@ -5456,7 +5456,6 @@ async function ghPutHeaders(message) {
         '',
         '/*',
         '  X-Frame-Options: SAMEORIGIN',
-        '  X-Content-Type-Options: nosniff',
         '',
     ];
     const HEADERS_CONTENT = lines.join('\n');  // GUARANTEED LF — never CRLF
