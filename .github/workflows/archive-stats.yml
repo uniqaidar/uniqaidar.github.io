@@ -18,6 +18,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+      - name: Create temp directory
+        run: mkdir -p tmp
 
       - name: Archive yesterday's KV stats
         env:
