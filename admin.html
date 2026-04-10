@@ -18,7 +18,7 @@
     --yellow:   #FEB301;
     --purple:   #a29bfe;
     --text:     #e8e8e8;
-    --muted:    #8a8a8a;  /* was #555555 — bumped for WCAG AA readability on dark bg */
+    --muted:    #e8e8e8;  /* soft white — secondary labels, form hints, table headers */
     --mono:     'IBM Plex Mono', monospace;
 }
 
@@ -164,12 +164,12 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
 .cat-row { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 11px 15px; margin-bottom: 8px; }
 .cat-row .lbl { flex: 1; }
 .badge { font-family: var(--mono); font-size: 0.68rem; background: var(--border); padding: 3px 8px; border-radius: 4px; color: var(--yellow); }
-.cnt   { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+.cnt   { font-family: var(--mono); font-size: 0.72rem; color: #2ecc71; }
 
 /* ئارشێف */
 .arc-item { display: flex; align-items: center; background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 9px 13px; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
 .arc-name { font-family: var(--mono); font-size: 0.76rem; color: var(--yellow); min-width: 200px; }
-.arc-prev { font-size: 0.8rem; color: var(--muted); flex: 1; }
+.arc-prev { font-size: 0.8rem; color: #ff5700; flex: 1; }
 
 /* سەیڤ ئۆڤەرلەی */
 .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 5000; align-items: center; justify-content: center; flex-direction: column; gap: 14px; }
@@ -192,7 +192,7 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
 .modal-footer { display: flex; gap: 9px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
 
 /* section divider */
-.section-label { font-size: 0.7rem; color: #b0b0b0; font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.section-label { font-size: 0.7rem; color: #29b6f6; font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
 
 @media (max-width: 580px) {
     .form-grid { grid-template-columns: 1fr; }
@@ -444,7 +444,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
 <!-- لۆدینگ -->
 <div id="loading-screen">
     <div class="spinner"></div>
-    <p style="color:var(--muted);font-size:0.88rem">بارکردنی index.html لە GitHub...</p>
+    <p style="color:var(--muted);font-size:0.88rem"><span data-ku>بارکردنی index.html لە GitHub...</span><span data-en style="display:none">Loading index.html from GitHub...</span></p>
 </div>
 
 <!-- سێتەپ -->
@@ -484,10 +484,10 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
 <header>
     <h1><a href="https://uniqaidar.pages.dev/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;"><span data-ku>⚙️ پانێلی UniQaidar</span><span data-en style="display:none">⚙️ UniQaidar Admin</span></a></h1>
     <div class="header-right">
-        <span id="sul-clock" dir="ltr" title="کاتی سلێمانی (UTC+3)">⏱ —</span>
-        <span id="rbadge" class="repo-badge">پەیوەند نەکراوە</span>
+        <span id="sul-clock" dir="ltr" title="Sulaymaniyah Time (UTC+3)">⏱ —</span>
+        <span id="rbadge" class="repo-badge"><span data-ku>پەیوەند نەکراوە</span><span data-en style="display:none">Not connected</span></span>
         <div id="sdot" class="status-dot"></div>
-        <button class="btn btn-ghost" onclick="restoreBackup()" style="font-size:0.78rem;padding:6px 12px;" title="گەڕاندنەوەی دوایین نوێکردنەوەی پاراستراو"><span data-ku>↩ گەڕاندنەوەی باکئەپ</span><span data-en style="display:none">↩ Restore Backup</span></button>
+        <button class="btn btn-ghost" onclick="restoreBackup()" style="font-size:0.78rem;padding:6px 12px;" title="Restore the last saved backup"><span data-ku>↩ گەڕاندنەوەی باکئەپ</span><span data-en style="display:none">↩ Restore Backup</span></button>
         <button class="btn btn-ghost" onclick="showSetup()" style="font-size:0.78rem;padding:6px 12px;"><span data-ku>⚙ گۆڕین</span><span data-en style="display:none">⚙ Settings</span></button>
         <button class="btn btn-ghost" id="lang-toggle-btn" onclick="uqToggleLang()" style="font-size:0.78rem;padding:6px 12px;font-family:monospace;letter-spacing:0.02em;" title="Switch interface language">🌐 EN</button>
     </div>
@@ -597,8 +597,8 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         <div class="box">
             <div class="box-header"><div class="dot" style="background:var(--accent)"></div> 📝 Welcome Section Editor</div>
             <div class="box-body">
-                <div style="background:rgba(255,87,0,0.07);border:1px solid rgba(255,87,0,0.2);border-radius:7px;padding:10px 14px;margin-bottom:14px;font-size:0.8rem;color:var(--muted);line-height:1.7;">
-                    ئەم بەشە <strong style="color:var(--accent);">بزووتنی SEO</strong>یە — دەقی کوردی پیشەیی کە گووگڵ بەسەرەوە دەبینێت.
+                <div style="background:rgba(255,87,0,0.07);border:1px solid rgba(255,87,0,0.2);border-radius:7px;padding:10px 14px;margin-bottom:14px;font-size:0.8rem;color:#e8e8e8;line-height:1.7;">
+                    <span data-ku>ئەم بەشە <strong style="color:var(--accent);">بزووتنی SEO</strong>یە — دەقی کوردی پیشەیی کە گووگڵ بەسەرەوە دەبینێت.</span><span data-en style="display:none">This section is an <strong style="color:var(--accent);">SEO driver</strong> — the professional Kurdish text that Google sees above the fold.</span>
                 </div>
                 <div class="form-grid">
                     <div class="form-group full">
@@ -756,19 +756,19 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
 
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap">
                     <button class="btn btn-ghost" onclick="scanFonts()" id="scan-btn">🔍 Scan UniQaidarFonts folder</button>
-                    <span id="scan-status" style="font-size:0.8rem;color:var(--muted);font-family:var(--mono)"></span>
+                    <span id="scan-status" style="font-size:0.8rem;color:#2ecc71;font-family:var(--mono)"></span>
                 </div>
 
                 <div class="form-grid">
                     <div class="form-group full">
                         <label><span data-ku>هەڵبژێرنی فایلی .ttf — تەنها فۆنتی نوێ کە لە وێبسایت نییە نیشان دەدرێت</span><span data-en style="display:none">Select .ttf File — Only new fonts not on the website are shown</span></label>
                         <select id="f-select" onchange="onFontSelect()" style="font-family:var(--mono);font-size:0.85rem">
-                            <option value="">— یەکەم Scan بکە —</option>
+                            <option value=""><span data-ku>— یەکەم Scan بکە —</span><span data-en style="display:none">— Scan First —</span></option>
                         </select>
                     </div>
                     <div class="form-group full">
                         <label><span data-ku>ناوی کارتی فۆنت (ئینگلیزی) — ئەمە ناوێکە کە لەسەر کارتەکە دەردەکەوێت، دەتوانرێت جیاواز بێت لە ناوی فایل</span><span data-en style="display:none">Font Card Name (English) — This is what appears on the card, can differ from file name</span></label>
-                        <input id="f-displayname" type="text" dir="ltr" placeholder="مەسەلەن: UniQAIDAR_MyFont 001" style="font-family:var(--mono);font-size:0.85rem;direction:ltr;">
+                        <input id="f-displayname" type="text" dir="ltr" placeholder="e.g.: UniQAIDAR_MyFont 001" style="font-family:var(--mono);font-size:0.85rem;direction:ltr;">
                     </div>
                     <div class="form-group full">
                         <label><span data-ku>دەقی پیشاندان</span><span data-en style="display:none">Preview Text</span></label>
@@ -786,7 +786,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                             color:#f0f0f0; text-align:justify; direction:rtl;
                             line-height:1.8; overflow:hidden; font-family:Tahoma,sans-serif;
                             transition:line-height 0.2s; word-break:break-word;">
-                            دەقی پەرەگراف بنووسە بۆ دەرکەوتنی پریڤیو
+                            <span data-ku>دەقی پەرەگراف بنووسە بۆ دەرکەوتنی پریڤیو</span><span data-en style="display:none">Write paragraph text to see preview</span>
                         </div>
                     </div>
                     <div class="form-group full">
@@ -804,7 +804,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                             color:#f0f0f0; text-align:center; overflow:hidden;
                             display:flex; align-items:center; justify-content:center;
                             font-family: Tahoma, sans-serif;">
-                            فۆنتێک هەڵبژێرە بۆ دەرکەوتنی پریڤیو
+                            <span data-ku>فۆنتێک هەڵبژێرە بۆ دەرکەوتنی پریڤیو</span><span data-en style="display:none">Select a font to see preview</span>
                         </div>
                     </div>
                     <div class="form-group">
@@ -845,15 +845,15 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         <div class="box">
             <div class="box-header"><div class="dot" style="background:var(--green)"></div> <span data-ku>یەک جار بەکارهێنە — پڕکردنەوەی قەبارەی فۆنتەکان لە fonts.json</span><span data-en style="display:none">One-Time Use — Backfill Font Sizes in fonts.json</span></div>
             <div class="box-body">
-                <p style="font-size:0.83rem;color:var(--muted);margin-bottom:16px;line-height:1.8;">
-                    ئەم دوگمەیە یەک جار بەکارهێنرێت. قەبارەی ڕاستەقینەی هەموو فۆنتەکان لە GitHub دەخوێنێتەوە و بە شێوەی دایمی لە <code style="color:var(--yellow);font-family:var(--mono)">fonts.json</code> پاشکەوت دەکات. دوای ئەمەش ماڵپەڕەکە هیچ کات داواکاری سایز لە GitHub ناکات.
+                <p style="font-size:0.83rem;color:var(--text);margin-bottom:16px;line-height:1.8;">
+                    <span data-ku>ئەم دوگمەیە یەک جار بەکارهێنرێت. قەبارەی ڕاستەقینەی هەموو فۆنتەکان لە GitHub دەخوێنێتەوە و بە شێوەی دایمی لە <code style="color:var(--yellow);font-family:var(--mono)">fonts.json</code> پاشکەوت دەکات. دوای ئەمەش ماڵپەڕەکە هیچ کات داواکاری سایز لە GitHub ناکات.</span><span data-en style="display:none">This button is used once only. It reads the real file sizes of all fonts from GitHub and permanently saves them in <code style="color:var(--yellow);font-family:var(--mono)">fonts.json</code>. After this, the website will never request file sizes from GitHub again.</span>
                 </p>
                 <div id="backfill-progress" style="display:none;margin-bottom:14px;">
                     <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 16px;">
                         <div id="backfill-bar-wrap" style="background:var(--border);border-radius:4px;height:6px;margin-bottom:10px;overflow:hidden;">
                             <div id="backfill-bar" style="height:100%;background:var(--green);width:0%;transition:width 0.3s;border-radius:4px;"></div>
                         </div>
-                        <div id="backfill-status" style="font-size:0.82rem;font-family:var(--mono);color:var(--muted);"></div>
+                        <div id="backfill-status" style="font-size:0.82rem;font-family:var(--mono);color:#2ecc71;"></div>
                     </div>
                 </div>
                 <div id="backfill-alert" class="alert"></div>
@@ -874,7 +874,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                 <div class="form-grid">
                     <div class="form-group">
                         <label><span data-ku>ناوی کاتێگۆری (کوردی/عەرەبی)</span><span data-en style="display:none">Category Name (Kurdish/Arabic)</span></label>
-                        <input type="text" id="new-cat-label" placeholder="فۆنتی نوێ">
+                        <input type="text" id="new-cat-label" placeholder="New category name">
                     </div>
                     <div class="form-group">
                         <label><span data-ku>ID (ئینگلیزی، بێ بۆشایی)</span><span data-en style="display:none">ID (English, no spaces)</span></label>
@@ -892,12 +892,12 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             <div class="box-header"><div class="dot" style="background:var(--yellow)"></div> <span data-ku>کاتێگۆریەکانی ئێستا</span><span data-en style="display:none">Current Categories</span></div>
             <div class="box-body">
                 <div style="background:rgba(9,132,227,0.1);border:1px solid rgba(9,132,227,0.3);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:0.8rem;color:var(--accent);line-height:1.7;">
-                    💡 <strong>تێبینی:</strong> کاتێگۆری <strong>🔥 زۆرترین داونلۆکراوەکان</strong> ئەمەش دەتوانرێت بگوازرێتەوە بە ▲▼ — مەسەلەن بردنەوەی تەنیشت <strong>فۆنتی دەستنووس</strong> یان هەر شوێنێکی تر. پاشکەوتکردنی ڕیزبەندی نوێ بکە بۆ پەڕەی سەرەکی.
+                    <span data-ku>💡 <strong>تێبینی:</strong> کاتێگۆری <strong>🔥 زۆرترین داونلۆکراوەکان</strong> ئەمەش دەتوانرێت بگوازرێتەوە بە ▲▼ — مەسەلەن بردنەوەی تەنیشت <strong>فۆنتی دەستنووس</strong> یان هەر شوێنێکی تر. پاشکەوتکردنی ڕیزبەندی نوێ بکە بۆ پەڕەی سەرەکی.</span><span data-en style="display:none">💡 <strong>Note:</strong> The <strong>🔥 Most Downloaded</strong> category can be moved with ▲▼ — e.g. next to <strong>Handwriting</strong> or anywhere else. Save the new order to the main page.</span>
                 </div>
                 <div id="cat-list" style="display:flex;flex-direction:column;gap:6px;"></div>
                 <div style="margin-top:12px;display:flex;gap:10px;align-items:center;">
                     <button class="btn btn-primary" onclick="saveReorder()" style="background:var(--accent)">
-                        💾 سەیڤی ڕیزبەندی نوێ بۆ GitHub
+                        <span data-ku>💾 سەیڤی ڕیزبەندی نوێ بۆ GitHub</span><span data-en style="display:none">💾 Save New Order to GitHub</span>
                     </button>
                     <div id="reorder-alert" class="alert" style="flex:1;margin-top:0;"></div>
                 </div>
@@ -929,7 +929,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     </div>
                 </div>
 
-                <div class="section-label" style="margin-top:18px;">Open Graph (سۆشیال میدیا شێر)</div>
+                <div class="section-label" style="margin-top:18px;">Open Graph (Social Media Share)</div>
                 <div class="form-grid">
                     <div class="form-group full">
                         <label>OG Title</label>
@@ -968,20 +968,21 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         <div class="box" style="margin-top:18px;">
             <div class="box-header"><div class="dot" style="background:var(--accent)"></div> <span data-ku>🗺 Sitemap.xml — نوێکردنەوەی ئۆتۆماتیکی</span><span data-en style="display:none">🗺 Sitemap.xml — Auto Update</span></div>
             <div class="box-body">
-                <p style="font-size:0.83rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
-                    sitemap.xml بەخۆی نوێ دەکرێتەوە کاتێک فۆنتێک زیاد یان سڕایەوە.<br>
-                    ئەمەش دەتوانیت بە دەستی بکەیت بەکلیکی دوگمەی خوارەوە.
+                <p style="font-size:0.83rem;color:var(--text);margin:0 0 10px;line-height:1.6;">
+                    <span data-ku>sitemap.xml بەخۆی نوێ دەکرێتەوە کاتێک فۆنتێک زیاد یان سڕایەوە.<br>
+                    ئەمەش دەتوانیت بە دەستی بکەیت بەکلیکی دوگمەی خوارەوە.</span><span data-en style="display:none">sitemap.xml auto-updates whenever a font is added or removed.<br>
+                    You can also do this manually by clicking the button below.</span>
                 </p>
-                <div style="font-size:0.78rem;color:var(--muted);font-family:var(--mono);margin-bottom:12px;">
-                    کۆی URL: <strong>1 Home + <span id="sitemap-cat-count">—</span> کاتێگۆری + <span id="sitemap-font-count">—</span> فۆنت</strong>
+                <div style="font-size:0.78rem;color:var(--text);font-family:var(--mono);margin-bottom:12px;">
+                    Total URLs: <strong>1 Home + <span id="sitemap-cat-count">—</span> Categories + <span id="sitemap-font-count">—</span> Fonts</strong>
                 </div>
                 <div id="sitemap-alert" class="alert"></div>
                 <div class="btn-row">
-                    <button class="btn btn-green" onclick="runAtomicSave()" id="atomic-save-btn" title="یەک کلیک — fonts.json + index.html + sitemap.xml + robots.txt + _headers پاشکەوت دەکرێن">⚡ Atomic Save</button>
+                    <button class="btn btn-green" onclick="runAtomicSave()" id="atomic-save-btn" title="One click — saves fonts.json + index.html + sitemap.xml + robots.txt + _headers">⚡ Atomic Save</button>
                     <button class="btn btn-primary" onclick="regenerateSitemapManual()" id="sitemap-btn"><span data-ku>🗺 دروستکردنی sitemap.xml</span><span data-en style="display:none">🗺 Generate sitemap.xml</span></button>
-                    <button class="btn" style="background:#4285f4;color:#fff;" onclick="pingGoogleManual()" title="Google و Bing ئاگاداری دەکەن کە sitemap نوێکرایەوە">🔔 Ping Google</button>
+                    <button class="btn" style="background:#4285f4;color:#fff;" onclick="pingGoogleManual()" title="Notify Google and Bing that the sitemap was updated">🔔 Ping Google</button>
                     <button class="btn" style="background:#0078d4;color:#fff;" onclick="submitBingSitemap()" id="bing-sitemap-btn" title="Submit sitemap directly to Bing Webmaster Tools via API">🔵 Bing Sitemap</button>
-                    <button class="btn" style="background:#00b050;color:#fff;" onclick="emergencyCRLFFix()" id="crlf-fix-btn" title="پاككردنەوەی CRLF لە sitemap.xml — چارەسەری مۆسکەی ئەم کێشەیە">🛠 Fix CRLF Now</button>
+                    <button class="btn" style="background:#00b050;color:#fff;" onclick="emergencyCRLFFix()" id="crlf-fix-btn" title="Remove CRLF from sitemap.xml — fixes the root cause of Couldn't Fetch">🛠 Fix CRLF Now</button>
                     <button class="btn btn-ghost" onclick="repairRobotsTxt()" id="robots-btn" style="border-color:var(--yellow);color:var(--yellow);"><span data-ku>🤖 چاکسازی robots.txt</span><span data-en style="display:none">🤖 Repair robots.txt</span></button>
                     <button class="btn btn-ghost" onclick="runHealthCheck()" id="health-btn" style="border-color:var(--purple);color:var(--purple);"><span data-ku>🏥 Health Check فۆنتەکان</span><span data-en style="display:none">🏥 Font Health Check</span></button>
                 </div>
@@ -998,15 +999,15 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             <div class="box-header"><div class="dot" style="background:#ea4335"></div> <span data-ku>🚨 Google Recovery — چارەسەری "Couldn't Fetch"</span><span data-en style="display:none">🚨 Google Recovery — Fix "Couldn't Fetch"</span></div>
             <div class="box-body">
 
-                <p style="font-size:0.82rem;color:var(--muted);margin:0 0 14px;line-height:1.7;">
-                    هەموو ئەم کردارانە بەپێی ئەهەمیەتیان ریزبەندیکراون. هەر یەکێکی بکە بە ریز و لە نێوان هەر کردارێکدا چەند دەقەیەک چاوەڕوان بە.
+                <p style="font-size:0.82rem;color:var(--text);margin:0 0 14px;line-height:1.7;">
+                    All these actions are ranked by importance. Do each one in order and wait a few minutes between each step.
                 </p>
 
                 <!-- STEP 1: Live HTTP Audit -->
                 <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;">
-                    <div style="font-size:0.8rem;font-weight:bold;color:var(--accent);margin-bottom:6px;">① پشکنینی ژیوەی sitemap.xml (HTTP Audit)</div>
-                    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
-                        مووچەی ئەم دوگمەیە پەیوەندی ڕاستەوخۆ دەکات بە سایتەکەت و Content-Type، HTTP Status، و بایتی یەکەم پشکنی دەکات — تەنانەت Googlebot دەبینێت چی.
+                    <div style="font-size:0.8rem;font-weight:bold;color:var(--accent);margin-bottom:6px;">① Live sitemap.xml Audit (HTTP Audit)</div>
+                    <p style="font-size:0.78rem;color:var(--text);margin:0 0 10px;line-height:1.6;">
+                        Connects directly to your site and checks Content-Type, HTTP Status, and first byte — exactly what Googlebot sees.
                     </p>
                     <div id="audit-alert" class="alert"></div>
                     <div class="btn-row" style="margin-top:8px;">
@@ -1017,83 +1018,80 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
 
                 <!-- STEP 2: Delete + Resubmit GSC -->
                 <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;">
-                    <div style="font-size:0.8rem;font-weight:bold;color:#fbbc05;margin-bottom:6px;">② سڕینەوە و دووبارە نێردنی sitemap لە Google Search Console</div>
-                    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
-                        ئەمە بەهێزترین کردارەکەیە. Google کاشێی کۆنی "Couldn't fetch" دادەنێ و دووبارەی دەخوێنێتەوە لە سکراچ.
+                    <div style="font-size:0.8rem;font-weight:bold;color:#fbbc05;margin-bottom:6px;">② Delete &amp; Resubmit sitemap in Google Search Console</div>
+                    <p style="font-size:0.78rem;color:var(--text);margin:0 0 10px;line-height:1.6;">
+                        This is the most powerful action. Google discards its old "Couldn't fetch" cache and re-reads from scratch.
                     </p>
                     <div style="background:var(--surface2);border-radius:6px;padding:10px;font-size:0.78rem;line-height:2;color:var(--text);">
-                        <span style="color:var(--accent);">١.</span> بچۆ بۆ
-                        <a href="https://search.google.com/search-console/sitemaps?resource_id=sc-domain%3Auniqaidar.pages.dev" target="_blank" style="color:#4285f4;text-decoration:none;">Google Search Console → Sitemaps ↗</a><br>
-                        <span style="color:var(--accent);">٢.</span> کلیک لەسەر دوگمەی <strong style="color:var(--red);">⋮</strong> تەنیشت <code style="color:var(--yellow);font-size:0.72rem;">/sitemap.xml</code> و <strong>سڕینەوە</strong><br>
-                        <span style="color:var(--accent);">٣.</span> <strong>چاوەڕوان بە 30 چرکەیەک</strong><br>
-                        <span style="color:var(--accent);">٤.</span> لە باکسی "Add a new sitemap" بنووسە: <code style="color:var(--green);font-size:0.78rem;">sitemap.xml</code> کلیکی <strong>SUBMIT</strong> بکە<br>
-                        <span style="color:var(--accent);">٥.</span> دووبارە submit بکە بۆ: <code style="color:var(--yellow);font-size:0.78rem;">sitemap_index.xml</code> (ئەمەش زیاد بکە — دوو entry دەبن)<br>
-                        <span style="color:var(--accent);">٦.</span> چاوەڕوان بە ٢٤ کاتژمێر
+                        <span style="color:var(--accent);">1.</span> Go to <a href="https://search.google.com/search-console/sitemaps?resource_id=sc-domain%3Auniqaidar.pages.dev" target="_blank" style="color:#4285f4;text-decoration:none;">Google Search Console → Sitemaps ↗</a><br>
+                        <span style="color:var(--accent);">2.</span> Click the <strong style="color:var(--red);">⋮</strong> menu next to <code style="color:var(--yellow);font-size:0.72rem;">/sitemap.xml</code> and <strong>Remove</strong><br>
+                        <span style="color:var(--accent);">3.</span> <strong>Wait 30 seconds</strong><br>
+                        <span style="color:var(--accent);">4.</span> In the "Add a new sitemap" box, type: <code style="color:var(--green);font-size:0.78rem;">sitemap.xml</code> and click <strong>SUBMIT</strong><br>
+                        <span style="color:var(--accent);">5.</span> Also submit: <code style="color:var(--yellow);font-size:0.78rem;">sitemap_index.xml</code> (add both entries)<br>
+                        <span style="color:var(--accent);">6.</span> Wait 24 hours
                     </div>
                 </div>
 
                 <!-- STEP 3: URL Inspection -->
                 <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;">
-                    <div style="font-size:0.8rem;font-weight:bold;color:var(--green);margin-bottom:6px;">③ URL Inspection — داواکاری ئیندێکسکردن بە دەستی</div>
-                    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
-                        ئەمە دووەم بەهێزترین ئامرازەکەیە. Google دەتوانێت URL بە تایبەتی بخوێنێتەوە، وەک مامەڵەی ئەوەی پێشوەخت دەکات.
+                    <div style="font-size:0.8rem;font-weight:bold;color:var(--green);margin-bottom:6px;">③ URL Inspection — Manual Indexing Request</div>
+                    <p style="font-size:0.78rem;color:var(--text);margin:0 0 10px;line-height:1.6;">
+                        This is the second most powerful tool. Google can fetch the URL individually, treating it as a priority.
                     </p>
                     <div style="background:var(--surface2);border-radius:6px;padding:10px;font-size:0.78rem;line-height:2;color:var(--text);">
-                        <span style="color:var(--accent);">١.</span> بچۆ بۆ
-                        <a href="https://search.google.com/search-console/inspect?resource_id=sc-domain%3Auniqaidar.pages.dev" target="_blank" style="color:#4285f4;text-decoration:none;">URL Inspection Tool ↗</a><br>
-                        <span style="color:var(--accent);">٢.</span> URL ی sitemap بنووسە: <code style="color:var(--green);font-size:0.78rem;">https://uniqaidar.pages.dev/sitemap.xml</code><br>
-                        <span style="color:var(--accent);">٣.</span> کلیک لەسەر <strong>"Test Live URL"</strong> بکە — ئەمە دەریدەخات Google ئایا دەتوانێت بیخوێنێتەوە<br>
-                        <span style="color:var(--accent);">٤.</span> ئەگەر سەرکەوتوو بوو، کلیکی <strong>"Request Indexing"</strong> بکە
+                        <span style="color:var(--accent);">1.</span> Go to <a href="https://search.google.com/search-console/inspect?resource_id=sc-domain%3Auniqaidar.pages.dev" target="_blank" style="color:#4285f4;text-decoration:none;">URL Inspection Tool ↗</a><br>
+                        <span style="color:var(--accent);">2.</span> Enter the sitemap URL: <code style="color:var(--green);font-size:0.78rem;">https://uniqaidar.pages.dev/sitemap.xml</code><br>
+                        <span style="color:var(--accent);">3.</span> Click <strong>"Test Live URL"</strong> — this shows if Google can fetch it<br>
+                        <span style="color:var(--accent);">4.</span> If successful, click <strong>"Request Indexing"</strong>
                     </div>
                 </div>
 
                 <!-- STEP 4: Cloudflare Cache Purge -->
                 <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;">
-                    <div style="font-size:0.8rem;font-weight:bold;color:var(--purple);margin-bottom:6px;">④ پاككردنەوەی کاشی Cloudflare Pages</div>
-                    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
-                        Cloudflare لەوانەیە کۆپیی کۆنی sitemap.xml کاش بکات. پاككردنەوەی کاش دڵنیا دەکات Googlebot نوێترین فایلەکە دەبینێت.
+                    <div style="font-size:0.8rem;font-weight:bold;color:var(--purple);margin-bottom:6px;">④ Purge Cloudflare Pages Cache</div>
+                    <p style="font-size:0.78rem;color:var(--text);margin:0 0 10px;line-height:1.6;">
+                        Cloudflare may be serving a cached old version of sitemap.xml. Purging the cache ensures Googlebot sees the latest file.
                     </p>
                     <div style="background:var(--surface2);border-radius:6px;padding:10px;font-size:0.78rem;line-height:2;color:var(--text);">
-                        <span style="color:var(--accent);">١.</span> بچۆ بۆ
-                        <a href="https://dash.cloudflare.com/" target="_blank" style="color:#f6821f;text-decoration:none;">Cloudflare Dashboard ↗</a><br>
-                        <span style="color:var(--accent);">٢.</span> هەڵبژێرە: <strong>Pages → uniqaidar → Deployments</strong><br>
-                        <span style="color:var(--accent);">٣.</span> کلیک لەسەر دوایین deployment → <strong>"Purge Cache"</strong> یان دووبارە deploy بکە<br>
-                        <span style="color:var(--accent);">٤.</span> ئەگەر دۆمەینی خۆت داری (نەک .pages.dev)، بچۆ بۆ <strong>Caching → Cache Rules</strong> و کاشی sitemap.xml بیکوژێ
+                        <span style="color:var(--accent);">1.</span> Go to <a href="https://dash.cloudflare.com/" target="_blank" style="color:#f6821f;text-decoration:none;">Cloudflare Dashboard ↗</a><br>
+                        <span style="color:var(--accent);">2.</span> Select: <strong>Pages → uniqaidar → Deployments</strong><br>
+                        <span style="color:var(--accent);">3.</span> Click on the latest deployment → <strong>"Purge Cache"</strong> or re-deploy<br>
+                        <span style="color:var(--accent);">4.</span> If using a custom domain, go to <strong>Caching → Cache Rules</strong> and clear sitemap.xml cache
                     </div>
                 </div>
 
                 <!-- STEP 5: Googlebot Simulation -->
                 <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;">
-                    <div style="font-size:0.8rem;font-weight:bold;color:#34a853;margin-bottom:6px;">⑤ شێوازکردنی Googlebot — پشکنینی User-Agent</div>
-                    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
-                        تەست دەکات ئایا سایتەکەت Googlebot بلۆک دەکات. ئەگەر ئەم ئامرازە ناتوانێت sitemap بخوێنێتەوە — Google ناتوانێتیش.
+                    <div style="font-size:0.8rem;font-weight:bold;color:#34a853;margin-bottom:6px;">⑤ Googlebot Simulation — User-Agent Check</div>
+                    <p style="font-size:0.78rem;color:var(--text);margin:0 0 10px;line-height:1.6;">
+                        Tests whether your site blocks Googlebot. If this tool cannot read the sitemap — neither can Google.
                     </p>
                     <div id="bot-alert" class="alert"></div>
                     <div class="btn-row" style="margin-top:8px;">
-                        <button class="btn" style="background:#34a853;color:#fff;" onclick="simulateGooglebot()">🤖 شێوازکردنی Googlebot</button>
+                        <button class="btn" style="background:#34a853;color:#fff;" onclick="simulateGooglebot()">🤖 Simulate Googlebot</button>
                     </div>
                     <div id="bot-results" style="display:none;margin-top:10px;font-family:var(--mono);font-size:0.75rem;line-height:1.9;background:var(--surface2);border-radius:6px;padding:12px;"></div>
                 </div>
 
                 <!-- STEP 6: XML Validator -->
                 <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;">
-                    <div style="font-size:0.8rem;font-weight:bold;color:var(--yellow);margin-bottom:6px;">⑥ Validate کردنی XML — بەخۆی پشکنینی sitemap</div>
-                    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
-                        دەقی sitemap.xml ی ئێستاکەت دادەمەزرێت و دەیپشکنێت بۆ هەڵەی XML، URLی نادروست، و کاراکتەری قەدەغەکراو.
+                    <div style="font-size:0.8rem;font-weight:bold;color:var(--yellow);margin-bottom:6px;">⑥ Validate XML — Self-check sitemap</div>
+                    <p style="font-size:0.78rem;color:var(--text);margin:0 0 10px;line-height:1.6;">
+                        Downloads your current sitemap.xml and checks it for XML errors, invalid URLs, and illegal characters.
                     </p>
                     <div id="xml-alert" class="alert"></div>
                     <div class="btn-row" style="margin-top:8px;">
                         <button class="btn" style="background:var(--yellow);color:#000;" onclick="validateSitemapXml()">✅ Validate XML</button>
-                        <a href="https://www.xml-sitemaps.com/validate-xml-sitemap.html" target="_blank" class="btn btn-ghost" style="font-size:0.8rem;">🌐 Validator دەرەکی</a>
+                        <a href="https://www.xml-sitemaps.com/validate-xml-sitemap.html" target="_blank" class="btn btn-ghost" style="font-size:0.8rem;">🌐 External Validator</a>
                     </div>
                     <div id="xml-results" style="display:none;margin-top:10px;font-family:var(--mono);font-size:0.74rem;line-height:1.8;background:var(--surface2);border-radius:6px;padding:12px;max-height:220px;overflow-y:auto;"></div>
                 </div>
 
                 <!-- STEP 7: IndexNow -->
                 <div style="background:var(--bg);border:1px solid #0078d4;border-radius:8px;padding:14px;margin-bottom:12px;">
-                    <div style="font-size:0.8rem;font-weight:bold;color:#0078d4;margin-bottom:6px;">⑦ IndexNow — فێرستکردنی فوری بۆ Bing / Yandex / Naver</div>
-                    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
-                        IndexNow پرۆتۆکۆلی فێرستکردنی فوری Bing و Yandex و Naver و Amazon Bot ـە. یەک پینگ — هەموو ئینجینەکان ئاگادار دەکرێن. Google هێشتا پشتیوانی نەکردووە، بەڵام ئەگەر بکاتیش بەخۆی ئاگادار دەبێت.
+                    <div style="font-size:0.8rem;font-weight:bold;color:#0078d4;margin-bottom:6px;">⑦ IndexNow — Instant Indexing for Bing / Yandex / Naver</div>
+                    <p style="font-size:0.78rem;color:var(--text);margin:0 0 10px;line-height:1.6;">
+                        IndexNow is the instant indexing protocol for Bing, Yandex, Naver, and Amazon Bot. One ping — all engines are notified. Google has not yet adopted it, but may in the future.
                     </p>
 
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
@@ -1106,19 +1104,19 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                         </div>
                     </div>
 
-                    <div id="indexnow-key-status" style="font-size:0.76rem;color:var(--muted);font-family:var(--mono);margin-bottom:10px;display:none;"></div>
+                    <div id="indexnow-key-status" style="font-size:0.76rem;color:#29b6f6;font-family:var(--mono);margin-bottom:10px;display:none;"></div>
 
                     <div style="background:var(--surface2);border-radius:6px;padding:10px;font-size:0.78rem;line-height:2;color:var(--text);margin-bottom:10px;">
-                        <strong style="color:#0078d4;">ئەم ٣ هەنگاوە تەنها یەک جار پێویستە:</strong><br>
-                        <span style="color:var(--accent);">١.</span> کلیکی <strong>"دروستکردنی کلیلی نوێ"</strong> بکە یان کلیلی Bing خۆت بنووسە<br>
-                        <span style="color:var(--accent);">٢.</span> کلیکی <strong>"پاشکەوتکردنی فایلی کلیل"</strong> بکە — فایلێک دروست دەکات لە GitHub: <code style="color:var(--yellow);font-size:0.72rem;">/{key}.txt</code><br>
-                        <span style="color:var(--accent);">٣.</span> ئەمەی تەنها یەک جار بکە — پاشان <strong>"پینگ IndexNow"</strong> دەکات لە هەر بار Atomic Save دا
+                        <strong style="color:#0078d4;">These 3 steps are required only once:</strong><br>
+                        <span style="color:var(--accent);">1.</span> Click <strong>"Generate New Key"</strong> or enter your own Bing key<br>
+                        <span style="color:var(--accent);">2.</span> Click <strong>"Save Key File"</strong> — creates a file in GitHub: <code style="color:var(--yellow);font-size:0.72rem;">/{key}.txt</code><br>
+                        <span style="color:var(--accent);">3.</span> Do this once — then <strong>"Ping IndexNow"</strong> runs automatically on every Atomic Save
                     </div>
 
                     <div id="indexnow-alert" class="alert"></div>
                     <div class="btn-row" style="margin-top:8px;flex-wrap:wrap;">
-                        <button class="btn" style="background:#0078d4;color:#fff;" id="indexnow-save-btn" onclick="saveIndexNowKeyFile()" disabled>💾 پاشکەوتکردنی فایلی کلیل بۆ GitHub</button>
-                        <button class="btn" style="background:#00b4d8;color:#fff;" id="indexnow-ping-btn" onclick="pingIndexNow(false)" disabled>📡 پینگی IndexNow (sitemap)</button>
+                        <button class="btn" style="background:#0078d4;color:#fff;" id="indexnow-save-btn" onclick="saveIndexNowKeyFile()" disabled>💾 Save Key File to GitHub</button>
+                        <button class="btn" style="background:#00b4d8;color:#fff;" id="indexnow-ping-btn" onclick="pingIndexNow(false)" disabled>📡 Ping IndexNow (sitemap)</button>
                         <button class="btn btn-ghost" id="indexnow-bulk-btn" onclick="pingIndexNow(true)" disabled style="border-color:#0078d4;color:#0078d4;"><span data-ku>📦 پینگی تەواو (هەموو URLەکان)</span><span data-en style="display:none">📦 Bulk Ping (All URLs)</span></button>
                     </div>
                     <div id="indexnow-results" style="display:none;margin-top:10px;font-family:var(--mono);font-size:0.74rem;line-height:1.8;background:var(--surface2);border-radius:6px;padding:12px;max-height:200px;overflow-y:auto;"></div>
@@ -1126,10 +1124,10 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
 
                 <!-- STEP 8: Bing Webmaster Tools Sitemap -->
                 <div style="background:var(--bg);border:1px solid #0078d4;border-radius:8px;padding:14px;margin-bottom:12px;">
-                    <div style="font-size:0.8rem;font-weight:bold;color:#0078d4;margin-bottom:6px;">⑧ Bing Webmaster Tools — Submit sitemap بۆ Bing</div>
-                    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 10px;line-height:1.6;">
-                        Bing سیتمێپ بە جیاوازی Google بەڕێوە دەبات. Bing Webmaster Tools API Key بنووسە بۆ submit کردنی ڕاستەوخۆ.<br>
-                        <strong style="color:var(--yellow);">Key وەرگرتن:</strong>
+                    <div style="font-size:0.8rem;font-weight:bold;color:#0078d4;margin-bottom:6px;">⑧ Bing Webmaster Tools — Submit sitemap to Bing</div>
+                    <p style="font-size:0.78rem;color:var(--text);margin:0 0 10px;line-height:1.6;">
+                        Bing manages sitemaps differently from Google. Enter your Bing Webmaster Tools API Key to submit directly.<br>
+                        <strong style="color:var(--yellow);">Get your key:</strong>
                         <a href="https://www.bing.com/webmasters/home" target="_blank" style="color:#0078d4;">Bing Webmaster Tools ↗</a>
                         → Settings → API Access → Generate API Key
                     </p>
@@ -1143,17 +1141,17 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     </div>
                     <div id="bing-submit-alert" class="alert"></div>
                     <div style="background:var(--surface2);border-radius:6px;padding:10px;font-size:0.78rem;line-height:2;color:var(--text);margin-top:8px;">
-                        <strong style="color:#0078d4;">ئەگەر API Key نەتت:</strong> بە دەستی بکە:<br>
-                        <span style="color:var(--accent);">١.</span> بچۆ بۆ <a href="https://www.bing.com/webmasters/sitemaps" target="_blank" style="color:#0078d4;">Bing Webmaster → Sitemaps ↗</a><br>
-                        <span style="color:var(--accent);">٢.</span> کلیکی <strong>"Add Sitemap"</strong> بکە<br>
-                        <span style="color:var(--accent);">٣.</span> بنووسە: <code style="color:var(--green);">https://uniqaidar.pages.dev/sitemap.xml</code><br>
-                        <span style="color:var(--accent);">٤.</span> دووبارە زیاد بکە: <code style="color:var(--yellow);">https://uniqaidar.pages.dev/sitemap_index.xml</code>
+                        <strong style="color:#0078d4;">If you don't have an API Key, do it manually:</strong><br>
+                        <span style="color:var(--accent);">1.</span> Go to <a href="https://www.bing.com/webmasters/sitemaps" target="_blank" style="color:#0078d4;">Bing Webmaster → Sitemaps ↗</a><br>
+                        <span style="color:var(--accent);">2.</span> Click <strong>"Add Sitemap"</strong><br>
+                        <span style="color:var(--accent);">3.</span> Enter: <code style="color:var(--green);">https://uniqaidar.pages.dev/sitemap.xml</code><br>
+                        <span style="color:var(--accent);">4.</span> Also add: <code style="color:var(--yellow);">https://uniqaidar.pages.dev/sitemap_index.xml</code>
                     </div>
                 </div>
 
                 <!-- STEP 9: External Tools -->
                 <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;">
-                    <div style="font-size:0.8rem;font-weight:bold;color:var(--muted);margin-bottom:8px;">⑨ ئامرازە دەرەکییەکان — پشکنینی زیاتر</div>
+                    <div style="font-size:0.8rem;font-weight:bold;color:var(--text);margin-bottom:8px;">⑨ External Tools — Further Checks</div>
                     <div style="display:flex;flex-wrap:wrap;gap:8px;">
                         <a href="https://search.google.com/test/rich-results?url=https://uniqaidar.pages.dev/" target="_blank" class="btn btn-ghost" style="font-size:0.75rem;">🔬 Rich Results Test</a>
                         <a href="https://www.bing.com/webmasters/sitemaps" target="_blank" class="btn btn-ghost" style="font-size:0.75rem;border-color:#0078d4;color:#0078d4;">🔵 Bing Sitemaps</a>
@@ -1177,11 +1175,11 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             <div class="box-header"><div class="dot" style="background:var(--yellow)"></div> <span data-ku>هەموو فۆنتەکان (<span id="arc-count">0</span>)</span><span data-en style="display:none">All Fonts (<span id="arc-count">0</span>)</span></div>
             <div class="box-body">
                 <div style="display:flex;gap:10px;margin-bottom:13px;flex-wrap:wrap;align-items:center;">
-                    <input id="arc-full-search" type="text" placeholder="گەڕان بەدوای ناوی فۆنت..." oninput="renderArcFull()" style="max-width:260px;">
+                    <input id="arc-full-search" type="text" placeholder="Search font name..." oninput="renderArcFull()" style="max-width:260px;">
                     <select id="arc-full-cat" onchange="renderArcFull()" style="max-width:200px;">
-                        <option value="all">هەموو کاتێگۆریەکان</option>
+                        <option value="all"><span data-ku>هەموو کاتێگۆریەکان</span><span data-en style="display:none">All Categories</span></option>
                     </select>
-                    <span id="arc-filtered-count" style="color:var(--muted);font-size:0.78rem;font-family:var(--mono);"></span>
+                    <span id="arc-filtered-count" style="color:#2ecc71;font-size:0.78rem;font-family:var(--mono);"></span>
                 </div>
                 <div id="arc-full-list" style="max-height:500px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;"></div>
             </div>
@@ -1279,69 +1277,69 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                                 ئەم بەشە <strong style="color:var(--accent);">بزووتنی SEO</strong>یە — دەقی کوردی پیشەیی کە گووگڵ بەسەرەوە دەبینێت. دەتوانیت هەر دەقێک بگۆڕیت و ببیتە GitHub.
                             </div>
                             <div class="pvb-field">
-                                <label class="pvb-label">H1 — سەردێڕی سەرەکی</label>
+                                <label class="pvb-label">H1 — Main Heading</label>
                                 <input type="text" id="_pvb_pvb-wlc-h1" class="pvb-input" style="direction:rtl;" placeholder="بەخێربێن بۆ ماڵپەڕی...">
                             </div>
                             <div class="pvb-field">
-                                <label class="pvb-label">ناردەی سەرەکی (Lead)</label>
+                                <label class="pvb-label">Main Lead Text</label>
                                 <textarea id="_pvb_pvb-wlc-lead" class="pvb-input pvb-textarea" style="direction:rtl;height:48px;"></textarea>
                             </div>
                             <div class="pvb-field">
-                                <label class="pvb-label">پەراگرافی دەستپێکردن (Intro)</label>
+                                <label class="pvb-label">Intro Paragraph</label>
                                 <textarea id="_pvb_pvb-wlc-intro" class="pvb-input pvb-textarea" style="direction:rtl;height:72px;"></textarea>
                             </div>
                             <div class="pvb-field">
-                                <label class="pvb-label">پەراگرافی سەکۆ (Platform)</label>
+                                <label class="pvb-label">Platform Paragraph</label>
                                 <textarea id="_pvb_pvb-wlc-platform" class="pvb-input pvb-textarea" style="direction:rtl;height:56px;"></textarea>
                             </div>
                             <div class="pvb-field">
-                                <label class="pvb-label">سەردێڕی جۆرەکانی فۆنت (H2 Categories)</label>
+                                <label class="pvb-label">H2 Categories Heading</label>
                                 <input type="text" id="_pvb_pvb-wlc-cats-h2" class="pvb-input" style="direction:rtl;">
                             </div>
                             <div class="pvb-field">
-                                <label class="pvb-label">سەردێڕی بەرنامەکان (H2 Apps)</label>
+                                <label class="pvb-label">H2 Apps Heading</label>
                                 <input type="text" id="_pvb_pvb-wlc-apps-h2" class="pvb-input" style="direction:rtl;">
                             </div>
                             <div class="pvb-field">
-                                <label class="pvb-label">پەراگرافی بەرنامەکان (Apps Lead)</label>
+                                <label class="pvb-label">Apps Lead Paragraph</label>
                                 <textarea id="_pvb_pvb-wlc-apps-lead" class="pvb-input pvb-textarea" style="direction:rtl;height:56px;"></textarea>
                             </div>
                             <div class="pvb-field">
-                                <label class="pvb-label">سەردێڕی تایبەتمەندییەکان (H2 Features)</label>
+                                <label class="pvb-label">H2 Features Heading</label>
                                 <input type="text" id="_pvb_pvb-wlc-feats-h2" class="pvb-input" style="direction:rtl;">
                             </div>
                             <div class="pvb-field">
-                                <label class="pvb-label">دەقی داخستن (Closing)</label>
+                                <label class="pvb-label">Closing Text</label>
                                 <textarea id="_pvb_pvb-wlc-close" class="pvb-input pvb-textarea" style="direction:rtl;height:56px;"></textarea>
                             </div>
                             <div class="pvb-field">
-                                <label class="pvb-label">دەقی دوگمەی گواستنەوە (Toggle label)</label>
+                                <label class="pvb-label">Toggle Button Label</label>
                                 <input type="text" id="_pvb_pvb-wlc-toggle-lbl" class="pvb-input" style="direction:rtl;" placeholder="بەخێربێن بۆ یونی‌قەیدار">
                             </div>
                             <div class="pvb-field">
-                                <label class="pvb-label">⚡ تاگلاین ١ (Tagline 1)</label>
+                                <label class="pvb-label">⚡ Tagline 1</label>
                                 <input type="text" id="_pvb_pvb-wlc-tag1" class="pvb-input" style="direction:rtl;" placeholder="🎨 زیاتر لە ٤٢٠ فۆنتی کوردی و عەرەبی بۆ داگرتن">
                             </div>
                             <div class="pvb-field">
-                                <label class="pvb-label">⚡ تاگلاین ٢ (Tagline 2)</label>
+                                <label class="pvb-label">⚡ Tagline 2</label>
                                 <input type="text" id="_pvb_pvb-wlc-tag2" class="pvb-input" style="direction:rtl;" placeholder="✨ بە خۆڕایی — داگرتنی خێرا و ئاسان">
                             </div>
                             <div class="pvb-field">
-                                <label class="pvb-label">⚡ تاگلاین ٣ (Tagline 3)</label>
+                                <label class="pvb-label">⚡ Tagline 3</label>
                                 <input type="text" id="_pvb_pvb-wlc-tag3" class="pvb-input" style="direction:rtl;" placeholder="🖋 فۆنتی پیشەیی بۆ هەموو بوارەکان">
                             </div>
                             <div class="pvb-field">
-                                <label class="pvb-label">⚡ تاگلاین ٤ (Tagline 4)</label>
+                                <label class="pvb-label">⚡ Tagline 4</label>
                                 <input type="text" id="_pvb_pvb-wlc-tag4" class="pvb-input" style="direction:rtl;" placeholder="📱 گونجاو بۆ مۆبایل، کۆمپیوتەر و تابلێت">
                             </div>
-                            <div style="font-size:0.68rem;color:var(--yellow);font-family:var(--mono);margin:6px 0 4px;">⚠ لیستەکان (li) لە کانڤاسەکە بە ڕاستەوخۆ دووجار کلیک بکە بۆ دەستکاریکردن</div>
+                            <div style="font-size:0.68rem;color:var(--yellow);font-family:var(--mono);margin:6px 0 4px;">⚠ Double-click list items (li) in the canvas to edit them directly</div>
                             <div id="_pvb_pvb-wlc-alert" class="alert"></div>
                             <div style="display:flex;gap:6px;margin-top:8px;">
                                 <button class="pvb-btn pvb-btn-sm" style="flex:1;" onclick="pvbWelcomeLoad()"><span data-ku>↺ بارکردن</span><span data-en style="display:none">↺ Load</span></button>
                                 <button class="pvb-btn pvb-btn-sm" style="flex:1;" onclick="pvbWelcomeSave()">💾 Save to GitHub</button>
                             </div>
                             <div style="margin-top:6px;">
-                                <button class="pvb-btn pvb-btn-sm pvb-btn-ghost" style="width:100%;" onclick="pvbOpenWelcomeInCanvas()">🖱 دەستکاری لە کانڤاسەکەدا</button>
+                                <button class="pvb-btn pvb-btn-sm pvb-btn-ghost" style="width:100%;" onclick="pvbOpenWelcomeInCanvas()">🖱 Edit in Canvas</button>
                             </div>
                         </div>
                     </div>
@@ -1467,7 +1465,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     <div id="pvb-inspect-empty" class="pvb-empty-state">
                         <div style="font-size:2.5rem;margin-bottom:10px;">🖱️</div>
                         <div>Click any element in the canvas to inspect it</div>
-                        <div style="font-size:0.7rem;color:var(--muted);margin-top:6px;">Double-click or right-click to edit text</div>
+                        <div style="font-size:0.7rem;color:#29b6f6;margin-top:6px;">Double-click or right-click to edit text</div>
                     </div>
 
                 </div><!-- /panel-inspect -->
@@ -1515,7 +1513,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                             <button class="pvb-btn pvb-btn-sm pvb-btn-ghost" style="flex:1;" onclick="pvbThemePreset('light')">☀ Light</button>
                             <button class="pvb-btn pvb-btn-sm pvb-btn-ghost" style="flex:1;" onclick="pvbThemePreset('midnight')">🎆 Mid</button>
                         </div>
-                        <div style="font-size:0.68rem;color:var(--muted);margin-top:8px;line-height:1.5;">Live in canvas. Written to :root on Publish.</div>
+                        <div style="font-size:0.68rem;color:#29b6f6;margin-top:8px;line-height:1.5;">Live in canvas. Written to :root on Publish.</div>
                     </div>
 
                     <!-- Per-element Typography -->
@@ -1965,7 +1963,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                         <!-- Zoom -->
                         <div style="display:flex;align-items:center;gap:4px;border:1px solid var(--border);border-radius:6px;padding:2px 6px;">
                             <button class="pvb-etb-btn" style="min-width:22px;min-height:22px;padding:2px 5px;font-size:0.7rem;" onclick="pvbZoom(-10)">-</button>
-                            <span id="pvb-zoom-label" style="font-size:0.72rem;color:var(--muted);font-family:var(--mono);min-width:36px;text-align:center;">100%</span>
+                            <span id="pvb-zoom-label" style="font-size:0.72rem;color:#e8e8e8;font-family:var(--mono);min-width:36px;text-align:center;">100%</span>
                             <button class="pvb-etb-btn" style="min-width:22px;min-height:22px;padding:2px 5px;font-size:0.7rem;" onclick="pvbZoom(10)">+</button>
                             <button class="pvb-etb-btn" style="min-width:22px;min-height:22px;padding:2px 5px;font-size:0.66rem;" onclick="pvbZoom(0)" title="Reset zoom">⊡</button>
                         </div>
@@ -2038,7 +2036,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                 <div class="pvb-iframe-wrap" id="pvb-iframe-wrap">
                     <div id="pvb-canvas-loading" class="pvb-canvas-loading">
                         <div class="spinner"></div>
-                        <span style="font-size:0.82rem;color:var(--muted);">Loading canvas...</span>
+                        <span style="font-size:0.82rem;color:#29b6f6;">Loading canvas...</span>
                     </div>
                     <!-- Overlay for hover-highlight before click -->
                     <div id="pvb-hover-overlay" style="display:none;position:absolute;pointer-events:none;border:1px dashed rgba(9,132,227,0.5);background:rgba(9,132,227,0.06);z-index:9;transition:all 0.08s;box-sizing:border-box;"></div>
@@ -2111,7 +2109,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
 
     /* ── Brand strip at the top of sidebar ── */
     .pvb-sidebar::before {
-        content: '🎨 پڕۆ ڤیژوال بیڵدەر — UniQaidar';
+        content: '🎨 Pro Visual Builder — UniQaidar';
         display: block;
         font-size: 0.68rem;
         font-family: Tahoma, Arial, sans-serif;
@@ -2516,7 +2514,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         justify-content:center; gap:14px; z-index:10;
     }
     .pvb-canvas-loading::after {
-        content: 'پانێلی ڤیژوال بارکراوە...';
+        content: 'Visual Builder Panel Loading...';
         font-size: 0.78rem;
         color: var(--pvb-accent);
         font-family: Tahoma, Arial, sans-serif;
@@ -2743,14 +2741,14 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             document.head.appendChild(s);
         }
         box.style.fontFamily = `'${name}', Tahoma, sans-serif`;
-        box.textContent = name + ' — UniQaidar · فۆنتی کوردی';
+        box.textContent = name + ' — UniQaidar · Kurdish Fonts';
     }
 
     // ── Save: Interface Font ─────────────────────────────
     async function pvbSaveInterfaceFont() {
         const sel = document.getElementById('pvb-ifont-select');
         const al  = document.getElementById('pvb-ifont-alert');
-        if (!sel || !sel.value) return alert2(al,'❌ فۆنتێک هەڵبژێرە!','err');
+        if (!sel || !sel.value) return alert2(al,'❌ Please select a font!','err');
         const nf = sel.value;
         let next = RAW;
         next = next.replace(/(font-family:\s*\')[^\']+(\',[\s]*Tahoma,[\s]*Arial,[\s]*sans-serif\s*!important)/g,`$1${nf}$2`);
@@ -2955,7 +2953,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                 loaded++;
             }
         });
-        alert2(al, loaded > 0 ? ('✅ بارکرا — ' + loaded + ' بەند') : '⚠️ هیچ بەندێک نەدۆزرایەوە — کانڤاس بارکە یاخود RAW بوەرگرە', loaded > 0 ? 'ok' : 'inf');
+        alert2(al, loaded > 0 ? ('✅ Loaded — ' + loaded + ' items') : '⚠️ No items found — load the canvas or fetch RAW', loaded > 0 ? 'ok' : 'inf');
     }
 
     // ── Save: push all changed fields to GitHub via ghPut ──────────
@@ -3001,12 +2999,12 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             var re = new RegExp('(<li[^>]*data-pvb="'+t[1]+'"[^>]*>)([\\s\\S]*?)(<\\/li>)','i');
             if(re.test(next)){ next = next.replace(re,'$1'+newVal+'$3'); changed++; }
         });
-        if (next === RAW) return alert2(al, '⚠️ هیچ گۆڕانکارییەک نەبوو.', 'inf');
+        if (next === RAW) return alert2(al, '⚠️ No changes were made.', 'inf');
         alert2(al, '⏳ Saving ' + changed + ' fields to GitHub...', 'inf');
         var ok = await ghPut(next, 'Welcome Section: update ' + changed + ' fields');
         if (ok) {
             RAW = next;
-            alert2(al, '✅ ' + changed + ' بەند پاشەکەوتکرا!', 'ok');
+            alert2(al, '✅ ' + changed + ' items saved!', 'ok');
         } else {
             alert2(al, '❌ Save failed — check GitHub token.', 'err');
         }
@@ -4529,7 +4527,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
     async function pvbPublish() {
         const al  = document.getElementById('pvb-publish-alert');
         const btn = document.getElementById('pvb-publish-btn');
-        if (!TOKEN||!USER||!REPO) return alert2(al,'❌ پەیوەندی بکە بە GitHub یەکەم.','err');
+        if (!TOKEN||!USER||!REPO) return alert2(al,'❌ Connect to GitHub first.','err');
         if (!_pvbIDoc||!_pvbLoaded) return alert2(al,'❌ Canvas not loaded.','err');
         btn.disabled = true;
         alert2(al,'⏳ Step 1/5 — Destroying TinyMCE...','inf');
@@ -4644,9 +4642,9 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
       <!-- VISITS BOX -->
       <div class="box" style="margin-bottom:18px;">
         <div class="box-header" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
-          <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--green)"></div><span>🌍 سەردانەکانی وێبسایت</span></div>
+          <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--green)"></div><span><span data-ku>🌍 سەردانەکانی وێبسایت</span><span data-en style="display:none">🌍 Website Visits</span></span></div>
           <div style="display:flex;align-items:center;gap:8px;">
-            <span id="visit-last-refresh" style="font-size:0.72rem;color:var(--muted);font-family:var(--mono);">نەنوێکراوەتەوە</span>
+            <span id="visit-last-refresh" style="font-size:0.72rem;color:#29b6f6;font-family:var(--mono);">Not refreshed</span>
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadVisitStats(true)"><span data-ku>🔄 نوێکردنەوە</span><span data-en style="display:none">🔄 Refresh</span></button>
           </div>
         </div>
@@ -4654,11 +4652,11 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:16px;">
             <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--green);" id="v-total">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>کۆی سەردانەکان</span><span data-en style="display:none">Total Visits</span></div></div>
             <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--red);" id="v-today">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>سەردانی ئەمڕۆ</span><span data-en style="display:none">Today's Visits</span></div></div>
-            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--accent);" id="v-month">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">سەردانی ئەم مانگە</div></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--accent);" id="v-month">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>سەردانی ئەم مانگە</span><span data-en style="display:none">This Month's Visits</span></div></div>
             <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--yellow);" id="v-countries">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>وڵاتی جیاواز</span><span data-en style="display:none">Unique Countries</span></div></div>
           </div>
           <div id="v-alert" class="alert"></div>
-          <div class="section-label" style="margin-bottom:8px;">سەردانەکان بەپێی وڵات</div>
+          <div class="section-label" style="margin-bottom:8px;"><span data-ku>سەردانەکان بەپێی وڵات</span><span data-en style="display:none">Visits by Country</span></div>
           <div style="overflow-x:auto;">
             <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
@@ -4669,12 +4667,12 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
               </tr></thead>
               <tbody id="v-country-tbody"></tbody>
             </table>
-            <div id="v-country-footer" style="margin-top:8px;font-size:0.75rem;color:#aaa;text-align:center;"></div>
+            <div id="v-country-footer" style="margin-top:8px;font-size:0.75rem;color:#2ecc71;text-align:center;"></div>
             <div id="v-country-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
 
           <!-- Full visit log -->
-          <div class="section-label" style="margin-bottom:8px;margin-top:20px;">تەواوی ئەرشیفی سەردانەکان</div>
+          <div class="section-label" style="margin-bottom:8px;margin-top:20px;"><span data-ku>تەواوی ئەرشیفی سەردانەکان</span><span data-en style="display:none">Full Visit Archive</span></div>
           <div style="overflow-x:auto;">
             <table style="width:100%;border-collapse:collapse;font-size:0.8rem;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
@@ -4688,7 +4686,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
               </tr></thead>
               <tbody id="v-log-tbody"></tbody>
             </table>
-            <div id="v-log-footer" style="margin-top:8px;font-size:0.75rem;color:#aaa;text-align:center;"></div>
+            <div id="v-log-footer" style="margin-top:8px;font-size:0.75rem;color:#2ecc71;text-align:center;"></div>
             <div id="v-log-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
 
@@ -4707,14 +4705,14 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
               </tr></thead>
               <tbody id="v-viral-tbody"></tbody>
             </table>
-            <div id="v-viral-footer" style="margin-top:8px;font-size:0.75rem;color:#aaa;text-align:center;"></div>
+            <div id="v-viral-footer" style="margin-top:8px;font-size:0.75rem;color:#2ecc71;text-align:center;"></div>
             <div id="v-viral-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
 
           <!-- SEARCH KEYWORDS TABLE -->
           <div class="section-label" style="margin-bottom:8px;margin-top:20px;"><span data-ku>🔎 کەلیمەی گەڕان (Search Keywords)</span><span data-en style="display:none">🔎 Search Keywords</span></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;">
-            <input type="text" id="search-q-filter" placeholder="فلتەر بەدوای کەلیمە..." oninput="renderSearchTable()" style="max-width:260px;direction:rtl;">
+            <input type="text" id="search-q-filter" placeholder="Filter by keyword..." oninput="renderSearchTable()" style="max-width:260px;direction:rtl;">
             <input type="date" id="search-date-from" onchange="renderSearchTable()" style="direction:ltr;color-scheme:dark;max-width:150px;">
             <input type="date" id="search-date-to"   onchange="renderSearchTable()" style="direction:ltr;color-scheme:dark;max-width:150px;">
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 10px;" onclick="clearSearchFilters()"><span data-ku>پاکردنەوەی فلتەر</span><span data-en style="display:none">Clear Filters</span></button>
@@ -4725,12 +4723,12 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             <div style="background:var(--bg);border:1px solid rgba(41,182,246,0.3);border-radius:10px;padding:12px;text-align:center;"><div style="font-size:1.4rem;font-weight:bold;color:#29b6f6;" id="sq-today">—</div><div style="font-size:0.72rem;color:var(--muted);margin-top:3px;"><span data-ku>گەڕانی ئەمڕۆ</span><span data-en style="display:none">Today's Searches</span></div></div>
           </div>
           <div style="overflow-x:auto;margin-bottom:20px;">
-            <div class="section-label" style="font-size:0.75rem;margin-bottom:6px;color:#aaa;">زۆرترین کەلیمەی گەڕان</div>
+            <div class="section-label" style="font-size:0.75rem;margin-bottom:6px;color:#29b6f6;"><span data-ku>زۆرترین کەلیمەی گەڕان</span><span data-en style="display:none">Top Search Keywords</span></div>
             <table style="width:100%;border-collapse:collapse;font-size:0.82rem;min-width:400px;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;">#</th>
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;cursor:pointer;" onclick="sortSqBy('query')"><span data-ku>کەلیمە</span><span data-en style="display:none">Keyword</span> ▼</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortSqBy('count')">ژمارە</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortSqBy('count')"><span data-ku>ژمارە</span><span data-en style="display:none">Count</span></th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;" onclick="sortSqBy('last')"><span data-ku>دوایین گەڕان</span><span data-en style="display:none">Last Search</span> ↕</th>
               </tr></thead>
               <tbody id="sq-summary-tbody"></tbody>
@@ -4738,7 +4736,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             <div id="sq-summary-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
           <div style="overflow-x:auto;">
-            <div class="section-label" style="font-size:0.75rem;margin-bottom:6px;color:#aaa;">تەواوی ئەرشیفی گەڕانەکان</div>
+            <div class="section-label" style="font-size:0.75rem;margin-bottom:6px;color:#29b6f6;"><span data-ku>تەواوی ئەرشیفی گەڕانەکان</span><span data-en style="display:none">Full Search Archive</span></div>
             <table style="width:100%;border-collapse:collapse;font-size:0.8rem;min-width:600px;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
                 <th style="padding:7px 10px;text-align:right;font-weight:normal;">#</th>
@@ -4750,7 +4748,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
               </tr></thead>
               <tbody id="sq-log-tbody"></tbody>
             </table>
-            <div id="sq-log-footer" style="margin-top:8px;font-size:0.75rem;color:#aaa;text-align:center;"></div>
+            <div id="sq-log-footer" style="margin-top:8px;font-size:0.75rem;color:#2ecc71;text-align:center;"></div>
             <div id="sq-log-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
         </div>
@@ -4761,7 +4759,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         <div class="box-header" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
           <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--yellow)"></div><span><span data-ku>📊 ئامارەکانی داگرتنی فۆنت</span><span data-en style="display:none">📊 Font Download Stats</span></span></div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <span id="dl-last-refresh" style="font-size:0.72rem;color:var(--muted);font-family:var(--mono);">نەنوێکراوەتەوە</span>
+            <span id="dl-last-refresh" style="font-size:0.72rem;color:#29b6f6;font-family:var(--mono);">Not refreshed</span>
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadDlStats(true)"><span data-ku>🔄 نوێکردنەوە</span><span data-en style="display:none">🔄 Refresh</span></button>
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="exportDlCsv()">📥 Export CSV</button>
             <button class="btn btn-red" style="font-size:0.78rem;padding:5px 12px;" onclick="clearDlStats()"><span data-ku>🗑 سڕینەوەی هەموو ئامارەکان</span><span data-en style="display:none">🗑 Clear All Stats</span></button>
@@ -4774,23 +4772,23 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--accent);" id="dl-single-count">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>داگرتنی تاکەکە</span><span data-en style="display:none">Single Downloads</span></div></div>
             <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--green);" id="dl-bulk-count">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>داگرتنی تەواوی</span><span data-en style="display:none">Bulk Downloads</span></div></div>
             <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--purple);" id="dl-unique-fonts">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>فۆنتی جیاواز</span><span data-en style="display:none">Unique Fonts</span></div></div>
-            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.1rem;font-weight:bold;color:var(--red);font-family:var(--mono);" id="dl-today-count">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">داگرتنی ئەمڕۆ</div></div>
-            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.1rem;font-weight:bold;color:var(--accent);font-family:var(--mono);" id="dl-this-month">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">داگرتنی ئەم مانگە</div></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.1rem;font-weight:bold;color:var(--red);font-family:var(--mono);" id="dl-today-count">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>داگرتنی ئەمڕۆ</span><span data-en style="display:none">Today's Downloads</span></div></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.1rem;font-weight:bold;color:var(--accent);font-family:var(--mono);" id="dl-this-month">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>داگرتنی ئەم مانگە</span><span data-en style="display:none">This Month's Downloads</span></div></div>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">
-            <input type="text" id="dl-search" placeholder="گەڕان بەدوای ناوی فۆنت..." oninput="renderDlTable()" style="max-width:280px;direction:rtl;">
+            <input type="text" id="dl-search" placeholder="Search by font name..." oninput="renderDlTable()" style="max-width:280px;direction:rtl;">
             <select id="dl-type-filter" onchange="renderDlTable()" style="max-width:160px;">
-              <option value="all">هەموو جۆرەکان</option>
-              <option value="single">تاکە فۆنت</option>
-              <option value="bulk">تەواوی فۆنتەکان</option>
-              <option value="cat-bulk">داگرتنی کاتێگۆری</option>
+              <option value="all"><span data-ku>هەموو جۆرەکان</span><span data-en style="display:none">All Types</span></option>
+              <option value="single"><span data-ku>تاکە فۆنت</span><span data-en style="display:none">Single Font</span></option>
+              <option value="bulk"><span data-ku>تەواوی فۆنتەکان</span><span data-en style="display:none">All Fonts (Bulk)</span></option>
+              <option value="cat-bulk"><span data-ku>داگرتنی کاتێگۆری</span><span data-en style="display:none">Category Download</span></option>
             </select>
             <input type="date" id="dl-date-from" onchange="renderDlTable()" style="direction:ltr;color-scheme:dark;max-width:150px;">
             <input type="date" id="dl-date-to" onchange="renderDlTable()" style="direction:ltr;color-scheme:dark;max-width:150px;">
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 10px;" onclick="clearDlFilters()"><span data-ku>پاکردنەوەی فلتەر</span><span data-en style="display:none">Clear Filters</span></button>
           </div>
           <div id="dl-stats-alert" class="alert"></div>
-          <div class="section-label" style="margin-bottom:10px;">داگرتنەکان بەپێی فۆنت</div>
+          <div class="section-label" style="margin-bottom:10px;"><span data-ku>داگرتنەکان بەپێی فۆنت</span><span data-en style="display:none">Downloads by Font</span></div>
           <div style="overflow-x:auto;margin-bottom:24px;">
             <table style="width:100%;border-collapse:collapse;font-size:0.82rem;min-width:500px;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
@@ -4801,10 +4799,10 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
               </tr></thead>
               <tbody id="dl-font-tbody"></tbody>
             </table>
-            <div id="dl-font-footer" style="margin-top:8px;font-size:0.75rem;color:#aaa;text-align:center;"></div>
+            <div id="dl-font-footer" style="margin-top:8px;font-size:0.75rem;color:#2ecc71;text-align:center;"></div>
             <div id="dl-font-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
-          <div class="section-label" style="margin-bottom:10px;">تەواوی ئەرشیفی داگرتنەکان</div>
+          <div class="section-label" style="margin-bottom:10px;"><span data-ku>تەواوی ئەرشیفی داگرتنەکان</span><span data-en style="display:none">Full Download Archive</span></div>
           <div style="overflow-x:auto;">
             <table style="width:100%;border-collapse:collapse;font-size:0.8rem;min-width:700px;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);">
@@ -4819,7 +4817,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
               </tr></thead>
               <tbody id="dl-log-tbody"></tbody>
             </table>
-            <div id="dl-log-footer" style="margin-top:8px;font-size:0.75rem;color:#aaa;text-align:center;"></div>
+            <div id="dl-log-footer" style="margin-top:8px;font-size:0.75rem;color:#2ecc71;text-align:center;"></div>
             <div id="dl-log-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
         </div>
@@ -4828,27 +4826,27 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
       <!-- TRENDING MANAGEMENT BOX -->
       <div class="box" id="trending-box">
         <div class="box-header" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
-          <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--green)"></div><span>🔥 بەڕێوەبردنی زۆرترین داونلۆکراوەکان (popular.json)</span></div>
+          <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--green)"></div><span><span data-ku>🔥 بەڕێوەبردنی زۆرترین داونلۆکراوەکان (popular.json)</span><span data-en style="display:none">🔥 Manage Most Downloaded (popular.json)</span></span></div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadPopularJson()">📥 Load from GitHub</button>
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="autoFillTrending()" title="داخستنی تاپ ٢٥ لە ئامارەکانی داگرتن">⚡ Auto-fill from Stats</button>
-            <button class="btn btn-primary" style="font-size:0.78rem;padding:5px 12px;" onclick="savePopularJson()">💾 سەیڤی popular.json بۆ GitHub</button>
+            <button class="btn btn-primary" style="font-size:0.78rem;padding:5px 12px;" onclick="savePopularJson()"><span data-ku>💾 سەیڤی popular.json بۆ GitHub</span><span data-en style="display:none">💾 Save popular.json to GitHub</span></button>
           </div>
         </div>
         <div class="box-body">
           <div id="trending-alert" class="alert"></div>
-          <p style="font-size:0.8rem;color:var(--muted);margin-bottom:14px;">ڕیزبەندی فۆنتەکان دەتوانی بگۆڕی بە ▲▼ یان بە لابردن و زیادکردن. تاپ ٢٥ فۆنت دەخرێنە پیشاندان لە بەشی 🔥 سایتەکە.<br>
-          <span style="color:var(--green);font-size:0.78rem;">⚡ کاتێک تابی 📊 Downloads کردنەوە، لیستەکە بەخۆی لە ئامارەکانی Cloudflare نوێ دەبێتەوە. دواتر 💾 سەیڤ بکە بۆ popular.json.</span></p>
+          <p style="font-size:0.8rem;color:var(--text);margin-bottom:14px;"><span data-ku>You can reorder fonts by ▲▼ یان بە لابردن و زیادکردن. تاپ ٢٥ فۆنت دەخرێنە پیشاندان لە بەشی 🔥 سایتەکە.</span><span data-en style="display:none">You can reorder fonts by ▲▼ or by removing and adding. Top 25 fonts are shown in the 🔥 section of the site.</span><br>
+          <span style="color:var(--green);font-size:0.78rem;"><span data-ku>⚡ کاتێک تابی 📊 Downloads کردنەوە، لیستەکە بەخۆی لە ئامارەکانی Cloudflare نوێ دەبێتەوە. دواتر 💾 سەیڤ بکە بۆ popular.json.</span><span data-en style="display:none">⚡ When the 📊 Downloads tab is opened, the list auto-updates from Cloudflare stats. Then 💾 Save to popular.json.</span></span></p>
           
           <!-- Add font manually -->
           <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap;">
-            <input type="text" id="trending-add-input" placeholder="ناوی فۆنت بنووسە، مەسەلەن: UniQAIDAR_BiLaL 084" style="flex:1;min-width:200px;direction:ltr;font-family:monospace;">
-            <button class="btn btn-green" style="font-size:0.8rem;padding:7px 14px;" onclick="trendingAddFont()">➕ زیادکردن</button>
+            <input type="text" id="trending-add-input" placeholder="Enter font name, e.g.: UniQAIDAR_BiLaL 084" style="flex:1;min-width:200px;direction:ltr;font-family:monospace;">
+            <button class="btn btn-green" style="font-size:0.8rem;padding:7px 14px;" onclick="trendingAddFont()"><span data-ku>➕ زیادکردن</span><span data-en style="display:none">➕ Add</span></button>
           </div>
 
           <!-- Trending list -->
           <div id="trending-list" style="display:flex;flex-direction:column;gap:5px;max-height:520px;overflow-y:auto;"></div>
-          <div style="margin-top:8px;font-size:0.75rem;color:var(--muted);font-family:monospace;" id="trending-count"></div>
+          <div style="margin-top:8px;font-size:0.75rem;color:#2ecc71;font-family:monospace;" id="trending-count"></div>
         </div>
       </div>
     </div>
@@ -4858,13 +4856,13 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
 <!-- ئۆڤەرلەی سەیڤ کردن -->
 <div id="overlay" class="overlay">
     <div class="spinner"></div>
-    <p id="overlay-msg">سەیڤ دەکرێت...</p>
+    <p id="overlay-msg"><span data-ku>سەیڤ دەکرێت...</span><span data-en style="display:none">Saving...</span></p>
 </div>
 
 <!-- مۆدالی دەستکاریکردن -->
 <div id="edit-modal" class="modal-backdrop">
     <div class="modal-box">
-        <h3>✏️ دەستکاریکردنی فۆنت</h3>
+        <h3><span data-ku>✏️ دەستکاریکردنی فۆنت</span><span data-en style="display:none">✏️ Edit Font</span></h3>
         <input type="hidden" id="edit-orig-name">
         <input type="hidden" id="edit-path">
         <div class="form-grid">
@@ -4877,7 +4875,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                 <input type="text" id="edit-displayname" dir="ltr" style="font-family:var(--mono);font-size:0.85rem;direction:ltr;" placeholder="مەسەلەن: UniQAIDAR_MyFont 001">
             </div>
             <div class="form-group">
-                <label>ناوی فایل</label>
+                <label>File Name</label>
                 <input type="text" id="edit-file" dir="ltr" style="font-family:var(--mono);font-size:0.85rem;direction:ltr;" readonly>
             </div>
             <div class="form-group">
@@ -4885,7 +4883,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                 <input type="date" id="edit-date" style="direction:ltr;color-scheme:dark;">
             </div>
             <div class="form-group full">
-                <label>دەقی پێشبینی</label>
+                <label>Preview Text</label>
                 <input type="text" id="edit-preview">
             </div>
             <div class="form-group full">
@@ -4900,7 +4898,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     color:#f0f0f0; text-align:justify; direction:rtl;
                     line-height:1.8; overflow:hidden; font-family:Tahoma,sans-serif;
                     transition:line-height 0.2s; word-break:break-word;">
-                    دەقی پەرەگراف بنووسە بۆ دەرکەوتنی پریڤیو
+                    <span data-ku>دەقی پەرەگراف بنووسە بۆ دەرکەوتنی پریڤیو</span><span data-en style="display:none">Write paragraph text to see preview</span>
                 </div>
             </div>
             <div class="form-group full">
@@ -5000,7 +4998,7 @@ function updateAddParaPreview() {
     var box = document.getElementById('add-para-preview-box');
     if (!box || !ta) return;
     var text = ta.value.trim();
-    box.textContent = text || 'دەقی پەرەگراف بنووسە بۆ دەرکەوتنی پریڤیو';
+    box.textContent = text || 'Enter paragraph text to see preview';
     // Apply font from selected file
     var sel = document.getElementById('f-select');
     if (sel && sel.value) {
@@ -5016,7 +5014,7 @@ function updateEditParaPreview() {
     var box = document.getElementById('edit-para-preview-box');
     if (!box || !ta) return;
     var text = ta.value.trim();
-    box.textContent = text || 'دەقی پەرەگراف بنووسە بۆ دەرکەوتنی پریڤیو';
+    box.textContent = text || 'Enter paragraph text to see preview';
     // Apply font from edit-name
     var nameEl = document.getElementById('edit-name');
     if (nameEl && nameEl.value) box.style.fontFamily = "'" + nameEl.value + "', Tahoma, sans-serif";
@@ -5132,15 +5130,15 @@ async function doSetup() {
     USER  = document.getElementById('setup-user').value.trim();
     REPO  = document.getElementById('setup-repo').value.trim();
     const al = document.getElementById('setup-alert');
-    if (!TOKEN||!USER||!REPO) return alert2(al,'تکایە هەموو خانەکان پڕ بکەرەوە!','err');
+    if (!TOKEN||!USER||!REPO) return alert2(al,'Please fill in all fields!','err');
 
-    alert2(al,'🔍 دۆزینەوەی ئۆتۆماتیکی فایل لە GitHub...','inf');
+    alert2(al,'🔍 Auto-detecting file on GitHub...','inf');
 
     const detected = await autoDetect(TOKEN, USER, REPO);
     BRANCH = detected.branch;
     FILE   = detected.file;
 
-    alert2(al,`📂 دۆزرایەوە: ${FILE} (branch: ${BRANCH}) — پەیوەندیکردن...`,'inf');
+    alert2(al,`📂 Found: ${FILE} (branch: ${BRANCH}) — Connecting...`,'inf');
 
     const ok = await loadIndex();
     if (ok) {
@@ -5148,7 +5146,7 @@ async function doSetup() {
         document.getElementById('setup-screen').style.display='none';
         setReady(true);
     } else {
-        alert2(al,`❌ پەیوەندی سەرنەکەوت. تۆکێن یان ناوی ڕیپۆ بپشکنەوە! (${FILE} / ${BRANCH})`,'err');
+        alert2(al,`❌ Connection failed. Check your token or repo name! (${FILE} / ${BRANCH})`,'err');
     }
 }
 
@@ -5167,7 +5165,7 @@ async function ghGet() {
         // Token validation: detect revoked/invalid token
         if (r.status === 401) {
             document.getElementById('sdot').className = 'status-dot';
-            document.getElementById('rbadge').textContent = '⚠️ تۆکێن نەگونجاوە';
+            document.getElementById('rbadge').textContent = '⚠️ Token invalid';
         }
         return null;
     }
@@ -5432,20 +5430,18 @@ async function ghPutHeaders(message) {
         '/sitemap.xml',
         '  Content-Type: application/xml; charset=utf-8',
         '  X-Content-Type-Options: nosniff',
-        '  Cache-Control: no-cache, no-store, must-revalidate',
-        '  Pragma: no-cache',
-        '  Expires: 0',
+        '  Cache-Control: public, max-age=0, must-revalidate',
         '  Access-Control-Allow-Origin: *',
         '',
         '/sitemap_index.xml',
         '  Content-Type: application/xml; charset=utf-8',
         '  X-Content-Type-Options: nosniff',
-        '  Cache-Control: no-cache, no-store, must-revalidate',
+        '  Cache-Control: public, max-age=0, must-revalidate',
         '  Access-Control-Allow-Origin: *',
         '',
         '/robots.txt',
         '  Content-Type: text/plain; charset=utf-8',
-        '  Cache-Control: no-cache, no-store, must-revalidate',
+        '  Cache-Control: public, max-age=0, must-revalidate',
         '',
         '/fonts.json',
         '  Content-Type: application/json; charset=utf-8',
@@ -5581,24 +5577,24 @@ async function pingGoogle() {
 // Manual trigger from SEO tab UI
 async function pingGoogleManual() {
     const al = document.getElementById('sitemap-alert');
-    alert2(al, '⏳ Bing ئاگاداری دەکرێت...', 'inf');
+    alert2(al, '⏳ Notifying Bing...', 'inf');
     await pingGoogle();
     // Google officially deprecated the public /ping endpoint in late 2024.
     // Still sent for Bing (which still supports it). For Google, use Search Console → Sitemaps → Resubmit.
-    alert2(al, '✅ Bing ئاگادار کرا. ⚠️ Google لە 2024دا /ping کۆتایی پێهات — بۆ زووترین ئیندێکسکردن لە Google Search Console sitemap دووبارە بنێرەوە.', 'ok');
+    alert2(al, '✅ Bing notified. ⚠️ Google deprecated /ping in 2024 — for fastest indexing, resubmit sitemap in Google Search Console.', 'ok');
 }
 
 async function regenerateSitemapManual() {
     const al = document.getElementById('sitemap-alert');
-    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە پەیوەندی بکە بە GitHub پێش ئەم کارە!', 'err');
-    if (!FONTS_RAW || FONTS_RAW.length === 0) return alert2(al, '❌ fonts.json بارنەکراوە — دووبارە پەیوەندی بکە.', 'err');
-    alert2(al, '⏳ Sitemap دروست دەکرێت و پۆش دەکرێت...', 'inf');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ Please connect to GitHub first!', 'err');
+    if (!FONTS_RAW || FONTS_RAW.length === 0) return alert2(al, '❌ fonts.json not loaded — reconnect to GitHub.', 'err');
+    alert2(al, '⏳ Building and pushing sitemap...', 'inf');
     const ok = await generateAndPushSitemap(FONTS_RAW, 'Manual sitemap regeneration');
     if (ok) {
         const total = 1 + new Set(['All', ...FONTS_RAW.flatMap(f => Array.isArray(f.category) ? f.category : [f.category || ''])].filter(Boolean)).size + FONTS_RAW.length;
-        alert2(al, `✅ sitemap.xml نوێکرایەوە! کۆی URL: ${total}`, 'ok');
+        alert2(al, `✅ sitemap.xml updated! Total URLs: ${total}`, 'ok');
     } else {
-        alert2(al, '❌ پۆشکردنی sitemap.xml سەرنەکەوت — دووبارە هەوڵ بدەرەوە.', 'err');
+        alert2(al, '❌ Failed to push sitemap.xml — please try again.', 'err');
     }
 }
 
@@ -5606,11 +5602,11 @@ async function regenerateSitemapManual() {
 async function runAtomicSave() {
     const al  = document.getElementById('atomic-save-alert');
     const btn = document.getElementById('atomic-save-btn');
-    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە پێش ئەم کارە پەیوەندی بکە بە GitHub!', 'err');
-    if (!FONTS_RAW || !FONTS_RAW.length) return alert2(al, '❌ fonts.json بارنەکراوە.', 'err');
-    if (!RAW) return alert2(al, '❌ index.html بارنەکراوە.', 'err');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ Please connect to GitHub before this action!', 'err');
+    if (!FONTS_RAW || !FONTS_RAW.length) return alert2(al, '❌ fonts.json not loaded.', 'err');
+    if (!RAW) return alert2(al, '❌ index.html not loaded.', 'err');
     btn.disabled = true;
-    alert2(al, '⏳ Atomic Save دەستپێکرد — 5 فایل پاشکەوت دەکرێن...', 'inf');
+    alert2(al, '⏳ Atomic Save started — saving 5 files...', 'inf');
     try {
         const res = await atomicSave(FONTS_RAW, RAW, 'UniQaidar Admin: Atomic Save');
         const parts = [];
@@ -5625,9 +5621,9 @@ async function runAtomicSave() {
         if (res.headers) parts.push('✅ _headers');
         else             parts.push('❌ _headers');
         const allOk = res.fonts && res.html && res.sitemap && res.robots && res.headers;
-        alert2(al, (allOk ? '⚡ Atomic Save تەواو! ' : '⚠️ Partial Save: ') + parts.join(' | '), allOk ? 'ok' : 'err');
+        alert2(al, (allOk ? '⚡ Atomic Save complete! ' : '⚠️ Partial Save: ') + parts.join(' | '), allOk ? 'ok' : 'err');
     } catch(e) {
-        alert2(al, '❌ هەڵە: ' + e.message, 'err');
+        alert2(al, '❌ Error: ' + e.message, 'err');
     }
     btn.disabled = false;
 }
@@ -5638,8 +5634,8 @@ async function runAtomicSave() {
 async function repairRobotsTxt() {
     const al  = document.getElementById('robots-alert');
     const btn = document.getElementById('robots-btn');
-    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە پێش ئەم کارە پەیوەندی بکە بە GitHub!', 'err');
-    alert2(al, '⏳ robots.txt پشکنیت دەکرێت...', 'inf');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ Please connect to GitHub before this action!', 'err');
+    alert2(al, '⏳ Checking robots.txt...', 'inf');
     btn.disabled = true;
     try {
         const ROBOTS_FILE = 'robots.txt';
@@ -5666,7 +5662,7 @@ async function repairRobotsTxt() {
             changed = true;
         }
         if (!changed) {
-            alert2(al, '✅ robots.txt تەواوە — Sitemap URL دروستە، هیچ گۆڕینێک پێویست نییە.', 'ok');
+            alert2(al, '✅ robots.txt is correct — Sitemap URL is valid, no changes needed.', 'ok');
             btn.disabled = false;
             return;
         }
@@ -5680,12 +5676,12 @@ async function repairRobotsTxt() {
         const wr = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${ROBOTS_FILE}`,
             { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body });
         if (wr.ok) {
-            alert2(al, '✅ robots.txt چاکسرایەوە و Sitemap URL نوێکرایەوە.', 'ok');
+            alert2(al, '✅ robots.txt fixed and Sitemap URL updated.', 'ok');
         } else {
-            alert2(al, '❌ robots.txt نوێکردنەوەی سەرنەکەوت.', 'err');
+            alert2(al, '❌ robots.txt update failed.', 'err');
         }
     } catch(e) {
-        alert2(al, '❌ هەڵە: ' + e.message, 'err');
+        alert2(al, '❌ Error: ' + e.message, 'err');
     }
     btn.disabled = false;
 }
@@ -5697,9 +5693,9 @@ async function runHealthCheck() {
     const al      = document.getElementById('health-alert');
     const results = document.getElementById('health-results');
     const btn     = document.getElementById('health-btn');
-    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە پێش ئەم کارە پەیوەندی بکە بە GitHub!', 'err');
-    if (!FONTS_RAW || FONTS_RAW.length === 0) return alert2(al, '❌ fonts.json بارنەکراوە — پەیوەندی بکە.', 'err');
-    alert2(al, `⏳ پشکنینی ${FONTS_RAW.length} فۆنت لەسەر GitHub...`, 'inf');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ Please connect to GitHub before this action!', 'err');
+    if (!FONTS_RAW || FONTS_RAW.length === 0) return alert2(al, '❌ fonts.json not loaded — connect to GitHub.', 'err');
+    alert2(al, `⏳ Checking ${FONTS_RAW.length} fonts on GitHub...`, 'inf');
     btn.disabled = true;
     results.style.display = 'none';
     results.innerHTML = '';
@@ -5724,9 +5720,9 @@ async function runHealthCheck() {
         });
         // Report
         if (missing.length === 0) {
-            alert2(al, `✅ هەموو ${FONTS_RAW.length} فۆنت سەلامەتن — هیچ فایلێکی کەم نییە.`, 'ok');
+            alert2(al, `✅ All ${FONTS_RAW.length} fonts are healthy — no missing files.`, 'ok');
         } else {
-            alert2(al, `⚠️ ${missing.length} فۆنت کێشەیان هەیە — تەفاسیل لە خوارەوە بپشکنە.`, 'err');
+            alert2(al, `⚠️ ${missing.length} font(s) have issues — see details below.`, 'err');
             const rows = missing.map((m, i) => `
                 <div style="display:flex;gap:10px;align-items:center;padding:7px 10px;background:var(--bg);border:1px solid rgba(225,112,85,0.3);border-radius:6px;margin-bottom:6px;flex-wrap:wrap;">
                     <span style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);min-width:28px;">${i+1}</span>
@@ -5738,7 +5734,7 @@ async function runHealthCheck() {
             results.style.display = 'block';
         }
     } catch(e) {
-        alert2(al, '❌ هەڵە: ' + e.message, 'err');
+        alert2(al, '❌ Error: ' + e.message, 'err');
     }
     btn.disabled = false;
 }
@@ -5917,15 +5913,15 @@ function buildCatList() {
         row.style.cssText = 'flex-wrap:wrap;gap:8px;';
         row.innerHTML = `
             <div style="display:flex;flex-direction:column;gap:2px;">
-                <button class="btn btn-ghost" style="padding:1px 7px;font-size:0.7rem;min-width:28px;opacity:${isFirst?'0.25':'1'}" ${isFirst?'disabled':''} onclick="moveCat(${i},-1)" title="بردن بۆ سەرەوە">▲</button>
-                <button class="btn btn-ghost" style="padding:1px 7px;font-size:0.7rem;min-width:28px;opacity:${isLast?'0.25':'1'}" ${isLast?'disabled':''} onclick="moveCat(${i},1)" title="بردن بۆ خوارەوە">▼</button>
+                <button class="btn btn-ghost" style="padding:1px 7px;font-size:0.7rem;min-width:28px;opacity:${isFirst?'0.25':'1'}" ${isFirst?'disabled':''} onclick="moveCat(${i},-1)" title="Move Up">▲</button>
+                <button class="btn btn-ghost" style="padding:1px 7px;font-size:0.7rem;min-width:28px;opacity:${isLast?'0.25':'1'}" ${isLast?'disabled':''} onclick="moveCat(${i},1)" title="Move Down">▼</button>
             </div>
             <span class="lbl" id="lbl-${i}">${c.label}</span>
             <input id="inp-${i}" value="${c.label}" style="display:none;flex:1;min-width:120px;max-width:180px" placeholder="ناوی کاتێگۆری">
             <span class="badge" id="badge-${i}">${c.id}</span>
             <input id="inp-id-${i}" value="${c.id}" style="display:none;width:90px;font-family:var(--mono);font-size:0.75rem;background:var(--bg);border:1px solid var(--yellow);color:var(--yellow);border-radius:5px;padding:4px 8px" placeholder="ئینگلیزی-ID">
-            <span class="cnt">${count} فۆنت</span>
-            <button class="btn btn-ghost" style="padding:5px 10px;font-size:0.75rem;" onclick="startCatEdit(${i})">✏️ گۆڕینی ناو</button>
+            <span class="cnt" data-count="${count}">${count} <span data-ku>فۆنت</span><span data-en style="display:none">fonts</span></span>
+            <button class="btn btn-ghost" style="padding:5px 10px;font-size:0.75rem;" onclick="startCatEdit(${i})"><span data-ku>✏️ گۆڕینی ناو</span><span data-en style="display:none">✏️ Rename</span></button>
             <button id="savebtn-${i}" class="btn btn-primary" style="display:none;padding:5px 10px;font-size:0.75rem;" onclick="saveCatName(${i})"><span data-ku>💾 سەیڤ</span><span data-en style="display:none">💾 Save</span></button>
             <button id="cancelbtn-${i}" class="btn btn-ghost" style="display:none;padding:5px 10px;font-size:0.75rem;" onclick="cancelCatEdit(${i})"><span data-ku>کانسڵ</span><span data-en style="display:none">Cancel</span></button>
             <button class="btn btn-red" style="padding:5px 10px;font-size:0.75rem;" onclick="deleteCat(${i})">🗑</button>`;
@@ -5948,7 +5944,7 @@ function moveCat(idx, dir) {
 
 async function saveReorder() {
     const al = document.getElementById('reorder-alert');
-    alert2(al, 'سەیڤ کردنی ڕیزبەندی نوێ...', 'inf');
+    alert2(al, 'Saving new order...', 'inf');
 
     let btnHtml = '';
     cats.forEach((c, idx) => {
@@ -5961,17 +5957,17 @@ async function saveReorder() {
     // FIX: Use regex replace instead of fragile bracket-depth HTML parser
     const rx = /(<div class="marquee-content">)([\s\S]*?)(<\/div>)/;
     if (!rx.test(RAW)) {
-        return alert2(al, '❌ marquee-content نەدۆزرایەوە — دووبارە index.html بەرکەوتە!', 'err');
+        return alert2(al, '❌ marquee-content not found — please reload index.html!', 'err');
     }
     const next = RAW.replace(rx, `$1${btnHtml}$3`);
 
     if (next === RAW) {
-        return alert2(al, '❌ هیچ گۆڕانکارییەک نەدۆزرایەوە — ئەگەر ڕیزبەندی پێشتر ذخیرەکراوە', 'inf');
+        return alert2(al, '❌ No changes found — if order was already saved', 'inf');
     }
 
     const ok = await ghPut(next, 'Reorder categories');
-    if (ok) alert2(al, '✅ ڕیزبەندی کاتێگۆریەکان ذخیرەکرا!', 'ok');
-    else    alert2(al, '❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!', 'err');
+    if (ok) alert2(al, '✅ Category order saved!', 'ok');
+    else    alert2(al, '❌ Save failed. Check your token!', 'err');
 }
 
 function startCatEdit(idx) {
@@ -6002,9 +5998,9 @@ async function saveCatName(idx) {
     const oldLabel = cats[idx].label;
     const oldId    = cats[idx].id;
 
-    if (!newLabel) return alert2(al, 'ناو نابێت بەتاڵ بێت!', 'err');
-    if (!newId)    return alert2(al, 'ID نابێت بەتاڵ بێت!', 'err');
-    if (/\s/.test(newId)) return alert2(al, 'ID نابێت بۆشایی تێدا بێت!', 'err');
+    if (!newLabel) return alert2(al, 'Name cannot be empty!', 'err');
+    if (!newId)    return alert2(al, 'ID cannot be empty!', 'err');
+    if (/\s/.test(newId)) return alert2(al, 'ID cannot contain spaces!', 'err');
     const labelChanged = newLabel !== oldLabel;
     const idChanged    = newId !== oldId;
     if (!labelChanged && !idChanged) { cancelCatEdit(idx); return; }
@@ -6013,7 +6009,7 @@ async function saveCatName(idx) {
     const newBtn = `onclick="filterFonts('${newId}', this)">${newLabel}</button>`;
 
     if (!RAW.includes(oldBtn)) {
-        return alert2(al, `❌ دوگمەی "${oldId}" لە index.html نەدۆزرایەوە.`, 'err');
+        return alert2(al, `❌ Button "${oldId}" not found in index.html.`, 'err');
     }
 
     let next = RAW.split(oldBtn).join(newBtn);
@@ -6023,11 +6019,11 @@ async function saveCatName(idx) {
         next = next.split(`filterFonts('${oldId}',`).join(`filterFonts('${newId}',`);
     }
 
-    alert2(al, 'سەیڤ دەکرێت بۆ GitHub...', 'inf');
+    alert2(al, 'Saving to GitHub...', 'inf');
 
     // Save index.html (button labels / IDs)
     const ok = await ghPut(next, `Rename cat: ${oldLabel}(${oldId}) → ${newLabel}(${newId})`);
-    if (!ok) return alert2(al, '❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!', 'err');
+    if (!ok) return alert2(al, '❌ Save failed. Check your token!', 'err');
 
     // If ID changed: also update fonts.json category arrays
     if (idChanged && FONTS_RAW.length > 0) {
@@ -6037,7 +6033,7 @@ async function saveCatName(idx) {
             return Object.assign({}, f, { category: newCats });
         });
         const fontsOk = await ghPutFonts(updatedFonts, `Rename cat in fonts.json: ${oldId} → ${newId}`);
-        if (!fontsOk) alert2(al, '⚠️ index.html نوێکرایەوە بەڵام fonts.json نەنوێکرایەوە — دووبارە هەوڵ بدەرەوە!', 'err');
+        if (!fontsOk) alert2(al, '⚠️ index.html updated but fonts.json failed — please try again!', 'err');
     }
 
     cats[idx].label = newLabel;
@@ -6045,7 +6041,7 @@ async function saveCatName(idx) {
     buildCatPills();
     buildCatList();
     buildArcSel();
-    alert2(al, `✅ "${oldLabel}" → "${newLabel}" گۆڕدرا!`, 'ok');
+    alert2(al, `✅ "${oldLabel}" → "${newLabel}" renamed!`, 'ok');
 }
 
 function buildArcSel() {
@@ -6053,7 +6049,7 @@ function buildArcSel() {
     const sel = document.getElementById('arc-full-cat');
     if (sel) {
         const cur = sel.value;
-        sel.innerHTML = '<option value="all">هەموو کاتێگۆریەکان</option>';
+        sel.innerHTML = '<option value="all"><span data-ku>هەموو کاتێگۆریەکان</span><span data-en style="display:none">All Categories</span></option>';
         cats.forEach(c => {
             const o = document.createElement('option');
             o.value = c.id; o.textContent = `${c.label} (${c.id})`;
@@ -6110,12 +6106,12 @@ function renderArcFull() {
         return matchCat && matchQ;
     });
 
-    if (filteredCountEl) filteredCountEl.textContent = filtered.length !== fnts.length ? `${filtered.length} فۆنت` : '';
+    if (filteredCountEl) filteredCountEl.textContent = filtered.length !== fnts.length ? (document.body.classList.contains('lang-en') ? `${filtered.length} fonts` : `${filtered.length} فۆنت`) : '';
 
     if (!fullEl) return;
     fullEl.innerHTML = '';
     if (!filtered.length) {
-        fullEl.innerHTML = '<div style="color:var(--muted);text-align:center;padding:24px;font-size:0.83rem">هیچ فۆنتێک نەدۆزرایەوە</div>';
+        fullEl.innerHTML = '<div style="color:var(--muted);text-align:center;padding:24px;font-size:0.83rem"><span data-ku>هیچ فۆنتێک نەدۆزرایەوە</span><span data-en style="display:none">No fonts found</span></div>';
         return;
     }
     filtered.forEach(f => {
@@ -6147,8 +6143,8 @@ async function scanFonts() {
 
     btn.disabled = true;
     status.style.color = 'var(--muted)';
-    status.textContent = 'بەدواداگەڕان...';
-    fontSel.innerHTML  = '<option value="">بارکردن...</option>';
+    status.textContent = 'Scanning...';
+    fontSel.innerHTML  = '<option value="">Loading...</option>';
 
     try {
         const res = await fetch(
@@ -6196,7 +6192,7 @@ async function scanFonts() {
             fontSel.appendChild(grp);
         }
 
-        status.textContent = `✅ ${ttfFiles.length} فایلی .ttf — ${newFiles.length} نوێ`;
+        status.textContent = `✅ ${ttfFiles.length} .ttf files — ${newFiles.length} new`;
         status.style.color = 'var(--green)';
     } catch(e) {
         fontSel.innerHTML = '<option value="">❌ نەتوانرا فۆڵدەر بخوێنرێتەوە</option>';
@@ -6211,9 +6207,9 @@ function onFontSelect() {
     const box = document.getElementById('live-preview-box');
     const dnInput = document.getElementById('f-displayname');
     if (!filename) {
-        if (box) { box.textContent = 'فۆنتێک هەڵبژێرە بۆ دەرکەوتنی پریڤیو'; box.style.fontFamily = 'Tahoma, sans-serif'; }
+        if (box) { box.textContent = 'Select a font to see preview'; box.style.fontFamily = 'Tahoma, sans-serif'; }
     var paraBox = document.getElementById('add-para-preview-box');
-    if (paraBox) { paraBox.textContent = 'دەقی پەرەگراف بنووسە بۆ دەرکەوتنی پریڤیو'; paraBox.style.fontFamily = 'Tahoma, sans-serif'; }
+    if (paraBox) { paraBox.textContent = 'Enter paragraph text to see preview'; paraBox.style.fontFamily = 'Tahoma, sans-serif'; }
         if (dnInput) dnInput.value = '';
         return;
     }
@@ -6255,7 +6251,7 @@ function clearFont() {
     const status = document.getElementById('scan-status');
     if (status) status.textContent = '';
     const box = document.getElementById('live-preview-box');
-    if (box) { box.textContent = 'فۆنتێک هەڵبژێرە بۆ دەرکەوتنی پریڤیو'; box.style.fontFamily = 'Tahoma, sans-serif'; }
+    if (box) { box.textContent = 'Select a font to see preview'; box.style.fontFamily = 'Tahoma, sans-serif'; }
     document.querySelectorAll('#f-cat-pills .cat-pill').forEach(b => b.classList.remove('on'));
     set('f-cats', '');
 }
@@ -6269,18 +6265,18 @@ async function addFont() {
     const displayName = v('f-displayname').trim();
     const al       = document.getElementById('fadd-alert');
 
-    if (!filename || !name) return alert2(al, '❌ تکایە فۆنتێک لە لیستەکە هەڵبژێرە!', 'err');
+    if (!filename || !name) return alert2(al, '❌ Please select a font from the list!', 'err');
 
     const catsArr = cats_v ? cats_v.split(',').filter(Boolean) : [];
-    if (!catsArr.length) return alert2(al, '❌ کەمترین یەک کاتێگۆری هەڵبژێرە!', 'err');
+    if (!catsArr.length) return alert2(al, '❌ Please select at least one category!', 'err');
 
     const path = `UniQaidarFonts/${filename}`;
-    if (fnts.find(f => f.path === path)) return alert2(al, `❌ "${name}" پێشتر زیادکراوە!`, 'err');
+    if (fnts.find(f => f.path === path)) return alert2(al, `❌ "${name}" was already added!`, 'err');
 
     if (!RAW || RAW.length < 1000) return alert2(al, '❌ index.html بار نەکراوە. دووبارە پەیوەندی بکە!', 'err');
 
     // ── Verify TTF exists in repo ──
-    alert2(al, 'پشکنینی فایل لە GitHub...', 'inf');
+    alert2(al, 'Checking file on GitHub...', 'inf');
     try {
         const checkRes = await fetch(
             `https://api.github.com/repos/${USER}/${REPO}/contents/UniQaidarFonts/${encodeURIComponent(filename)}`,
@@ -6376,7 +6372,7 @@ function openEdit(i) {
     // Pre-populate paragraph preview
     var editParaBox = document.getElementById('edit-para-preview-box');
     if (editParaBox) {
-        var paraText = (f.paragraph && f.paragraph.trim()) ? f.paragraph.trim() : 'دەقی پەرەگراف بنووسە بۆ دەرکەوتنی پریڤیو';
+        var paraText = (f.paragraph && f.paragraph.trim()) ? f.paragraph.trim() : (document.body.classList.contains('lang-en') ? 'Write paragraph text to see preview' : 'دەقی پەرەگراف بنووسە بۆ دەرکەوتنی پریڤیو');
         editParaBox.textContent = paraText;
         editParaBox.style.lineHeight = lhVal;
         if (f.name) editParaBox.style.fontFamily = "'" + f.name + "', Tahoma, sans-serif";
@@ -6446,7 +6442,7 @@ async function saveEditFont() {
     const newFontsArray = [...FONTS_RAW];
     newFontsArray[origIdx] = updatedEntry;
 
-    alert2(al, 'سەیڤ دەکرێت...', 'inf');
+    alert2(al, 'Saving...', 'inf');
     const ok = await ghPutFonts(newFontsArray, `Edit font: ${name}`);
     if (!ok) return alert2(al, '❌ سەیڤ سەرنەکەوت!', 'err');
 
@@ -6517,7 +6513,7 @@ async function addCat() {
     if (!RAW.includes(anchor)) return alert2(al,'❌ anchor لە index.html نەدۆزرایەوە!','err');
 
     const next = RAW.replace(anchor, anchor + newBtn);
-    alert2(al,'سەیڤ دەکرێت...','inf');
+    alert2(al,'Saving...','inf');
     const ok = await ghPut(next, `Add category: ${label}`);
     if (ok) {
         cats.push({id,label});
@@ -6668,7 +6664,7 @@ async function saveHeaderSocial() {
     if (fb) next = next.replace(/(<a id="social-facebook" href=")[^"]*"/, `$1${fb}"`);
     if (tg) next = next.replace(/(<a id="social-telegram" href=")[^"]*"/, `$1${tg}"`);
     if (next===RAW) return alert2(al,'❌ نەتوانرا دۆزرایەوە!','err');
-    alert2(al,'سەیڤ دەکرێت...','inf');
+    alert2(al,'Saving...','inf');
     const ok = await ghPut(next,'Update: social links');
     ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
 }
@@ -6683,7 +6679,7 @@ async function saveHeaderLogo() {
     let next = RAW;
     next = next.replace(/(<a id="logo-link" href=")[^"]*"/, `$1${url}"`);
     next = next.replace(/(id="logo-link"[^>]*onclick="window\.location\.href=')[^']*'/, `$1${url}'`);
-    alert2(al,'سەیڤ دەکرێت...','inf');
+    alert2(al,'Saving...','inf');
     const ok = await ghPut(next,'Update: logo link');
     ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
 }
@@ -6698,7 +6694,7 @@ async function saveHeaderSearch() {
     let next = RAW;
     if (desktop) next = next.replace(/(var DESKTOP\s*=\s*')[^']*'/, `$1${desktop}'`);
     if (mobile)  next = next.replace(/(var MOBILE\s*=\s*')[^']*'/, `$1${mobile}'`);
-    alert2(al,'سەیڤ دەکرێت...','inf');
+    alert2(al,'Saving...','inf');
     const ok = await ghPut(next,'Update: search placeholders');
     ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
 }
@@ -6724,7 +6720,7 @@ async function saveHeaderSizebar() {
     }
     // reset button label
     if (reset) next = next.replace(/(onclick="changeFontSize\(\d+\); document\.getElementById\('font-size-slider'\)\.value=\d+;"[^>]*>)[^<]*(<\/button>)/, `$1${reset}$2`);
-    alert2(al,'سەیڤ دەکرێت...','inf');
+    alert2(al,'Saving...','inf');
     const ok = await ghPut(next,'Update: size bar');
     ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
 }
@@ -6738,7 +6734,7 @@ async function saveFooter() {
     if (!text) return alert2(al,'دەق نابێت بەتاڵ بێت!','err');
     const next = RAW.replace(/<p id="footer-text"[^>]*>[\s\S]*?<\/p>/, `<p id="footer-text" dir="ltr">${text}</p>`);
     if (next===RAW) return alert2(al,'❌ footer-text نەدۆزرایەوە!','err');
-    alert2(al,'سەیڤ دەکرێت...','inf');
+    alert2(al,'Saving...','inf');
     const ok = await ghPut(next,'Update: footer');
     ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
 }
@@ -6778,7 +6774,7 @@ async function saveDownloadModal() {
         next = next.replace(/var FONTS_PER_PAGE\s*=\s*\d+;\s*\/\/ admin:perpage/, `var FONTS_PER_PAGE = ${perPageNum}; // admin:perpage`);
     }
 
-    alert2(al,'سەیڤ دەکرێت...','inf');
+    alert2(al,'Saving...','inf');
     const ok = await ghPut(next,'Update: download modal');
     ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
 }
@@ -6815,7 +6811,7 @@ async function saveAbout() {
     if (dev)    next = next.replace(/(<span id="about-developer"[^>]*>)[^<]*(<\/span>)/, `$1${dev}$2`);
 
     if (next===RAW) return alert2(al,'❌ هیچ گۆڕانکارییەک نەدۆزرایەوە یان ئێلیمێنتەکان نەدۆزرایەوە!','err');
-    alert2(al,'سەیڤ دەکرێت...','inf');
+    alert2(al,'Saving...','inf');
     const ok = await ghPut(next,'Update: about modal');
     ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
 }
@@ -6896,7 +6892,7 @@ async function saveSEO() {
     }
 
     if (next===RAW) return alert2(al,'❌ هیچ گۆڕانکارییەک نەکراوە!','err');
-    alert2(al,'سەیڤ دەکرێت...','inf');
+    alert2(al,'Saving...','inf');
     const ok = await ghPut(next,'Update: SEO meta');
     ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
 }
@@ -7148,7 +7144,9 @@ async function loadAllStats(force) {
         STATS_LOADED = true;
 
         const sulNow = nowSUL();
-        const ts  = 'دوایین نوێکردنەوە: ' + sulNow.toLocaleDateString('en-CA') + ' — ' + sulNow.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
+        const isEn = document.body.classList.contains('lang-en');
+        const tsLabel = isEn ? 'Last updated: ' : 'دوایین نوێکردنەوە: ';
+        const ts  = tsLabel + sulNow.toLocaleDateString('en-CA') + ' — ' + sulNow.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
         document.getElementById('dl-last-refresh').textContent    = ts;
         document.getElementById('visit-last-refresh').textContent = ts;
 
@@ -7171,7 +7169,7 @@ async function loadAllStats(force) {
                 _trendingList = cfTop25.slice();
                 buildTrendingList();
                 const tral = document.getElementById('trending-alert');
-                if (tral) alert2(tral, '✅ زۆرترین داونلۆکراوەکان بەخۆی نوێکرایەوە لە ئامارەکانی Cloudflare (' + cfTop25.length + ' فۆنت). بۆ پاشکەوتکردن کلیک لەسەر 💾 سەیڤی popular.json بکە.', 'ok');
+                if (tral) alert2(tral, document.body.classList.contains('lang-en') ? '✅ Top ' + cfTop25.length + ' fonts auto-loaded from Cloudflare stats. Click 💾 Save popular.json to keep them.' : '✅ زۆرترین داونلۆکراوەکان بەخۆی نوێکرایەوە لە ئامارەکانی Cloudflare (' + cfTop25.length + ' فۆنت). بۆ پاشکەوتکردن کلیک لەسەر 💾 سەیڤی popular.json بکە.', 'ok');
             }
         } catch(e) { /* silent */ }
 
@@ -7227,9 +7225,9 @@ function renderVisitStats() {
             <td style="padding:7px 10px;text-align:center;"><span style="background:var(--border);padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${item.count}</span></td>
             <td style="padding:7px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);" dir="ltr">${fmtSUL(item.last)}</td>
         </tr>`).join('')
-    : '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ داتایەک نییە</td></tr>';
+    : '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);"><span data-ku>هیچ داتایەک نییە</span><span data-en style="display:none">No data yet</span></td></tr>';
     const vcFooter = document.getElementById('v-country-footer');
-    if (vcFooter) vcFooter.textContent = `کۆی ${vcTotal} وڵات`;
+    if (vcFooter) vcFooter.textContent = document.body.classList.contains('lang-en') ? `Total: ${vcTotal} countries` : `کۆی ${vcTotal} وڵات`;
     renderPgBar('v-country-pg', vcPage, vcTotal, PG_SIZE, (p)=>{ PG.vcountry=p; renderVisitStats(); });
 
     // ── Full visit log — sortable + paginated ──
@@ -7249,7 +7247,7 @@ function renderVisitStats() {
     if (ltbody) {
         ltbody.innerHTML = '';
         if (!vlSlice.length) {
-            ltbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
+            ltbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--muted);"><span data-ku>هیچ تۆماری نییە</span><span data-en style="display:none">No records found</span></td></tr>';
         } else {
             vlSlice.forEach((ev,i) => {
                 const tr = document.createElement('tr');
@@ -7274,7 +7272,7 @@ function renderVisitStats() {
         }
     }
     const vtFooter = document.getElementById('v-log-footer');
-    if (vtFooter) vtFooter.textContent = `کۆی ${vlTotal} تۆمار`;
+    if (vtFooter) vtFooter.textContent = document.body.classList.contains('lang-en') ? `Total: ${vlTotal} records` : `کۆی ${vlTotal} تۆمار`;
     renderPgBar('v-log-pg', vlPage, vlTotal, PG_SIZE, (p)=>{ PG.vlog=p; renderVisitStats(); });
 
     // ── Virality table: copy_font | copy_category | copy_bulk_modal ──
@@ -7290,7 +7288,7 @@ function renderVisitStats() {
     if (vtbody) {
         vtbody.innerHTML = '';
         if (!vvSlice.length) {
-            vtbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
+            vtbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--muted);"><span data-ku>هیچ تۆماری نییە</span><span data-en style="display:none">No records found</span></td></tr>';
         } else {
             const evtColors = { copy_font: '#74b9ff', copy_category: '#a29bfe', copy_bulk_modal: '#fd79a8' };
             const evtLabels = { copy_font: '🔗 فۆنت', copy_category: '📁 کاتێگۆری', copy_bulk_modal: '📦 Modal' };
@@ -7320,7 +7318,7 @@ function renderVisitStats() {
         }
     }
     const vvFooter = document.getElementById('v-viral-footer');
-    if (vvFooter) vvFooter.textContent = `کۆی ${vvTotal} تۆمار`;
+    if (vvFooter) vvFooter.textContent = document.body.classList.contains('lang-en') ? `Total: ${vvTotal} records` : `کۆی ${vvTotal} تۆمار`;
     renderPgBar('v-viral-pg', vvPage, vvTotal, PG_SIZE, (p)=>{ PG.vviral=p; renderVisitStats(); });
 }
 
@@ -7395,7 +7393,7 @@ function renderSearchTable() {
                     <td style="padding:6px 10px;text-align:center;"><span style="background:rgba(41,182,246,0.15);color:#29b6f6;padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${item.count}</span></td>
                     <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.72rem;color:var(--text);" dir="ltr">${fmtSUL(item.last)}</td>
                 </tr>`).join('')
-            : '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ گەڕانێک نییە</td></tr>';
+            : '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);"><span data-ku>هیچ گەڕانێک نییە</span><span data-en style="display:none">No searches found</span></td></tr>';
         renderPgBar('sq-summary-pg', PG.sqsummary, sqSTotal, SQ_PG_SIZE, (p)=>{ PG.sqsummary=p; renderSearchTable(); });
     }
 
@@ -7417,7 +7415,7 @@ function renderSearchTable() {
     if (sqLogBody) {
         sqLogBody.innerHTML = '';
         if (!sqSlice.length) {
-            sqLogBody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
+            sqLogBody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--muted);"><span data-ku>هیچ تۆماری نییە</span><span data-en style="display:none">No records found</span></td></tr>';
         } else {
             sqSlice.forEach((ev,i) => {
                 const tr = document.createElement('tr');
@@ -7436,7 +7434,7 @@ function renderSearchTable() {
         }
     }
     const sqLogFooter = document.getElementById('sq-log-footer');
-    if (sqLogFooter) sqLogFooter.textContent = `کۆی ${sqTotal} تۆمار`;
+    if (sqLogFooter) sqLogFooter.textContent = document.body.classList.contains('lang-en') ? `Total: ${sqTotal} records` : `کۆی ${sqTotal} تۆمار`;
     renderPgBar('sq-log-pg', PG.sqlog, sqTotal, PG_SIZE, (p)=>{ PG.sqlog=p; renderSearchTable(); });
 }
 
@@ -7517,7 +7515,7 @@ function renderDlTable() {
     const ftbody = document.getElementById('dl-font-tbody');
     ftbody.innerHTML = '';
     if (!dfSlice.length) {
-        ftbody.innerHTML = '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);">هیچ داگرتنێک نییە</td></tr>';
+        ftbody.innerHTML = '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);"><span data-ku>هیچ داگرتنێک نییە</span><span data-en style="display:none">No downloads found</span></td></tr>';
     } else {
         dfSlice.forEach((item,i) => {
             const tr = document.createElement('tr');
@@ -7554,7 +7552,7 @@ function renderDlTable() {
         });
     }
     const dfFooter = document.getElementById('dl-font-footer');
-    if (dfFooter) dfFooter.textContent = `کۆی ${dfTotal} فۆنت`;
+    if (dfFooter) dfFooter.textContent = document.body.classList.contains('lang-en') ? `Total: ${dfTotal} fonts` : `کۆی ${dfTotal} فۆنت`;
     renderPgBar('dl-font-pg', dfPage, dfTotal, PG_SIZE, (p)=>{ PG.dlfont=p; renderDlTable(); });
 
     // ── Full event log — sortable + paginated ──
@@ -7577,7 +7575,7 @@ function renderDlTable() {
     const ltbody = document.getElementById('dl-log-tbody');
     ltbody.innerHTML = '';
     if (!dlSlice.length) {
-        ltbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--muted);">هیچ تۆماری نییە</td></tr>';
+        ltbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--muted);"><span data-ku>هیچ تۆماری نییە</span><span data-en style="display:none">No records found</span></td></tr>';
     } else {
         dlSlice.forEach((ev,i) => {
             const tr  = document.createElement('tr');
@@ -7585,10 +7583,10 @@ function renderDlTable() {
             const isCatBulk = ev.type==='cat-bulk' || (ev.font||'').includes('داگرتنی کاتێگۆری');
             const isBulk    = !isCatBulk && (ev.type==='bulk' || (ev.font||'').includes('<span data-ku>داگرتنی تەواوی</span><span data-en style="display:none">Bulk Downloads</span>'));
             const lbl = isCatBulk
-                ? '<span style="background:var(--purple);color:#fff;padding:2px 10px;border-radius:10px;font-size:0.72rem;display:inline-block;white-space:nowrap;unicode-bidi:plaintext;">کاتێگۆری</span>'
+                ? '<span style="background:var(--purple);color:#fff;padding:2px 10px;border-radius:10px;font-size:0.72rem;display:inline-block;white-space:nowrap;unicode-bidi:plaintext;">Category</span>'
                 : isBulk
-                ? '<span style="background:var(--green);color:#000;padding:2px 10px;border-radius:10px;font-size:0.72rem;display:inline-block;white-space:nowrap;unicode-bidi:plaintext;">تەواوی</span>'
-                : '<span style="background:var(--accent);color:#fff;padding:2px 10px;border-radius:10px;font-size:0.72rem;display:inline-block;white-space:nowrap;unicode-bidi:plaintext;">تاکە</span>';
+                ? '<span style="background:var(--green);color:#000;padding:2px 10px;border-radius:10px;font-size:0.72rem;display:inline-block;white-space:nowrap;unicode-bidi:plaintext;">Bulk</span>'
+                : '<span style="background:var(--accent);color:#fff;padding:2px 10px;border-radius:10px;font-size:0.72rem;display:inline-block;white-space:nowrap;unicode-bidi:plaintext;">Single</span>';
             const evSUL = fmtSUL(ev.ts||ev.date||'');
             let evFontLink, evLinkIcon;
             if (isBulk) {
@@ -7625,7 +7623,7 @@ function renderDlTable() {
         });
     }
     const dlFooter = document.getElementById('dl-log-footer');
-    if (dlFooter) dlFooter.textContent = `کۆی ${dlTotal} تۆمار`;
+    if (dlFooter) dlFooter.textContent = document.body.classList.contains('lang-en') ? `Total: ${dlTotal} records` : `کۆی ${dlTotal} تۆمار`;
     renderPgBar('dl-log-pg', dlPage, dlTotal, PG_SIZE, (p)=>{ PG.dllog=p; renderDlTable(); });
 }
 
@@ -7644,7 +7642,7 @@ function clearDlStats() {
 
 function exportDlCsv() {
     const filtered = getFilteredEvents();
-    if (!filtered.length) { alert('هیچ داتایەک نییە'); return; }
+    if (!filtered.length) { alert('No data yet'); return; }
     const rows = [['#','ناوی فۆنت','جۆر','وڵات','بەروار','کات']];
     filtered.forEach((ev,i) => rows.push([i+1, ev.font||'', ev.type||'', ev.country||'', ev.date||'', ev.time||'']));
     const csv = rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
@@ -7787,7 +7785,7 @@ async function updateTrending() {
         .slice(0, 25)
         .map(([name]) => name);
 
-    if (!top25.length) return alert('هیچ داگرتنی تاکەیەک نەدۆزرایەوە.');
+    if (!top25.length) return alert(document.body.classList.contains('lang-en') ? 'No single font downloads found.' : 'هیچ داگرتنی تاکەیەک نەدۆزرایەوە.');
 
     // Save to popular.json on GitHub
     const popularContent = JSON.stringify(top25, null, 2);
@@ -7818,8 +7816,8 @@ async function updateTrending() {
         _trendingList = top25.slice();
         buildTrendingList();
         const tral = document.getElementById('trending-alert');
-        if (tral) alert2(tral, '✅ popular.json نوێکرایەوە! ' + top25.length + ' فۆنت.', 'ok');
-        alert(`✅ popular.json نوێکرایەوە!\n\nتاپ ${top25.length} فۆنت پاشکەوت کرا.\n\n${top25.slice(0,5).join('\n')}${top25.length > 5 ? '\n...' : ''}`);
+        if (tral) alert2(tral, document.body.classList.contains('lang-en') ? '✅ popular.json updated! ' + top25.length + ' fonts.' : '✅ popular.json نوێکرایەوە! ' + top25.length + ' فۆنت.', 'ok');
+        alert(document.body.classList.contains('lang-en') ? `✅ popular.json updated!\n\nTop ${top25.length} fonts saved.\n\n${top25.slice(0,5).join('\n')}${top25.length > 5 ? '\n...' : ''}` : `✅ popular.json نوێکرایەوە!\n\nتاپ ${top25.length} فۆنت پاشکەوت کرا.\n\n${top25.slice(0,5).join('\n')}${top25.length > 5 ? '\n...' : ''}`);
     } else {
         const err = await r.json().catch(() => ({}));
         alert('❌ popular.json سەیڤ نەکرا: ' + (err.message || r.status));
@@ -7837,7 +7835,7 @@ var _popularJsonSha = undefined; // GitHub SHA for PUT update
 async function loadPopularJson() {
     const al = document.getElementById('trending-alert');
     if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە یەکەم پەیوەندی بکە بە GitHub.', 'err');
-    alert2(al, 'بارکردن...', 'inf');
+    alert2(al, 'Loading...', 'inf');
     try {
         const r = await fetch(
             `https://api.github.com/repos/${USER}/${REPO}/contents/popular.json?ref=${BRANCH}&_=${Date.now()}`,
@@ -7849,8 +7847,8 @@ async function loadPopularJson() {
         const decoded = fromBase64(d.content);
         _trendingList = JSON.parse(decoded).filter(n => typeof n === 'string' && n.trim()).slice(0, 25);
         buildTrendingList();
-        alert2(al, `✅ بارکرا! ${_trendingList.length} فۆنت.`, 'ok');
-    } catch(e) { alert2(al, '❌ هەڵە: ' + e.message, 'err'); }
+        alert2(al, document.body.classList.contains('lang-en') ? `✅ Loaded! ${_trendingList.length} fonts.` : `✅ بارکرا! ${_trendingList.length} فۆنت.`, 'ok');
+    } catch(e) { alert2(al, '❌ Error: ' + e.message, 'err'); }
 }
 
 // Auto-fill from current download stats (top 25)
@@ -7873,7 +7871,7 @@ function autoFillTrending() {
         .slice(0, 25)
         .map(([name]) => name);
     buildTrendingList();
-    alert2(al, `\u2705 ${_trendingList.length} \u0641\u06c6\u0646\u062a\u06cc \u062a\u0627\u067e \u0644\u06d5 \u0626\u0627\u0645\u0627\u0631\u06d5\u06a9\u0627\u0646\u06d5\u0648\u06d5 \u0647\u06ce\u0646\u0631\u0627.`, 'ok');
+    alert2(al, document.body.classList.contains('lang-en') ? `✅ Top ${_trendingList.length} fonts loaded from stats.` : `✅ ${_trendingList.length} فۆنتی تاپ لە ئامارەکانەوە هێنرا.`, 'ok');
 }
 
 // Build the visual list with move up/down and delete
@@ -7896,7 +7894,7 @@ function buildTrendingList() {
             <button class="btn btn-red" style="padding:4px 10px;font-size:0.72rem;" onclick="trendingRemove(${i})">&#128465;</button>`;
         el.appendChild(row);
     });
-    if (countEl) countEl.textContent = _trendingList.length + ' / 25 \u0641\u06c6\u0646\u062a';
+    if (countEl) countEl.textContent = _trendingList.length + (document.body.classList.contains('lang-en') ? ' / 25 fonts' : ' / 25 \u0641\u06c6\u0646\u062a');
 }
 
 function trendingMove(idx, dir) {
@@ -7917,11 +7915,11 @@ function trendingAddFont() {
     const al = document.getElementById('trending-alert');
     if (!name) return;
     if (_trendingList.includes(name)) {
-        alert2(al, '\u26a0\ufe0f \u0626\u06d5\u0645 \u0641\u06c6\u0646\u062a\u06d5 \u067e\u06ce\u0634\u062a\u0631 \u0647\u06d5\u06cc\u06d5 \u0644\u06d5 \u0644\u06cc\u0633\u062a\u06d5\u06a9\u06d5.', 'inf');
+        alert2(al, '⚠️ This font is already in the list.', 'inf');
         return;
     }
     if (_trendingList.length >= 25) {
-        alert2(al, '\u26a0\ufe0f \u0644\u06cc\u0633\u062a\u06d5\u06a9\u06d5 \u062a\u06d5\u0648\u0627\u0648\u06d5 (25 \u0641\u06c6\u0646\u062a). \u06cc\u06d5\u06a9\u06ce\u06a9 \u0644\u0627\u0628\u0628\u06d5 \u067e\u06ce\u0634 \u0632\u06cc\u0627\u062f\u06a9\u0631\u062f\u0646\u06cc \u0646\u0648\u06ce.', 'inf');
+        alert2(al, '⚠️ The list is full (25 fonts). Please remove one before adding more.', 'inf');
         return;
     }
     _trendingList.unshift(name);
@@ -7933,8 +7931,8 @@ function trendingAddFont() {
 async function savePopularJson() {
     const al = document.getElementById('trending-alert');
     if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە یەکەم پەیوەندی بکە بە GitHub.', 'err');
-    if (!_trendingList.length) return alert2(al, '⚠️ لیستەکە بووە. تکایە فۆنتی زیاد بکە.', 'inf');
-    alert2(al, 'سەیڤ دەکرێت...', 'inf');
+    if (!_trendingList.length) return alert2(al, document.body.classList.contains('lang-en') ? '⚠️ List is empty. Please add a font first.' : '⚠️ لیستەکە بووە. تکایە فۆنتی زیاد بکە.', 'inf');
+    alert2(al, 'Saving...', 'inf');
     const popularContent = JSON.stringify(_trendingList, null, 2);
     const encoded = toBase64(popularContent);
     if (!_popularJsonSha) {
@@ -7955,7 +7953,7 @@ async function savePopularJson() {
     if (r.ok) {
         const rd = await r.json();
         _popularJsonSha = rd.content ? rd.content.sha : undefined;
-        alert2(al, `✅ popular.json \u0633\u06d5\u06cc\u06a4\u06a9\u0631\u0627! ${_trendingList.length} \u0641\u06c6\u0646\u062a.`, 'ok');
+        alert2(al, document.body.classList.contains('lang-en') ? `✅ popular.json saved! ${_trendingList.length} fonts.` : `✅ popular.json سەیڤکرا! ${_trendingList.length} فۆنت.`, 'ok');
     } else {
         const err = await r.json().catch(() => ({}));
         alert2(al, '❌ \u0633\u06d5\u06cc\u06a4 \u0633\u06d5\u0631\u0646\u06d5\u06a9\u06d5\u0648\u062a: ' + (err.message || r.status), 'err');
@@ -7970,7 +7968,7 @@ async function backfillFontSizes() {
     const bar    = document.getElementById('backfill-bar');
     const status = document.getElementById('backfill-status');
     if (!ready) return alert2(al, '❌ دووبارە پەیوەندی بکە پێش بەکارهێنانی ئەم تایبەتمەندییە.', 'err');
-    if (!FONTS_RAW || !FONTS_RAW.length) return alert2(al, '❌ fonts.json بارنەکراوە.', 'err');
+    if (!FONTS_RAW || !FONTS_RAW.length) return alert2(al, '❌ fonts.json not loaded.', 'err');
     const missing = FONTS_RAW.filter(f => !f.size);
     if (!missing.length) return alert2(al, '✅ هەموو فۆنتەکان پێشتر قەبارەیان تۆماربووە!', 'ok');
     if (!confirm('قەبارەی ' + missing.length + ' فۆنت تۆمارنەکراوە. ئەمەیان پڕ دەکرێتەوە لە GitHub. بەردەوام بێت؟')) return;
@@ -7978,13 +7976,13 @@ async function backfillFontSizes() {
     prog.style.display = 'block';
     alert2(al, '', '');
     try {
-        status.textContent = 'خوێندنەوەی قەبارەکان لە GitHub...';
+        status.textContent = 'Reading file sizes from GitHub...';
         bar.style.width = '10%';
         const res = await fetch(
             'https://api.github.com/repos/' + USER + '/' + REPO + '/contents/UniQaidarFonts',
             { headers: { Authorization: 'token ' + TOKEN, Accept: 'application/vnd.github.v3+json' } }
         );
-        if (!res.ok) throw new Error('GitHub API سەرنەکەوت (' + res.status + ')');
+        if (!res.ok) throw new Error('GitHub API failed (' + res.status + ')');
         const files = await res.json();
         const sizeMap = {};
         files.forEach(function(f) { sizeMap[f.name] = Math.round(f.size / 1024) || 1; });
@@ -7997,15 +7995,15 @@ async function backfillFontSizes() {
             if (kb) { filled++; return Object.assign({}, f, { size: kb + ' KB' }); }
             return f;
         });
-        status.textContent = 'پاشکەوتکردن بۆ GitHub... (' + filled + ' فۆنت نوێکرا)';
+        status.textContent = 'Saving to GitHub... (' + filled + ' fonts updated)';
         bar.style.width = '70%';
         const ok = await ghPutFonts(updated, 'Backfill font sizes: ' + filled + ' fonts updated');
         if (!ok) throw new Error('پاشکەوتکردنی fonts.json سەرنەکەوت');
         bar.style.width = '100%';
         FONTS_RAW = updated;
         parseFonts(); buildCatPills(); renderArc(); renderArcFull();
-        status.textContent = '✅ ' + filled + ' فۆنت نوێکرا';
-        alert2(al, '✅ تەواو! ' + filled + ' فۆنت قەبارەیان تۆمارکرا بە دایمی. ئێستا ماڵپەڕەکە هیچ کات داواکاری سایز لە GitHub ناکات.', 'ok');
+        status.textContent = '✅ ' + filled + ' fonts updated';
+        alert2(al, '✅ Done! ' + filled + ' font sizes saved permanently. The website will no longer request sizes from GitHub.', 'ok');
         btn.textContent = '✅ تەواوکرا';
     } catch(e) {
         alert2(al, '❌ ' + e.message, 'err');
@@ -8054,28 +8052,28 @@ async function runLiveAudit() {
             row('', 'X-Content-Type-Options', xco,                                    xco.includes('nosniff')) +
             row('', 'Cache-Control',        cc,                                        null) +
             row('', 'یەکەم بایت',           `"${firstChar}" (0x${firstByte.toString(16).toUpperCase()})`, startOk) +
-            row('', 'BOM / کاراکتەری نادروست', hasBOM ? 'BOM دۆزرایەوە ❌' : 'نییە ✅', !hasBOM) +
-            row('', '<?xml دیکلەرەیشن',    hasXmlDecl ? 'هەیە ✅' : 'نییە ❌',        hasXmlDecl) +
-            row('', '<urlset xmlns=...>',   hasUrlset  ? 'هەیە ✅' : 'نییە ❌',        hasUrlset) +
+            row('', 'BOM / Invalid character', hasBOM ? 'BOM found ❌' : 'None ✅', !hasBOM) +
+            row('', '<?xml Declaration',    hasXmlDecl ? 'Yes ✅' : 'None ❌',        hasXmlDecl) +
+            row('', '<urlset xmlns=...>',   hasUrlset  ? 'Yes ✅' : 'None ❌',        hasUrlset) +
             row('', 'ژمارەی <url> تاگەکان', urlCount,                                 urlCount > 0) +
-            row('', 'بۆشایی لە <loc>',      hasSpaceInLoc ? 'دۆزرایەوە ❌' : 'نییە ✅', !hasSpaceInLoc) +
-            row('', 'کاراکتەری قەدەغەکراو', ctrlChars ? 'دۆزرایەوە ❌' : 'نییە ✅',   !ctrlChars) +
+            row('', 'Space in <loc>',        hasSpaceInLoc ? 'Found ❌' : 'None ✅', !hasSpaceInLoc) +
+            row('', 'Illegal control chars', ctrlChars ? 'Found ❌' : 'None ✅',   !ctrlChars) +
             `<div style="margin-top:8px;font-size:0.7rem;color:var(--muted);">URL: ${SITEMAP}</div>`;
 
         res.style.display = 'block';
 
         const hasCRLF = text.includes('\r\n');
         res.innerHTML +=
-            row('', 'CRLF لە فایلەکەدا (مۆسکەی ئەم کێشەیە)', hasCRLF ? 'بەڵێ ❌ — Cloudflare هێدەرەکان نادەستکاری' : 'نییە ✅', !hasCRLF);
+            row('', 'CRLF لە فایلەکەدا (مۆسکەی ئەم کێشەیە)', hasCRLF ? 'Yes ❌ — Cloudflare will not apply headers' : 'None ✅', !hasCRLF);
         const allOk = r.ok && appXml && startOk && !hasBOM && hasXmlDecl && hasUrlset && !hasSpaceInLoc && !ctrlChars && !hasCRLF;
         if (allOk) {
-            alert2(al, '✅ هەموو شتێک باشە — تکایە بستێپ ② بکە (سڕین و دووبارە نێردن لە GSC).', 'ok');
+            alert2(al, '✅ Everything looks good — please do Step ② (delete and resubmit in GSC).', 'ok');
         } else if (hasCRLF) {
-            alert2(al, '❌ مۆسکەی ئەم کێشەیە دۆزرایەوە: CRLF لە _headers ـدا — Atomic Save بکە تا چاک بکرێتەوە!', 'err');
+            alert2(al, '❌ Root cause found: CRLF in _headers — run Atomic Save to fix it!', 'err');
         } else if (!appXml) {
-            alert2(al, '❌ Content-Type هێشتا text/xml ـە — _headers فایلەکەت نوێنەکرایەوە! Atomic Save بکە.', 'err');
+            alert2(al, '❌ Content-Type is still text/xml — your _headers file was not updated! Run Atomic Save.', 'err');
         } else {
-            alert2(al, '⚠️ هەندێک پرۆبلەم دۆزرایەوە — سەرەوەکان بپشکنە.', 'err');
+            alert2(al, '⚠️ Some issues found — check the details above.', 'err');
         }
     } catch(e) {
         alert2(al, '❌ هەڵە: ' + e.message + ' — ئەمە دەبێت CORS بێت، ئامرازی دەرەکی بەکاربێنە.', 'err');
@@ -8103,18 +8101,18 @@ async function simulateGooglebot() {
         const urlCount = (body.match(/<url>/g) || []).length;
 
         res.innerHTML =
-            `<div style="color:var(--green);">HTTP ${r.status} — ${r.ok ? 'دەستگەیشتنی باش' : 'هەڵە'}</div>` +
+            `<div style="color:var(--green);">HTTP ${r.status} — ${r.ok ? 'Successful access' : 'Error'}</div>` +
             `<div>Content-Type: <span style="color:${ct.includes('application/xml')?'var(--green)':'var(--red)'};">${ct}</span></div>` +
             `<div>ژمارەی URL: <span style="color:var(--yellow);">${urlCount}</span></div>` +
             `<div style="margin-top:6px;color:var(--muted);font-size:0.7rem;">تێبینی: User-Agent ی ڕاستەقینەی Googlebot ناتوانرێت لە browser دا بنێرێت (سیکیۆریتی). ئەگەر HTTP 200 دەستت کەوت — دروستە. بۆ پشکنینی تەواو لە GSC → URL Inspection → Test Live URL بکە.</div>`;
         res.style.display = 'block';
 
         if (r.ok && ct.includes('application/xml')) {
-            alert2(al, '✅ سایتەکەت دەستپێدەگات و Content-Type دروستە. پرۆبلەمەکە لەلایەن Google کاشێکەوەیە — بستێپ ② بکە.', 'ok');
+            alert2(al, '✅ Site is accessible and Content-Type is correct. Problem is Google cache — do Step ②.', 'ok');
         } else if (r.ok && !ct.includes('application/xml')) {
-            alert2(al, '❌ دەستپێدەگات بەڵام Content-Type هێشتا text/xml ـە — _headers فایلەکەت Atomic Save بکە.', 'err');
+            alert2(al, '❌ Accessible but Content-Type is still text/xml — run Atomic Save to fix _headers.', 'err');
         } else {
-            alert2(al, '❌ HTTP ' + r.status + ' — سایتەکەت کێشەی هەیە!', 'err');
+            alert2(al, '❌ HTTP ' + r.status + ' — your site has a server error!', 'err');
         }
     } catch(e) {
         alert2(al, '⚠️ CORS بلۆکی کرد — ئەمەی واتای ئەوە نییە مەشکڵێکە. لە GSC → URL Inspection → Test Live URL بکە.', 'inf');
@@ -8145,7 +8143,7 @@ async function validateSitemapXml() {
         if (parseErr) {
             errors.push('❌ XML Parse Error: ' + parseErr.textContent.slice(0, 120));
         } else {
-            warns.push('✅ XML دروست parse کرا');
+            warns.push('✅ XML parsed correctly');
         }
 
         // Namespace check
@@ -8155,9 +8153,9 @@ async function validateSitemapXml() {
         } else {
             const ns = urlset.getAttribute('xmlns') || '';
             if (ns === 'http://www.sitemaps.org/schemas/sitemap/0.9') {
-                warns.push('✅ xmlns namespace دروستە');
+                warns.push('✅ xmlns namespace is correct');
             } else {
-                errors.push('❌ xmlns نادروستە: ' + (ns || '(بوش)'));
+                errors.push('❌ xmlns is invalid: ' + (ns || '(empty)'));
             }
         }
 
@@ -8183,14 +8181,14 @@ async function validateSitemapXml() {
 
         // Byte-0 check
         if (!text.trimStart().startsWith('<')) {
-            errors.push('❌ فایل بە کاراکتەری نادروست دەست دەکات — پێویستە < بێت');
+            errors.push('❌ File starts with invalid character — must start with <');
         } else {
             warns.push('✅ فایل بە < دەست دەکات (Byte-0 Rule)');
         }
 
         // BOM check
         if (text.charCodeAt(0) === 0xFEFF || (text.charCodeAt(0) === 0xEF)) {
-            errors.push('❌ BOM دۆزرایەوە لە سەرەوەی فایلەکە');
+            errors.push('❌ BOM found at start of file');
         } else {
             warns.push('✅ BOM نییە');
         }
@@ -8210,9 +8208,9 @@ async function validateSitemapXml() {
         res.style.display = 'block';
 
         if (errors.length === 0) {
-            alert2(al, `✅ XML تەواو دروستە! ${warns.length} چاوەڕوانکاری. پرۆبلەمەکە لەلایەن Googlebot دژەوایی یان کاشێکەوەیە.`, 'ok');
+            alert2(al, `✅ XML is perfectly valid! ${warns.length} notices. The problem is on Googlebot's side or in cache.`, 'ok');
         } else {
-            alert2(al, `❌ ${errors.length} هەڵە دۆزرایەوە — Atomic Save بکە بۆ چاکسازی.`, 'err');
+            alert2(al, `❌ ${errors.length} error(s) found — run Atomic Save to fix them.`, 'err');
         }
     } catch(e) {
         alert2(al, '❌ ' + e.message, 'err');
@@ -8246,7 +8244,7 @@ function generateIndexNowKey() {
     const key = Array.from(arr).map(b => b.toString(16).padStart(2,'0')).join('');
     document.getElementById('indexnow-key').value = key;
     indexNowKeyChanged();
-    alert2(document.getElementById('indexnow-alert'), '🎲 کلیلی نوێ دروستکرا — تکایە فایلەکەی پاشکەوت بکە بۆ GitHub.', 'inf');
+    alert2(document.getElementById('indexnow-alert'), '🎲 New key generated — please save the key file to GitHub.', 'inf');
 }
 
 function indexNowKeyChanged() {
@@ -8261,11 +8259,11 @@ function indexNowKeyChanged() {
         statusEl.style.display = 'block';
         if (valid) {
             statusEl.style.color = 'var(--green)';
-            statusEl.textContent = '✅ کلیل دروستە — فایلی پێویست: /' + key.toLowerCase() + '.txt';
+            statusEl.textContent = '✅ Valid key — required file: /' + key.toLowerCase() + '.txt';
             try { localStorage.setItem('uq_indexnow_key', key.toLowerCase()); } catch(e) {}
         } else if (key.length > 0) {
             statusEl.style.color = 'var(--red)';
-            statusEl.textContent = '❌ کلیل نادروستە — تەنها ئەژمارە و a-f ی پێویستە (هێکس)، ٨–١٢٨ کاراکتەر';
+            statusEl.textContent = '❌ Invalid key — only digits and a-f allowed (hex), 8–128 characters';
         } else {
             statusEl.style.display = 'none';
         }
@@ -8279,10 +8277,10 @@ function indexNowKeyChanged() {
 async function saveIndexNowKeyFile() {
     const al  = document.getElementById('indexnow-alert');
     const btn = document.getElementById('indexnow-save-btn');
-    if (!INDEXNOW_KEY) return alert2(al, '❌ کلیل نادروستە.', 'err');
-    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ پەیوەندی بکە بە GitHub پێش ئەم کارە.', 'err');
+    if (!INDEXNOW_KEY) return alert2(al, '❌ Invalid key.', 'err');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ Connect to GitHub first.', 'err');
     btn.disabled = true;
-    alert2(al, '⏳ پاشکەوتکردنی فایلی کلیل...', 'inf');
+    alert2(al, '⏳ Saving key file...', 'inf');
     try {
         const filename = INDEXNOW_KEY + '.txt';
         // Check if file already exists
@@ -8306,7 +8304,7 @@ async function saveIndexNowKeyFile() {
         if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
         const d = await r.json();
         INDEXNOW_KEY_SHA = d.content?.sha || '';
-        alert2(al, `✅ فایلی کلیل پاشکەوتکرا: /${filename}\nئێستا چاوەڕوان بە Cloudflare deploy بکات (١-٢ خولەک)، پاشان پینگ بکە.`, 'ok');
+        alert2(al, `✅ Key file saved: /${filename}\nNow wait for Cloudflare to deploy (1-2 min), then ping.`, 'ok');
     } catch(e) {
         alert2(al, '❌ ' + e.message, 'err');
     }
@@ -8316,8 +8314,8 @@ async function saveIndexNowKeyFile() {
 async function pingIndexNow(bulk = false) {
     const al  = document.getElementById('indexnow-alert');
     const res = document.getElementById('indexnow-results');
-    if (!INDEXNOW_KEY) return alert2(al, '❌ کلیل نادروستە.', 'err');
-    alert2(al, bulk ? '⏳ پینگی تەواو — هەموو URLەکان...' : '⏳ پینگ IndexNow...', 'inf');
+    if (!INDEXNOW_KEY) return alert2(al, '❌ Invalid key.', 'err');
+    alert2(al, bulk ? '⏳ Full ping — all URLs...' : '⏳ Pinging IndexNow...', 'inf');
     res.style.display = 'none';
 
     const BASE = 'https://uniqaidar.pages.dev/';
@@ -8348,12 +8346,12 @@ async function pingIndexNow(bulk = false) {
         });
         // With no-cors we get opaque response — treat as success if no throw
         res.innerHTML =
-            `<div style="color:var(--green);">📡 پێدراوە — ${urlList.length} URL بۆ api.indexnow.org</div>` +
-            `<div style="color:var(--muted);font-size:0.7rem;">mode: no-cors (opaque response — ئەمە نریمالەیە بۆ IndexNow)</div>` +
+            `<div style="color:var(--green);">📡 Submitted — ${urlList.length} URLs to api.indexnow.org</div>` +
+            `<div style="color:var(--muted);font-size:0.7rem;">mode: no-cors (opaque response — this is normal for IndexNow)</div>` +
             `<div style="margin-top:4px;">URL سەرەوە: <span style="color:var(--yellow);">${urlList.slice(0,3).join(', ')}${urlList.length>3?' ...':''}</span></div>` +
             `<div style="margin-top:6px;color:var(--muted);">پشکنینی encasing: <a href="https://www.bing.com/webmasters" target="_blank" style="color:#0078d4;">Bing Webmaster Tools ↗</a></div>`;
         res.style.display = 'block';
-        alert2(al, `✅ IndexNow پینگکرا! ${urlList.length} URL نێردرا بۆ Bing/Yandex/Naver/Amazon. لە چەند خولەکدا فێرست دەکرێن.`, 'ok');
+        alert2(al, `✅ IndexNow pinged! ${urlList.length} URLs sent to Bing/Yandex/Naver/Amazon. They will be indexed within minutes.`, 'ok');
     } catch(e) {
         alert2(al, '❌ ' + e.message, 'err');
     }
@@ -8385,9 +8383,9 @@ atomicSave = async function(fontsArray, htmlContent, commitMessage) {
 async function emergencyCRLFFix() {
     const al  = document.getElementById('crlf-fix-alert');
     const btn = document.getElementById('crlf-fix-btn');
-    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ تکایە پەیوەندی بکە بە GitHub پێش ئەم کارە!', 'err');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ Please connect to GitHub first!', 'err');
     btn.disabled = true;
-    alert2(al, '⏳ خوێندنەوەی sitemap.xml ی ئێستا لە GitHub...', 'inf');
+    alert2(al, '⏳ Reading current sitemap.xml from GitHub...', 'inf');
     try {
         // Fetch current sitemap from GitHub (raw bytes)
         const r = await fetch(
@@ -8404,7 +8402,7 @@ async function emergencyCRLFFix() {
         // Verify it actually changed
         const wasCRLF = raw.includes('\r\n');
         if (!wasCRLF) {
-            alert2(al, '✅ sitemap.xml پێشتر پاکە — CRLF نییە. پێویست نییە دووبارە بنێریت.', 'ok');
+            alert2(al, '✅ sitemap.xml is already clean — no CRLF found. No action needed.', 'ok');
             btn.disabled = false;
             return;
         }
@@ -8442,9 +8440,9 @@ async function emergencyCRLFFix() {
             }
         } catch(e) {}
 
-        alert2(al, `✅ CRLF چاکسرایەوە! ${crlfCount} CRLF سڕایەوە لە sitemap.xml دا. ئێستا Cloudflare deploy دەکات (١-٢ خولەک). پاشان GSC → Sitemaps → دووبارە بنێرە.`, 'ok');
+        alert2(al, `✅ CRLF fixed! ${crlfCount} occurrences removed from sitemap.xml. Cloudflare is now deploying (1-2 min). Then go to GSC → Sitemaps → Resubmit.`, 'ok');
     } catch(e) {
-        alert2(al, '❌ هەڵە: ' + e.message, 'err');
+        alert2(al, '❌ Error: ' + e.message, 'err');
     }
     btn.disabled = false;
 }
@@ -8455,7 +8453,7 @@ async function emergencyCRLFFix() {
 async function submitBingSitemap() {
     // Quick button from main SEO box — opens Bing sitemaps page
     const al = document.getElementById('bing-sitemap-alert');
-    alert2(al, '⏳ IndexNow پینگ دەکرێت بۆ Bing و سیتمێپ دەنێردرێت...', 'inf');
+    alert2(al, '⏳ Pinging Bing via IndexNow and submitting sitemap...', 'inf');
     try {
         // First ping IndexNow (Bing supports it)
         const SITEMAP = 'https://uniqaidar.pages.dev/sitemap.xml';
@@ -8465,21 +8463,21 @@ async function submitBingSitemap() {
         // If we have IndexNow key, use it
         if (INDEXNOW_KEY) {
             await pingIndexNow(false);
-            alert2(al, '✅ IndexNow پینگکرا بۆ Bing/Yandex/Naver! لە ٣٠ خولەکدا فێرست دەکرێن.', 'ok');
+            alert2(al, '✅ IndexNow pinged for Bing/Yandex/Naver! They will index within 30 minutes.', 'ok');
         } else {
-            alert2(al, '✅ Bing ئاگادار کرا. بۆ submit کردنی ڕاستەوخۆ: SEO Tab → Google Recovery → ⑧ Bing Webmaster Tools', 'ok');
+            alert2(al, '✅ Bing notified. For direct submission: SEO Tab → Google Recovery → ⑧ Bing Webmaster Tools', 'ok');
         }
     } catch(e) {
-        alert2(al, '⚠️ ' + e.message + ' — بە دەستی بکە: Bing Webmaster Tools → Sitemaps', 'inf');
+        alert2(al, '⚠️ ' + e.message + ' — Do it manually: Bing Webmaster Tools → Sitemaps', 'inf');
     }
 }
 
 async function submitBingSitemapFull() {
     const al     = document.getElementById('bing-submit-alert');
     const apiKey = (document.getElementById('bing-api-key')?.value || '').trim();
-    if (!apiKey) return alert2(al, '❌ تکایە Bing API Key بنووسە.', 'err');
+    if (!apiKey) return alert2(al, '❌ Please enter your Bing API Key.', 'err');
 
-    alert2(al, '⏳ Submit کردن بۆ Bing Webmaster Tools...', 'inf');
+    alert2(al, '⏳ Submitting to Bing Webmaster Tools...', 'inf');
 
     const sitemaps = [
         'https://uniqaidar.pages.dev/sitemap.xml',
@@ -8494,7 +8492,7 @@ async function submitBingSitemapFull() {
                 `https://ssl.bing.com/webmaster/api.svc/json/AddSitemap?apikey=${encodeURIComponent(apiKey)}&siteUrl=https://uniqaidar.pages.dev/&sitemap=${encodeURIComponent(sm)}`,
                 { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: '{}' }
             );
-            results.push('📤 ' + sm.split('/').pop() + ' → نێردرا (no-cors opaque)');
+            results.push('📤 ' + sm.split('/').pop() + ' → Sent (no-cors opaque)');
         } catch(e) {
             results.push('⚠️ ' + sm.split('/').pop() + ': ' + e.message);
         }
