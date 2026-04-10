@@ -4656,6 +4656,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;"><div style="font-size:1.6rem;font-weight:bold;color:var(--yellow);" id="v-countries">—</div><div style="font-size:0.75rem;color:var(--muted);margin-top:4px;"><span data-ku>وڵاتی جیاواز</span><span data-en style="display:none">Unique Countries</span></div></div>
           </div>
           <div id="v-alert" class="alert"></div>
+          <div id="vt-hist-badge" style="font-size:0.74rem;color:var(--yellow);font-family:var(--mono);margin-bottom:10px;min-height:18px;"></div>
           <div class="section-label" style="margin-bottom:8px;"><span data-ku>سەردانەکان بەپێی وڵات</span><span data-en style="display:none">Visits by Country</span></div>
           <div style="overflow-x:auto;">
             <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
@@ -4788,6 +4789,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 10px;" onclick="clearDlFilters()"><span data-ku>پاکردنەوەی فلتەر</span><span data-en style="display:none">Clear Filters</span></button>
           </div>
           <div id="dl-stats-alert" class="alert"></div>
+          <div id="dl-hist-badge" style="font-size:0.74rem;color:var(--yellow);font-family:var(--mono);margin-bottom:10px;min-height:18px;"></div>
           <div class="section-label" style="margin-bottom:10px;"><span data-ku>داگرتنەکان بەپێی فۆنت</span><span data-en style="display:none">Downloads by Font</span></div>
           <div style="overflow-x:auto;margin-bottom:24px;">
             <table style="width:100%;border-collapse:collapse;font-size:0.82rem;min-width:500px;">
@@ -7127,15 +7129,25 @@ const HIST_BASE = 'https://raw.githubusercontent.com/uniqaidar/uniqaidar.github.
 // ── Fetch all historical archive files from GitHub (runs once per session) ──
 async function loadHistoricalData() {
     if (HIST_LOADED) return;
+
+    // Show loading badge in both stats panels
+    const _setBadge = (msg, color) => {
+        ['dl-hist-badge','vt-hist-badge'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.textContent = msg; el.style.color = color || 'var(--yellow)'; }
+        });
+    };
+    _setBadge('⏳ بارکردنی ئەرشیڤی مێژووی…');
+
     try {
-        // 1. Fetch the index file to know which archive files exist
+        // 1. Fetch index.json to know which archive files exist
         const idxR = await fetch(`${HIST_BASE}/index.json?_=${Date.now()}`);
-        if (!idxR.ok) return; // No historicaldata yet — first run, that's fine
+        if (!idxR.ok) { _setBadge(''); return; }
         const idx = await idxR.json();
         const files = Array.isArray(idx.files) ? idx.files : [];
-        if (!files.length) return;
+        if (!files.length) { _setBadge(''); return; }
 
-        // 2. Fetch all archive files in parallel
+        // 2. Fetch all archive files in parallel (with per-file error isolation)
         const fetches = files.map(fn =>
             fetch(`${HIST_BASE}/${fn}?_=${Date.now()}`)
                 .then(r => r.ok ? r.json() : [])
@@ -7143,19 +7155,35 @@ async function loadHistoricalData() {
         );
         const results = await Promise.all(fetches);
 
-        // 3. Flatten — each file is an array of {date, downloads:[], visits:[]}
+        // 3. Flatten — each archive file is [{date, downloads:[], visits:[]}, ...]
+        //    All event types (download, copy_font, copy_category, copy_bulk_modal, search)
+        //    are preserved as-is inside the downloads array; visits array holds page visits.
         HIST_DL = [];
         HIST_VT = [];
+        let histDays = 0;
         results.forEach(fileArr => {
             if (!Array.isArray(fileArr)) return;
             fileArr.forEach(dayObj => {
+                if (!dayObj || typeof dayObj !== 'object') return;
+                histDays++;
                 if (Array.isArray(dayObj.downloads)) HIST_DL.push(...dayObj.downloads);
                 if (Array.isArray(dayObj.visits))    HIST_VT.push(...dayObj.visits);
             });
         });
 
         HIST_LOADED = true;
-    } catch(e) { /* silent — historical data is optional */ }
+
+        // Show summary badge
+        const isEn = document.body.classList.contains('lang-en');
+        const badge = isEn
+            ? `📦 Archive: ${files.length} file(s) · ${histDays} days · ${HIST_DL.length} events · ${HIST_VT.length} visits`
+            : `📦 ئەرشیڤ: ${files.length} فایل · ${histDays} ڕۆژ · ${HIST_DL.length} ئیڤێنت · ${HIST_VT.length} سەردان`;
+        _setBadge(badge, 'var(--green)');
+
+    } catch(e) {
+        _setBadge('⚠️ ئەرشیڤ بارنەکرا: ' + e.message, 'var(--red)');
+        /* non-fatal — admin still shows live KV data */
+    }
 }
 
 // ── Load today's live data from KV + merge with historical archive ──
