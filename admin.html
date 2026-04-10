@@ -5381,7 +5381,7 @@ async function ghPutSitemap(xmlContent, message) {
         const { sha: blobSha } = await blobRes.json();
 
         // 2. Get current HEAD commit SHA for the branch
-        const refRes = await fetch(`${base}/git/ref/heads/${BRANCH}`, { headers: hdrs });
+        const refRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, { headers: hdrs });
         if (!refRes.ok) throw new Error('ref failed: ' + refRes.status);
         const { object: { sha: headSha } } = await refRes.json();
 
@@ -5418,15 +5418,8 @@ async function ghPutSitemap(xmlContent, message) {
         SITEMAP_SHA = blobSha;
         return true;
     } catch(e) {
-        // Fallback to Contents API if Git Data API fails
-        SITEMAP_SHA = '';
-        await ghGetSitemapSha();
-        const body = JSON.stringify({ message, content: toBase64(xmlContent), sha: SITEMAP_SHA || undefined, branch: BRANCH });
-        const r = await fetch(`${base}/contents/${SITEMAP_FILE}`, { method: 'PUT', headers: hdrs, body });
-        if (!r.ok) return false;
-        const d = await r.json();
-        SITEMAP_SHA = d.content.sha;
-        return true;
+        console.error('ghPutSitemap Git Data API failed:', e.message);
+        return false;
     }
 }
 
@@ -8600,7 +8593,7 @@ async function emergencyCRLFFix() {
         const { sha: blobSha } = await blobRes.json();
 
         // 2. Get HEAD
-        const refRes = await fetch(`${base}/git/ref/heads/${BRANCH}`, { headers: hdrs });
+        const refRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, { headers: hdrs });
         if (!refRes.ok) throw new Error('ref: ' + refRes.status);
         const { object: { sha: headSha } } = await refRes.json();
 
