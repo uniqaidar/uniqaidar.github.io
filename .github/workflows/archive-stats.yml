@@ -2,138 +2,69 @@ name: Archive KV Stats
 
 on:
   schedule:
-    # Runs at 00:30 UTC daily (03:30 Sulaymaniyah time) — safely after midnight
+    # Runs at 00:30 UTC daily (03:30 Sulaymaniyah time)
     - cron: '30 0 * * *'
   workflow_dispatch:
-    # Allow manual trigger from GitHub Actions UI
+    # Allow manual trigger
 
 jobs:
   archive:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # needed to commit historicaldata files
+      contents: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      - name: Create temp directory
-        run: mkdir -p tmp
 
       - name: Archive yesterday's KV stats
         env:
           STATS_URL: https://uniqaidar.pages.dev/api/stats
-          PURGE_URL: https://uniqaidar.pages.dev/api/purge
           ARCHIVE_TOKEN: ${{ secrets.ARCHIVE_TOKEN }}
-          MAX_FILE_BYTES: 5000000   # 5MB per file
+          MAX_FILE_BYTES: 5000000 
         run: |
           set -e
 
-          # ── 1. Calculate yesterday's date (Sulaymaniyah = UTC+3) ──
+          # 1. Calculate date
           YESTERDAY=$(TZ='Asia/Baghdad' date -d 'yesterday' '+%Y-%m-%d')
           echo "Archiving data for: $YESTERDAY"
 
-          # ── 2. Fetch yesterday's data from KV via Pages Function ──
+          # 2. Fetch data
           echo "Fetching stats from KV..."
           RESPONSE=$(curl -sf \
             -H "Authorization: Bearer ${ARCHIVE_TOKEN}" \
             "${STATS_URL}?type=both&date=${YESTERDAY}" \
             --max-time 60) || { echo "ERROR: Failed to fetch stats"; exit 1; }
 
-          # Check if response is valid
+          # Verify response
           OK=$(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('ok','false'))" 2>/dev/null || echo "false")
           if [ "$OK" != "True" ] && [ "$OK" != "true" ]; then
             echo "ERROR: API returned not-ok: $RESPONSE"
             exit 1
           fi
 
-          DL_COUNT=$(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('downloads',[])))" 2>/dev/null || echo "0")
-          VT_COUNT=$(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('visits',[])))" 2>/dev/null || echo "0")
-          echo "Downloads: $DL_COUNT, Visits: $VT_COUNT"
+          # 3. Save to temp file FIRST
+          echo "$RESPONSE" > kv_response.json
 
-          if [ "$DL_COUNT" = "0" ] && [ "$VT_COUNT" = "0" ]; then
-            echo "No data for $YESTERDAY — nothing to archive."
-            exit 0
-          fi
+          # 4. Run Python Archiver
+          YESTERDAY="$YESTERDAY" MAX_FILE_BYTES="$MAX_FILE_BYTES" python3 << 'PYEOF'
+          import json, os
 
-          # ── 3. Prepare historicaldata directory ──
-          mkdir -p historicaldata
-
-          # ── 4. Write the new day's data as a dated entry ──
-          python3 << 'PYEOF'
-          import json, os, sys
-
-          response_raw = os.environ.get('RESPONSE_DATA', '')
-          yesterday    = os.environ.get('YESTERDAY', '')
-          max_bytes    = int(os.environ.get('MAX_FILE_BYTES', 5000000))
-          arch_dir     = 'historicaldata'
-
-          # Parse API response
-          with open('/tmp/kv_response.json', 'r') as f:
-              data = json.load(f)
-
-          new_entry = {
-              'date':      yesterday,
-              'downloads': data.get('downloads', []),
-              'visits':    data.get('visits', [])
-          }
-          new_json = json.dumps(new_entry, separators=(',', ':'))  # minified
-
-          # Find the current archive file to append to
-          idx = 1
-          while True:
-              path = os.path.join(arch_dir, f'archive_{idx}.json')
-              if not os.path.exists(path):
-                  # New file — start with empty array
-                  current = []
-                  break
-              size = os.path.getsize(path)
-              if size + len(new_json.encode()) + 2 < max_bytes:
-                  # File has room
-                  with open(path, 'r', encoding='utf-8') as f:
-                      current = json.load(f)
-                  break
-              idx += 1
-
-          current.append(new_entry)
-          path = os.path.join(arch_dir, f'archive_{idx}.json')
-          with open(path, 'w', encoding='utf-8') as f:
-              # Minified — saves space, still valid JSON
-              json.dump(current, f, separators=(',', ':'), ensure_ascii=False)
-
-          # Write index file listing all archive files
-          all_files = sorted([
-              f for f in os.listdir(arch_dir)
-              if f.startswith('archive_') and f.endswith('.json')
-          ])
-          index = {'files': all_files, 'updated': yesterday}
-          with open(os.path.join(arch_dir, 'index.json'), 'w') as f:
-              json.dump(index, f, separators=(',', ':'))
-
-          print(f'Written to {path} (file #{idx})')
-          print(f'Total archive files: {len(all_files)}')
-          PYEOF
-
-          # Save response to temp file for Python script above
-          echo "$RESPONSE" > /tmp/kv_response.json
-          YESTERDAY="$YESTERDAY" python3 << 'PYEOF'
-          import json, os, sys
-
-          yesterday = os.environ.get('YESTERDAY', '')
+          yesterday = os.environ.get('YESTERDAY')
           max_bytes = int(os.environ.get('MAX_FILE_BYTES', '5000000'))
           arch_dir  = 'historicaldata'
+          os.makedirs(arch_dir, exist_ok=True)
 
-          with open('/tmp/kv_response.json', 'r') as f:
+          with open('kv_response.json', 'r') as f:
               data = json.load(f)
 
           new_entry = {
-              'date':      yesterday,
+              'date': yesterday,
               'downloads': data.get('downloads', []),
-              'visits':    data.get('visits', [])
+              'visits': data.get('visits', [])
           }
-
-          os.makedirs(arch_dir, exist_ok=True)
 
           idx = 1
           while True:
@@ -142,7 +73,7 @@ jobs:
                   current = []
                   break
               size = os.path.getsize(path)
-              entry_size = len(json.dumps(new_entry, separators=(',',':'), ensure_ascii=False).encode('utf-8'))
+              entry_size = len(json.dumps(new_entry, separators=(',',':')).encode('utf-8'))
               if size + entry_size + 2 < max_bytes:
                   with open(path, 'r', encoding='utf-8') as f:
                       current = json.load(f)
@@ -150,33 +81,27 @@ jobs:
               idx += 1
 
           current.append(new_entry)
-          path = os.path.join(arch_dir, f'archive_{idx}.json')
           with open(path, 'w', encoding='utf-8') as f:
               json.dump(current, f, separators=(',',':'), ensure_ascii=False)
 
-          all_files = sorted([
-              fn for fn in os.listdir(arch_dir)
-              if fn.startswith('archive_') and fn.endswith('.json')
-          ])
+          all_files = sorted([fn for fn in os.listdir(arch_dir) if fn.startswith('archive_') and fn.endswith('.json')])
           index = {'files': all_files, 'updated': yesterday}
           with open(os.path.join(arch_dir, 'index.json'), 'w') as f:
               json.dump(index, f, separators=(',',':'))
 
-          print(f'Written to {path}')
+          print(f'Successfully written to {path}')
           PYEOF
 
       - name: Commit archived data
         run: |
-          git config user.name  "UniQaidar Admin"
+          git config user.name "UniQaidar Admin"
           git config user.email "uniqaidar@gmail.com"
           git add historicaldata/
-          # Only commit if there are actual changes
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
             git commit -m "Auto-archive stats: $(TZ='Asia/Baghdad' date -d 'yesterday' '+%Y-%m-%d')"
             git push
-            echo "Committed and pushed."
           fi
 
       - name: Purge yesterday's KV keys
@@ -185,13 +110,9 @@ jobs:
           ARCHIVE_TOKEN: ${{ secrets.ARCHIVE_TOKEN }}
         run: |
           YESTERDAY=$(TZ='Asia/Baghdad' date -d 'yesterday' '+%Y-%m-%d')
-          echo "Purging KV keys for: $YESTERDAY"
-          curl -sf \
-            -X POST \
+          curl -sf -X POST \
             -H "Authorization: Bearer ${ARCHIVE_TOKEN}" \
             -H "Content-Type: application/json" \
             -d "{\"date\":\"${YESTERDAY}\"}" \
             "${PURGE_URL}" \
-            --max-time 30 \
-            && echo "Purge successful." \
-            || echo "WARNING: Purge failed — KV keys not deleted. Data is still safely archived."
+            --max-time 30 && echo "KV Purge successful." || echo "Purge failed."
