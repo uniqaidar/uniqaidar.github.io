@@ -5531,10 +5531,11 @@ async function ghPutHeaders(message) {
 async function ghPutGitattributes(message) {
     const FILE = '.gitattributes';
     const content = [
-        '# Force LF line endings for all text files — prevents GitHub autocrlf from corrupting sitemap.xml',
+        '# Treat XML/JSON as binary — zero line-ending conversion by Git or GitHub',
+        '*.xml -text',
+        '*.json -text',
+        '# Force LF for all other text files',
         '* text=auto eol=lf',
-        '*.xml text eol=lf',
-        '*.json text eol=lf',
         '*.txt text eol=lf',
         '*.html text eol=lf',
         '*.css text eol=lf',
@@ -8584,6 +8585,10 @@ async function emergencyCRLFFix() {
         const hdrs = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
         const base = `https://api.github.com/repos/${USER}/${REPO}`;
 
+        // STEP A: Write .gitattributes first (*.xml -text) so GitHub treats XML as binary from now on
+        await ghPutGitattributes('Fix: .gitattributes — treat XML as binary to stop autocrlf');
+
+        // STEP B: Now write sitemap.xml via Blobs API — .gitattributes is already active
         // 1. Create blob
         const blobRes = await fetch(`${base}/git/blobs`, {
             method: 'POST', headers: hdrs,
@@ -8643,8 +8648,7 @@ async function emergencyCRLFFix() {
             }
         } catch(e) {}
 
-        // Also write .gitattributes to permanently prevent GitHub autocrlf from re-introducing CRLF
-        try { await ghPutGitattributes('Fix: add .gitattributes to force LF line endings'); } catch(e) {}
+        // Also write .gitattributes — already done above as STEP A, skip duplicate
 
         const msg = wasCRLF
             ? `✅ CRLF fixed! ${crlfCount} occurrences removed. .gitattributes added to prevent recurrence. Wait 2 min for Cloudflare, then GSC → Sitemaps → Resubmit.`
