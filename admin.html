@@ -7024,7 +7024,11 @@ function setReady(val) {
     document.getElementById('rbadge').textContent = val ? `${USER}/${REPO}` : 'پەیوەند نەکراوە';
     document.getElementById('fbtn').disabled = !val;
     document.getElementById('cbtn').disabled = !val;
-    if (val) loadAllSettings();
+    if (val) {
+        loadAllSettings();
+        // Pre-load stats immediately on login — historical archive + today's live data
+        loadAllStats(false);
+    }
 }
 
 function go(id, btn) {
@@ -7065,6 +7069,9 @@ function set(id,val) { const el=document.getElementById(id); if(el) el.value=val
 let DL_DATA = [], DL_SORT = 'count', DL_SORT_DIR = -1, DL_TIMER = null;
 let VT_DATA = [], VT_TIMER = null;
 let STATS_LOADED = false;
+let HIST_LOADED  = false;   // true once historicaldata files are fetched
+let HIST_DL      = [];      // downloads from all archive_*.json files
+let HIST_VT      = [];      // visits    from all archive_*.json files
 
 // Pagination state for all 4 tables
 const PG = { vcountry:1, vlog:1, vviral:1, dlfont:1, dllog:1, sqsummary:1, sqlog:1 };
@@ -7114,8 +7121,44 @@ function renderPgBar(containerId, currentPage, total, perPage, onGo) {
 
 // Always use the Cloudflare Pages URL for the API — admin.html may be served from GitHub Pages
 const STATS_API_BASE = 'https://uniqaidar.pages.dev';
+// GitHub raw content base for historicaldata archive files
+const HIST_BASE = 'https://raw.githubusercontent.com/uniqaidar/uniqaidar.github.io/main/historicaldata';
 
-// Load both downloads + visits in one request from /api/stats
+// ── Fetch all historical archive files from GitHub (runs once per session) ──
+async function loadHistoricalData() {
+    if (HIST_LOADED) return;
+    try {
+        // 1. Fetch the index file to know which archive files exist
+        const idxR = await fetch(`${HIST_BASE}/index.json?_=${Date.now()}`);
+        if (!idxR.ok) return; // No historicaldata yet — first run, that's fine
+        const idx = await idxR.json();
+        const files = Array.isArray(idx.files) ? idx.files : [];
+        if (!files.length) return;
+
+        // 2. Fetch all archive files in parallel
+        const fetches = files.map(fn =>
+            fetch(`${HIST_BASE}/${fn}?_=${Date.now()}`)
+                .then(r => r.ok ? r.json() : [])
+                .catch(() => [])
+        );
+        const results = await Promise.all(fetches);
+
+        // 3. Flatten — each file is an array of {date, downloads:[], visits:[]}
+        HIST_DL = [];
+        HIST_VT = [];
+        results.forEach(fileArr => {
+            if (!Array.isArray(fileArr)) return;
+            fileArr.forEach(dayObj => {
+                if (Array.isArray(dayObj.downloads)) HIST_DL.push(...dayObj.downloads);
+                if (Array.isArray(dayObj.visits))    HIST_VT.push(...dayObj.visits);
+            });
+        });
+
+        HIST_LOADED = true;
+    } catch(e) { /* silent — historical data is optional */ }
+}
+
+// ── Load today's live data from KV + merge with historical archive ──
 async function loadAllStats(force) {
     if (!force && STATS_LOADED) {
         updateDlSummary(); renderDlTable(); renderVisitStats(); renderSearchTable(); return;
@@ -7123,13 +7166,35 @@ async function loadAllStats(force) {
     const alDl = document.getElementById('dl-stats-alert');
     const alVt = document.getElementById('v-alert');
 
+    const isEn = document.body.classList.contains('lang-en');
+    const tsLabel = isEn ? 'Last updated: ' : 'دوایین نوێکردنەوە: ';
+
     try {
-        const r = await fetch(`${STATS_API_BASE}/api/stats?type=both`);
+        // ── Step 1: Load historical archive (once per session, or on force) ──
+        if (!HIST_LOADED || force) {
+            HIST_LOADED = false; // allow re-fetch on force
+            await loadHistoricalData();
+        }
+
+        // ── Step 2: Fetch today's live data from Cloudflare KV ──
+        const today = todaySUL();
+        const r = await fetch(`${STATS_API_BASE}/api/stats?type=both&date=${today}`);
         if (!r.ok) {
             let errMsg = r.status;
             try { const e = await r.json(); errMsg = e.error || errMsg; } catch(_) {}
-            alert2(alDl, '❌ ' + errMsg, 'err');
-            alert2(alVt, '❌ ' + errMsg, 'err');
+            // Still show historical data even if live fetch fails
+            if (HIST_DL.length || HIST_VT.length) {
+                DL_DATA = [...HIST_DL];
+                VT_DATA = [...HIST_VT];
+                STATS_LOADED = true;
+                const sulNow = nowSUL();
+                const ts = tsLabel + sulNow.toLocaleDateString('en-CA') + ' — ' + sulNow.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'}) + (isEn ? ' (archive only)' : ' (ئەرشیڤ تەنها)');
+                document.getElementById('dl-last-refresh').textContent    = ts;
+                document.getElementById('visit-last-refresh').textContent = ts;
+                updateDlSummary(); renderDlTable(); renderVisitStats(); renderSearchTable();
+            }
+            alert2(alDl, '⚠️ Live KV: ' + errMsg + (HIST_DL.length ? ' — ئەرشیڤی مێژووی بارکرا' : ''), 'err');
+            alert2(alVt, '⚠️ Live KV: ' + errMsg + (HIST_VT.length ? ' — ئەرشیڤی مێژووی بارکرا' : ''), 'err');
             return;
         }
         const data = await r.json();
@@ -7139,21 +7204,23 @@ async function loadAllStats(force) {
             return;
         }
 
-        DL_DATA = Array.isArray(data.downloads) ? data.downloads : [];
-        VT_DATA = Array.isArray(data.visits)    ? data.visits    : [];
+        // ── Step 3: Merge historical + live ──
+        // Historical has everything up to yesterday. Live has today only.
+        const liveDl = Array.isArray(data.downloads) ? data.downloads : [];
+        const liveVt = Array.isArray(data.visits)    ? data.visits    : [];
+
+        DL_DATA = [...HIST_DL, ...liveDl];
+        VT_DATA = [...HIST_VT, ...liveVt];
         STATS_LOADED = true;
 
         const sulNow = nowSUL();
-        const isEn = document.body.classList.contains('lang-en');
-        const tsLabel = isEn ? 'Last updated: ' : 'دوایین نوێکردنەوە: ';
-        const ts  = tsLabel + sulNow.toLocaleDateString('en-CA') + ' — ' + sulNow.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
+        const ts = tsLabel + sulNow.toLocaleDateString('en-CA') + ' — ' + sulNow.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
         document.getElementById('dl-last-refresh').textContent    = ts;
         document.getElementById('visit-last-refresh').textContent = ts;
 
         updateDlSummary(); renderDlTable(); renderVisitStats(); renderSearchTable();
 
-        // ── Auto-sync Trending Manager with freshest Cloudflare data ──
-        // Compute top-25 silently and update the trending list view if it hasn't been manually edited
+        // ── Auto-sync Trending Manager with freshest merged data ──
         try {
             const singleEvs = DL_DATA.filter(ev => {
                 if (ev.type !== 'single') return false;
@@ -7165,18 +7232,18 @@ async function loadAllStats(force) {
             singleEvs.forEach(ev => { const k = ev.font||'?'; cfCountMap[k] = (cfCountMap[k]||0)+1; });
             const cfTop25 = Object.entries(cfCountMap).sort((a,b)=>b[1]-a[1]).slice(0,25).map(([n])=>n);
             if (cfTop25.length && !_trendingList.length) {
-                // Only auto-fill if list hasn't been manually loaded yet
                 _trendingList = cfTop25.slice();
                 buildTrendingList();
                 const tral = document.getElementById('trending-alert');
-                if (tral) alert2(tral, document.body.classList.contains('lang-en') ? '✅ Top ' + cfTop25.length + ' fonts auto-loaded from Cloudflare stats. Click 💾 Save popular.json to keep them.' : '✅ زۆرترین داونلۆکراوەکان بەخۆی نوێکرایەوە لە ئامارەکانی Cloudflare (' + cfTop25.length + ' فۆنت). بۆ پاشکەوتکردن کلیک لەسەر 💾 سەیڤی popular.json بکە.', 'ok');
+                if (tral) alert2(tral, isEn ? '✅ Top ' + cfTop25.length + ' fonts auto-loaded from merged stats. Click 💾 Save popular.json to keep them.' : '✅ زۆرترین داونلۆکراوەکان بەخۆی نوێکرایەوە لە ئامارە تەواوەکانەوە (' + cfTop25.length + ' فۆنت). بۆ پاشکەوتکردن کلیک لەسەر 💾 سەیڤی popular.json بکە.', 'ok');
             }
         } catch(e) { /* silent */ }
 
+        // ── 15-minute auto-refresh (replaces old 10-minute) ──
         if (DL_TIMER) clearInterval(DL_TIMER);
         if (VT_TIMER) clearInterval(VT_TIMER);
-        DL_TIMER = setInterval(() => loadAllStats(true), 10*60*1000);
-        VT_TIMER = DL_TIMER; // same interval, tracked separately for clarity
+        DL_TIMER = setInterval(() => loadAllStats(true), 15*60*1000);
+        VT_TIMER = DL_TIMER;
 
     } catch(e) {
         alert2(alDl, '❌ ' + e.message, 'err');
