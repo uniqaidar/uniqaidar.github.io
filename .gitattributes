@@ -1,7 +1,8 @@
-# Force LF line endings for all text files — prevents GitHub autocrlf from corrupting sitemap.xml
+# Treat XML/JSON as binary — zero line-ending conversion by Git or GitHub
+*.xml -text
+*.json -text
+# Force LF for all other text files
 * text=auto eol=lf
-*.xml text eol=lf
-*.json text eol=lf
 *.txt text eol=lf
 *.html text eol=lf
 *.css text eol=lf
