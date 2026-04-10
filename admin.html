@@ -5246,7 +5246,10 @@ async function atomicSave(fontsArray, htmlContent, commitMessage) {
     // 6. sitemap_index.xml — alternative GSC entry point (helps with Cloudflare Pages fetcher bug)
     try { await ghPutSitemapIndex(commitMessage + ' [sitemap_index.xml]'); } catch(e) {}
 
-    // 7. IndexNow key file (if key is set in admin)
+    // 7. .gitattributes — force LF on all XML/JSON/txt files so GitHub never re-introduces CRLF
+    try { await ghPutGitattributes(commitMessage + ' [.gitattributes]'); } catch(e) {}
+
+    // 8. IndexNow key file (if key is set in admin)
     if (INDEXNOW_KEY) {
         try { await saveIndexNowKeyFile(); } catch(e) {}
     }
@@ -5481,6 +5484,43 @@ async function ghPutHeaders(message) {
         const d = await r.json();
         HEADERS_SHA = d.content ? d.content.sha : '';
         return true;
+    } catch(e) { return false; }
+}
+
+// ══════════════════════════════════════════
+// GitHub API — .gitattributes (force LF, prevents GitHub autocrlf from corrupting XML/JSON)
+// ══════════════════════════════════════════
+async function ghPutGitattributes(message) {
+    const FILE = '.gitattributes';
+    const content = [
+        '# Force LF line endings for all text files — prevents GitHub autocrlf from corrupting sitemap.xml',
+        '* text=auto eol=lf',
+        '*.xml text eol=lf',
+        '*.json text eol=lf',
+        '*.txt text eol=lf',
+        '*.html text eol=lf',
+        '*.css text eol=lf',
+        '*.js text eol=lf',
+        '',
+    ].join('\n');
+    try {
+        let sha = '';
+        const chk = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/${FILE}?ref=${BRANCH}`,
+            { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+        );
+        if (chk.ok) { const d = await chk.json(); sha = d.sha || ''; }
+        const body = JSON.stringify({
+            message,
+            content: toBase64(content),
+            branch: BRANCH,
+            ...(sha ? { sha } : {})
+        });
+        const r = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/${FILE}`,
+            { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body }
+        );
+        return r.ok;
     } catch(e) { return false; }
 }
 
@@ -8488,18 +8528,18 @@ async function emergencyCRLFFix() {
         );
         if (!r.ok) throw new Error('GitHub API سەرنەکەوت: ' + r.status);
         const d   = await r.json();
+        // CRITICAL: detect CRLF in raw base64-decoded binary BEFORE TextDecoder normalizes it
+        // TextDecoder may silently strip \r, making raw.includes('\r\n') always false
+        const b64clean = (d.content || '').replace(/\s/g, '');
+        const binStr = atob(b64clean);
+        const wasCRLF = binStr.includes('\r\n') || binStr.includes('\r');
         const raw = fromBase64(d.content);  // decode current content
 
         // Apply full healing: CRLF→LF, trim, strip control chars, spaces in loc
         const healed = healSitemapXml(raw);
 
-        // Verify it actually changed
-        const wasCRLF = raw.includes('\r\n');
-        if (!wasCRLF) {
-            alert2(al, '✅ sitemap.xml is already clean — no CRLF found. No action needed.', 'ok');
-            btn.disabled = false;
-            return;
-        }
+        // Always force-write to guarantee clean LF file on GitHub
+        // (GitHub autocrlf can silently re-introduce \r\n even on a "clean" file)
 
         // Push cleaned version
         const crlfCount = (raw.match(/\r\n/g) || []).length;
@@ -8523,18 +8563,23 @@ async function emergencyCRLFFix() {
                 { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
             );
             if (ri.ok) {
-                const di  = await ri.json();
+                const di   = await ri.json();
                 const rawi = fromBase64(di.content);
                 const healedi = rawi.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
-                if (rawi.includes('\r\n')) {
-                    const bi = JSON.stringify({ message: 'Fix CRLF in sitemap_index.xml', content: toBase64(healedi), sha: di.sha, branch: BRANCH });
-                    await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/sitemap_index.xml`,
-                        { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body: bi });
-                }
+                // Always force-write — same autocrlf issue applies
+                const bi = JSON.stringify({ message: 'Fix CRLF in sitemap_index.xml', content: toBase64(healedi), sha: di.sha, branch: BRANCH });
+                await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/sitemap_index.xml`,
+                    { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body: bi });
             }
         } catch(e) {}
 
-        alert2(al, `✅ CRLF fixed! ${crlfCount} occurrences removed from sitemap.xml. Cloudflare is now deploying (1-2 min). Then go to GSC → Sitemaps → Resubmit.`, 'ok');
+        // Also write .gitattributes to permanently prevent GitHub autocrlf from re-introducing CRLF
+        try { await ghPutGitattributes('Fix: add .gitattributes to force LF line endings'); } catch(e) {}
+
+        const msg = wasCRLF
+            ? `✅ CRLF fixed! ${crlfCount} occurrences removed. .gitattributes added to prevent recurrence. Wait 2 min for Cloudflare, then GSC → Sitemaps → Resubmit.`
+            : `✅ Force-written with guaranteed LF endings + .gitattributes added. Wait 2 min for Cloudflare, then GSC → Sitemaps → Resubmit.`;
+        alert2(al, msg, 'ok');
     } catch(e) {
         alert2(al, '❌ Error: ' + e.message, 'err');
     }
