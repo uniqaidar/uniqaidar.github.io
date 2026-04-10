@@ -5366,23 +5366,68 @@ async function ghGetSitemapSha() {
 }
 
 async function ghPutSitemap(xmlContent, message) {
-    // ALWAYS force-refresh SHA before every write — stale SHA causes 409 conflicts
-    SITEMAP_SHA = '';
-    await ghGetSitemapSha();
-    const body = JSON.stringify({
-        message,
-        content: toBase64(xmlContent),
-        sha: SITEMAP_SHA || undefined,
-        branch: BRANCH
-    });
-    const r = await fetch(
-        `https://api.github.com/repos/${USER}/${REPO}/contents/${SITEMAP_FILE}`,
-        { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body }
-    );
-    if (!r.ok) return false;
-    const d = await r.json();
-    SITEMAP_SHA = d.content.sha;
-    return true;
+    // Use Git Data API (blob→tree→commit) instead of Contents API.
+    // Contents API goes through GitHub's autocrlf filter which re-introduces \r\n.
+    // The Git Data API stores raw bytes — no line ending conversion ever.
+    const hdrs = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+    const base = `https://api.github.com/repos/${USER}/${REPO}`;
+    try {
+        // 1. Create blob with raw base64 content (autocrlf bypassed)
+        const blobRes = await fetch(`${base}/git/blobs`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ content: toBase64(xmlContent), encoding: 'base64' })
+        });
+        if (!blobRes.ok) throw new Error('blob failed: ' + blobRes.status);
+        const { sha: blobSha } = await blobRes.json();
+
+        // 2. Get current HEAD commit SHA for the branch
+        const refRes = await fetch(`${base}/git/ref/heads/${BRANCH}`, { headers: hdrs });
+        if (!refRes.ok) throw new Error('ref failed: ' + refRes.status);
+        const { object: { sha: headSha } } = await refRes.json();
+
+        // 3. Get base tree SHA from HEAD commit
+        const commitRes = await fetch(`${base}/git/commits/${headSha}`, { headers: hdrs });
+        if (!commitRes.ok) throw new Error('commit failed: ' + commitRes.status);
+        const { tree: { sha: baseTreeSha } } = await commitRes.json();
+
+        // 4. Create new tree with updated sitemap.xml blob
+        const treeRes = await fetch(`${base}/git/trees`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({
+                base_tree: baseTreeSha,
+                tree: [{ path: SITEMAP_FILE, mode: '100644', type: 'blob', sha: blobSha }]
+            })
+        });
+        if (!treeRes.ok) throw new Error('tree failed: ' + treeRes.status);
+        const { sha: newTreeSha } = await treeRes.json();
+
+        // 5. Create new commit
+        const newCommitRes = await fetch(`${base}/git/commits`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ message, tree: newTreeSha, parents: [headSha] })
+        });
+        if (!newCommitRes.ok) throw new Error('new commit failed: ' + newCommitRes.status);
+        const { sha: newCommitSha } = await newCommitRes.json();
+
+        // 6. Fast-forward branch ref
+        const updateRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, {
+            method: 'PATCH', headers: hdrs,
+            body: JSON.stringify({ sha: newCommitSha, force: false })
+        });
+        if (!updateRes.ok) throw new Error('ref update failed: ' + updateRes.status);
+        SITEMAP_SHA = blobSha;
+        return true;
+    } catch(e) {
+        // Fallback to Contents API if Git Data API fails
+        SITEMAP_SHA = '';
+        await ghGetSitemapSha();
+        const body = JSON.stringify({ message, content: toBase64(xmlContent), sha: SITEMAP_SHA || undefined, branch: BRANCH });
+        const r = await fetch(`${base}/contents/${SITEMAP_FILE}`, { method: 'PUT', headers: hdrs, body });
+        if (!r.ok) return false;
+        const d = await r.json();
+        SITEMAP_SHA = d.content.sha;
+        return true;
+    }
 }
 
 // ══════════════════════════════════════════
@@ -8541,20 +8586,52 @@ async function emergencyCRLFFix() {
         // Always force-write to guarantee clean LF file on GitHub
         // (GitHub autocrlf can silently re-introduce \r\n even on a "clean" file)
 
-        // Push cleaned version
-        const crlfCount = (raw.match(/\r\n/g) || []).length;
-        const body = JSON.stringify({
-            message: 'Emergency fix: strip CRLF from sitemap.xml (' + crlfCount + ' occurrences)',
-            content: toBase64(healed),
-            sha:     d.sha,
-            branch:  BRANCH
+        // Push cleaned version via Git Data API (bypasses GitHub autocrlf — Contents API re-introduces \r\n)
+        const crlfCount = (binStr.match(/\r\n/g) || []).length;
+        const hdrs = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+        const base = `https://api.github.com/repos/${USER}/${REPO}`;
+
+        // 1. Create blob
+        const blobRes = await fetch(`${base}/git/blobs`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ content: toBase64(healed), encoding: 'base64' })
         });
-        const wr = await fetch(
-            `https://api.github.com/repos/${USER}/${REPO}/contents/sitemap.xml`,
-            { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body }
-        );
-        if (!wr.ok) { const e = await wr.json(); throw new Error(e.message || wr.status); }
-        SITEMAP_SHA = (await wr.json()).content?.sha || '';
+        if (!blobRes.ok) throw new Error('blob: ' + blobRes.status);
+        const { sha: blobSha } = await blobRes.json();
+
+        // 2. Get HEAD
+        const refRes = await fetch(`${base}/git/ref/heads/${BRANCH}`, { headers: hdrs });
+        if (!refRes.ok) throw new Error('ref: ' + refRes.status);
+        const { object: { sha: headSha } } = await refRes.json();
+
+        // 3. Get base tree
+        const commitRes = await fetch(`${base}/git/commits/${headSha}`, { headers: hdrs });
+        if (!commitRes.ok) throw new Error('commit: ' + commitRes.status);
+        const { tree: { sha: baseTreeSha } } = await commitRes.json();
+
+        // 4. New tree
+        const treeRes = await fetch(`${base}/git/trees`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ base_tree: baseTreeSha, tree: [{ path: 'sitemap.xml', mode: '100644', type: 'blob', sha: blobSha }] })
+        });
+        if (!treeRes.ok) throw new Error('tree: ' + treeRes.status);
+        const { sha: newTreeSha } = await treeRes.json();
+
+        // 5. New commit
+        const newCommitRes = await fetch(`${base}/git/commits`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ message: 'Emergency fix: strip CRLF from sitemap.xml (' + crlfCount + ' occurrences)', tree: newTreeSha, parents: [headSha] })
+        });
+        if (!newCommitRes.ok) throw new Error('new commit: ' + newCommitRes.status);
+        const { sha: newCommitSha } = await newCommitRes.json();
+
+        // 6. Update branch ref
+        const updateRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, {
+            method: 'PATCH', headers: hdrs,
+            body: JSON.stringify({ sha: newCommitSha, force: false })
+        });
+        if (!updateRes.ok) throw new Error('ref update: ' + updateRes.status);
+        SITEMAP_SHA = blobSha;
 
         // Also fix sitemap_index.xml
         try {
