@@ -8580,16 +8580,13 @@ async function emergencyCRLFFix() {
         // Always force-write to guarantee clean LF file on GitHub
         // (GitHub autocrlf can silently re-introduce \r\n even on a "clean" file)
 
-        // Push cleaned version via Git Data API (bypasses GitHub autocrlf — Contents API re-introduces \r\n)
+        // Push cleaned version — ONE atomic commit with both .gitattributes + sitemap.xml
+        // This avoids the HEAD race condition where two sequential commits cause a 422 on ref update
         const crlfCount = (binStr.match(/\r\n/g) || []).length;
         const hdrs = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
         const base = `https://api.github.com/repos/${USER}/${REPO}`;
 
-        // STEP A: Write .gitattributes first (*.xml -text) so GitHub treats XML as binary from now on
-        await ghPutGitattributes('Fix: .gitattributes — treat XML as binary to stop autocrlf');
-
-        // STEP B: Now write sitemap.xml via Blobs API — .gitattributes is already active
-        // 1. Create blob
+        // 1. Create blob for sitemap.xml (raw bytes, no autocrlf)
         const blobRes = await fetch(`${base}/git/blobs`, {
             method: 'POST', headers: hdrs,
             body: JSON.stringify({ content: toBase64(healed), encoding: 'base64' })
@@ -8597,33 +8594,63 @@ async function emergencyCRLFFix() {
         if (!blobRes.ok) throw new Error('blob: ' + blobRes.status);
         const { sha: blobSha } = await blobRes.json();
 
-        // 2. Get HEAD
+        // 2. Create blob for .gitattributes (*.xml -text = binary, no conversion ever)
+        const gaContent = [
+            '# Treat XML/JSON as binary — zero line-ending conversion by Git or GitHub',
+            '*.xml -text',
+            '*.json -text',
+            '# Force LF for all other text files',
+            '* text=auto eol=lf',
+            '*.txt text eol=lf',
+            '*.html text eol=lf',
+            '*.css text eol=lf',
+            '*.js text eol=lf',
+            '',
+        ].join('\n');
+        const gaBlobRes = await fetch(`${base}/git/blobs`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ content: toBase64(gaContent), encoding: 'base64' })
+        });
+        if (!gaBlobRes.ok) throw new Error('ga blob: ' + gaBlobRes.status);
+        const { sha: gaBlobSha } = await gaBlobRes.json();
+
+        // 3. Get HEAD
         const refRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, { headers: hdrs });
         if (!refRes.ok) throw new Error('ref: ' + refRes.status);
         const { object: { sha: headSha } } = await refRes.json();
 
-        // 3. Get base tree
+        // 4. Get base tree
         const commitRes = await fetch(`${base}/git/commits/${headSha}`, { headers: hdrs });
         if (!commitRes.ok) throw new Error('commit: ' + commitRes.status);
         const { tree: { sha: baseTreeSha } } = await commitRes.json();
 
-        // 4. New tree
+        // 5. New tree with BOTH files in one operation
         const treeRes = await fetch(`${base}/git/trees`, {
             method: 'POST', headers: hdrs,
-            body: JSON.stringify({ base_tree: baseTreeSha, tree: [{ path: 'sitemap.xml', mode: '100644', type: 'blob', sha: blobSha }] })
+            body: JSON.stringify({
+                base_tree: baseTreeSha,
+                tree: [
+                    { path: 'sitemap.xml',   mode: '100644', type: 'blob', sha: blobSha },
+                    { path: '.gitattributes', mode: '100644', type: 'blob', sha: gaBlobSha }
+                ]
+            })
         });
         if (!treeRes.ok) throw new Error('tree: ' + treeRes.status);
         const { sha: newTreeSha } = await treeRes.json();
 
-        // 5. New commit
+        // 6. One commit for both files
         const newCommitRes = await fetch(`${base}/git/commits`, {
             method: 'POST', headers: hdrs,
-            body: JSON.stringify({ message: 'Emergency fix: strip CRLF from sitemap.xml (' + crlfCount + ' occurrences)', tree: newTreeSha, parents: [headSha] })
+            body: JSON.stringify({
+                message: `Fix: strip CRLF from sitemap.xml + *.xml -text in .gitattributes (${crlfCount} occurrences)`,
+                tree: newTreeSha,
+                parents: [headSha]
+            })
         });
         if (!newCommitRes.ok) throw new Error('new commit: ' + newCommitRes.status);
         const { sha: newCommitSha } = await newCommitRes.json();
 
-        // 6. Update branch ref
+        // 7. Update branch ref
         const updateRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, {
             method: 'PATCH', headers: hdrs,
             body: JSON.stringify({ sha: newCommitSha, force: false })
@@ -8648,7 +8675,7 @@ async function emergencyCRLFFix() {
             }
         } catch(e) {}
 
-        // Also write .gitattributes — already done above as STEP A, skip duplicate
+        // .gitattributes already committed above in the same atomic commit
 
         const msg = wasCRLF
             ? `✅ CRLF fixed! ${crlfCount} occurrences removed. .gitattributes added to prevent recurrence. Wait 2 min for Cloudflare, then GSC → Sitemaps → Resubmit.`
