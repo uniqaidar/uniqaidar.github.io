@@ -2,6 +2,7 @@
 // Admin panel reads ALL stats from KV — returns full rich metadata objects
 // Supports both old daily keys (dl:YYYY-MM-DD, vt:YYYY-MM-DD)
 // AND new hourly keys (dl:YYYY-MM-DD:HH, vt:YYYY-MM-DD:HH)
+// Optional ?date=YYYY-MM-DD param — returns only that day's data (used by archive job)
 // KV binding: UQDATA
 
 export async function onRequestGet(context) {
@@ -22,8 +23,10 @@ export async function onRequestGet(context) {
             }
         }
 
-        const url  = new URL(context.request.url);
-        const type = url.searchParams.get('type') || 'both';
+        const url    = new URL(context.request.url);
+        const type   = url.searchParams.get('type') || 'both';
+        // Optional date filter — if set, only return keys for that specific date
+        const dateFilter = url.searchParams.get('date') || null;
 
         async function listAllKeys(prefix) {
             const keys = [];
@@ -51,14 +54,17 @@ export async function onRequestGet(context) {
         let downloads = [], visits = [];
 
         if (type === 'dl' || type === 'both') {
-            const dlKeys   = await listAllKeys('dl:');
+            // If dateFilter set, only list keys for that date prefix
+            const prefix   = dateFilter ? `dl:${dateFilter}` : 'dl:';
+            const dlKeys   = await listAllKeys(prefix);
             const dlChunks = await fetchKeys(dlKeys);
             dlChunks.forEach(chunk => { if (Array.isArray(chunk)) downloads.push(...chunk); });
             downloads.sort((a, b) => (b.ts || b.date || '') > (a.ts || a.date || '') ? 1 : -1);
         }
 
         if (type === 'vt' || type === 'both') {
-            const vtKeys   = await listAllKeys('vt:');
+            const prefix   = dateFilter ? `vt:${dateFilter}` : 'vt:';
+            const vtKeys   = await listAllKeys(prefix);
             const vtChunks = await fetchKeys(vtKeys);
             vtChunks.forEach(chunk => { if (Array.isArray(chunk)) visits.push(...chunk); });
             visits.sort((a, b) => (b.ts || b.date || '') > (a.ts || a.date || '') ? 1 : -1);
