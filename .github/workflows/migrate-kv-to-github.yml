@@ -1,0 +1,49 @@
+# .github/workflows/migrate-kv-to-github.yml
+# ONE-TIME FULL KV MIGRATION — dumps ALL dl: and vt: keys → historicaldata/
+# Run manually from: GitHub → Actions → "One-Time KV Migration" → Run workflow
+# After success: delete this file (or leave it — it only runs on manual trigger)
+
+name: One-Time KV Migration
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type YES to confirm full migration'
+        required: true
+        default: ''
+
+jobs:
+  migrate:
+    if: github.event.inputs.confirm == 'YES'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ARCHIVE_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install node-fetch@3
+
+      - name: Run migration script
+        env:
+          CF_ACCOUNT_ID:   ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN:    ${{ secrets.CF_API_TOKEN }}
+          CF_KV_NAMESPACE: ${{ secrets.CF_KV_NAMESPACE_ID }}
+          ARCHIVE_TOKEN:   ${{ secrets.ARCHIVE_TOKEN }}
+          PAGES_BASE_URL:  https://uniqaidar.pages.dev
+        run: node migrate.mjs
+
+      - name: Commit archive files
+        run: |
+          git config user.name  "UniQaidar Bot"
+          git config user.email "bot@uniqaidar.pages.dev"
+          git add historicaldata/
+          git diff --staged --quiet || git commit -m "One-time KV migration: archive all historical data"
+          git push
