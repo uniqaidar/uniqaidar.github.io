@@ -4645,56 +4645,9 @@ async function loadFontsAndInit() {
         } else { _popularFonts = []; }
     } catch(e) { _popularFonts = []; }
 
-    // ── Also silently fetch live Cloudflare stats from /api/stats ──
-    // If we get real-time download data, use it to override _popularFonts
-    // so 🔥 زۆرترین داونلۆکراوەکان always reflects actual Cloudflare data
-    (async function() {
-        try {
-            var _statsResp = await fetch('/api/stats');
-            if (_statsResp.ok) {
-                var _statsData = await _statsResp.json();
-                // /api/stats returns {downloads:[{font,count,...},...], ...} or an array
-                var dlArr = null;
-                if (Array.isArray(_statsData)) {
-                    dlArr = _statsData;
-                } else if (_statsData && Array.isArray(_statsData.downloads)) {
-                    dlArr = _statsData.downloads;
-                } else if (_statsData && Array.isArray(_statsData.events)) {
-                    dlArr = _statsData.events;
-                }
-                if (dlArr && dlArr.length) {
-                    // Count per font (single downloads only)
-                    var _cfCountMap = {};
-                    dlArr.forEach(function(ev) {
-                        if (ev.type && ev.type !== 'single') return;
-                        var fn = ev.font || ev.name || '';
-                        if (!fn) return;
-                        if (fn.indexOf('داگرتنی') !== -1) return;
-                        _cfCountMap[fn] = (_cfCountMap[fn] || 0) + 1;
-                    });
-                    var _cfTop25 = Object.entries(_cfCountMap)
-                        .sort(function(a,b){ return b[1]-a[1]; })
-                        .slice(0, 25)
-                        .map(function(e){ return e[0]; });
-                    if (_cfTop25.length) {
-                        _popularFonts = _cfTop25;
-                        // Update the Trending count badge in panels if already rendered
-                        try {
-                            var _tNames = new Set(_popularFonts);
-                            var _tCount = fonts.filter(function(f){ return _tNames.has(f.name); }).length;
-                            document.querySelectorAll('.filter-btn').forEach(function(b) {
-                                var oc = b.getAttribute('onclick') || '';
-                                if ((oc.split("'")[1]||'').toLowerCase() === 'trending') {
-                                    var badge = b.querySelector('.cat-count');
-                                    if (badge) badge.textContent = '(' + _tCount + ')';
-                                }
-                            });
-                        } catch(e2) {}
-                    }
-                }
-            }
-        } catch(e) { /* silent — popular.json fallback already set */ }
-    })();
+    // ── Live stats override removed ──
+    // popular.json is the authoritative all-time top-25 source (updated by admin with full history).
+    // Overriding it with today-only /api/stats caused the trending section to show only ~5 fonts.
 
     // ── original DOMContentLoaded body ──
 
