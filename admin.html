@@ -5298,17 +5298,27 @@ async function ensureRobotsHasSitemap() {
         if (idx === -1) lines.push(CORRECT_SITEMAP);
         else lines[idx] = CORRECT_SITEMAP;
         const newContent = lines.join('\n');
-        const body = JSON.stringify({
-            message: 'Auto: ensure robots.txt Sitemap URL',
-            content: toBase64(newContent),
-            branch:  BRANCH,
-            ...(sha ? { sha } : {})
-        });
-        const wr = await fetch(
-            `https://api.github.com/repos/${USER}/${REPO}/contents/${ROBOTS_FILE}`,
-            { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body }
-        );
-        return wr.ok;
+        // Use Git Data API — Contents API autocrlf would corrupt robots.txt with \r\n,
+        // causing Google's robots.txt parser to misread the Sitemap: directive.
+        const hdrsR = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+        const baseR = `https://api.github.com/repos/${USER}/${REPO}`;
+        const bR = await fetch(`${baseR}/git/blobs`, { method: 'POST', headers: hdrsR, body: JSON.stringify({ content: toBase64(newContent), encoding: 'base64' }) });
+        if (!bR.ok) return false;
+        const { sha: bSha } = await bR.json();
+        const rR = await fetch(`${baseR}/git/refs/heads/${BRANCH}`, { headers: hdrsR });
+        if (!rR.ok) return false;
+        const { object: { sha: hSha } } = await rR.json();
+        const cR = await fetch(`${baseR}/git/commits/${hSha}`, { headers: hdrsR });
+        if (!cR.ok) return false;
+        const { tree: { sha: tSha } } = await cR.json();
+        const tR = await fetch(`${baseR}/git/trees`, { method: 'POST', headers: hdrsR, body: JSON.stringify({ base_tree: tSha, tree: [{ path: ROBOTS_FILE, mode: '100644', type: 'blob', sha: bSha }] }) });
+        if (!tR.ok) return false;
+        const { sha: ntSha } = await tR.json();
+        const ncR = await fetch(`${baseR}/git/commits`, { method: 'POST', headers: hdrsR, body: JSON.stringify({ message: 'Auto: ensure robots.txt Sitemap URL', tree: ntSha, parents: [hSha] }) });
+        if (!ncR.ok) return false;
+        const { sha: ncSha } = await ncR.json();
+        const uR = await fetch(`${baseR}/git/refs/heads/${BRANCH}`, { method: 'PATCH', headers: hdrsR, body: JSON.stringify({ sha: ncSha, force: false }) });
+        return uR.ok;
     } catch(e) { return false; }
 }
 
@@ -5439,26 +5449,48 @@ async function ghPutSitemapIndex(message) {
         '</sitemapindex>',
         '',
     ].join('\n');
+    // Use Git Data API (blob→tree→commit) — NOT Contents API.
+    // Contents API runs GitHub's autocrlf smudge filter server-side, re-introducing \r\n
+    // into XML bytes even after toBase64() has stripped them. Git Data API stores raw bytes.
+    const hdrs = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+    const base = `https://api.github.com/repos/${USER}/${REPO}`;
     try {
-        const FILE_IDX = 'sitemap_index.xml';
-        let sha = '';
-        const chk = await fetch(
-            `https://api.github.com/repos/${USER}/${REPO}/contents/${FILE_IDX}?ref=${BRANCH}`,
-            { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
-        );
-        if (chk.ok) { const d = await chk.json(); sha = d.sha || ''; }
-        const body = JSON.stringify({
-            message,
-            content: toBase64(xml),
-            branch: BRANCH,
-            ...(sha ? { sha } : {})
+        // 1. Blob — raw bytes, autocrlf bypassed
+        const blobRes = await fetch(`${base}/git/blobs`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ content: toBase64(xml), encoding: 'base64' })
         });
-        const r = await fetch(
-            `https://api.github.com/repos/${USER}/${REPO}/contents/${FILE_IDX}`,
-            { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body }
-        );
-        return r.ok;
-    } catch(e) { return false; }
+        if (!blobRes.ok) throw new Error('blob: ' + blobRes.status);
+        const { sha: blobSha } = await blobRes.json();
+        // 2. HEAD commit SHA
+        const refRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, { headers: hdrs });
+        if (!refRes.ok) throw new Error('ref: ' + refRes.status);
+        const { object: { sha: headSha } } = await refRes.json();
+        // 3. Base tree SHA
+        const commitRes = await fetch(`${base}/git/commits/${headSha}`, { headers: hdrs });
+        if (!commitRes.ok) throw new Error('commit: ' + commitRes.status);
+        const { tree: { sha: baseTreeSha } } = await commitRes.json();
+        // 4. New tree
+        const treeRes = await fetch(`${base}/git/trees`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ base_tree: baseTreeSha, tree: [{ path: 'sitemap_index.xml', mode: '100644', type: 'blob', sha: blobSha }] })
+        });
+        if (!treeRes.ok) throw new Error('tree: ' + treeRes.status);
+        const { sha: newTreeSha } = await treeRes.json();
+        // 5. Commit
+        const newCommitRes = await fetch(`${base}/git/commits`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ message, tree: newTreeSha, parents: [headSha] })
+        });
+        if (!newCommitRes.ok) throw new Error('new commit: ' + newCommitRes.status);
+        const { sha: newCommitSha } = await newCommitRes.json();
+        // 6. Fast-forward branch ref
+        const updateRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, {
+            method: 'PATCH', headers: hdrs,
+            body: JSON.stringify({ sha: newCommitSha, force: false })
+        });
+        return updateRes.ok;
+    } catch(e) { console.error('ghPutSitemapIndex Git Data API failed:', e.message); return false; }
 }
 
 // ══════════════════════════════════════════
@@ -5500,37 +5532,62 @@ async function ghPutHeaders(message) {
         '',
     ];
     const HEADERS_CONTENT = lines.join('\n');  // GUARANTEED LF — never CRLF
+    // CRITICAL: Use Git Data API — NOT Contents API.
+    // _headers is parsed by Cloudflare's edge router; a single \r byte breaks ALL header
+    // rules in the file. Contents API runs GitHub's autocrlf smudge filter server-side
+    // and re-introduces \r\n even after toBase64() has stripped them.
+    const hdrs = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+    const base = `https://api.github.com/repos/${USER}/${REPO}`;
     try {
-        // ALWAYS force-refresh SHA to avoid 409 stale conflicts
-        HEADERS_SHA = '';
-        const rSha = await fetch(
-            `https://api.github.com/repos/${USER}/${REPO}/contents/${HEADERS_FILE}?ref=${BRANCH}`,
-            { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
-        );
-        if (rSha.ok) { const dSha = await rSha.json(); HEADERS_SHA = dSha.sha || ''; }
-        const body = JSON.stringify({
-            message,
-            content: toBase64(HEADERS_CONTENT),
-            branch: BRANCH,
-            ...(HEADERS_SHA ? { sha: HEADERS_SHA } : {})
+        // 1. Blob — raw bytes, autocrlf bypassed
+        const blobRes = await fetch(`${base}/git/blobs`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ content: toBase64(HEADERS_CONTENT), encoding: 'base64' })
         });
-        const r = await fetch(
-            `https://api.github.com/repos/${USER}/${REPO}/contents/${HEADERS_FILE}`,
-            { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body }
-        );
-        if (!r.ok) return false;
-        const d = await r.json();
-        HEADERS_SHA = d.content ? d.content.sha : '';
+        if (!blobRes.ok) throw new Error('blob: ' + blobRes.status);
+        const { sha: blobSha } = await blobRes.json();
+        // 2. HEAD commit SHA
+        const refRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, { headers: hdrs });
+        if (!refRes.ok) throw new Error('ref: ' + refRes.status);
+        const { object: { sha: headSha } } = await refRes.json();
+        // 3. Base tree SHA
+        const commitRes = await fetch(`${base}/git/commits/${headSha}`, { headers: hdrs });
+        if (!commitRes.ok) throw new Error('commit: ' + commitRes.status);
+        const { tree: { sha: baseTreeSha } } = await commitRes.json();
+        // 4. New tree
+        const treeRes = await fetch(`${base}/git/trees`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ base_tree: baseTreeSha, tree: [{ path: HEADERS_FILE, mode: '100644', type: 'blob', sha: blobSha }] })
+        });
+        if (!treeRes.ok) throw new Error('tree: ' + treeRes.status);
+        const { sha: newTreeSha } = await treeRes.json();
+        // 5. Commit
+        const newCommitRes = await fetch(`${base}/git/commits`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ message, tree: newTreeSha, parents: [headSha] })
+        });
+        if (!newCommitRes.ok) throw new Error('new commit: ' + newCommitRes.status);
+        const { sha: newCommitSha } = await newCommitRes.json();
+        // 6. Fast-forward branch ref
+        const updateRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, {
+            method: 'PATCH', headers: hdrs,
+            body: JSON.stringify({ sha: newCommitSha, force: false })
+        });
+        if (!updateRes.ok) throw new Error('ref update: ' + updateRes.status);
+        HEADERS_SHA = blobSha;
         return true;
-    } catch(e) { return false; }
+    } catch(e) { console.error('ghPutHeaders Git Data API failed:', e.message); return false; }
 }
 
 // ══════════════════════════════════════════
 // GitHub API — .gitattributes (force LF, prevents GitHub autocrlf from corrupting XML/JSON)
 // ══════════════════════════════════════════
 async function ghPutGitattributes(message) {
-    const FILE = '.gitattributes';
-    const content = [
+    // CRITICAL: Use Git Data API — NOT Contents API.
+    // .gitattributes is itself a text file, so the Contents API would run autocrlf on it,
+    // potentially corrupting the very file that's supposed to prevent CRLF corruption.
+    // Git Data API stores raw bytes with zero transformation — the only safe path.
+    const GA_CONTENT = [
         '# Treat XML/JSON as binary — zero line-ending conversion by Git or GitHub',
         '*.xml -text',
         '*.json -text',
@@ -5541,26 +5598,46 @@ async function ghPutGitattributes(message) {
         '*.css text eol=lf',
         '*.js text eol=lf',
         '',
-    ].join('\n');
+    ].join('\n'); // join('\n') = guaranteed LF — never \r\n
+    const hdrs = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+    const base = `https://api.github.com/repos/${USER}/${REPO}`;
     try {
-        let sha = '';
-        const chk = await fetch(
-            `https://api.github.com/repos/${USER}/${REPO}/contents/${FILE}?ref=${BRANCH}`,
-            { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
-        );
-        if (chk.ok) { const d = await chk.json(); sha = d.sha || ''; }
-        const body = JSON.stringify({
-            message,
-            content: toBase64(content),
-            branch: BRANCH,
-            ...(sha ? { sha } : {})
+        // 1. Blob — raw bytes, autocrlf bypassed
+        const blobRes = await fetch(`${base}/git/blobs`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ content: toBase64(GA_CONTENT), encoding: 'base64' })
         });
-        const r = await fetch(
-            `https://api.github.com/repos/${USER}/${REPO}/contents/${FILE}`,
-            { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body }
-        );
-        return r.ok;
-    } catch(e) { return false; }
+        if (!blobRes.ok) throw new Error('blob: ' + blobRes.status);
+        const { sha: blobSha } = await blobRes.json();
+        // 2. HEAD commit SHA
+        const refRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, { headers: hdrs });
+        if (!refRes.ok) throw new Error('ref: ' + refRes.status);
+        const { object: { sha: headSha } } = await refRes.json();
+        // 3. Base tree SHA
+        const commitRes = await fetch(`${base}/git/commits/${headSha}`, { headers: hdrs });
+        if (!commitRes.ok) throw new Error('commit: ' + commitRes.status);
+        const { tree: { sha: baseTreeSha } } = await commitRes.json();
+        // 4. New tree
+        const treeRes = await fetch(`${base}/git/trees`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ base_tree: baseTreeSha, tree: [{ path: '.gitattributes', mode: '100644', type: 'blob', sha: blobSha }] })
+        });
+        if (!treeRes.ok) throw new Error('tree: ' + treeRes.status);
+        const { sha: newTreeSha } = await treeRes.json();
+        // 5. Commit
+        const newCommitRes = await fetch(`${base}/git/commits`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ message, tree: newTreeSha, parents: [headSha] })
+        });
+        if (!newCommitRes.ok) throw new Error('new commit: ' + newCommitRes.status);
+        const { sha: newCommitSha } = await newCommitRes.json();
+        // 6. Fast-forward branch ref
+        const updateRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, {
+            method: 'PATCH', headers: hdrs,
+            body: JSON.stringify({ sha: newCommitSha, force: false })
+        });
+        return updateRes.ok;
+    } catch(e) { console.error('ghPutGitattributes Git Data API failed:', e.message); return false; }
 }
 
 // ══════════════════════════════════════════
@@ -5747,16 +5824,27 @@ async function repairRobotsTxt() {
             return;
         }
         const newContent = lines.join('\n');
-        const body = JSON.stringify({
-            message: 'Fix robots.txt: ensure correct Sitemap URL',
-            content: toBase64(newContent),
-            branch: BRANCH,
-            ...(robotsSha ? { sha: robotsSha } : {})
-        });
-        const wr = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${ROBOTS_FILE}`,
-            { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body });
-        if (wr.ok) {
-            alert2(al, '✅ robots.txt fixed and Sitemap URL updated.', 'ok');
+        // Use Git Data API — Contents API autocrlf would corrupt robots.txt with \r\n
+        const hdrsRp = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+        const baseRp = `https://api.github.com/repos/${USER}/${REPO}`;
+        const bRp = await fetch(`${baseRp}/git/blobs`, { method: 'POST', headers: hdrsRp, body: JSON.stringify({ content: toBase64(newContent), encoding: 'base64' }) });
+        if (!bRp.ok) throw new Error('blob: ' + bRp.status);
+        const { sha: bShaRp } = await bRp.json();
+        const rRp = await fetch(`${baseRp}/git/refs/heads/${BRANCH}`, { headers: hdrsRp });
+        if (!rRp.ok) throw new Error('ref: ' + rRp.status);
+        const { object: { sha: hShaRp } } = await rRp.json();
+        const cRp = await fetch(`${baseRp}/git/commits/${hShaRp}`, { headers: hdrsRp });
+        if (!cRp.ok) throw new Error('commit: ' + cRp.status);
+        const { tree: { sha: tShaRp } } = await cRp.json();
+        const tRp = await fetch(`${baseRp}/git/trees`, { method: 'POST', headers: hdrsRp, body: JSON.stringify({ base_tree: tShaRp, tree: [{ path: ROBOTS_FILE, mode: '100644', type: 'blob', sha: bShaRp }] }) });
+        if (!tRp.ok) throw new Error('tree: ' + tRp.status);
+        const { sha: ntShaRp } = await tRp.json();
+        const ncRp = await fetch(`${baseRp}/git/commits`, { method: 'POST', headers: hdrsRp, body: JSON.stringify({ message: 'Fix robots.txt: ensure correct Sitemap URL', tree: ntShaRp, parents: [hShaRp] }) });
+        if (!ncRp.ok) throw new Error('new commit: ' + ncRp.status);
+        const { sha: ncShaRp } = await ncRp.json();
+        const uRp = await fetch(`${baseRp}/git/refs/heads/${BRANCH}`, { method: 'PATCH', headers: hdrsRp, body: JSON.stringify({ sha: ncShaRp, force: false }) });
+        if (uRp.ok) {
+            alert2(al, '✅ robots.txt fixed and Sitemap URL updated (via Git Data API — CRLF-safe).', 'ok');
         } else {
             alert2(al, '❌ robots.txt update failed.', 'err');
         }
@@ -7108,6 +7196,8 @@ function setReady(val) {
         loadAllSettings();
         // Pre-load stats immediately on login — historical archive + today's live data
         loadAllStats(false);
+        // ── Self-Healing Watchdog: runs 5s after connect, silently fixes any sitemap issues ──
+        setTimeout(sitemapSelfHeal, 5000);
     }
 }
 
@@ -8578,6 +8668,240 @@ atomicSave = async function(fontsArray, htmlContent, commitMessage) {
 })();
 
 // ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+// SELF-HEALING WATCHDOG
+// Runs automatically 5s after GitHub connects.
+// Silently audits the live sitemap.xml and auto-fixes any detected issue
+// without requiring any manual button press.
+// Detected & fixed:
+//   1. CRLF line endings  → re-pushes via Git Data API (same as Fix CRLF Now)
+//   2. Wrong Content-Type → re-pushes _headers via Git Data API
+//   3. Missing/wrong .gitattributes → re-pushes via Git Data API
+//   4. Space in <loc> URL → heals and re-pushes sitemap
+//   5. BOM at file start  → heals and re-pushes sitemap
+//   6. Missing <?xml declaration → heals and re-pushes sitemap
+// All results are written to the SEO tab audit alert (silent when healthy).
+// ════════════════════════════════════════════════════════════
+async function sitemapSelfHeal() {
+    // ── Phase 1: Fetch live sitemap from Cloudflare edge (what Google actually sees) ──
+    let liveOk = false, liveCRLF = false, liveWrongCT = false,
+        liveBOM = false, liveSpaceInLoc = false, liveMissingXml = false;
+    const SITEMAP_URL = 'https://uniqaidar.pages.dev/sitemap.xml';
+    const healLog = [];
+
+    try {
+        const resp = await fetch(SITEMAP_URL, { cache: 'no-store' });
+        const ct = resp.headers.get('content-type') || '';
+        liveWrongCT = !ct.includes('application/xml');
+        const text = await resp.text();
+        liveCRLF        = text.includes('\r\n') || text.includes('\r');
+        liveBOM         = text.charCodeAt(0) === 0xFEFF || text.charCodeAt(0) === 0xEF;
+        liveSpaceInLoc  = /<loc>[^<]* [^<]*<\/loc>/.test(text);
+        liveMissingXml  = !text.trimStart().startsWith('<?xml');
+        liveOk = resp.ok && !liveWrongCT && !liveCRLF && !liveBOM && !liveSpaceInLoc && !liveMissingXml;
+    } catch(e) {
+        // Network error — cannot audit, skip silently
+        console.warn('[SelfHeal] Cannot reach live sitemap:', e.message);
+        return;
+    }
+
+    if (liveOk) {
+        // ── Phase 2: Even if live is clean, verify .gitattributes exists in repo ──
+        // GitHub Desktop or a direct git push can corrupt XML even after a clean live state.
+        try {
+            const gaR = await fetch(
+                `https://api.github.com/repos/${USER}/${REPO}/contents/.gitattributes?ref=${BRANCH}`,
+                { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+            );
+            if (gaR.ok) {
+                const gaD = await gaR.json();
+                const gaText = fromBase64(gaD.content || '');
+                const hasXmlRule = gaText.includes('*.xml -text') || gaText.includes('*.xml text eol=lf');
+                if (!hasXmlRule) {
+                    healLog.push('.gitattributes missing *.xml rule — re-pushing');
+                    await ghPutGitattributes('[SelfHeal] Add *.xml -text to .gitattributes');
+                }
+            } else {
+                // .gitattributes doesn't exist at all
+                healLog.push('.gitattributes missing entirely — creating');
+                await ghPutGitattributes('[SelfHeal] Create .gitattributes with *.xml -text');
+            }
+        } catch(e) { /* non-fatal */ }
+
+        if (healLog.length === 0) {
+            // Truly healthy — update audit UI silently
+            _selfHealUpdateUI('✅ Self-Heal: سایتمەپ تەندروستە — هیچ کێشەیەک نەدۆزرایەوە / Sitemap healthy — no issues detected.', 'ok');
+            console.info('[SelfHeal] All checks passed.');
+        } else {
+            _selfHealUpdateUI('🔧 Self-Heal: ' + healLog.join(' | '), 'ok');
+        }
+        return;
+    }
+
+    // ── Phase 3: Issues found — run the full atomic 3-file fix silently ──
+    if (liveCRLF)       healLog.push('CRLF found in live sitemap.xml');
+    if (liveWrongCT)    healLog.push('Wrong Content-Type (' + (liveWrongCT ? 'not application/xml' : '') + ')');
+    if (liveBOM)        healLog.push('BOM detected at file start');
+    if (liveSpaceInLoc) healLog.push('Unencoded space in <loc> URL');
+    if (liveMissingXml) healLog.push('Missing <?xml declaration');
+
+    _selfHealUpdateUI('🔧 Self-Heal: کێشە دۆزرایەوە — چاکسازی خۆکار دەست پێدەکات... / Issues found — auto-fixing: ' + healLog.join(', '), 'inf');
+    console.warn('[SelfHeal] Issues detected:', healLog);
+
+    try {
+        // ── Fetch raw bytes from GitHub (source of truth, bypasses Cloudflare cache) ──
+        const ghR = await fetch(
+            `https://api.github.com/repos/${USER}/${REPO}/contents/sitemap.xml?ref=${BRANCH}`,
+            { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+        );
+        if (!ghR.ok) throw new Error('GitHub read failed: ' + ghR.status);
+        const ghD = await ghR.json();
+
+        // Detect CRLF in raw binary BEFORE TextDecoder normalises it
+        const b64clean = (ghD.content || '').replace(/\s/g, '');
+        const binStr   = atob(b64clean);
+        const rawText  = fromBase64(ghD.content);
+        const crlfCount = (binStr.match(/\r\n/g) || []).length;
+
+        // Heal: strip CRLF, BOM, control chars, spaces in <loc>, ensure <?xml
+        const healed = healSitemapXml(rawText);
+
+        // Build .gitattributes content
+        const gaContent = [
+            '# Treat XML/JSON as binary — zero line-ending conversion by Git or GitHub',
+            '*.xml -text',
+            '*.json -text',
+            '# Force LF for all other text files',
+            '* text=auto eol=lf',
+            '*.txt text eol=lf',
+            '*.html text eol=lf',
+            '*.css text eol=lf',
+            '*.js text eol=lf',
+            '',
+        ].join('\n');
+
+        // Build fresh sitemap_index.xml
+        const todayIdx = new Date().toISOString().slice(0, 10);
+        const xmlIdx = [
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+            '  <sitemap>',
+            '    <loc>https://uniqaidar.pages.dev/sitemap.xml</loc>',
+            '    <lastmod>' + todayIdx + '</lastmod>',
+            '  </sitemap>',
+            '</sitemapindex>',
+            '',
+        ].join('\n');
+
+        // All writes via Git Data API — atomic 3-file commit
+        const hdrs = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+        const base = `https://api.github.com/repos/${USER}/${REPO}`;
+
+        // Create all 4 blobs in parallel (sitemap.xml, sitemap_index.xml, .gitattributes, _headers)
+        const headersLines = [
+            '# UniQaidar — Cloudflare Pages headers',
+            '',
+            '/sitemap.xml',
+            '  Content-Type: application/xml; charset=utf-8',
+            '  X-Content-Type-Options: nosniff',
+            '  Cache-Control: public, max-age=0, must-revalidate',
+            '  Access-Control-Allow-Origin: *',
+            '',
+            '/sitemap_index.xml',
+            '  Content-Type: application/xml; charset=utf-8',
+            '  X-Content-Type-Options: nosniff',
+            '  Cache-Control: public, max-age=0, must-revalidate',
+            '  Access-Control-Allow-Origin: *',
+            '',
+            '/robots.txt',
+            '  Content-Type: text/plain; charset=utf-8',
+            '  Cache-Control: public, max-age=0, must-revalidate',
+            '',
+            '/fonts.json',
+            '  Content-Type: application/json; charset=utf-8',
+            '  Cache-Control: public, max-age=3600',
+            '  Access-Control-Allow-Origin: *',
+            '',
+            '/*.txt',
+            '  Cache-Control: public, max-age=86400',
+            '  Access-Control-Allow-Origin: *',
+            '',
+            '/*',
+            '  X-Frame-Options: SAMEORIGIN',
+            '',
+        ];
+        const headersContent = headersLines.join('\n');
+
+        const [smBlob, idxBlob, gaBlob, hdBlob] = await Promise.all([
+            fetch(`${base}/git/blobs`, { method:'POST', headers:hdrs, body:JSON.stringify({ content:toBase64(healed),         encoding:'base64' }) }).then(r=>r.json()),
+            fetch(`${base}/git/blobs`, { method:'POST', headers:hdrs, body:JSON.stringify({ content:toBase64(xmlIdx),          encoding:'base64' }) }).then(r=>r.json()),
+            fetch(`${base}/git/blobs`, { method:'POST', headers:hdrs, body:JSON.stringify({ content:toBase64(gaContent),       encoding:'base64' }) }).then(r=>r.json()),
+            liveWrongCT
+                ? fetch(`${base}/git/blobs`, { method:'POST', headers:hdrs, body:JSON.stringify({ content:toBase64(headersContent), encoding:'base64' }) }).then(r=>r.json())
+                : Promise.resolve(null),
+        ]);
+
+        // Get HEAD
+        const refRes    = await fetch(`${base}/git/refs/heads/${BRANCH}`, { headers: hdrs });
+        const { object: { sha: headSha } } = await refRes.json();
+        const commitRes = await fetch(`${base}/git/commits/${headSha}`, { headers: hdrs });
+        const { tree:   { sha: baseTreeSha } } = await commitRes.json();
+
+        // Build tree entries — always fix sitemap.xml, sitemap_index.xml, .gitattributes
+        // Only include _headers if Content-Type was wrong
+        const treeEntries = [
+            { path: 'sitemap.xml',      mode:'100644', type:'blob', sha: smBlob.sha  },
+            { path: 'sitemap_index.xml', mode:'100644', type:'blob', sha: idxBlob.sha },
+            { path: '.gitattributes',    mode:'100644', type:'blob', sha: gaBlob.sha  },
+        ];
+        if (liveWrongCT && hdBlob && hdBlob.sha) {
+            treeEntries.push({ path: '_headers', mode:'100644', type:'blob', sha: hdBlob.sha });
+            healLog.push('_headers re-pushed');
+        }
+
+        const treeRes = await fetch(`${base}/git/trees`, {
+            method:'POST', headers:hdrs,
+            body: JSON.stringify({ base_tree: baseTreeSha, tree: treeEntries })
+        });
+        const { sha: newTreeSha } = await treeRes.json();
+
+        const newCommitRes = await fetch(`${base}/git/commits`, {
+            method:'POST', headers:hdrs,
+            body: JSON.stringify({
+                message: `[SelfHeal] Auto-fix sitemap: ${healLog.join(', ')} (${crlfCount} CRLF occurrences)`,
+                tree: newTreeSha, parents: [headSha]
+            })
+        });
+        const { sha: newCommitSha } = await newCommitRes.json();
+
+        await fetch(`${base}/git/refs/heads/${BRANCH}`, {
+            method:'PATCH', headers:hdrs,
+            body: JSON.stringify({ sha: newCommitSha, force: false })
+        });
+
+        SITEMAP_SHA = smBlob.sha;
+
+        const fixedMsg = `✅ Self-Heal: چاکسازی خۆکار سەرکەوت / Auto-fixed: ${healLog.join(' | ')}. Wait 2 min for Cloudflare → GSC Sitemaps → Remove both → Resubmit sitemap.xml only.`;
+        _selfHealUpdateUI(fixedMsg, 'ok');
+        console.info('[SelfHeal] Fixed successfully:', healLog);
+
+    } catch(e) {
+        const errMsg = `⚠️ Self-Heal: کێشە دۆزرایەوە بەڵام چاکسازی سەرنەکەوت / Issues found but auto-fix failed: ${e.message} — run 🛠 Fix CRLF Now manually.`;
+        _selfHealUpdateUI(errMsg, 'err');
+        console.error('[SelfHeal] Auto-fix failed:', e);
+    }
+}
+
+function _selfHealUpdateUI(msg, type) {
+    // Write to the SEO tab audit alert (visible when user opens SEO tab)
+    const al = document.getElementById('crlf-fix-alert');
+    if (al) alert2(al, msg, type);
+    // Also write to audit-alert if it exists and is empty
+    const al2 = document.getElementById('audit-alert');
+    if (al2 && !al2.textContent.trim()) alert2(al2, msg, type);
+}
+
+// ════════════════════════════════════════════════════════════
 // EMERGENCY CRLF FIX — fetches live sitemap, strips CRLF, re-pushes
 // This is the one-click fix for the root cause of "Couldn't fetch"
 // ════════════════════════════════════════════════════════════
@@ -8652,25 +8976,50 @@ async function emergencyCRLFFix() {
         if (!commitRes.ok) throw new Error('commit: ' + commitRes.status);
         const { tree: { sha: baseTreeSha } } = await commitRes.json();
 
-        // 5. New tree with BOTH files in one operation
+        // 5a. Build fresh sitemap_index.xml content (LF-only, no Contents API read)
+        //     Regenerate rather than fetch+heal — avoids another Contents API call that
+        //     could itself return CRLF-corrupted base64 from GitHub's smudge filter.
+        const todayIdx = new Date().toISOString().slice(0, 10);
+        const xmlIdx = [
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+            '  <sitemap>',
+            '    <loc>https://uniqaidar.pages.dev/sitemap.xml</loc>',
+            '    <lastmod>' + todayIdx + '</lastmod>',
+            '  </sitemap>',
+            '</sitemapindex>',
+            '',
+        ].join('\n'); // join('\n') is guaranteed LF — never \r\n
+
+        // 5b. Blob for sitemap_index.xml via Git Data API (raw bytes, autocrlf bypassed)
+        const idxBlobRes = await fetch(`${base}/git/blobs`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ content: toBase64(xmlIdx), encoding: 'base64' })
+        });
+        if (!idxBlobRes.ok) throw new Error('idx blob: ' + idxBlobRes.status);
+        const { sha: idxBlobSha } = await idxBlobRes.json();
+
+        // 5c. ONE atomic tree with ALL THREE files — sitemap.xml + sitemap_index.xml + .gitattributes
+        //     Single commit, no HEAD race, every XML file goes through Git Data API only.
         const treeRes = await fetch(`${base}/git/trees`, {
             method: 'POST', headers: hdrs,
             body: JSON.stringify({
                 base_tree: baseTreeSha,
                 tree: [
-                    { path: 'sitemap.xml',   mode: '100644', type: 'blob', sha: blobSha },
-                    { path: '.gitattributes', mode: '100644', type: 'blob', sha: gaBlobSha }
+                    { path: 'sitemap.xml',       mode: '100644', type: 'blob', sha: blobSha    },
+                    { path: 'sitemap_index.xml',  mode: '100644', type: 'blob', sha: idxBlobSha },
+                    { path: '.gitattributes',      mode: '100644', type: 'blob', sha: gaBlobSha  }
                 ]
             })
         });
         if (!treeRes.ok) throw new Error('tree: ' + treeRes.status);
         const { sha: newTreeSha } = await treeRes.json();
 
-        // 6. One commit for both files
+        // 6. One commit for all three files
         const newCommitRes = await fetch(`${base}/git/commits`, {
             method: 'POST', headers: hdrs,
             body: JSON.stringify({
-                message: `Fix: strip CRLF from sitemap.xml + *.xml -text in .gitattributes (${crlfCount} occurrences)`,
+                message: `Fix: strip CRLF — sitemap.xml (${crlfCount} occurrences) + sitemap_index.xml + .gitattributes via Git Data API`,
                 tree: newTreeSha,
                 parents: [headSha]
             })
@@ -8686,28 +9035,9 @@ async function emergencyCRLFFix() {
         if (!updateRes.ok) throw new Error('ref update: ' + updateRes.status);
         SITEMAP_SHA = blobSha;
 
-        // Also fix sitemap_index.xml
-        try {
-            const ri = await fetch(
-                `https://api.github.com/repos/${USER}/${REPO}/contents/sitemap_index.xml?ref=${BRANCH}`,
-                { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
-            );
-            if (ri.ok) {
-                const di   = await ri.json();
-                const rawi = fromBase64(di.content);
-                const healedi = rawi.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
-                // Always force-write — same autocrlf issue applies
-                const bi = JSON.stringify({ message: 'Fix CRLF in sitemap_index.xml', content: toBase64(healedi), sha: di.sha, branch: BRANCH });
-                await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/sitemap_index.xml`,
-                    { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body: bi });
-            }
-        } catch(e) {}
-
-        // .gitattributes already committed above in the same atomic commit
-
         const msg = wasCRLF
-            ? `✅ CRLF fixed! ${crlfCount} occurrences removed. .gitattributes added to prevent recurrence. Wait 2 min for Cloudflare, then GSC → Sitemaps → Resubmit.`
-            : `✅ Force-written with guaranteed LF endings + .gitattributes added. Wait 2 min for Cloudflare, then GSC → Sitemaps → Resubmit.`;
+            ? `✅ CRLF fixed! ${crlfCount} occurrences removed. sitemap.xml + sitemap_index.xml + .gitattributes committed atomically via Git Data API — autocrlf can never touch these again. Wait 2 min for Cloudflare → GSC Sitemaps → Remove both entries → Resubmit sitemap.xml only.`
+            : `✅ Force-written with guaranteed LF endings. All 3 files (sitemap.xml + sitemap_index.xml + .gitattributes) committed atomically via Git Data API. Wait 2 min for Cloudflare → GSC Sitemaps → Remove both → Resubmit sitemap.xml only.`;
         alert2(al, msg, 'ok');
     } catch(e) {
         alert2(al, '❌ Error: ' + e.message, 'err');
