@@ -7935,8 +7935,31 @@ function deviceIcon(device) {
 async function updateTrending() {
     if (!TOKEN || !USER || !REPO) return alert('تکایە یەکەم پەیوەندی بکە بە GitHub.');
 
-    // Get only clean single-font downloads (using same strict filter as Task 4 fix)
-    const singleEvents = DL_DATA.filter(ev => {
+    const isEn = document.body.classList.contains('lang-en');
+    const tral = document.getElementById('trending-alert');
+
+    // ── Step 1: Ensure full historical archive is loaded (all archive_*.json files) ──
+    if (!HIST_LOADED) {
+        alert2(tral, isEn ? '⏳ Loading full historical archive…' : '⏳ بارکردنی ئەرشیڤی تەواوی مێژووی…', 'inf');
+        await loadHistoricalData();
+    }
+
+    // ── Step 2: Fetch today’s live data from KV ──
+    alert2(tral, isEn ? '⏳ Fetching live data…' : '⏳ بارکردنی داتای ژیوە…', 'inf');
+    let liveDl = [];
+    try {
+        const kvR = await fetch(`${STATS_API_BASE}/api/stats?type=dl`);
+        if (kvR.ok) {
+            const kvData = await kvR.json();
+            if (kvData.ok && Array.isArray(kvData.downloads)) liveDl = kvData.downloads;
+        }
+    } catch(e) { /* non-fatal — use archive only */ }
+
+    // ── Step 3: Merge all-time archive + today’s live ──
+    const allDl = [...HIST_DL, ...liveDl];
+
+    // ── Step 4: Filter — clean single-font download events only ──
+    const singleEvents = allDl.filter(ev => {
         if (ev.type !== 'single') return false;
         if (ev.event && ev.event !== 'download') return false;
         const fn = ev.font || '';
@@ -7945,20 +7968,20 @@ async function updateTrending() {
         return true;
     });
 
-    // Count per font
+    // ── Step 5: Count per font across all-time ──
     const countMap = {};
     singleEvents.forEach(ev => {
         const k = ev.font || '?';
         countMap[k] = (countMap[k] || 0) + 1;
     });
 
-    // Sort by count desc, take top 25 names only
+    // ── Step 6: Sort by total count desc, take top 25 names only ──
     const top25 = Object.entries(countMap)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 25)
         .map(([name]) => name);
 
-    if (!top25.length) return alert(document.body.classList.contains('lang-en') ? 'No single font downloads found.' : 'هیچ داگرتنی تاکەیەک نەدۆزرایەوە.');
+    if (!top25.length) return alert(isEn ? 'No single font downloads found.' : 'هیچ داگرتنی تاکەیەک نەدۆزرایەوە.');
 
     // Save to popular.json on GitHub
     const popularContent = JSON.stringify(top25, null, 2);
@@ -7988,9 +8011,14 @@ async function updateTrending() {
         // Sync the Trending Manager UI
         _trendingList = top25.slice();
         buildTrendingList();
-        const tral = document.getElementById('trending-alert');
-        if (tral) alert2(tral, document.body.classList.contains('lang-en') ? '✅ popular.json updated! ' + top25.length + ' fonts.' : '✅ popular.json نوێکرایەوە! ' + top25.length + ' فۆنت.', 'ok');
-        alert(document.body.classList.contains('lang-en') ? `✅ popular.json updated!\n\nTop ${top25.length} fonts saved.\n\n${top25.slice(0,5).join('\n')}${top25.length > 5 ? '\n...' : ''}` : `✅ popular.json نوێکرایەوە!\n\nتاپ ${top25.length} فۆنت پاشکەوت کرا.\n\n${top25.slice(0,5).join('\n')}${top25.length > 5 ? '\n...' : ''}`);
+        const totalEvents = singleEvents.length;
+        const archiveCount = HIST_DL.length;
+        const liveCount = liveDl.length;
+        const src = isEn
+            ? `(${archiveCount} archive + ${liveCount} live = ${totalEvents} total events)`
+            : `(${archiveCount} ئەرشیڤ + ${liveCount} ژیوە = ${totalEvents} ئیڤێنتی گشتی)`;
+        if (tral) alert2(tral, (isEn ? '✅ popular.json updated! Top ' + top25.length + ' fonts from all-time stats. ' : '✅ popular.json نوێکرایەوە! تاپ ' + top25.length + ' فۆنت لە سەرتاسەری هەمیشەی. ') + src, 'ok');
+        alert(isEn ? `✅ popular.json updated!\n\nTop ${top25.length} fonts (all-time)\n${src}\n\n${top25.slice(0,5).join('\n')}${top25.length > 5 ? '\n...' : ''}` : `✅ popular.json نوێکرایەوە!\n\nتاپ ${top25.length} فۆنت (هەمیشە)\n${src}\n\n${top25.slice(0,5).join('\n')}${top25.length > 5 ? '\n...' : ''}`);
     } else {
         const err = await r.json().catch(() => ({}));
         alert('❌ popular.json سەیڤ نەکرا: ' + (err.message || r.status));
