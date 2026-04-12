@@ -983,6 +983,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     <button class="btn" style="background:#4285f4;color:#fff;" onclick="pingGoogleManual()" title="Notify Google and Bing that the sitemap was updated">🔔 Ping Google</button>
                     <button class="btn" style="background:#0078d4;color:#fff;" onclick="submitBingSitemap()" id="bing-sitemap-btn" title="Submit sitemap directly to Bing Webmaster Tools via API">🔵 Bing Sitemap</button>
                     <button class="btn" style="background:#00b050;color:#fff;" onclick="emergencyCRLFFix()" id="crlf-fix-btn" title="Remove CRLF from sitemap.xml — fixes the root cause of Couldn't Fetch">🛠 Fix CRLF Now</button>
+                    <button class="btn" style="background:#7c3aed;color:#fff;" onclick="ghPutRedirects('Fix: deploy _redirects to prevent SPA soft-404 on sitemap').then(ok=>alert2(document.getElementById('sitemap-alert'), ok ? '✅ _redirects deployed — Cloudflare will no longer soft-404 the sitemap.' : '❌ _redirects deploy failed — check GitHub token.', ok ? \'ok\' : \'err\'))" title="Deploy _redirects file — stops Cloudflare Pages SPA catch-all from serving HTML instead of XML for sitemap.xml">🛡 Deploy _redirects</button>
                     <button class="btn btn-ghost" onclick="repairRobotsTxt()" id="robots-btn" style="border-color:var(--yellow);color:var(--yellow);"><span data-ku>🤖 چاکسازی robots.txt</span><span data-en style="display:none">🤖 Repair robots.txt</span></button>
                     <button class="btn btn-ghost" onclick="runHealthCheck()" id="health-btn" style="border-color:var(--purple);color:var(--purple);"><span data-ku>🏥 Health Check فۆنتەکان</span><span data-en style="display:none">🏥 Font Health Check</span></button>
                 </div>
@@ -5218,9 +5219,9 @@ function domUpdateElementText(htmlStr, selector, text) {
     return htmlStr;
 }
 
-// ── ATOMIC SAVE — one click commits fonts.json + index.html + sitemap.xml + robots.txt + _headers ──
+// ── ATOMIC SAVE — one click commits fonts.json + index.html + sitemap.xml + robots.txt + _headers + _redirects ──
 async function atomicSave(fontsArray, htmlContent, commitMessage) {
-    const results = { fonts: false, html: false, sitemap: false, robots: false, headers: false };
+    const results = { fonts: false, html: false, sitemap: false, robots: false, headers: false, redirects: false };
     if (!TOKEN || !USER || !REPO) return results;
 
     // 1. fonts.json
@@ -5243,13 +5244,16 @@ async function atomicSave(fontsArray, htmlContent, commitMessage) {
     // 5. _headers — LF-only, no-cache, application/xml
     try { results.headers = await ghPutHeaders(commitMessage + ' [_headers]'); } catch(e) {}
 
-    // 6. sitemap_index.xml — alternative GSC entry point (helps with Cloudflare Pages fetcher bug)
+    // 6. _redirects — prevents Cloudflare Pages SPA catch-all from soft-404ing the sitemap
+    try { results.redirects = await ghPutRedirects(commitMessage + ' [_redirects]'); } catch(e) {}
+
+    // 7. sitemap_index.xml — alternative GSC entry point (helps with Cloudflare Pages fetcher bug)
     try { await ghPutSitemapIndex(commitMessage + ' [sitemap_index.xml]'); } catch(e) {}
 
-    // 7. .gitattributes — force LF on all XML/JSON/txt files so GitHub never re-introduces CRLF
+    // 8. .gitattributes — force LF on all XML/JSON/txt files so GitHub never re-introduces CRLF
     try { await ghPutGitattributes(commitMessage + ' [.gitattributes]'); } catch(e) {}
 
-    // 8. IndexNow key file (if key is set in admin)
+    // 9. IndexNow key file (if key is set in admin)
     if (INDEXNOW_KEY) {
         try { await saveIndexNowKeyFile(); } catch(e) {}
     }
@@ -5580,6 +5584,62 @@ async function ghPutHeaders(message) {
 }
 
 // ══════════════════════════════════════════
+// GitHub API — _redirects (fixes Cloudflare Pages SPA catch-all soft-404 for sitemap)
+// ══════════════════════════════════════════
+async function ghPutRedirects(message) {
+    // CRITICAL: Use Git Data API — NOT Contents API, same reason as _headers.
+    // _redirects is parsed by Cloudflare's edge router; CRLF would break all rules.
+    // This file ensures /sitemap.xml is served as a real file, not swallowed by
+    // the SPA catch-all which returns index.html (HTML) causing Google's sitemap
+    // bot to see HTML instead of XML → "Couldn't fetch" in Search Console.
+    const lines = [
+        '# UniQaidar — Cloudflare Pages redirects',
+        '# These 200 rewrites prevent the SPA catch-all from intercepting static files.',
+        '# Without this, Googlebot may receive index.html when fetching /sitemap.xml.',
+        '/sitemap.xml        /sitemap.xml        200',
+        '/sitemap_index.xml  /sitemap_index.xml  200',
+        '/robots.txt         /robots.txt         200',
+        '/fonts.json         /fonts.json         200',
+        '',
+    ];
+    const REDIRECTS_CONTENT = lines.join('\n');
+    const hdrs = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+    const base = `https://api.github.com/repos/${USER}/${REPO}`;
+    try {
+        const blobRes = await fetch(`${base}/git/blobs`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ content: toBase64(REDIRECTS_CONTENT), encoding: 'base64' })
+        });
+        if (!blobRes.ok) throw new Error('blob: ' + blobRes.status);
+        const { sha: blobSha } = await blobRes.json();
+        const refRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, { headers: hdrs });
+        if (!refRes.ok) throw new Error('ref: ' + refRes.status);
+        const { object: { sha: headSha } } = await refRes.json();
+        const commitRes = await fetch(`${base}/git/commits/${headSha}`, { headers: hdrs });
+        if (!commitRes.ok) throw new Error('commit: ' + commitRes.status);
+        const { tree: { sha: baseTreeSha } } = await commitRes.json();
+        const treeRes = await fetch(`${base}/git/trees`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ base_tree: baseTreeSha, tree: [{ path: '_redirects', mode: '100644', type: 'blob', sha: blobSha }] })
+        });
+        if (!treeRes.ok) throw new Error('tree: ' + treeRes.status);
+        const { sha: newTreeSha } = await treeRes.json();
+        const newCommitRes = await fetch(`${base}/git/commits`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ message, tree: newTreeSha, parents: [headSha] })
+        });
+        if (!newCommitRes.ok) throw new Error('new commit: ' + newCommitRes.status);
+        const { sha: newCommitSha } = await newCommitRes.json();
+        const updateRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, {
+            method: 'PATCH', headers: hdrs,
+            body: JSON.stringify({ sha: newCommitSha, force: false })
+        });
+        if (!updateRes.ok) throw new Error('ref update: ' + updateRes.status);
+        return true;
+    } catch(e) { console.error('ghPutRedirects Git Data API failed:', e.message); return false; }
+}
+
+// ══════════════════════════════════════════
 // GitHub API — .gitattributes (force LF, prevents GitHub autocrlf from corrupting XML/JSON)
 // ══════════════════════════════════════════
 async function ghPutGitattributes(message) {
@@ -5647,32 +5707,16 @@ function buildSitemapXml(fontsArray) {
     const BASE = 'https://uniqaidar.pages.dev/';
     const today = new Date().toISOString().slice(0, 10);
 
-    // Collect all unique categories from the live fonts array
-    const catSet = new Set();
-    fontsArray.forEach(function(f) {
-        const arr = Array.isArray(f.category) ? f.category : (f.category ? [f.category] : []);
-        arr.forEach(function(c) { if (c) catSet.add(c); });
-    });
-    // Always include "All" at the top
-    const categories = ['All', ...Array.from(catSet).filter(c => c !== 'All').sort()];
-
-    // xmlEnc: escapes the 5 XML special chars — called AFTER encodeURIComponent so
-    // raw '&' from font/category names is already gone (encoded to %26 by then).
-    const xmlEnc = s => s
-        .replace(/&/g,  '&amp;')
-        .replace(/</g,  '&lt;')
-        .replace(/>/g,  '&gt;')
-        .replace(/"/g,  '&quot;')
-        .replace(/'/g,  '&apos;');
-
-    // safeUrl: percent-encodes the query-string VALUE then XML-escapes the full URL.
-    // This ensures characters like & # % in font/category names never appear raw in XML.
-    const safeUrl = (base, param, value) => xmlEnc(base + param + encodeURIComponent(value));
+    // NOTE: Query-string URLs (?cat=, ?font=) are intentionally excluded.
+    // Google treats all SPA query-string variants as duplicates of the homepage,
+    // which caused the sitemap to be flagged as low-quality and triggered
+    // "Couldn't fetch" in Google Search Console. Keeping only the canonical
+    // homepage URL fixes this and keeps the sitemap clean for Googlebot.
 
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n\n';
 
-    // Home
+    // Home — the only real canonical URL this SPA exposes
     xml += '  <!-- Home Page -->\n';
     xml += '  <url>\n';
     xml += `    <loc>${BASE}</loc>\n`;
@@ -5681,25 +5725,7 @@ function buildSitemapXml(fontsArray) {
     xml += '    <priority>1.00</priority>\n';
     xml += '  </url>\n\n';
 
-    // Categories
-    xml += '  <!-- Category Pages -->\n';
-    categories.forEach(function(cat) {
-        const loc = safeUrl(BASE, '?cat=', cat);
-        xml += `  <url><loc>${loc}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.80</priority></url>\n`;
-    });
-    xml += '\n';
-
-    // Individual fonts
-    xml += '  <!-- Individual Font Pages -->\n';
-    fontsArray.forEach(function(font) {
-        const name = font.name || '';
-        if (!name) return;
-        const loc = safeUrl(BASE, '?font=', name);
-        const lastmod = (font.dateAdded || today).trim();
-        xml += `  <url><loc>${loc}</loc><lastmod>${lastmod}</lastmod><changefreq>monthly</changefreq><priority>0.60</priority></url>\n`;
-    });
-
-    xml += '\n</urlset>';
+    xml += '</urlset>';
     return xml;
 }
 
@@ -5767,17 +5793,19 @@ async function runAtomicSave() {
     try {
         const res = await atomicSave(FONTS_RAW, RAW, 'UniQaidar Admin: Atomic Save');
         const parts = [];
-        if (res.fonts)   parts.push('✅ fonts.json');
-        else             parts.push('❌ fonts.json');
-        if (res.html)    parts.push('✅ index.html');
-        else             parts.push('❌ index.html');
-        if (res.sitemap) parts.push('✅ sitemap.xml');
-        else             parts.push('❌ sitemap.xml');
-        if (res.robots)  parts.push('✅ robots.txt');
-        else             parts.push('❌ robots.txt');
-        if (res.headers) parts.push('✅ _headers');
-        else             parts.push('❌ _headers');
-        const allOk = res.fonts && res.html && res.sitemap && res.robots && res.headers;
+        if (res.fonts)      parts.push('✅ fonts.json');
+        else                parts.push('❌ fonts.json');
+        if (res.html)       parts.push('✅ index.html');
+        else                parts.push('❌ index.html');
+        if (res.sitemap)    parts.push('✅ sitemap.xml');
+        else                parts.push('❌ sitemap.xml');
+        if (res.robots)     parts.push('✅ robots.txt');
+        else                parts.push('❌ robots.txt');
+        if (res.headers)    parts.push('✅ _headers');
+        else                parts.push('❌ _headers');
+        if (res.redirects)  parts.push('✅ _redirects');
+        else                parts.push('❌ _redirects');
+        const allOk = res.fonts && res.html && res.sitemap && res.robots && res.headers && res.redirects;
         alert2(al, (allOk ? '⚡ Atomic Save complete! ' : '⚠️ Partial Save: ') + parts.join(' | '), allOk ? 'ok' : 'err');
     } catch(e) {
         alert2(al, '❌ Error: ' + e.message, 'err');
