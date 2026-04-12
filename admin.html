@@ -983,11 +983,12 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     <button class="btn" style="background:#4285f4;color:#fff;" onclick="pingGoogleManual()" title="Notify Google and Bing that the sitemap was updated">🔔 Ping Google</button>
                     <button class="btn" style="background:#0078d4;color:#fff;" onclick="submitBingSitemap()" id="bing-sitemap-btn" title="Submit sitemap directly to Bing Webmaster Tools via API">🔵 Bing Sitemap</button>
                     <button class="btn" style="background:#00b050;color:#fff;" onclick="emergencyCRLFFix()" id="crlf-fix-btn" title="Remove CRLF from sitemap.xml — fixes the root cause of Couldn't Fetch">🛠 Fix CRLF Now</button>
-                    <button class="btn" style="background:#7c3aed;color:#fff;" onclick="ghPutRedirects('Fix: deploy _redirects to prevent SPA soft-404 on sitemap').then(ok=>alert2(document.getElementById('sitemap-alert'), ok ? '✅ _redirects deployed — Cloudflare will no longer soft-404 the sitemap.' : '❌ _redirects deploy failed — check GitHub token.', ok ? \'ok\' : \'err\'))" title="Deploy _redirects file — stops Cloudflare Pages SPA catch-all from serving HTML instead of XML for sitemap.xml">🛡 Deploy _redirects</button>
+                    <button class="btn" style="background:#7c3aed;color:#fff;" onclick="deployRedirects()" title="Deploy _redirects file — stops Cloudflare Pages SPA catch-all from serving HTML instead of XML for sitemap.xml">🛡 Deploy _redirects</button>
                     <button class="btn btn-ghost" onclick="repairRobotsTxt()" id="robots-btn" style="border-color:var(--yellow);color:var(--yellow);"><span data-ku>🤖 چاکسازی robots.txt</span><span data-en style="display:none">🤖 Repair robots.txt</span></button>
                     <button class="btn btn-ghost" onclick="runHealthCheck()" id="health-btn" style="border-color:var(--purple);color:var(--purple);"><span data-ku>🏥 Health Check فۆنتەکان</span><span data-en style="display:none">🏥 Font Health Check</span></button>
                 </div>
                 <div id="atomic-save-alert" class="alert" style="margin-top:10px;"></div>
+                <div id="redirects-alert" class="alert" style="margin-top:10px;"></div>
                 <div id="bing-sitemap-alert" class="alert" style="margin-top:10px;"></div>
                 <div id="crlf-fix-alert" class="alert" style="margin-top:10px;"></div>
                 <div id="robots-alert" class="alert" style="margin-top:10px;"></div>
@@ -5637,6 +5638,25 @@ async function ghPutRedirects(message) {
         if (!updateRes.ok) throw new Error('ref update: ' + updateRes.status);
         return true;
     } catch(e) { console.error('ghPutRedirects Git Data API failed:', e.message); return false; }
+}
+
+async function deployRedirects() {
+    const al  = document.getElementById('redirects-alert');
+    const btn = document.querySelector('[onclick="deployRedirects()"]');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ Please connect to GitHub first!', 'err');
+    if (btn) btn.disabled = true;
+    alert2(al, '⏳ Deploying _redirects to GitHub...', 'inf');
+    try {
+        const ok = await ghPutRedirects('Fix: deploy _redirects to prevent SPA soft-404 on sitemap');
+        if (ok) {
+            alert2(al, '✅ _redirects deployed — Cloudflare Pages will no longer soft-404 the sitemap. Wait ~1 min for deployment, then resubmit sitemap in Google Search Console.', 'ok');
+        } else {
+            alert2(al, '❌ _redirects deploy failed — check your GitHub token and connection.', 'err');
+        }
+    } catch(e) {
+        alert2(al, '❌ Error: ' + e.message, 'err');
+    }
+    if (btn) btn.disabled = false;
 }
 
 // ══════════════════════════════════════════
