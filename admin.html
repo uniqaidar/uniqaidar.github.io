@@ -617,9 +617,9 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                         <label><span data-ku>پەراگرافی سەکۆ (Platform)</span><span data-en style="display:none">Platform Paragraph</span></label>
                         <textarea id="pvb-wlc-platform" style="direction:rtl;height:56px;"></textarea>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="grid-column:2;text-align:right;">
                         <label><span data-ku>H2 Categories سەردێڕی جۆرەکان</span><span data-en style="display:none">H2 Categories Heading</span></label>
-                        <input type="text" id="pvb-wlc-cats-h2" style="direction:rtl;">
+                        <input type="text" id="pvb-wlc-cats-h2" style="direction:rtl;text-align:right;">
                     </div>
                     <div class="form-group full">
                         <label><span data-ku>🔵 جۆرەکان — بەند ١</span><span data-en style="display:none">🔵 Categories — Paragraph 1</span></label>
@@ -645,9 +645,9 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                         <label><span data-ku>🔵 جۆرەکان — بەند ٦</span><span data-en style="display:none">🔵 Categories — Paragraph 6</span></label>
                         <textarea id="pvb-wlc-cat-6" style="direction:rtl;height:72px;"></textarea>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="grid-column:2;text-align:right;">
                         <label><span data-ku>H2 Apps سەردێڕی بەرنامەکان</span><span data-en style="display:none">H2 Apps Heading</span></label>
-                        <input type="text" id="pvb-wlc-apps-h2" style="direction:rtl;">
+                        <input type="text" id="pvb-wlc-apps-h2" style="direction:rtl;text-align:right;">
                     </div>
                     <div class="form-group full">
                         <label><span data-ku>پەراگرافی بەرنامەکان (Apps Lead)</span><span data-en style="display:none">Apps Lead Paragraph</span></label>
@@ -669,9 +669,9 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                         <label><span data-ku>🟢 بەرنامەکان — بەند ٤</span><span data-en style="display:none">🟢 Apps — Paragraph 4</span></label>
                         <textarea id="pvb-wlc-app-4" style="direction:rtl;height:72px;"></textarea>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="grid-column:2;text-align:right;">
                         <label><span data-ku>H2 Features سەردێڕی تایبەتمەندییەکان</span><span data-en style="display:none">H2 Features Heading</span></label>
-                        <input type="text" id="pvb-wlc-feats-h2" style="direction:rtl;">
+                        <input type="text" id="pvb-wlc-feats-h2" style="direction:rtl;text-align:right;">
                     </div>
                     <div class="form-group full">
                         <label><span data-ku>🟠 تایبەتمەندییەکان — بەند ١</span><span data-en style="display:none">🟠 Features — Paragraph 1</span></label>
@@ -709,9 +709,9 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                         <label>⚡ Tagline 3</label>
                         <input type="text" id="pvb-wlc-tag3" style="direction:rtl;">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="grid-column:2;text-align:right;">
                         <label>⚡ Tagline 4</label>
-                        <input type="text" id="pvb-wlc-tag4" style="direction:rtl;">
+                        <input type="text" id="pvb-wlc-tag4" style="direction:rtl;text-align:right;">
                     </div>
                 </div>
                 <div id="pvb-wlc-alert" class="alert" style="margin-top:10px;"></div>
@@ -794,7 +794,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                         <input type="range" id="f-lineheight" min="0.1" max="6.0" step="0.1" value="1.8"
                             style="width:100%;accent-color:var(--accent);cursor:pointer;"
                             oninput="updateAddLhPreview()">
-                        <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);margin-top:2px;font-family:var(--mono);"><span>0.1</span><span>6.0</span></div>
+                        <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);margin-top:2px;font-family:var(--mono);direction:ltr;"><span>0.1</span><span>6.0</span></div>
                     </div>
                     <div class="form-group full">
                         <label><span data-ku>پیشاندانی ڕاستەقینە</span><span data-en style="display:none">Live Preview</span></label>
@@ -1172,7 +1172,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
     <!-- ══════════════════════════════════════════════════════ -->
     <div id="t-arc" class="tab-content">
         <div class="box">
-            <div class="box-header"><div class="dot" style="background:var(--yellow)"></div> <span data-ku>هەموو فۆنتەکان (<span id="arc-count">0</span>)</span><span data-en style="display:none">All Fonts (<span id="arc-count">0</span>)</span></div>
+            <div class="box-header"><div class="dot" style="background:var(--yellow)"></div> <span data-ku>هەموو فۆنتەکان (<span id="arc-count">0</span>)</span><span data-en style="display:none">All Fonts (<span id="arc-count-en">0</span>)</span></div>
             <div class="box-body">
                 <div style="display:flex;gap:10px;margin-bottom:13px;flex-wrap:wrap;align-items:center;">
                     <input id="arc-full-search" type="text" placeholder="Search font name..." oninput="renderArcFull()" style="max-width:260px;">
@@ -2741,7 +2741,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             document.head.appendChild(s);
         }
         box.style.fontFamily = `'${name}', Tahoma, sans-serif`;
-        box.textContent = name + ' — UniQaidar · Kurdish Fonts';
+        box.textContent = 'فۆنتی کوردی - ماڵپەڕی فۆنتەکانی یونی‌قەیدار';
     }
 
     // ── Save: Interface Font ─────────────────────────────
@@ -4764,7 +4764,6 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadDlStats(true)"><span data-ku>🔄 نوێکردنەوە</span><span data-en style="display:none">🔄 Refresh</span></button>
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="exportDlCsv()">📥 Export CSV</button>
             <button class="btn btn-red" style="font-size:0.78rem;padding:5px 12px;" onclick="clearDlStats()"><span data-ku>🗑 سڕینەوەی هەموو ئامارەکان</span><span data-en style="display:none">🗑 Clear All Stats</span></button>
-            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="updateTrending()" title="Top 25 زۆرترین داونلۆکراوەکان بنووسە بۆ popular.json"><span data-ku>🔄 نوێکردنەوە</span><span data-en style="display:none">🔄 Refresh</span>ی زۆرترین داونلۆکراوەکان</button>
           </div>
         </div>
         <div class="box-body">
@@ -4952,6 +4951,7 @@ const LS_KEY = 'uqadmin_cfg';
         localStorage.setItem(LANG_KEY, isEn ? 'en' : 'ku');
         var btn = document.getElementById('lang-toggle-btn');
         if (btn) btn.textContent = isEn ? '🌐 KU' : '🌐 EN';
+        if (typeof buildArcSel === 'function') buildArcSel();
     };
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
@@ -6213,14 +6213,28 @@ async function saveCatName(idx) {
 }
 
 function buildArcSel() {
-    // Populate archive category dropdown
+    // Populate archive category dropdown with font counts
     const sel = document.getElementById('arc-full-cat');
     if (sel) {
         const cur = sel.value;
-        sel.innerHTML = '<option value="all"><span data-ku>هەموو کاتێگۆریەکان</span><span data-en style="display:none">All Categories</span></option>';
+        const isEn = document.body.classList.contains('lang-en');
+        const allLabel = isEn
+            ? `All Categories — ${fnts.length}`
+            : `هەموو کاتێگۆریەکان — ${fnts.length}`;
+        sel.innerHTML = `<option value="all">${allLabel}</option>`;
         cats.forEach(c => {
+            let count;
+            if (c.id === 'All') {
+                count = fnts.length;
+            } else if (c.id === 'Trending') {
+                count = (typeof _trendingList !== 'undefined' && Array.isArray(_trendingList) && _trendingList.length)
+                    ? _trendingList.length : Math.min(25, fnts.length);
+            } else {
+                count = fnts.filter(f => (Array.isArray(f.category) ? f.category : [f.category]).includes(c.id)).length;
+            }
             const o = document.createElement('option');
-            o.value = c.id; o.textContent = `${c.label} (${c.id})`;
+            o.value = c.id;
+            o.textContent = `${c.label} — ${count}`;
             sel.appendChild(o);
         });
         if (cur) sel.value = cur;
@@ -6234,9 +6248,11 @@ function renderArc() {
     const q = (document.getElementById('arc-search')?.value || '').toLowerCase();
     const el = document.getElementById('arc-list');
     const countEl = document.getElementById('arc-count');
+    const countElEn = document.getElementById('arc-count-en');
 
     const filtered = q ? fnts.filter(f => f.name.toLowerCase().includes(q)) : fnts;
     if (countEl) countEl.textContent = fnts.length;
+    if (countElEn) countElEn.textContent = fnts.length;
 
     const makeItem = (f) => {
         const div = document.createElement('div');
@@ -6263,16 +6279,30 @@ function renderArcFull() {
     const cat = document.getElementById('arc-full-cat')?.value || 'all';
     const fullEl = document.getElementById('arc-full-list');
     const countEl = document.getElementById('arc-count');
+    const countElEn = document.getElementById('arc-count-en');
     const filteredCountEl = document.getElementById('arc-filtered-count');
 
     if (countEl) countEl.textContent = fnts.length;
+    if (countElEn) countElEn.textContent = fnts.length;
 
-    const filtered = fnts.filter(f => {
-        const fc = Array.isArray(f.category) ? f.category : [f.category];
-        const matchCat = cat === 'all' || fc.includes(cat);
-        const matchQ   = !q || f.name.toLowerCase().includes(q) || (f.preview||'').toLowerCase().includes(q);
-        return matchCat && matchQ;
-    });
+    // Fix 6: Trending category — filter by popular.json list (_trendingList)
+    let filtered;
+    if (cat === 'Trending') {
+        const trendNames = (typeof _trendingList !== 'undefined' && Array.isArray(_trendingList) && _trendingList.length)
+            ? _trendingList : [];
+        filtered = fnts.filter(f => {
+            const matchTrend = trendNames.includes(f.name);
+            const matchQ = !q || f.name.toLowerCase().includes(q) || (f.preview||'').toLowerCase().includes(q);
+            return matchTrend && matchQ;
+        });
+    } else {
+        filtered = fnts.filter(f => {
+            const fc = Array.isArray(f.category) ? f.category : [f.category];
+            const matchCat = cat === 'all' || fc.includes(cat);
+            const matchQ   = !q || f.name.toLowerCase().includes(q) || (f.preview||'').toLowerCase().includes(q);
+            return matchCat && matchQ;
+        });
+    }
 
     if (filteredCountEl) filteredCountEl.textContent = filtered.length !== fnts.length ? (document.body.classList.contains('lang-en') ? `${filtered.length} fonts` : `${filtered.length} فۆنت`) : '';
 
