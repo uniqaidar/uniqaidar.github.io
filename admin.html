@@ -5286,7 +5286,7 @@ async function ensureRobotsHasSitemap() {
             `https://api.github.com/repos/${USER}/${REPO}/contents/${ROBOTS_FILE}?ref=${BRANCH}`,
             { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
         );
-        let content = 'User-agent: *\nAllow: /\n' + CORRECT_SITEMAP;
+        let content = 'User-agent: *\nAllow: /\nDisallow: /admin.html\n' + CORRECT_SITEMAP;
         let sha = undefined;
         if (r.ok) {
             const d = await r.json();
@@ -5800,7 +5800,7 @@ async function repairRobotsTxt() {
         // Fetch existing robots.txt
         const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${ROBOTS_FILE}?ref=${BRANCH}`,
             { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' }});
-        let existingContent = 'User-agent: *\nAllow: /\n' + CORRECT_SITEMAP;
+        let existingContent = 'User-agent: *\nAllow: /\nDisallow: /admin.html\n' + CORRECT_SITEMAP;
         let robotsSha = undefined;
         if (r.ok) {
             const d = await r.json();
