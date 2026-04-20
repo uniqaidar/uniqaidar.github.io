@@ -2,8 +2,8 @@ name: Archive KV Stats
 
 on:
   schedule:
-    # Runs at 00:30 UTC daily (03:30 Sulaymaniyah time)
-    - cron: '30 0 * * *'
+    # Runs at 21:00 UTC daily (00:00 midnight Sulaymaniyah time, UTC+3)
+    - cron: '0 21 * * *'
   workflow_dispatch:
     # Allow manual trigger
 
