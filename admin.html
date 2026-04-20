@@ -7505,11 +7505,49 @@ async function loadAllStats(force) {
             const cfCountMap = {};
             singleEvs.forEach(ev => { const k = ev.font||'?'; cfCountMap[k] = (cfCountMap[k]||0)+1; });
             const cfTop25 = Object.entries(cfCountMap).sort((a,b)=>b[1]-a[1]).slice(0,25).map(([n])=>n);
-            if (cfTop25.length && !_trendingList.length) {
-                _trendingList = cfTop25.slice();
-                buildTrendingList();
+
+            if (cfTop25.length) {
                 const tral = document.getElementById('trending-alert');
-                if (tral) alert2(tral, isEn ? '✅ Top ' + cfTop25.length + ' fonts auto-loaded from merged stats. Click 💾 Save popular.json to keep them.' : '✅ زۆرترین داونلۆکراوەکان بەخۆی نوێکرایەوە لە ئامارە تەواوەکانەوە (' + cfTop25.length + ' فۆنت). بۆ پاشکەوتکردن کلیک لەسەر 💾 سەیڤی popular.json بکە.', 'ok');
+                // First time: just populate list (no auto-save yet — SHA not known)
+                if (!_trendingList.length) {
+                    _trendingList = cfTop25.slice();
+                    buildTrendingList();
+                    if (tral) alert2(tral, isEn ? '✅ Top ' + cfTop25.length + ' fonts auto-loaded from merged stats. Click 💾 Save popular.json to keep them.' : '✅ زۆرترین داونلۆکراوەکان بەخۆی نوێکرایەوە لە ئامارە تەواوەکانەوە (' + cfTop25.length + ' فۆنت). بۆ پاشکەوتکردن کلیک لەسەر 💾 سەیڤی popular.json بکە.', 'ok');
+                } else {
+                    // Compare: has the SET of top-25 fonts changed? (ignore reordering — only save when a font enters or leaves)
+                    const newSet = new Set(cfTop25);
+                    const oldSet = new Set(_trendingList);
+                    const setChanged = cfTop25.some(n => !oldSet.has(n)) || _trendingList.some(n => !newSet.has(n));
+                    if (setChanged && TOKEN && USER && REPO) {
+                        // Auto-save silently to GitHub
+                        _trendingList = cfTop25.slice();
+                        buildTrendingList();
+                        try {
+                            const popularContent = JSON.stringify(_trendingList, null, 2);
+                            const encoded = toBase64(popularContent);
+                            if (!_popularJsonSha) {
+                                const chk = await fetch(
+                                    `https://api.github.com/repos/${USER}/${REPO}/contents/popular.json?ref=${BRANCH}`,
+                                    { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+                                );
+                                if (chk.ok) { const d = await chk.json(); _popularJsonSha = d.sha; }
+                            }
+                            const body = { message: 'Auto-update popular.json: top 25 trending fonts', content: encoded, branch: BRANCH };
+                            if (_popularJsonSha) body.sha = _popularJsonSha;
+                            const r = await fetch(
+                                `https://api.github.com/repos/${USER}/${REPO}/contents/popular.json`,
+                                { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+                            );
+                            if (r.ok) {
+                                const rd = await r.json();
+                                _popularJsonSha = rd.content ? rd.content.sha : undefined;
+                                if (tral) alert2(tral, isEn
+                                    ? `🔄 popular.json auto-updated! Top ${_trendingList.length} fonts.`
+                                    : `🔄 popular.json بەخۆی نوێکرایەوە! تاپ ${_trendingList.length} فۆنت.`, 'ok');
+                            }
+                        } catch(e) { /* silent — manual save still available */ }
+                    }
+                }
             }
         } catch(e) { /* silent */ }
 

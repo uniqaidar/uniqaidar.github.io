@@ -1,0 +1,135 @@
+# .github/workflows/update-popular.yml
+# Runs every 6 hours. Fetches live download stats from Cloudflare KV,
+# computes the top-25 most-downloaded fonts, and updates popular.json
+# ONLY when the SET of fonts in the top 25 has changed (a font entered or left).
+# Reordering within the same set does NOT trigger a commit.
+# No admin panel needs to be open. Fully automatic.
+
+name: Auto-Update popular.json
+
+on:
+  schedule:
+    # Every 6 hours: 00:30, 06:30, 12:30, 18:30 UTC
+    - cron: '30 0,6,12,18 * * *'
+  workflow_dispatch:
+    # Allow manual trigger from GitHub → Actions
+
+jobs:
+  update-popular:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Compute top-25 and update popular.json if set changed
+        env:
+          STATS_URL:     https://uniqaidar.pages.dev/api/stats
+          ARCHIVE_TOKEN: ${{ secrets.ARCHIVE_TOKEN }}
+        run: |
+          set -e
+
+          # ── 1. Fetch live stats (today) ──────────────────────────────
+          echo "Fetching live stats..."
+          LIVE=$(curl -sf \
+            -H "Authorization: Bearer ${ARCHIVE_TOKEN}" \
+            "${STATS_URL}?type=downloads" \
+            --max-time 60) || { echo "ERROR: Failed to fetch live stats"; exit 1; }
+
+          OK=$(echo "$LIVE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('ok','false'))" 2>/dev/null || echo "false")
+          if [ "$OK" != "True" ] && [ "$OK" != "true" ]; then
+            echo "ERROR: API returned not-ok: $LIVE"
+            exit 1
+          fi
+
+          echo "$LIVE" > live_stats.json
+
+          # ── 2. Load all historical archive files ────────────────────
+          echo "Loading historical data..."
+          python3 << 'PYEOF'
+          import json, os, glob
+
+          # Load live events
+          with open('live_stats.json') as f:
+              live_data = json.load(f)
+          all_events = live_data.get('downloads', [])
+
+          # Load all historicaldata/archive_*.json
+          arch_dir = 'historicaldata'
+          if os.path.isdir(arch_dir):
+              for path in sorted(glob.glob(os.path.join(arch_dir, 'archive_*.json'))):
+                  try:
+                      with open(path, encoding='utf-8') as f:
+                          entries = json.load(f)  # list of {date, downloads, visits}
+                      for entry in entries:
+                          all_events.extend(entry.get('downloads', []))
+                  except Exception as e:
+                      print(f"Warning: could not read {path}: {e}")
+
+          # ── 3. Count single-font downloads ──────────────────────────
+          count_map = {}
+          for ev in all_events:
+              if ev.get('type') != 'single':
+                  continue
+              if ev.get('event') and ev.get('event') != 'download':
+                  continue
+              font = (ev.get('font') or '').strip()
+              if not font:
+                  continue
+              # Skip bulk/category entries
+              if 'داگرتنی کاتێگۆری' in font:
+                  continue
+              if 'داگرتنی تەواوی' in font:
+                  continue
+              count_map[font] = count_map.get(font, 0) + 1
+
+          # ── 4. Compute top-25 ────────────────────────────────────────
+          top25 = [name for name, _ in sorted(count_map.items(), key=lambda x: -x[1])[:25]]
+          print(f"Computed top-25: {top25[:5]}... ({len(top25)} total)")
+
+          # ── 5. Load current popular.json ─────────────────────────────
+          popular_path = 'popular.json'
+          current = []
+          if os.path.exists(popular_path):
+              try:
+                  with open(popular_path, encoding='utf-8') as f:
+                      current = json.load(f)
+              except Exception:
+                  current = []
+
+          # ── 6. Compare SETS — only update if membership changed ──────
+          new_set = set(top25)
+          old_set = set(current)
+          if new_set == old_set:
+              print("No change in top-25 set. popular.json not updated.")
+              with open('no_change.flag', 'w') as f:
+                  f.write('1')
+          else:
+              entered = new_set - old_set
+              left    = old_set - new_set
+              print(f"Set changed! Entered: {entered} | Left: {left}")
+              with open(popular_path, 'w', encoding='utf-8') as f:
+                  json.dump(top25, f, indent=2, ensure_ascii=False)
+              print(f"Written {len(top25)} fonts to popular.json")
+          PYEOF
+
+      - name: Commit updated popular.json
+        run: |
+          if [ -f no_change.flag ]; then
+            echo "No changes — skipping commit."
+            exit 0
+          fi
+          git config user.name  "UniQaidar Bot"
+          git config user.email "bot@uniqaidar.pages.dev"
+          git add popular.json
+          if git diff --staged --quiet; then
+            echo "Git sees no diff — skipping commit."
+          else
+            git commit -m "Auto-update popular.json: top 25 trending fonts [$(TZ='Asia/Baghdad' date '+%Y-%m-%d %H:%M')]"
+            git push
+            echo "popular.json committed and pushed."
+          fi
