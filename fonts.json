@@ -1,5 +1,22 @@
 [
   {
+    "name": "UniQAIDAR_Ford 05 PK",
+    "file": "UniQAIDAR_Ford 05 PK",
+    "path": "UniQaidarFonts/UniQAIDAR_Ford 05 PK.ttf",
+    "category": [
+      "Nwe",
+      "All",
+      "Taybat",
+      "Kanal",
+      "Dastnus",
+      "Hunari"
+    ],
+    "preview": "فۆنتی کۆمپانیای فۆڕد",
+    "paragraph": "فۆنتی نوێی کوردی: فۆڕد. ئێستا فۆنتی نوێی کۆمپانیای فۆڕد لە ماڵپەڕی فەرمی فۆنتەکانی یونی‌قەیدار بەردەستە. ئەم فۆنتە بە ئیلهاموەرگرتنی هونەری لە لۆگۆی جیهانیی فۆڕد دیزاین کراوە و خاوەنی سێ ئەستووریی جیاوازە: بۆڵد - ڕیگولار - لایت. تایبەتمەندییەکی تری ئەم فۆنتە بریتییە لە بوونی دوو شێوازی جیاواز بۆ پیتەکانی (گ) و (ک)، کە دەستکراوەیی زیاتر بە دیزاینەر دەبەخشێت.",
+    "lineHeight": 1.8,
+    "size": "90 KB"
+  },
+  {
     "name": "UniQAIDAR_Ford 06 PK",
     "file": "UniQAIDAR_Ford 06 PK",
     "path": "UniQaidarFonts/UniQAIDAR_Ford 06 PK.ttf",
