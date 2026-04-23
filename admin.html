@@ -502,6 +502,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         <button class="tab"        onclick="go('t-arc',     this)">📦 Archive</button>
         <button class="tab"        onclick="go('t-dlstats', this)">📊 Downloads</button>
         <button class="tab"        onclick="go('t-site',    this)">⚙️ Site Settings</button>
+        <button class="tab"        onclick="go('t-modals',  this)">🪟 Modals</button>
         <button class="tab"        onclick="go('t-visual',  this)">🎨 Pro Visual Builder</button>
     </div>
 
@@ -1188,6 +1189,125 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         </div>
     </div>
     <!-- ══════════════════════════════════════════════════════ -->
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB: Modals                                            -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="t-modals" class="tab-content">
+
+        <!-- Download Modal Editor -->
+        <div class="box">
+            <div class="box-header"><div class="dot" style="background:var(--accent)"></div> ⬇ Download Modal</div>
+            <div class="box-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Header Button Label</label>
+                        <input type="text" id="dm-header-btn-inp" placeholder="داگرتنی تەواوی فۆنتەکان" style="direction:rtl;">
+                    </div>
+                    <div class="form-group">
+                        <label>Modal Title</label>
+                        <input type="text" id="dm-title-inp" placeholder="داگرتنی تەواوی فۆنتەکان" style="direction:rtl;">
+                    </div>
+                    <div class="form-group full">
+                        <label>Description</label>
+                        <textarea id="dm-desc-inp" style="direction:rtl;height:64px;" placeholder="پێناسەی مۆدالی داگرتن..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Download Button Label</label>
+                        <input type="text" id="dm-btn-inp" placeholder="داگرتن لە Google Drive" style="direction:rtl;">
+                    </div>
+                    <div class="form-group">
+                        <label>Download URL</label>
+                        <input type="text" id="dl-url" placeholder="https://drive.google.com/..." style="direction:ltr;">
+                    </div>
+                    <div class="form-group">
+                        <label>Direct Download Label</label>
+                        <input type="text" id="dm-direct-inp" placeholder="داگرتنی ڕاستەوخۆ" style="direction:rtl;">
+                    </div>
+                    <div class="form-group">
+                        <label>Category Download Button Label</label>
+                        <input type="text" id="dm-cat-dl-inp" placeholder="داگرتنی کاتێگۆری" style="direction:rtl;">
+                    </div>
+                    <div class="form-group">
+                        <label>Fonts Per Page</label>
+                        <input type="number" id="dm-perpage-inp" placeholder="100" min="10" max="500" style="direction:ltr;">
+                    </div>
+                </div>
+                <div id="dl-alert" class="alert" style="margin-top:10px;"></div>
+                <div class="btn-row">
+                    <button class="btn btn-ghost" onclick="if(typeof loadAllSettings==='function') loadAllSettings()">↺ Reload from GitHub</button>
+                    <button class="btn btn-primary" onclick="saveDownloadModal()">💾 Save Download Modal</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Modal Editor -->
+        <div class="box">
+            <div class="box-header"><div class="dot" style="background:var(--purple)"></div> ℹ About Modal</div>
+            <div class="box-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="about-title-inp" placeholder="دەربارەی یونیقەیدار" style="direction:rtl;">
+                    </div>
+                    <div class="form-group">
+                        <label>Features Section Title</label>
+                        <input type="text" id="about-features-title-inp" placeholder="تایبەتمەندییەکانی ماڵپەڕ" style="direction:rtl;">
+                    </div>
+                    <div class="form-group full">
+                        <label>Content / Description</label>
+                        <textarea id="about-text" style="direction:rtl;height:100px;" placeholder="دەربارەی ماڵپەڕ..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Feature 1 — Icon</label>
+                        <input type="text" id="about-feat1-icon-inp" placeholder="🎨" style="direction:ltr;">
+                    </div>
+                    <div class="form-group">
+                        <label>Feature 1 — Text</label>
+                        <input type="text" id="about-feat1-text-inp" style="direction:rtl;">
+                    </div>
+                    <div class="form-group">
+                        <label>Feature 2 — Icon</label>
+                        <input type="text" id="about-feat2-icon-inp" placeholder="🖋" style="direction:ltr;">
+                    </div>
+                    <div class="form-group">
+                        <label>Feature 2 — Text</label>
+                        <input type="text" id="about-feat2-text-inp" style="direction:rtl;">
+                    </div>
+                    <div class="form-group">
+                        <label>Feature 3 — Icon</label>
+                        <input type="text" id="about-feat3-icon-inp" placeholder="📦" style="direction:ltr;">
+                    </div>
+                    <div class="form-group">
+                        <label>Feature 3 — Text</label>
+                        <input type="text" id="about-feat3-text-inp" style="direction:rtl;">
+                    </div>
+                    <div class="form-group">
+                        <label>Feature 4 — Icon</label>
+                        <input type="text" id="about-feat4-icon-inp" placeholder="🌐" style="direction:ltr;">
+                    </div>
+                    <div class="form-group">
+                        <label>Feature 4 — Text</label>
+                        <input type="text" id="about-feat4-text-inp" style="direction:rtl;">
+                    </div>
+                    <div class="form-group">
+                        <label>Launch Date</label>
+                        <input type="text" id="about-launch-inp" placeholder="٢٠٢٥" style="direction:rtl;">
+                    </div>
+                    <div class="form-group">
+                        <label>Developer Name</label>
+                        <input type="text" id="about-dev-inp" placeholder="Qaidar Rahim" style="direction:ltr;">
+                    </div>
+                </div>
+                <div id="about-alert" class="alert" style="margin-top:10px;"></div>
+                <div class="btn-row">
+                    <button class="btn btn-ghost" onclick="if(typeof loadAllSettings==='function') loadAllSettings()">↺ Reload from GitHub</button>
+                    <button class="btn btn-primary" onclick="saveAbout()">💾 Save About Modal</button>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /t-modals -->
 
     <!-- ══════════════════════════════════════════════════════ -->
     <!-- TAB: Pro Visual Builder                               -->
@@ -6053,8 +6173,11 @@ function parseFonts() {
             path:        f.path        || (f.file ? 'UniQaidarFonts/' + f.file + '.ttf' : ''),
             category:    cats_arr,
             preview:     f.preview     || '',
+            paragraph:   f.paragraph   || '',
+            lineHeight:  f.lineHeight  || 1.8,
             dateAdded:   f.dateAdded   || '',
-            displayName: f.displayName || ''
+            displayName: f.displayName || '',
+            size:        f.size        || ''
         };
     });
 }
@@ -6671,7 +6794,7 @@ async function saveEditFont() {
     const editLineHVal  = document.getElementById('edit-lineheight') ? parseFloat(document.getElementById('edit-lineheight').value) : null;
     const updatedEntry = { name, file, path, category: catsArr };
     if (preview)                             updatedEntry.preview = preview;
-    if (paragraphVal)                        updatedEntry.paragraph = paragraphVal;
+    updatedEntry.paragraph = paragraphVal !== '' ? paragraphVal : (origFont.paragraph || '');
     if (editLineHVal)                          updatedEntry.lineHeight = editLineHVal;
     if (date)                                updatedEntry.dateAdded = date;
     if (displayName && displayName !== name) updatedEntry.displayName = displayName;
@@ -6861,7 +6984,7 @@ function loadAllSettings() {
     for (let i=1;i<=4;i++) {
         const iconM = RAW.match(new RegExp(`<span id="about-feat${i}-icon"[^>]*>([^<]*)<\\/span>`));
         if (iconM) set(`about-feat${i}-icon-inp`, iconM[1]);
-        const textM = RAW.match(new RegExp(`<span id="about-feat${i}-text">([\\s\\S]*?)<\\/span>`));
+        const textM = RAW.match(new RegExp(`<span id="about-feat${i}-text"[^>]*>([\\s\\S]*?)<\\/span>`));
         if (textM) set(`about-feat${i}-text-inp`, textM[1].replace(/<[^>]+>/g,'').trim());
     }
     const launchM = RAW.match(/<span id="about-launch-date"[^>]*>([^<]*)<\/span>/);
@@ -7290,6 +7413,7 @@ function go(id, btn) {
     if (id==='t-arc')     renderArcFull();
     if (id==='t-visual')  pvbInit();
     if (id==='t-site')    { if (typeof pvbPopulateLogic === 'function') pvbPopulateLogic(); if (typeof loadAllSettings === 'function') loadAllSettings(); }
+    if (id==='t-modals')  { if (typeof loadAllSettings === 'function') loadAllSettings(); }
     if (id==='t-dlstats') { loadDlStats(false); loadVisitStats(false); if(TOKEN && USER && REPO && !_trendingList.length) { loadPopularJson(); } }
 }
 
@@ -7314,7 +7438,7 @@ function set(id,val) { const el=document.getElementById(id); if(el) el.value=val
 // ══════════════════════════════════════════
 // Downloads & Visits Statistics Tab — Cloudflare KV
 // ══════════════════════════════════════════
-let DL_DATA = [], DL_SORT = 'count', DL_SORT_DIR = -1, DL_TIMER = null;
+let DL_DATA = [], DL_SORT = 'last', DL_SORT_DIR = -1, DL_TIMER = null;
 let VT_DATA = [], VT_TIMER = null;
 let STATS_LOADED = false;
 let HIST_LOADED  = false;   // true once historicaldata files are fetched
@@ -7326,7 +7450,7 @@ const PG = { vcountry:1, vlog:1, vviral:1, dlfont:1, dllog:1, sqsummary:1, sqlog
 const PG_SIZE = 25;
 
 // Sort state for visit tables
-let VT_COUNTRY_SORT = 'count', VT_COUNTRY_DIR = -1;
+let VT_COUNTRY_SORT = 'last', VT_COUNTRY_DIR = -1;
 let VT_LOG_SORT = 'ts', VT_LOG_DIR = -1;
 let DL_LOG_SORT = 'ts', DL_LOG_DIR = -1;
 
@@ -7591,7 +7715,7 @@ function renderVisitStats() {
     countryArr.sort((a,b)=>{
         let va = a[VT_COUNTRY_SORT]||'', vb = b[VT_COUNTRY_SORT]||'';
         if (VT_COUNTRY_SORT==='count'){va=a.count;vb=b.count;}
-        return va<vb ? VT_COUNTRY_DIR : va>vb ? -VT_COUNTRY_DIR : 0;
+        return (va<vb ? -1 : va>vb ? 1 : 0) * VT_COUNTRY_DIR;
     });
     const vcTotal = countryArr.length;
     const vcPage  = PG.vcountry;
@@ -7617,7 +7741,7 @@ function renderVisitStats() {
         if (VT_LOG_SORT==='source') { va=a.source||''; vb=b.source||''; }
         if (VT_LOG_SORT==='device') { va=a.device||''; vb=b.device||''; }
         if (VT_LOG_SORT==='url')    { va=a.url||''; vb=b.url||''; }
-        return va<vb ? VT_LOG_DIR : va>vb ? -VT_LOG_DIR : 0;
+        return (va<vb ? -1 : va>vb ? 1 : 0) * VT_LOG_DIR;
     });
     const vlTotal = vtSorted.length;
     const vlPage  = PG.vlog;
@@ -7658,7 +7782,7 @@ function renderVisitStats() {
     const viralEvents = DL_DATA.filter(ev => ['copy_font','copy_category','copy_bulk_modal'].includes(ev.event||''));
     const viralSorted = [...viralEvents].sort((a,b)=>{
         const va = a[VIRAL_SORT]||'', vb = b[VIRAL_SORT]||'';
-        return va < vb ? VIRAL_SORT_DIR : va > vb ? -VIRAL_SORT_DIR : 0;
+        return (va < vb ? -1 : va > vb ? 1 : 0) * VIRAL_SORT_DIR;
     });
     const vvTotal = viralSorted.length;
     const vvPage  = PG.vviral || 1;
@@ -7754,7 +7878,7 @@ function renderSearchTable() {
     const kwArr = Object.values(kwMap).sort((a,b)=>{
         let va=a[SQ_SORT]||'', vb=b[SQ_SORT]||'';
         if(SQ_SORT==='count'){va=a.count;vb=b.count;}
-        return va<vb?SQ_SORT_DIR:va>vb?-SQ_SORT_DIR:0;
+        return (va<vb?-1:va>vb?1:0)*SQ_SORT_DIR;
     });
     const sqSumBody = document.getElementById('sq-summary-tbody');
     if (sqSumBody) {
@@ -7785,7 +7909,7 @@ function renderSearchTable() {
         else if (SQ_LOG_SORT==='source')  { va=a.source||''; vb=b.source||''; }
         else if (SQ_LOG_SORT==='device')  { va=a.device||''; vb=b.device||''; }
         else { va=a.ts||a.date||''; vb=b.ts||b.date||''; }
-        return va<vb ? SQ_LOG_DIR : va>vb ? -SQ_LOG_DIR : 0;
+        return (va<vb ? -1 : va>vb ? 1 : 0) * SQ_LOG_DIR;
     });
     const sqTotal = logSorted.length;
     if (!PG.sqlog) PG.sqlog = 1;
@@ -7884,7 +8008,7 @@ function renderDlTable() {
     const arr = Object.values(fontMap).sort((a,b)=>{
         let va=a[DL_SORT]||'', vb=b[DL_SORT]||'';
         if (DL_SORT==='count'){va=a.count;vb=b.count;}
-        return va<vb?DL_SORT_DIR:va>vb?-DL_SORT_DIR:0;
+        return (va<vb?-1:va>vb?1:0)*DL_SORT_DIR;
     });
 
     const dfTotal = arr.length;
@@ -7944,7 +8068,7 @@ function renderDlTable() {
         else if (DL_LOG_SORT==='city')    { va=a.city||''; vb=b.city||''; }
         else if (DL_LOG_SORT==='source')  { va=a.source||''; vb=b.source||''; }
         else if (DL_LOG_SORT==='device')  { va=a.device||''; vb=b.device||''; }
-        return va<vb ? DL_LOG_DIR : va>vb ? -DL_LOG_DIR : 0;
+        return (va<vb ? -1 : va>vb ? 1 : 0) * DL_LOG_DIR;
     });
 
     const dlTotal = logSorted.length;
@@ -8062,12 +8186,12 @@ function nowSUL() {
     return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Baghdad' }));
 }
 function fmtSUL(tsStr) {
-    // Format any ISO timestamp to Sulaymaniyah local date+time
+    // Format any ISO timestamp to Sulaymaniyah local date+time (12-hour AM/PM)
     if (!tsStr) return '—';
     try {
         const d = new Date(tsStr);
         const date = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' }); // YYYY-MM-DD
-        const time = d.toLocaleTimeString('en-GB', { timeZone: 'Asia/Baghdad', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+        const time = d.toLocaleTimeString('en-US', { timeZone: 'Asia/Baghdad', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: true });
         return date + ' ' + time;
     } catch(e) { return tsStr.slice(0,19); }
 }
