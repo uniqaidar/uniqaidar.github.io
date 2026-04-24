@@ -7,18 +7,17 @@ on:
   workflow_dispatch:
     # Allow manual trigger
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   archive:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     permissions:
       contents: write
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.2.3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
