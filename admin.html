@@ -124,6 +124,37 @@ main { max-width: 100%; margin: 0 auto; padding: 16px 180px; display: flex; flex
 .box-header .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .box-body { padding: 18px; }
 
+/* ── Resizable table columns ───────────────────────────────── */
+.uq-resizable-table { table-layout: fixed; width: max-content; min-width: 100%; }
+.uq-resizable-table th {
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    min-width: 50px;
+}
+.uq-col-resizer {
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 6px;
+    cursor: col-resize;
+    background: transparent;
+    z-index: 2;
+    user-select: none;
+}
+.uq-col-resizer:hover, .uq-col-resizer.dragging {
+    background: rgba(255,87,0,0.45);
+}
+.uq-resizable-table th.sort-active {
+    color: var(--accent);
+}
+.uq-resizable-table th.sort-active::after {
+    content: ' ▲';
+    font-size: 0.65rem;
+}
+.uq-resizable-table th.sort-active.desc::after {
+    content: ' ▼';
+}
+
 /* فۆرم */
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
 .form-group { display: flex; flex-direction: column; gap: 5px; }
@@ -4763,6 +4794,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
           <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--green)"></div><span><span data-ku>🌍 سەردانەکانی وێبسایت</span><span data-en style="display:none">🌍 Website Visits</span></span></div>
           <div style="display:flex;align-items:center;gap:8px;">
             <span id="visit-last-refresh" style="font-size:0.72rem;color:#29b6f6;font-family:var(--mono);">Not refreshed</span>
+            <span id="visit-refresh-countdown" style="font-size:0.70rem;color:var(--muted);font-family:var(--mono);margin-left:6px;"></span>
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadVisitStats(true)"><span data-ku>🔄 نوێکردنەوە</span><span data-en style="display:none">🔄 Refresh</span></button>
           </div>
         </div>
@@ -4777,17 +4809,17 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
           <div id="vt-hist-badge" style="font-size:0.74rem;color:var(--yellow);font-family:var(--mono);margin-bottom:10px;min-height:18px;"></div>
           <!-- Unified Visit Table -->
           <div style="overflow-x:auto;">
-            <table style="width:100%;border-collapse:collapse;font-size:0.8rem;min-width:900px;">
+            <table id="vt-log-table" class="uq-resizable-table" style="border-collapse:collapse;font-size:0.8rem;min-width:900px;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);background:var(--surface2);">
-                <th style="padding:7px 10px;text-align:right;font-weight:normal;font-family:var(--mono);"><span data-ku>#</span><span data-en style="display:none">#</span></th>
-                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('country')"><span data-ku>وڵات ↕</span><span data-en style="display:none">Country ↕</span></th>
-                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('city')"><span data-ku>شار ↕</span><span data-en style="display:none">City ↕</span></th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('vcountry')"><span data-ku>ژمارەی سەردان (وڵات) ↕</span><span data-en style="display:none">Visit Count (Country) ↕</span></th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('vcity')"><span data-ku>ژمارەی سەردان (شار) ↕</span><span data-en style="display:none">Visit Count (City) ↕</span></th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('source')"><span data-ku>سەرچاوە ↕</span><span data-en style="display:none">Source ↕</span></th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('device')"><span data-ku>ئامێر ↕</span><span data-en style="display:none">Device ↕</span></th>
-                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('url')"><span data-ku>لاپەڕە ↕</span><span data-en style="display:none">Page ↕</span></th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('dcount')"><span data-ku>ژمارەی ئامێر ↕</span><span data-en style="display:none">Device Count ↕</span></th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;font-family:var(--mono);width:40px;"><span data-ku>#</span><span data-en style="display:none">#</span></th>
+                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('country')"><span data-ku>وڵات ↕</span><span data-en style="display:none">Country ↕</span><span class="uq-col-resizer"></span></th>
+                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('city')"><span data-ku>شار ↕</span><span data-en style="display:none">City ↕</span><span class="uq-col-resizer"></span></th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('vcountry')"><span data-ku>ژمارەی سەردان (وڵات) ↕</span><span data-en style="display:none">Visit Count (Country) ↕</span><span class="uq-col-resizer"></span></th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('vcity')"><span data-ku>ژمارەی سەردان (شار) ↕</span><span data-en style="display:none">Visit Count (City) ↕</span><span class="uq-col-resizer"></span></th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('source')"><span data-ku>سەرچاوە ↕</span><span data-en style="display:none">Source ↕</span><span class="uq-col-resizer"></span></th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('device')"><span data-ku>ئامێر ↕</span><span data-en style="display:none">Device ↕</span><span class="uq-col-resizer"></span></th>
+                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('url')"><span data-ku>لاپەڕە ↕</span><span data-en style="display:none">Page ↕</span><span class="uq-col-resizer"></span></th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('dcount')"><span data-ku>ژمارەی ئامێر ↕</span><span data-en style="display:none">Device Count ↕</span><span class="uq-col-resizer"></span></th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortVtLogBy('ts')"><span data-ku>بەروار — کات ↕</span><span data-en style="display:none">Date — Time ↕</span></th>
               </tr></thead>
               <tbody id="v-log-tbody"></tbody>
@@ -4867,6 +4899,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
           <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--yellow)"></div><span><span data-ku>📊 ئامارەکانی داگرتنی فۆنت</span><span data-en style="display:none">📊 Font Download Stats</span></span></div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <span id="dl-last-refresh" style="font-size:0.72rem;color:#29b6f6;font-family:var(--mono);">Not refreshed</span>
+            <span id="dl-refresh-countdown" style="font-size:0.70rem;color:var(--muted);font-family:var(--mono);margin-left:6px;"></span>
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadDlStats(true)"><span data-ku>🔄 نوێکردنەوە</span><span data-en style="display:none">🔄 Refresh</span></button>
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="exportDlCsv()">📥 Export CSV</button>
             <button class="btn btn-red" style="font-size:0.78rem;padding:5px 12px;" onclick="clearDlStats()"><span data-ku>🗑 سڕینەوەی هەموو ئامارەکان</span><span data-en style="display:none">🗑 Clear All Stats</span></button>
@@ -4897,18 +4930,18 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
           <div id="dl-hist-badge" style="font-size:0.74rem;color:var(--yellow);font-family:var(--mono);margin-bottom:10px;min-height:18px;"></div>
           <!-- Unified Font Download Stats Table -->
           <div style="overflow-x:auto;">
-            <table style="width:100%;border-collapse:collapse;font-size:0.8rem;min-width:1000px;">
+            <table id="dl-log-table" class="uq-resizable-table" style="border-collapse:collapse;font-size:0.8rem;min-width:1000px;">
               <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);background:var(--surface2);">
-                <th style="padding:7px 10px;text-align:right;font-weight:normal;font-family:var(--mono);"><span data-ku>#</span><span data-en style="display:none">#</span></th>
-                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('font')"><span data-ku>ناوی فۆنت ↕</span><span data-en style="display:none">Font Name ↕</span></th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('type')"><span data-ku>جۆر ↕</span><span data-en style="display:none">Type ↕</span></th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('dlcount')"><span data-ku>ژمارەی داگرتن ↕</span><span data-en style="display:none">Downloads Count ↕</span></th>
-                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('country')"><span data-ku>وڵات ↕</span><span data-en style="display:none">Country ↕</span></th>
-                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('city')"><span data-ku>شار ↕</span><span data-en style="display:none">City ↕</span></th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('source')"><span data-ku>سەرچاوە ↕</span><span data-en style="display:none">Source ↕</span></th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('device')"><span data-ku>ئامێر ↕</span><span data-en style="display:none">Device ↕</span></th>
-                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('url')"><span data-ku>لاپەڕە ↕</span><span data-en style="display:none">Page ↕</span></th>
-                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('dcount')"><span data-ku>ژمارەی ئامێر ↕</span><span data-en style="display:none">Device Count ↕</span></th>
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;font-family:var(--mono);width:40px;"><span data-ku>#</span><span data-en style="display:none">#</span></th>
+                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('font')"><span data-ku>ناوی فۆنت ↕</span><span data-en style="display:none">Font Name ↕</span><span class="uq-col-resizer"></span></th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('type')"><span data-ku>جۆر ↕</span><span data-en style="display:none">Type ↕</span><span class="uq-col-resizer"></span></th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('dlcount')"><span data-ku>ژمارەی داگرتن ↕</span><span data-en style="display:none">Downloads Count ↕</span><span class="uq-col-resizer"></span></th>
+                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('country')"><span data-ku>وڵات ↕</span><span data-en style="display:none">Country ↕</span><span class="uq-col-resizer"></span></th>
+                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('city')"><span data-ku>شار ↕</span><span data-en style="display:none">City ↕</span><span class="uq-col-resizer"></span></th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('source')"><span data-ku>سەرچاوە ↕</span><span data-en style="display:none">Source ↕</span><span class="uq-col-resizer"></span></th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('device')"><span data-ku>ئامێر ↕</span><span data-en style="display:none">Device ↕</span><span class="uq-col-resizer"></span></th>
+                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('url')"><span data-ku>لاپەڕە ↕</span><span data-en style="display:none">Page ↕</span><span class="uq-col-resizer"></span></th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('dcount')"><span data-ku>ژمارەی ئامێر ↕</span><span data-en style="display:none">Device Count ↕</span><span class="uq-col-resizer"></span></th>
                 <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortDlLogBy('ts')"><span data-ku>بەروار — کات ↕</span><span data-en style="display:none">Date — Time ↕</span></th>
               </tr></thead>
               <tbody id="dl-log-tbody"></tbody>
@@ -4926,7 +4959,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
       <!-- TRENDING MANAGEMENT BOX -->
       <div class="box" id="trending-box">
         <div class="box-header" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
-          <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--green)"></div><span>🔥 زۆرترین داونلۆکراوەکان (popular.json)</span></div>
+          <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--green)"></div><span>🔥 زۆرترین داونلۆکراوەکان (popular.json)</span><span id="trending-next-run" style="font-size:0.70rem;color:var(--muted);font-family:var(--mono);margin-left:4px;"></span></div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadPopularJson()">📥 Load from GitHub</button>
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="autoFillTrending()" title="داخستنی تاپ ٢٥ لە ئامارەکانی داگرتن">⚡ Auto-fill from Stats</button>
@@ -7633,7 +7666,8 @@ async function loadAllStats(force) {
         try {
             const singleEvs = DL_DATA.filter(ev => {
                 if (ev.type !== 'single') return false;
-                if (ev.event && ev.event !== 'download') return false;
+                const _ev = ev.event || '';
+                if (_ev !== '' && _ev !== 'download') return false;
                 const fn = ev.font || '';
                 return !fn.includes('داگرتنی کاتێگۆری') && !fn.includes('<span data-ku>داگرتنی تەواوی</span><span data-en style="display:none">Bulk Downloads</span>');
             });
@@ -7693,6 +7727,8 @@ async function loadAllStats(force) {
         if (VT_TIMER) clearInterval(VT_TIMER);
         DL_TIMER = setInterval(() => loadAllStats(true), 15*60*1000);
         VT_TIMER = DL_TIMER;
+        // Start 15-min countdown for visits + downloads refresh
+        startStatsCountdown();
 
     } catch(e) {
         alert2(alDl, '❌ ' + e.message, 'err');
@@ -7757,14 +7793,37 @@ function renderVisitStats() {
         if (!vlSlice.length) {
             ltbody.innerHTML = '<tr><td colspan="10" style="padding:20px;text-align:center;color:var(--muted);">No records found</td></tr>';
         } else {
+            let _vtgi = 0, _vtLastV = null, _prevVtgi = 0;
             vlSlice.forEach((ev,i) => {
+                // Group shading when sorted by a count/category column
+                let _vtGrpV = null;
+                if (['vcountry','vcity','dcount','country','city','device','source'].includes(VT_LOG_SORT)) {
+                    const _cc2 = ev.country||'?', _ci2 = (ev.city||'—').trim()||'—', _dv2 = (ev.device||'—').trim()||'—';
+                    if      (VT_LOG_SORT==='vcountry') _vtGrpV = String(countryMap[_cc2]?.count||0);
+                    else if (VT_LOG_SORT==='vcity')    _vtGrpV = String(cityMap[_ci2]||0);
+                    else if (VT_LOG_SORT==='dcount')   _vtGrpV = String(deviceMap[_dv2]||0);
+                    else if (VT_LOG_SORT==='country')  _vtGrpV = _cc2;
+                    else if (VT_LOG_SORT==='city')     _vtGrpV = _ci2;
+                    else if (VT_LOG_SORT==='device')   _vtGrpV = _dv2;
+                    else if (VT_LOG_SORT==='source')   _vtGrpV = ev.source||'';
+                    if (_vtGrpV !== _vtLastV) { _vtgi++; _vtLastV = _vtGrpV; }
+                }
                 const tr = document.createElement('tr');
                 const _src = (ev.source||'Direct').toLowerCase();
                 const _isSocial = ['facebook','instagram','telegram','twitter','tiktok','linkedin','reddit','whatsapp','youtube'].some(s=>_src.includes(s));
                 const _isSearch = ['google','bing','yahoo','duckduckgo'].some(s=>_src.includes(s));
-                const _rowBg = _isSocial ? 'rgba(225,48,108,0.05)' : _isSearch ? 'rgba(46,204,113,0.05)' : 'rgba(100,116,139,0.04)';
-                const _rowHover = _isSocial ? 'rgba(225,48,108,0.11)' : _isSearch ? 'rgba(46,204,113,0.11)' : 'rgba(100,116,139,0.09)';
-                tr.style.cssText = `border-bottom:1px solid var(--border);background:${_rowBg};`;
+                const _useGroup = _vtGrpV !== null;
+                const _isOddGrp = _vtgi % 2 === 1;
+                const _isNewVtGrp = _useGroup && i > 0 && (_vtgi !== _prevVtgi);
+                _prevVtgi = _vtgi;
+                const _rowBg = _useGroup
+                    ? (_isOddGrp ? 'rgba(41,182,246,0.10)' : 'rgba(162,155,254,0.07)')
+                    : (_isSocial ? 'rgba(225,48,108,0.05)' : _isSearch ? 'rgba(46,204,113,0.05)' : 'rgba(100,116,139,0.04)');
+                const _rowHover = _useGroup
+                    ? (_isOddGrp ? 'rgba(41,182,246,0.22)' : 'rgba(162,155,254,0.18)')
+                    : (_isSocial ? 'rgba(225,48,108,0.11)' : _isSearch ? 'rgba(46,204,113,0.11)' : 'rgba(100,116,139,0.09)');
+                const _vtBorderTop = _isNewVtGrp ? '2px solid rgba(255,255,255,0.18)' : '1px solid var(--border)';
+                tr.style.cssText = `border-top:${_vtBorderTop};background:${_rowBg};transition:background 0.12s;`;
                 tr.onmouseover = ()=>tr.style.background=_rowHover;
                 tr.onmouseout  = ()=>tr.style.background=_rowBg;
                 const cc = ev.country||'?';
@@ -8021,7 +8080,9 @@ function getFilteredEvents() {
     const df   = document.getElementById('dl-date-from')?.value||'';
     const dt   = document.getElementById('dl-date-to')?.value||'';
     return DL_DATA.filter(ev => {
-        if (ev.event && ev.event !== 'download') return false;  // exclude search, copy_font, copy_category, copy_bulk_modal
+        // Accept: event missing/empty (legacy) or explicitly 'download'. Reject all others.
+        const _evType = ev.event || '';
+        if (_evType !== '' && _evType !== 'download') return false;
         if (q    && !(ev.font||'').toLowerCase().includes(q)) return false;
         if (typeF !== 'all') {
             const fontName = ev.font || '';
@@ -8082,11 +8143,22 @@ function renderDlTable() {
     if (!dfSlice.length) {
         ftbody.innerHTML = '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);"><span data-ku>هیچ داگرتنێک نییە</span><span data-en style="display:none">No downloads found</span></td></tr>';
     } else {
+        // Build count groups for visual grouping when sorted by count
+        const _countGroups1 = {};
+        if (DL_SORT === 'count') {
+            let _gi = 0, _lastC = null;
+            dfSlice.forEach(item => {
+                if (item.count !== _lastC) { _gi++; _lastC = item.count; }
+                _countGroups1[item.font] = _gi;
+            });
+        }
         dfSlice.forEach((item,i) => {
+            const _grp = DL_SORT === 'count' ? _countGroups1[item.font] : 0;
+            const _grpBg = _grp ? (_grp % 2 === 0 ? 'rgba(255,87,0,0.07)' : 'rgba(255,255,255,0.03)') : '';
             const tr = document.createElement('tr');
-            tr.style.cssText = 'border-bottom:1px solid var(--border);transition:background 0.15s;';
+            tr.style.cssText = 'border-bottom:1px solid var(--border);transition:background 0.15s;' + (_grpBg ? 'background:'+_grpBg+';' : '');
             tr.onmouseover = ()=>tr.style.background='var(--surface2)';
-            tr.onmouseout  = ()=>tr.style.background='';
+            tr.onmouseout  = ()=>tr.style.background=_grpBg||'';
             const lastSUL = item.last ? fmtSUL(item.last) : '—';
             const isBulkEntry    = item.type==='bulk' || item.font.includes('<span data-ku>داگرتنی تەواوی</span><span data-en style="display:none">Bulk Downloads</span>');
             const isCatBulkEntry = item.type==='cat-bulk' || item.font.includes('داگرتنی کاتێگۆری');
@@ -8156,7 +8228,21 @@ function renderDlTable() {
     if (!dlSlice.length) {
         ltbody.innerHTML = '<tr><td colspan="11" style="padding:20px;text-align:center;color:var(--muted);">No downloads found</td></tr>';
     } else {
+        let _dlgi = 0, _dlLastV = null, _prevDlgi = 0;
         dlSlice.forEach((ev,i) => {
+            // Determine group index for this row
+            let _grpV = null;
+            if (['dlcount','dcount','type','country','city','device','source','font'].includes(DL_LOG_SORT)) {
+                if (DL_LOG_SORT==='dlcount') _grpV = String(dlFontCountMap[ev.font||'?']||0);
+                else if (DL_LOG_SORT==='dcount')  _grpV = String(dlDevMap[(ev.device||'—').trim()||'—']||0);
+                else if (DL_LOG_SORT==='type')    _grpV = ev.type||'';
+                else if (DL_LOG_SORT==='country') _grpV = ev.country||'';
+                else if (DL_LOG_SORT==='city')    _grpV = (ev.city||'').trim();
+                else if (DL_LOG_SORT==='device')  _grpV = (ev.device||'').trim();
+                else if (DL_LOG_SORT==='source')  _grpV = ev.source||'';
+                else if (DL_LOG_SORT==='font')    _grpV = ev.font||'';
+                if (_grpV !== _dlLastV) { _dlgi++; _dlLastV = _grpV; }
+            }
             const tr  = document.createElement('tr');
             const isCatBulk = ev.type==='cat-bulk' || (ev.font||'').includes('داگرتنی کاتێگۆری');
             const isBulk    = !isCatBulk && (ev.type==='bulk' || (ev.font||'').includes('<span data-ku>داگرتنی تەواوی</span><span data-en style="display:none">Bulk Downloads</span>'));
@@ -8203,9 +8289,25 @@ function renderDlTable() {
                 <td style="padding:6px 10px;font-size:0.72rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${pageHtml}</td>
                 <td style="padding:6px 10px;text-align:center;"><span style="background:rgba(162,155,254,0.15);color:#a29bfe;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;">${dcount}</span></td>
                 <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);white-space:nowrap;" dir="ltr">${evSUL}</td>`;
-            tr.style.background = isCatBulk ? 'rgba(162,155,254,0.06)' : isBulk ? 'rgba(46,204,113,0.06)' : 'rgba(255,87,0,0.04)';
-            tr.onmouseover = ()=>tr.style.background = isCatBulk ? 'rgba(162,155,254,0.13)' : isBulk ? 'rgba(46,204,113,0.13)' : 'rgba(255,87,0,0.10)';
-            tr.onmouseout  = ()=>tr.style.background = isCatBulk ? 'rgba(162,155,254,0.06)' : isBulk ? 'rgba(46,204,113,0.06)' : 'rgba(255,87,0,0.04)';
+            // ── Group-boundary detection using before/after comparison ──
+            let _baseBg, _isNewGroup = false;
+            if (isCatBulk) {
+                _baseBg = 'rgba(162,155,254,0.06)';
+            } else if (isBulk) {
+                _baseBg = 'rgba(46,204,113,0.06)';
+            } else if (_grpV !== null) {
+                // _dlgi already incremented when group changed — odd/even gives alternating shades
+                _baseBg = (_dlgi % 2 === 1) ? 'rgba(255,87,0,0.09)' : 'rgba(30,120,255,0.07)';
+                _isNewGroup = (i > 0 && _dlgi !== _prevDlgi);
+            } else {
+                _baseBg = 'rgba(255,87,0,0.04)';
+            }
+            _prevDlgi = _dlgi;
+
+            const _borderTop = _isNewGroup ? '2px solid rgba(255,255,255,0.18)' : '1px solid var(--border)';
+            tr.style.cssText = `background:${_baseBg};border-top:${_borderTop};transition:background 0.12s;`;
+            tr.onmouseover = () => tr.style.background = isCatBulk ? 'rgba(162,155,254,0.18)' : isBulk ? 'rgba(46,204,113,0.18)' : (_grpV !== null ? (_dlgi%2===1 ? 'rgba(255,87,0,0.20)' : 'rgba(30,120,255,0.18)') : 'rgba(255,87,0,0.12)');
+            tr.onmouseout  = () => tr.style.background = _baseBg;
             ltbody.appendChild(tr);
         });
     }
@@ -8227,6 +8329,50 @@ function clearDlFilters() {
 function clearDlStats() {
     alert('ئامارەکان لە Cloudflare KV پاراستراون.\nبۆ سڕینەوە بڕۆ بۆ Cloudflare Dashboard → KV → UQDATA namespace → سڕینەوەی کلیلەکان.');
 }
+
+// ══════════════════════════════════════════
+// Countdown timers
+// ══════════════════════════════════════════
+let _statsCountdownTimer = null;
+let _statsNextRefreshAt  = null;
+
+function startStatsCountdown() {
+    if (_statsCountdownTimer) clearInterval(_statsCountdownTimer);
+    _statsNextRefreshAt = Date.now() + 15 * 60 * 1000;
+    _statsCountdownTimer = setInterval(_tickStatsCountdown, 1000);
+    _tickStatsCountdown();
+}
+
+function _tickStatsCountdown() {
+    const remaining = Math.max(0, _statsNextRefreshAt - Date.now());
+    const mins = String(Math.floor(remaining / 60000)).padStart(2, '0');
+    const secs = String(Math.floor((remaining % 60000) / 1000)).padStart(2, '0');
+    const label = remaining > 0 ? `⏱ ${mins}:${secs}` : '⏳ refreshing...';
+    const el1 = document.getElementById('visit-refresh-countdown');
+    const el2 = document.getElementById('dl-refresh-countdown');
+    if (el1) el1.textContent = label;
+    if (el2) el2.textContent = label;
+    if (remaining <= 0) { _statsNextRefreshAt = Date.now() + 15 * 60 * 1000; }
+}
+
+function _tickTrendingCountdown() {
+    const d = new Date();
+    const utcTotalSecs = d.getUTCHours()*3600 + d.getUTCMinutes()*60 + d.getUTCSeconds();
+    const schedules = [30*60, 6*3600+30*60, 12*3600+30*60, 18*3600+30*60];
+    let minSecs = Infinity;
+    for (const s of schedules) {
+        let diff = s - utcTotalSecs;
+        if (diff <= 0) diff += 86400;
+        if (diff < minSecs) minSecs = diff;
+    }
+    const h = Math.floor(minSecs / 3600);
+    const m = Math.floor((minSecs % 3600) / 60);
+    const s = minSecs % 60;
+    const el = document.getElementById('trending-next-run');
+    if (el) el.textContent = `⏱ Next: ${h>0?h+'h ':''}${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+}
+setInterval(_tickTrendingCountdown, 1000);
+_tickTrendingCountdown();
 
 function exportDlCsv() {
     const filtered = getFilteredEvents();
@@ -9600,6 +9746,112 @@ async function submitBingSitemapFull() {
     }
     document.addEventListener('mouseup',  stopDrag);
     document.addEventListener('touchend', stopDrag);
+})();
+</script>
+
+<script>
+// ── Resizable columns for stat tables ──────────────────────────────────────
+(function() {
+    function initResizable(tableId) {
+        const tbl = document.getElementById(tableId);
+        if (!tbl) return;
+
+        // Set initial col widths from rendered widths
+        function lockWidths() {
+            const ths = tbl.querySelectorAll('thead th');
+            ths.forEach(th => {
+                if (!th.style.width) th.style.width = th.offsetWidth + 'px';
+            });
+        }
+
+        tbl.addEventListener('mousedown', function(e) {
+            const resizer = e.target.closest('.uq-col-resizer');
+            if (!resizer) return;
+            e.preventDefault();
+            lockWidths();
+            const th = resizer.closest('th');
+            if (!th) return;
+            resizer.classList.add('dragging');
+            const startX = e.pageX;
+            const startW = th.offsetWidth;
+
+            function onMove(e2) {
+                const newW = Math.max(50, startW + (e2.pageX - startX));
+                th.style.width = newW + 'px';
+            }
+            function onUp() {
+                resizer.classList.remove('dragging');
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+            }
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
+        });
+    }
+
+    // Initialize after first render (tables may not exist at script eval time)
+    function tryInit() {
+        initResizable('vt-log-table');
+        initResizable('dl-log-table');
+    }
+
+    // Run after DOM ready + after data loads (tables get rebuilt on each render)
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', tryInit);
+    } else {
+        tryInit();
+    }
+    // Re-init on any renderDlTable / renderVisitStats call via MutationObserver
+    function observeTable(tbodyId, tableId) {
+        const tbody = document.getElementById(tbodyId);
+        if (!tbody) return;
+        new MutationObserver(() => initResizable(tableId))
+            .observe(tbody, { childList: true });
+    }
+    // Wait for tbodies to exist
+    setTimeout(() => {
+        observeTable('v-log-tbody',  'vt-log-table');
+        observeTable('dl-log-tbody', 'dl-log-table');
+        tryInit();
+    }, 1500);
+})();
+
+// ── Active sort-column header highlighter ──────────────────────────────────
+(function() {
+    // Patch sortDlLogBy and sortVtLogBy to highlight active header
+    function highlightHeader(tableId, colKey, dir) {
+        const tbl = document.getElementById(tableId);
+        if (!tbl) return;
+        tbl.querySelectorAll('thead th').forEach(th => {
+            th.classList.remove('sort-active','desc');
+        });
+        // Find th by onclick attribute containing colKey
+        const th = Array.from(tbl.querySelectorAll('thead th[onclick]'))
+            .find(h => h.getAttribute('onclick').includes("'" + colKey + "'"));
+        if (th) {
+            th.classList.add('sort-active');
+            if (dir > 0) th.classList.add('desc');
+        }
+    }
+
+    const _origSortDlLogBy = window.sortDlLogBy;
+    window.sortDlLogBy = function(col) {
+        _origSortDlLogBy(col);
+        // DL_LOG_DIR may have flipped inside the original function
+        setTimeout(() => {
+            const dir = window.DL_LOG_DIR || -1;
+            highlightHeader('dl-log-table', col, dir);
+        }, 10);
+    };
+
+    const _origSortVtLogBy = window.sortVtLogBy;
+    window.sortVtLogBy = function(col) {
+        _origSortVtLogBy(col);
+        setTimeout(() => {
+            const dir = window.VT_LOG_DIR || -1;
+            highlightHeader('vt-log-table', col, dir);
+        }, 10);
+    };
 })();
 </script>
 </body>
