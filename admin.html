@@ -154,6 +154,14 @@ main { max-width: 100%; margin: 0 auto; padding: 16px 180px; display: flex; flex
 .uq-resizable-table th.sort-active.desc::after {
     content: ' ▼';
 }
+/* Font-name cells: allow full name to display — no truncation */
+.uq-resizable-table td.font-name-cell {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    max-width: none;
+    word-break: break-all;
+}
 
 /* فۆرم */
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
@@ -6749,13 +6757,19 @@ function openEdit(i) {
         editLhBox.style.lineHeight = lhVal;
         if (f.name) editLhBox.style.fontFamily = "'" + f.name + "', Tahoma, sans-serif";
     }
-    // Inject @font-face so the live preview renders with the actual font
+    // Inject @font-face so the live preview renders with the actual font.
+    // Use an absolute jsDelivr CDN URL so this works whether admin is opened
+    // locally, from a different origin, or from the live site.
     if (f.name) {
         const styleId = 'edit-font-face-' + f.name.replace(/\s+/g, '_');
         if (!document.getElementById(styleId)) {
             const s = document.createElement('style');
             s.id = styleId;
-            s.textContent = "@font-face{font-family:'" + f.name + "';src:url('UniQaidarFonts/" + f.name + ".ttf') format('truetype');}";
+            const _fontFile = (f.file ? f.file + '.ttf' : f.name + '.ttf');
+            const _fontUrl = (USER && REPO)
+                ? 'https://cdn.jsdelivr.net/gh/' + USER + '/' + REPO + '@' + (BRANCH||'main') + '/UniQaidarFonts/' + encodeURIComponent(_fontFile)
+                : 'UniQaidarFonts/' + _fontFile;
+            s.textContent = "@font-face{font-family:'" + f.name.replace(/'/g,"\\'") + "';src:url('" + _fontUrl + "') format('truetype');}";
             document.head.appendChild(s);
         }
     }
@@ -7793,16 +7807,77 @@ function renderVisitStats() {
         if (!vlSlice.length) {
             ltbody.innerHTML = '<tr><td colspan="10" style="padding:20px;text-align:center;color:var(--muted);">No records found</td></tr>';
         } else {
+            // ── AGGREGATION MODE for count columns ──
+            const _vtIsAgg = (VT_LOG_SORT === 'vcountry' || VT_LOG_SORT === 'vcity' || VT_LOG_SORT === 'dcount');
+
+            if (_vtIsAgg) {
+                // Group from full vtSorted array
+                const vtAggMap = {};
+                vtSorted.forEach(ev => {
+                    const cc = ev.country||'?';
+                    const ci = (ev.city||'—').trim()||'—';
+                    const dv = (ev.device||'—').trim()||'—';
+                    let groupKey;
+                    if      (VT_LOG_SORT === 'vcountry') groupKey = cc;
+                    else if (VT_LOG_SORT === 'vcity')    groupKey = ci;
+                    else                                 groupKey = dv;
+                    if (!vtAggMap[groupKey]) {
+                        vtAggMap[groupKey] = { _key: groupKey, _count: 0, _latestTs: '', _latestEv: null };
+                    }
+                    vtAggMap[groupKey]._count++;
+                    const evTs = ev.ts||ev.date||'';
+                    if (evTs > vtAggMap[groupKey]._latestTs) {
+                        vtAggMap[groupKey]._latestTs = evTs;
+                        vtAggMap[groupKey]._latestEv = ev;
+                    }
+                });
+                const vtAggArr = Object.values(vtAggMap).sort((a,b) => (a._count - b._count) * VT_LOG_DIR);
+                const vtAggTotal = vtAggArr.length;
+                const vtAggPage  = PG.vlog;
+                const vtAggSlice = vtAggArr.slice((vtAggPage-1)*PG_SIZE, vtAggPage*PG_SIZE);
+                vtAggSlice.forEach((grp, i) => {
+                    const ev = grp._latestEv;
+                    const tr = document.createElement('tr');
+                    const cc = ev.country||'?';
+                    const ci = (ev.city||'—').trim()||'—';
+                    const dv = (ev.device||'—').trim()||'—';
+                    // Show aggregated count in the relevant column, live counts in others
+                    const vcountryVal = VT_LOG_SORT === 'vcountry' ? grp._count : (countryMap[cc]?.count||0);
+                    const vcityVal    = VT_LOG_SORT === 'vcity'    ? grp._count : (cityMap[ci]||0);
+                    const dcountVal   = VT_LOG_SORT === 'dcount'   ? grp._count : (deviceMap[dv]||0);
+                    const pageHtml = ev.url
+                        ? `<a href="${ev.url}" target="_blank" style="color:var(--purple);text-decoration:none;font-size:0.72rem;" title="${ev.url}">${ev.url.replace(/^https?:\/\//,'').slice(0,35)}${ev.url.length>45?'…':''}</a>`
+                        : '<span style="color:var(--muted);">—</span>';
+                    const _rowBg    = i%2===0 ? 'rgba(41,182,246,0.10)' : 'rgba(162,155,254,0.07)';
+                    const _rowHover = i%2===0 ? 'rgba(41,182,246,0.22)' : 'rgba(162,155,254,0.18)';
+                    tr.style.cssText = `border-top:2px solid rgba(255,255,255,0.18);background:${_rowBg};transition:background 0.12s;`;
+                    tr.onmouseover = ()=>tr.style.background=_rowHover;
+                    tr.onmouseout  = ()=>tr.style.background=_rowBg;
+                    tr.innerHTML = `
+                        <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;white-space:nowrap;">${(vtAggPage-1)*PG_SIZE+i+1}</td>
+                        <td style="padding:6px 10px;font-size:0.78rem;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${fullCountryName(cc)} (${cc})">${fullCountryName(cc)} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${cc})</span></td>
+                        <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;" title="${ci}">${ci}</td>
+                        <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:var(--border);padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${vcountryVal}</span></td>
+                        <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(41,182,246,0.15);color:#29b6f6;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;">${vcityVal}</span></td>
+                        <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
+                        <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${deviceIcon(ev.device)}</td>
+                        <td style="padding:6px 10px;font-size:0.72rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${pageHtml}</td>
+                        <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(162,155,254,0.15);color:#a29bfe;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;">${dcountVal}</span></td>
+                        <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);white-space:nowrap;" dir="ltr">${fmtSUL(grp._latestTs)}</td>`;
+                    ltbody.appendChild(tr);
+                });
+                const vtFooter = document.getElementById('v-log-footer');
+                if (vtFooter) vtFooter.textContent = `Total: ${vtAggTotal} grouped records`;
+                renderPgBar('v-log-pg', vtAggPage, vtAggTotal, PG_SIZE, (p)=>{ PG.vlog=p; renderVisitStats(); });
+            } else {
+            // ── LIVE LOG MODE ──
             let _vtgi = 0, _vtLastV = null, _prevVtgi = 0;
             vlSlice.forEach((ev,i) => {
                 // Group shading when sorted by a count/category column
                 let _vtGrpV = null;
-                if (['vcountry','vcity','dcount','country','city','device','source'].includes(VT_LOG_SORT)) {
+                if (['country','city','device','source'].includes(VT_LOG_SORT)) {
                     const _cc2 = ev.country||'?', _ci2 = (ev.city||'—').trim()||'—', _dv2 = (ev.device||'—').trim()||'—';
-                    if      (VT_LOG_SORT==='vcountry') _vtGrpV = String(countryMap[_cc2]?.count||0);
-                    else if (VT_LOG_SORT==='vcity')    _vtGrpV = String(cityMap[_ci2]||0);
-                    else if (VT_LOG_SORT==='dcount')   _vtGrpV = String(deviceMap[_dv2]||0);
-                    else if (VT_LOG_SORT==='country')  _vtGrpV = _cc2;
+                    if      (VT_LOG_SORT==='country')  _vtGrpV = _cc2;
                     else if (VT_LOG_SORT==='city')     _vtGrpV = _ci2;
                     else if (VT_LOG_SORT==='device')   _vtGrpV = _dv2;
                     else if (VT_LOG_SORT==='source')   _vtGrpV = ev.source||'';
@@ -7836,23 +7911,24 @@ function renderVisitStats() {
                     ? `<a href="${ev.url}" target="_blank" style="color:var(--purple);text-decoration:none;font-size:0.72rem;" title="${ev.url}">${ev.url.replace(/^https?:\/\//,'').slice(0,35)}${ev.url.length>45?'…':''}</a>`
                     : '<span style="color:var(--muted);">—</span>';
                 tr.innerHTML = `
-                    <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${(vlPage-1)*PG_SIZE+i+1}</td>
-                    <td style="padding:6px 10px;font-size:0.78rem;color:var(--green);white-space:nowrap;">${fullCountryName(cc)} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${cc})</span></td>
-                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);">${ci}</td>
-                    <td style="padding:6px 10px;text-align:center;"><span style="background:var(--border);padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${vcountry}</span></td>
-                    <td style="padding:6px 10px;text-align:center;"><span style="background:rgba(41,182,246,0.15);color:#29b6f6;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;">${vcity}</span></td>
-                    <td style="padding:6px 10px;text-align:center;">${sourceBadge(ev.source)}</td>
-                    <td style="padding:6px 10px;text-align:center;">${deviceIcon(ev.device)}</td>
+                    <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;white-space:nowrap;">${(vlPage-1)*PG_SIZE+i+1}</td>
+                    <td style="padding:6px 10px;font-size:0.78rem;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${fullCountryName(cc)} (${cc})">${fullCountryName(cc)} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${cc})</span></td>
+                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;" title="${ci}">${ci}</td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:var(--border);padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${vcountry}</span></td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(41,182,246,0.15);color:#29b6f6;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;">${vcity}</span></td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${deviceIcon(ev.device)}</td>
                     <td style="padding:6px 10px;font-size:0.72rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${pageHtml}</td>
-                    <td style="padding:6px 10px;text-align:center;"><span style="background:rgba(162,155,254,0.15);color:#a29bfe;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;">${dcount}</span></td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(162,155,254,0.15);color:#a29bfe;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;">${dcount}</span></td>
                     <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);white-space:nowrap;" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
                 ltbody.appendChild(tr);
             });
+            const vtFooter = document.getElementById('v-log-footer');
+            if (vtFooter) vtFooter.textContent = `Total: ${vlTotal} records`;
+            renderPgBar('v-log-pg', vlPage, vlTotal, PG_SIZE, (p)=>{ PG.vlog=p; renderVisitStats(); });
+            } // end live log mode else
         }
     }
-    const vtFooter = document.getElementById('v-log-footer');
-    if (vtFooter) vtFooter.textContent = `Total: ${vlTotal} records`;
-    renderPgBar('v-log-pg', vlPage, vlTotal, PG_SIZE, (p)=>{ PG.vlog=p; renderVisitStats(); });
 
     // ── Virality table (copy_font | copy_category | copy_bulk_modal) ──
     const viralEvents = DL_DATA.filter(ev => ['copy_font','copy_category','copy_bulk_modal'].includes(ev.event||''));
@@ -7900,14 +7976,14 @@ function renderVisitStats() {
                     ? `<a href="${ev.url}" target="_blank" style="color:var(--purple);text-decoration:none;font-size:0.72rem;" title="${ev.url}">${ev.url.replace(/^https?:\/\//,'').slice(0,30)}${ev.url.length>40?'…':''}</a>`
                     : '<span style="color:var(--muted);">—</span>';
                 tr.innerHTML = `
-                    <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${(vvPage-1)*PG_SIZE+i+1}</td>
-                    <td style="padding:6px 10px;white-space:nowrap;"><span style="background:${evColor}22;color:${evColor};border:1px solid ${evColor}55;padding:2px 8px;border-radius:12px;font-size:0.72rem;">${evLabel}</span></td>
-                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.74rem;color:var(--yellow);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${ev.font||''}">${ev.font||'—'}</td>
-                    <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
-                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);">${ev.city||'—'}</td>
-                    <td style="padding:6px 10px;text-align:center;"><span style="background:rgba(253,121,168,0.15);color:#fd79a8;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${copyCount}</span></td>
-                    <td style="padding:6px 10px;text-align:center;">${sourceBadge(ev.source)}</td>
-                    <td style="padding:6px 10px;text-align:center;">${deviceIcon(ev.device)}</td>
+                    <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;white-space:nowrap;">${(vvPage-1)*PG_SIZE+i+1}</td>
+                    <td style="padding:6px 10px;white-space:nowrap;">${evLabel ? `<span style="background:${evColor}22;color:${evColor};border:1px solid ${evColor}55;padding:2px 8px;border-radius:12px;font-size:0.72rem;">${evLabel}</span>` : '—'}</td>
+                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.74rem;color:var(--yellow);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${ev.font||''}">${ev.font||'—'}</td>
+                    <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
+                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;" title="${ev.city||'—'}">${ev.city||'—'}</td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(253,121,168,0.15);color:#fd79a8;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${copyCount}</span></td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${deviceIcon(ev.device)}</td>
                     <td style="padding:6px 10px;font-size:0.72rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${pageHtml}</td>
                     <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);white-space:nowrap;" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
                 vtbody.appendChild(tr);
@@ -8028,6 +8104,63 @@ function renderSearchTable() {
         if (!sqSlice.length) {
             sqLogBody.innerHTML = '<tr><td colspan="10" style="padding:20px;text-align:center;color:var(--muted);">No records found</td></tr>';
         } else {
+            // ── AGGREGATION MODE for count columns ──
+            const _sqIsAgg = (SQ_LOG_SORT === 'count' || SQ_LOG_SORT === 'dcount');
+
+            if (_sqIsAgg) {
+                // Build aggregated groups from full logSorted
+                const sqAggMap = {};
+                logSorted.forEach(ev => {
+                    const kw = ev.font||ev.search||'?';
+                    const dv = (ev.device||'—').trim()||'—';
+                    const groupKey = SQ_LOG_SORT === 'count' ? kw : dv;
+                    if (!sqAggMap[groupKey]) {
+                        sqAggMap[groupKey] = { _key: groupKey, _count: 0, _latestTs: '', _latestEv: null };
+                    }
+                    sqAggMap[groupKey]._count++;
+                    const evTs = ev.ts||ev.date||'';
+                    if (evTs > sqAggMap[groupKey]._latestTs) {
+                        sqAggMap[groupKey]._latestTs = evTs;
+                        sqAggMap[groupKey]._latestEv = ev;
+                    }
+                });
+                const sqAggArr = Object.values(sqAggMap).sort((a,b) => (a._count - b._count) * SQ_LOG_DIR);
+                const sqAggTotal = sqAggArr.length;
+                const sqAggPage  = PG.sqlog;
+                const sqAggSlice = sqAggArr.slice((sqAggPage-1)*PG_SIZE, sqAggPage*PG_SIZE);
+                sqAggSlice.forEach((grp, i) => {
+                    const ev = grp._latestEv;
+                    const tr = document.createElement('tr');
+                    const kw = ev.font||ev.search||'?';
+                    const dv = (ev.device||'—').trim()||'—';
+                    const kwCountVal = SQ_LOG_SORT === 'count'  ? grp._count : (kwCountMap[kw]||1);
+                    const dcountVal  = SQ_LOG_SORT === 'dcount' ? grp._count : (devMapSq[dv]||0);
+                    const pageHtml = ev.url
+                        ? `<a href="${ev.url}" target="_blank" style="color:var(--purple);text-decoration:none;font-size:0.72rem;" title="${ev.url}">${ev.url.replace(/^https?:\/\//,'').slice(0,30)}${ev.url.length>40?'…':''}</a>`
+                        : '<span style="color:var(--muted);">—</span>';
+                    const _baseBg    = i%2===0 ? 'rgba(41,182,246,0.10)' : 'rgba(162,155,254,0.07)';
+                    const _hoverBg   = i%2===0 ? 'rgba(41,182,246,0.20)' : 'rgba(162,155,254,0.18)';
+                    tr.style.cssText = `border-top:2px solid rgba(255,255,255,0.18);background:${_baseBg};transition:background 0.12s;`;
+                    tr.onmouseover = ()=>tr.style.background=_hoverBg;
+                    tr.onmouseout  = ()=>tr.style.background=_baseBg;
+                    tr.innerHTML = `
+                        <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;white-space:nowrap;">${(sqAggPage-1)*PG_SIZE+i+1}</td>
+                        <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(41,182,246,0.15);color:#29b6f6;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${kwCountVal}</span></td>
+                        <td style="padding:6px 10px;font-family:var(--mono);font-size:0.8rem;color:#29b6f6;" dir="rtl" title="${kw}">${kw}</td>
+                        <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
+                        <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;" title="${ev.city||'—'}">${ev.city||'—'}</td>
+                        <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
+                        <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${deviceIcon(ev.device)}</td>
+                        <td style="padding:6px 10px;font-size:0.72rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${pageHtml}</td>
+                        <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(162,155,254,0.15);color:#a29bfe;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;">${dcountVal}</span></td>
+                        <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);white-space:nowrap;" dir="ltr">${fmtSUL(grp._latestTs)}</td>`;
+                    sqLogBody.appendChild(tr);
+                });
+                const sqLogFooterAgg = document.getElementById('sq-log-footer');
+                if (sqLogFooterAgg) sqLogFooterAgg.textContent = `Total: ${sqAggTotal} grouped records`;
+                renderPgBar('sq-log-pg', sqAggPage, sqAggTotal, PG_SIZE, (p)=>{ PG.sqlog=p; renderSearchTable(); });
+            } else {
+            // ── LIVE LOG MODE ──
             sqSlice.forEach((ev,i) => {
                 const tr = document.createElement('tr');
                 tr.style.cssText = 'border-bottom:1px solid var(--border);background:rgba(41,182,246,0.03);';
@@ -8041,23 +8174,24 @@ function renderSearchTable() {
                     ? `<a href="${ev.url}" target="_blank" style="color:var(--purple);text-decoration:none;font-size:0.72rem;" title="${ev.url}">${ev.url.replace(/^https?:\/\//,'').slice(0,30)}${ev.url.length>40?'…':''}</a>`
                     : '<span style="color:var(--muted);">—</span>';
                 tr.innerHTML = `
-                    <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${(PG.sqlog-1)*PG_SIZE+i+1}</td>
-                    <td style="padding:6px 10px;text-align:center;"><span style="background:rgba(41,182,246,0.15);color:#29b6f6;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${kwCount}</span></td>
-                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.8rem;color:#29b6f6;" dir="rtl">${kw}</td>
-                    <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
-                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);">${ev.city||'—'}</td>
-                    <td style="padding:6px 10px;text-align:center;">${sourceBadge(ev.source)}</td>
-                    <td style="padding:6px 10px;text-align:center;">${deviceIcon(ev.device)}</td>
+                    <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;white-space:nowrap;">${(PG.sqlog-1)*PG_SIZE+i+1}</td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(41,182,246,0.15);color:#29b6f6;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${kwCount}</span></td>
+                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.8rem;color:#29b6f6;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" dir="rtl" title="${kw}">${kw}</td>
+                    <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
+                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;" title="${ev.city||'—'}">${ev.city||'—'}</td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${deviceIcon(ev.device)}</td>
                     <td style="padding:6px 10px;font-size:0.72rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${pageHtml}</td>
-                    <td style="padding:6px 10px;text-align:center;"><span style="background:rgba(162,155,254,0.15);color:#a29bfe;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;">${dcount}</span></td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(162,155,254,0.15);color:#a29bfe;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;">${dcount}</span></td>
                     <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);white-space:nowrap;" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
                 sqLogBody.appendChild(tr);
             });
+            const sqLogFooter = document.getElementById('sq-log-footer');
+            if (sqLogFooter) sqLogFooter.textContent = `Total: ${sqTotal} records`;
+            renderPgBar('sq-log-pg', PG.sqlog, sqTotal, PG_SIZE, (p)=>{ PG.sqlog=p; renderSearchTable(); });
+            } // end live log mode else
         }
     }
-    const sqLogFooter = document.getElementById('sq-log-footer');
-    if (sqLogFooter) sqLogFooter.textContent = `Total: ${sqTotal} records`;
-    renderPgBar('sq-log-pg', PG.sqlog, sqTotal, PG_SIZE, (p)=>{ PG.sqlog=p; renderSearchTable(); });
 }
 
 // ── DOWNLOADS ──────────────────────────
@@ -8228,14 +8362,99 @@ function renderDlTable() {
     if (!dlSlice.length) {
         ltbody.innerHTML = '<tr><td colspan="11" style="padding:20px;text-align:center;color:var(--muted);">No downloads found</td></tr>';
     } else {
+        // ── AGGREGATION MODE: when sorted by a count column, group rows ──
+        const _isAggMode = (DL_LOG_SORT === 'dlcount' || DL_LOG_SORT === 'dcount');
+
+        if (_isAggMode) {
+            // Build aggregated groups from full logSorted (not just current page slice)
+            // Group key: font name (for dlcount) or device (for dcount)
+            const aggMap = {};
+            logSorted.forEach(ev => {
+                const groupKey = DL_LOG_SORT === 'dlcount'
+                    ? (ev.font || '?')
+                    : ((ev.device || '—').trim() || '—');
+                if (!aggMap[groupKey]) {
+                    aggMap[groupKey] = { _key: groupKey, _count: 0, _latestTs: '', _latestEv: null };
+                }
+                aggMap[groupKey]._count++;
+                const evTs = ev.ts || ev.date || '';
+                if (evTs > aggMap[groupKey]._latestTs) {
+                    aggMap[groupKey]._latestTs = evTs;
+                    aggMap[groupKey]._latestEv = ev;
+                }
+            });
+            // Sort aggregated rows by count descending (respect DL_LOG_DIR)
+            const aggArr = Object.values(aggMap).sort((a, b) => (a._count - b._count) * DL_LOG_DIR);
+            const aggTotal = aggArr.length;
+            const aggPage  = PG.dllog;
+            const aggSlice = aggArr.slice((aggPage - 1) * PG_SIZE, aggPage * PG_SIZE);
+
+            aggSlice.forEach((grp, i) => {
+                const ev = grp._latestEv;
+                const tr = document.createElement('tr');
+                const isCatBulk = ev.type === 'cat-bulk' || (ev.font || '').includes('داگرتنی کاتێگۆری');
+                const isBulk    = !isCatBulk && (ev.type === 'bulk' || (ev.font || '').includes('<span data-ku>داگرتنی تەواوی</span><span data-en style="display:none">Bulk Downloads</span>'));
+                const lbl = isCatBulk
+                    ? '<span style="background:var(--purple);color:#fff;padding:2px 10px;border-radius:10px;font-size:0.72rem;display:inline-block;white-space:nowrap;unicode-bidi:plaintext;">Category</span>'
+                    : isBulk
+                    ? '<span style="background:var(--green);color:#000;padding:2px 10px;border-radius:10px;font-size:0.72rem;display:inline-block;white-space:nowrap;unicode-bidi:plaintext;">Bulk</span>'
+                    : '<span style="background:var(--accent);color:#fff;padding:2px 10px;border-radius:10px;font-size:0.72rem;display:inline-block;white-space:nowrap;unicode-bidi:plaintext;">Single</span>';
+                const evSUL = fmtSUL(grp._latestTs);
+                let evFontLink, evLinkIcon;
+                if (isBulk) {
+                    evFontLink = 'https://uniqaidar.pages.dev/?dm=1'; evLinkIcon = '⬇';
+                } else if (isCatBulk) {
+                    const catMatch = (ev.font||'').match(/:\s*(.+?)\s*$/);
+                    let evCatId = catMatch ? catMatch[1].trim() : '';
+                    if (evCatId && cats && cats.length) {
+                        const byId    = cats.find(c => c.id.toLowerCase() === evCatId.toLowerCase());
+                        const byLabel = cats.find(c => c.label.toLowerCase() === evCatId.toLowerCase());
+                        evCatId = byId ? byId.id : (byLabel ? byLabel.id : evCatId);
+                    }
+                    evFontLink = evCatId ? `https://uniqaidar.pages.dev/?cat=${encodeURIComponent(evCatId)}` : 'https://uniqaidar.pages.dev/';
+                    evLinkIcon = '📂';
+                } else {
+                    evFontLink = `https://uniqaidar.pages.dev/?cat=All&font=${encodeURIComponent(ev.font||'')}`;
+                    evLinkIcon = '🔗';
+                }
+                const dlCountVal = DL_LOG_SORT === 'dlcount' ? grp._count : (dlFontCountMap[ev.font||'?']||1);
+                const dv         = (ev.device||'—').trim()||'—';
+                const dcountVal  = DL_LOG_SORT === 'dcount'  ? grp._count : (dlDevMap[dv]||0);
+                const pageHtml   = ev.url
+                    ? `<a href="${ev.url}" target="_blank" style="color:var(--purple);text-decoration:none;font-size:0.72rem;" title="${ev.url}">${ev.url.replace(/^https?:\/\//,'').slice(0,30)}${ev.url.length>40?'…':''}</a>`
+                    : '<span style="color:var(--muted);">—</span>';
+                const _baseBg = isCatBulk ? 'rgba(162,155,254,0.06)' : isBulk ? 'rgba(46,204,113,0.06)' : (i%2===0 ? 'rgba(255,87,0,0.09)' : 'rgba(30,120,255,0.07)');
+                tr.style.cssText = `background:${_baseBg};border-top:2px solid rgba(255,255,255,0.18);transition:background 0.12s;`;
+                tr.onmouseover = () => tr.style.background = isCatBulk ? 'rgba(162,155,254,0.18)' : isBulk ? 'rgba(46,204,113,0.18)' : (i%2===0 ? 'rgba(255,87,0,0.20)' : 'rgba(30,120,255,0.18)');
+                tr.onmouseout  = () => tr.style.background = _baseBg;
+                tr.innerHTML = `
+                    <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;white-space:nowrap;">${(aggPage-1)*PG_SIZE+i+1}</td>
+                    <td class="font-name-cell" style="padding:6px 10px;font-family:var(--mono);font-size:0.78rem;direction:ltr;" title="${ev.font||''}"><a href="${evFontLink}" target="_blank" style="color:var(--accent);text-decoration:none;">${ev.font||'?'} ${evLinkIcon}</a></td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;" dir="rtl">${lbl}</td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:${dlCountVal>=5?'var(--green)':'var(--border)'};color:${dlCountVal>=5?'#000':'var(--text)'};padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${dlCountVal}</span></td>
+                    <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
+                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;" title="${ev.city||'—'}">${ev.city||'—'}</td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${deviceIcon(ev.device)}</td>
+                    <td style="padding:6px 10px;font-size:0.72rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${pageHtml}</td>
+                    <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(162,155,254,0.15);color:#a29bfe;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;">${dcountVal}</span></td>
+                    <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);white-space:nowrap;" dir="ltr">${evSUL}</td>`;
+                ltbody.appendChild(tr);
+            });
+            // Override footer + pagination for aggregated view
+            const dlFooterAgg = document.getElementById('dl-log-footer');
+            if (dlFooterAgg) dlFooterAgg.textContent = `Total: ${aggTotal} grouped records`;
+            renderPgBar('dl-log-pg', aggPage, aggTotal, PG_SIZE, (p)=>{ PG.dllog=p; renderDlTable(); });
+            return; // skip the normal path below
+        }
+
+        // ── LIVE LOG MODE (default — ts or any non-count sort) ──
         let _dlgi = 0, _dlLastV = null, _prevDlgi = 0;
         dlSlice.forEach((ev,i) => {
             // Determine group index for this row
             let _grpV = null;
-            if (['dlcount','dcount','type','country','city','device','source','font'].includes(DL_LOG_SORT)) {
-                if (DL_LOG_SORT==='dlcount') _grpV = String(dlFontCountMap[ev.font||'?']||0);
-                else if (DL_LOG_SORT==='dcount')  _grpV = String(dlDevMap[(ev.device||'—').trim()||'—']||0);
-                else if (DL_LOG_SORT==='type')    _grpV = ev.type||'';
+            if (['type','country','city','device','source','font'].includes(DL_LOG_SORT)) {
+                if      (DL_LOG_SORT==='type')    _grpV = ev.type||'';
                 else if (DL_LOG_SORT==='country') _grpV = ev.country||'';
                 else if (DL_LOG_SORT==='city')    _grpV = (ev.city||'').trim();
                 else if (DL_LOG_SORT==='device')  _grpV = (ev.device||'').trim();
@@ -8278,16 +8497,16 @@ function renderDlTable() {
                 ? `<a href="${ev.url}" target="_blank" style="color:var(--purple);text-decoration:none;font-size:0.72rem;" title="${ev.url}">${ev.url.replace(/^https?:\/\//,'').slice(0,30)}${ev.url.length>40?'…':''}</a>`
                 : '<span style="color:var(--muted);">—</span>';
             tr.innerHTML = `
-                <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${(dlPage-1)*PG_SIZE+i+1}</td>
-                <td style="padding:6px 10px;font-family:var(--mono);font-size:0.78rem;direction:ltr;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><a href="${evFontLink}" target="_blank" style="color:var(--accent);text-decoration:none;">${ev.font||'?'} ${evLinkIcon}</a></td>
-                <td style="padding:6px 10px;text-align:center;" dir="rtl">${lbl}</td>
-                <td style="padding:6px 10px;text-align:center;"><span style="background:${dlCount>=5?'var(--green)':'var(--border)'};color:${dlCount>=5?'#000':'var(--text)'};padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${dlCount}</span></td>
-                <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
-                <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);">${ev.city||'—'}</td>
-                <td style="padding:6px 10px;text-align:center;">${sourceBadge(ev.source)}</td>
-                <td style="padding:6px 10px;text-align:center;">${deviceIcon(ev.device)}</td>
+                <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;white-space:nowrap;">${(dlPage-1)*PG_SIZE+i+1}</td>
+                <td class="font-name-cell" style="padding:6px 10px;font-family:var(--mono);font-size:0.78rem;direction:ltr;" title="${ev.font||''}"><a href="${evFontLink}" target="_blank" style="color:var(--accent);text-decoration:none;">${ev.font||'?'} ${evLinkIcon}</a></td>
+                <td style="padding:6px 10px;text-align:center;white-space:nowrap;" dir="rtl">${lbl}</td>
+                <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:${dlCount>=5?'var(--green)':'var(--border)'};color:${dlCount>=5?'#000':'var(--text)'};padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${dlCount}</span></td>
+                <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
+                <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;" title="${ev.city||'—'}">${ev.city||'—'}</td>
+                <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
+                <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${deviceIcon(ev.device)}</td>
                 <td style="padding:6px 10px;font-size:0.72rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${pageHtml}</td>
-                <td style="padding:6px 10px;text-align:center;"><span style="background:rgba(162,155,254,0.15);color:#a29bfe;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;">${dcount}</span></td>
+                <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(162,155,254,0.15);color:#a29bfe;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;">${dcount}</span></td>
                 <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);white-space:nowrap;" dir="ltr">${evSUL}</td>`;
             // ── Group-boundary detection using before/after comparison ──
             let _baseBg, _isNewGroup = false;
