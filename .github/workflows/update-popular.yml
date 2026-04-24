@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      NODE_VERSION: "24"
     permissions:
       contents: write
 
@@ -27,6 +28,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
 
       - name: Compute top-25 and update popular.json if set changed
         env:
@@ -77,7 +83,10 @@ jobs:
           for ev in all_events:
               if ev.get('type') != 'single':
                   continue
-              if ev.get('event') and ev.get('event') != 'download':
+              # Accept: event field missing/empty (legacy events) OR explicitly 'download'
+              # Reject: any other non-empty event value (search, copy_font, etc.)
+              ev_type = ev.get('event') or ''
+              if ev_type not in ('', 'download'):
                   continue
               font = (ev.get('font') or '').strip()
               if not font:
