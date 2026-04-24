@@ -11,10 +11,9 @@
   "UniQAIDAR_BiLaL 055",
   "UniQAIDAR_Life",
   "UniQAIDAR_BiLaL 085",
-  "UniQAIDAR_BiLaL 087",
   "UniQAIDAR_Nastaliq 001",
+  "UniQAIDAR_BiLaL 087",
   "UniQAIDAR_Nastaliq 003",
-  "UniQAIDAR_Ford 01",
   "UniQAIDAR_BiLaL 050",
   "UniQAIDAR_Free 006",
   "UniQAIDAR_Soz 017",
@@ -23,5 +22,6 @@
   "QAIDAR_ISLAMIC02",
   "UniQAIDAR_BiLaL 078",
   "UniQAIDAR_BiLaL 052",
-  "UniQAIDAR_BiLaL 077"
+  "UniQAIDAR_BiLaL 077",
+  "UniQAIDAR_Zhyan 002"
 ]
