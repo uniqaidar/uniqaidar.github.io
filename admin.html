@@ -439,7 +439,7 @@ body.lang-en .cat-pills, body.lang-en #arc-full-list,
 body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
 </style>
 </head>
-<body>
+<body class="lang-en">
 
 <!-- لۆدینگ -->
 <div id="loading-screen">
@@ -893,7 +893,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             <div class="box-header"><div class="dot" style="background:var(--yellow)"></div> <span data-ku>کاتێگۆریەکانی ئێستا</span><span data-en style="display:none">Current Categories</span></div>
             <div class="box-body">
                 <div style="background:rgba(9,132,227,0.1);border:1px solid rgba(9,132,227,0.3);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:0.8rem;color:var(--accent);line-height:1.7;">
-                    <span data-ku>💡 <strong>تێبینی:</strong> کاتێگۆری <strong>🔥 زۆرترین داونلۆکراوەکان</strong> ئەمەش دەتوانرێت بگوازرێتەوە بە ▲▼ — مەسەلەن بردنەوەی تەنیشت <strong>فۆنتی دەستنووس</strong> یان هەر شوێنێکی تر. پاشکەوتکردنی ڕیزبەندی نوێ بکە بۆ پەڕەی سەرەکی.</span><span data-en style="display:none">💡 <strong>Note:</strong> The <strong>🔥 Most Downloaded</strong> category can be moved with ▲▼ — e.g. next to <strong>Handwriting</strong> or anywhere else. Save the new order to the main page.</span>
+                    <span data-ku>💡 <strong>تێبینی:</strong> کاتێگۆری <strong>🔥 زۆرترین داونلۆکراوەکان</strong> ئەمەش دەتوانرێت بگوازرێتەوە بە ▲▼ — مەسەلەن بردنەوەی تەنیشت <strong>فۆنتی دەستنووس</strong> یان هەر شوێنێکی تر. پاشکەوتکردنی ڕیزبەندی نوێ بکە بۆ پەڕەی سەرەکی.</span><span data-en style="display:none">💡 <strong>Note:</strong> The <strong>🔥 زۆرترین داونلۆکراوەکان</strong> category can be moved with ▲▼ — e.g. next to <strong>Handwriting</strong> or anywhere else. Save the new order to the main page.</span>
                 </div>
                 <div id="cat-list" style="display:flex;flex-direction:column;gap:6px;"></div>
                 <div style="margin-top:12px;display:flex;gap:10px;align-items:center;">
@@ -4936,7 +4936,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         <div class="box-body">
           <div id="trending-alert" class="alert"></div>
           <div id="trending-last-update" style="font-size:0.74rem;color:var(--yellow);font-family:var(--mono);margin-bottom:6px;min-height:18px;"></div>
-          <p style="font-size:0.8rem;color:var(--text);margin-bottom:14px;"><span data-ku>You can reorder fonts by ▲▼ یان بە لابردن و زیادکردن. تاپ ٢٥ فۆنت دەخرێنە پیشاندان لە بەشی 🔥 سایتەکە.</span><span data-en style="display:none">You can reorder fonts by ▲▼ or by removing and adding. Top 25 fonts are shown in the 🔥 section of the site.</span><br>
+          <p style="font-size:0.8rem;color:var(--text);margin-bottom:14px;"><span data-ku>You can reorder fonts by ▲▼ یان بە لابردن و زیادکردن. تاپ ٢٥ فۆنت دەخرێنە پیشاندان لە بەشی 🔥 سایتەکە.</span><span data-en style="display:none">You can reorder fonts by ▲▼ or by removing and adding. Top 25 fonts are shown in the 🔥 زۆرترین داونلۆکراوەکان section of the site.</span><br>
           <span style="color:var(--green);font-size:0.78rem;"><span data-ku>⚡ کاتێک تابی 📊 Downloads کردنەوە، لیستەکە بەخۆی لە ئامارەکانی Cloudflare نوێ دەبێتەوە. دواتر 💾 سەیڤ بکە بۆ popular.json.</span><span data-en style="display:none">⚡ When the 📊 Downloads tab is opened, the list auto-updates from Cloudflare stats. Then 💾 Save to popular.json.</span></span></p>
           
           <!-- Add font manually -->
@@ -5055,14 +5055,14 @@ const LS_KEY = 'uqadmin_cfg';
     };
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
-            if (localStorage.getItem(LANG_KEY) === 'en') {
+            if (localStorage.getItem(LANG_KEY) !== 'ku') {
                 document.body.classList.add('lang-en');
                 var btn = document.getElementById('lang-toggle-btn');
                 if (btn) btn.textContent = '🌐 KU';
             }
         });
     } else {
-        if (localStorage.getItem(LANG_KEY) === 'en') {
+        if (localStorage.getItem(LANG_KEY) !== 'ku') {
             document.body.classList.add('lang-en');
             var btn = document.getElementById('lang-toggle-btn');
             if (btn) btn.textContent = '🌐 KU';
@@ -6711,7 +6711,7 @@ function openEdit(i) {
     const lhDisplay = document.getElementById('edit-lh-display');
     if (lhSlider) { lhSlider.value = lhVal.toFixed(1); }
     if (lhDisplay) { lhDisplay.textContent = lhVal.toFixed(1); }
-    var editLhBox = document.getElementById('edit-lh-preview-box');
+    var editLhBox = document.getElementById('edit-para-preview-box');
     if (editLhBox) {
         editLhBox.style.lineHeight = lhVal;
         if (f.name) editLhBox.style.fontFamily = "'" + f.name + "', Tahoma, sans-serif";
@@ -7531,11 +7531,25 @@ async function loadHistoricalData() {
 
         HIST_LOADED = true;
 
+        // Determine last archived timestamp
+        // Prefer idx.lastArchived, else derive from last filename (e.g. "2026-04-24.json")
+        let lastArchivedStr = '';
+        if (idx.lastArchived) {
+            lastArchivedStr = fmtSUL(idx.lastArchived);
+        } else if (files.length) {
+            const lastFile = files[files.length - 1];
+            const dateMatch = lastFile.match(/(\d{4}-\d{2}-\d{2})/);
+            if (dateMatch) {
+                lastArchivedStr = fmtSUL(dateMatch[1] + 'T00:00:00+03:00');
+            }
+        }
+
         // Show summary badge
         const isEn = document.body.classList.contains('lang-en');
+        const lastArchivedLine = lastArchivedStr ? (isEn ? ` · Last archived: ${lastArchivedStr}` : ` · دوایین ئەرشیڤکردن: ${lastArchivedStr}`) : '';
         const badge = isEn
-            ? `📦 Archive: ${files.length} file(s) · ${sizeKB} KB / ${sizeMB} MB · ${histDays} days · ${HIST_DL.length} events · ${HIST_VT.length} visits`
-            : `📦 ئەرشیڤ: ${files.length} فایل · ${sizeKB} KB / ${sizeMB} MB · ${histDays} ڕۆژ · ${HIST_DL.length} ئیڤێنت · ${HIST_VT.length} سەردان`;
+            ? `📦 Archive: ${files.length} file(s) · ${sizeKB} KB / ${sizeMB} MB · ${histDays} days · ${HIST_DL.length} events · ${HIST_VT.length} visits${lastArchivedLine}`
+            : `📦 ئەرشیڤ: ${files.length} فایل · ${sizeKB} KB / ${sizeMB} MB · ${histDays} ڕۆژ · ${HIST_DL.length} ئیڤێنت · ${HIST_VT.length} سەردان${lastArchivedLine}`;
         _setBadge(badge, 'var(--green)');
 
     } catch(e) {
@@ -8486,7 +8500,7 @@ async function fetchPopularJsonCommitInfo() {
                     const trigger    = run.event === 'schedule' ? '⏰ Scheduled' : run.event === 'workflow_dispatch' ? '▶️ Manual' : run.event;
                     const conclusionKU = run.conclusion === 'success' ? '✅ سەرکەوتوو' : '❌ ' + run.conclusion;
                     const conclusionEN = run.conclusion === 'success' ? '✅ Success'    : '❌ ' + run.conclusion;
-                    workflowLine = `📦 update-popular.yml — ${trigger} — ${runDate} (سلێمانی) — ئەنجامەکە: ${conclusionKU}|||${conclusionEN}`;
+                    workflowLine = `📦 update-popular.yml — ${trigger} — ${runDate} (Sulaymaniyah) — ئەنجامەکە: ${conclusionKU}|||${conclusionEN}`;
                 }
             }
         } catch(e) { /* non-fatal */ }
