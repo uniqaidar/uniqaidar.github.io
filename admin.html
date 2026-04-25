@@ -4977,7 +4977,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         <div class="box-body">
           <div id="trending-alert" class="alert"></div>
           <div id="trending-last-update" style="font-size:0.74rem;color:var(--yellow);font-family:var(--mono);margin-bottom:6px;min-height:18px;"></div>
-          <p style="font-size:0.8rem;color:var(--text);margin-bottom:14px;"><span data-ku>You can reorder fonts by ▲▼ یان بە لابردن و زیادکردن. تاپ ٢٥ فۆنت دەخرێنە پیشاندان لە بەشی 🔥 سایتەکە.</span><span data-en style="display:none">You can reorder fonts by ▲▼ or by removing and adding. Top 25 fonts are shown in the 🔥 section of the site.</span><br>
+          <p style="font-size:0.8rem;color:var(--text);margin-bottom:14px;"><span data-ku>You can reorder fonts by ▲▼ یان بە لابردن و زیادکردن. تاپ ٢٥ فۆنت دەخرێنە پیشاندان لە بەشی 🔥 سایتەکە.</span><span data-en style="display:none">You can reorder fonts by ▲▼ or by removing and adding. Top 25 fonts are shown in the 🔥 زۆرترین داونلۆکراوەکان section of the site.</span><br>
           <span style="color:var(--green);font-size:0.78rem;"><span data-ku>⚡ کاتێک تابی 📊 Downloads کردنەوە، لیستەکە بەخۆی لە ئامارەکانی Cloudflare نوێ دەبێتەوە. دواتر 💾 سەیڤ بکە بۆ popular.json.</span><span data-en style="display:none">⚡ When the 📊 Downloads tab is opened, the list auto-updates from Cloudflare stats. Then 💾 Save to popular.json.</span></span></p>
           
           <!-- Add font manually -->
@@ -7365,7 +7365,7 @@ async function restoreBackup() {
 
     if (!backup) return alert('هیچ پاراستنی پشتگیریەک نەدۆزرایەوە.\nپشتگیری تەنها دروست دەبێت کاتێک کە "سەیڤ" دەکەیت لە ئەم پانێلەوە.');
 
-    const timeStr = backupTime ? new Date(backupTime).toLocaleString('en-GB', {timeZone:'Asia/Baghdad'}) : '?';
+    const timeStr = backupTime ? new Date(backupTime).toLocaleDateString('en-GB', {timeZone:'Asia/Baghdad', day:'numeric', month:'long', year:'numeric'}) + ', ' + new Date(backupTime).toLocaleTimeString('en-US', {timeZone:'Asia/Baghdad', hour12:true}) : '?';
     if (!confirm(`گەڕاندنەوەی پشتگیری لە:\n${timeStr}\n\nئەمە index.html ی ئێستای GitHub دێنێتەوە. دڵنیایت؟`)) return;
 
     if (!ready) return alert('پێشتر پەیوەندی بکە بۆ GitHub.');
@@ -7644,7 +7644,7 @@ async function loadAllStats(force) {
                 VT_DATA = [...HIST_VT];
                 STATS_LOADED = true;
                 const sulNow = nowSUL();
-                const ts = tsLabel + sulNow.toLocaleDateString('en-CA') + ' — ' + sulNow.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'}) + (isEn ? ' (archive only)' : ' (ئەرشیڤ تەنها)');
+                const ts = tsLabel + sulNow.toLocaleDateString('en-GB', {timeZone:'Asia/Baghdad', day:'numeric', month:'long', year:'numeric'}) + ' — ' + sulNow.toLocaleTimeString('en-US', {timeZone:'Asia/Baghdad',hour:'2-digit',minute:'2-digit',hour12:true}) + (isEn ? ' (archive only)' : ' (ئەرشیڤ تەنها)');
                 const dlRef = document.getElementById('dl-last-refresh'); if (dlRef) dlRef.textContent = ts;
                 const vtRef = document.getElementById('visit-last-refresh'); if (vtRef) vtRef.textContent = ts;
                 updateDlSummary(); renderDlTable(); renderVisitStats(); renderSearchTable();
@@ -7670,7 +7670,7 @@ async function loadAllStats(force) {
         STATS_LOADED = true;
 
         const sulNow = nowSUL();
-        const ts = tsLabel + sulNow.toLocaleDateString('en-CA') + ' — ' + sulNow.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
+        const ts = tsLabel + sulNow.toLocaleDateString('en-GB', {timeZone:'Asia/Baghdad', day:'numeric', month:'long', year:'numeric'}) + ' — ' + sulNow.toLocaleTimeString('en-US', {timeZone:'Asia/Baghdad',hour:'2-digit',minute:'2-digit',hour12:true});
         const dlRef2 = document.getElementById('dl-last-refresh'); if (dlRef2) dlRef2.textContent = ts;
         const vtRef2 = document.getElementById('visit-last-refresh'); if (vtRef2) vtRef2.textContent = ts;
 
@@ -8640,9 +8640,9 @@ function fmtSUL(tsStr) {
     if (!tsStr) return '—';
     try {
         const d = new Date(tsStr);
-        const date = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' }); // YYYY-MM-DD
+        const date = d.toLocaleDateString('en-GB', { timeZone: 'Asia/Baghdad', day:'numeric', month:'long', year:'numeric' }); // 25 April 2026
         const time = d.toLocaleTimeString('en-US', { timeZone: 'Asia/Baghdad', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: true });
-        return date + ' ' + time;
+        return date + ' — ' + time;
     } catch(e) { return tsStr.slice(0,19); }
 }
 function todaySUL() {
@@ -8853,7 +8853,7 @@ async function fetchPopularJsonCommitInfo() {
         const committerName = c.commit.committer?.name || c.commit.author?.name || '—';
         const dateRaw = c.commit.committer?.date || c.commit.author?.date || '';
         const dateStr = dateRaw
-            ? new Date(dateRaw).toLocaleString('en-CA', { timeZone: 'Asia/Baghdad', hour12: false, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit' })
+            ? new Date(dateRaw).toLocaleDateString('en-GB', { timeZone: 'Asia/Baghdad', day:'numeric', month:'long', year:'numeric' }) + ', ' + new Date(dateRaw).toLocaleTimeString('en-US', { timeZone: 'Asia/Baghdad', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: true })
             : '—';
         const isAuto = committerName.toLowerCase().includes('bot') || msg.toLowerCase().includes('auto');
 
@@ -8869,7 +8869,7 @@ async function fetchPopularJsonCommitInfo() {
                 if (wdata.workflow_runs?.length) {
                     const run = wdata.workflow_runs[0];
                     const runDate = run.updated_at
-                        ? new Date(run.updated_at).toLocaleString('en-CA', { timeZone: 'Asia/Baghdad', hour12: false, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit' })
+                        ? new Date(run.updated_at).toLocaleDateString('en-GB', { timeZone: 'Asia/Baghdad', day:'numeric', month:'long', year:'numeric' }) + ', ' + new Date(run.updated_at).toLocaleTimeString('en-US', { timeZone: 'Asia/Baghdad', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: true })
                         : '—';
                     const trigger    = run.event === 'schedule' ? '⏰ Scheduled' : run.event === 'workflow_dispatch' ? '▶️ Manual' : run.event;
                     const conclusionKU = run.conclusion === 'success' ? '✅ سەرکەوتوو' : '❌ ' + run.conclusion;
