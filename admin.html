@@ -5495,13 +5495,14 @@ function healSitemapXml(xml) {
 // ── ROBOTS.TXT ensure Sitemap line ──
 async function ensureRobotsHasSitemap() {
     const ROBOTS_FILE    = 'robots.txt';
-    const CORRECT_SITEMAP = 'Sitemap: https://uniqaidar.pages.dev/sitemap.xml';
+    const CORRECT_SITEMAP  = 'Sitemap: https://uniqaidar.pages.dev/sitemap.xml';
+    const CORRECT_SITEMAP2 = 'Sitemap: https://uniqaidar.pages.dev/sitemap_index.xml';
     try {
         const r = await fetch(
             `https://api.github.com/repos/${USER}/${REPO}/contents/${ROBOTS_FILE}?ref=${BRANCH}`,
             { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
         );
-        let content = 'User-agent: *\nAllow: /\nDisallow: /admin.html\n' + CORRECT_SITEMAP;
+        let content = 'User-agent: *\nAllow: /\nDisallow: /admin.html\n\n' + CORRECT_SITEMAP + '\n' + CORRECT_SITEMAP2;
         let sha = undefined;
         if (r.ok) {
             const d = await r.json();
@@ -5509,9 +5510,20 @@ async function ensureRobotsHasSitemap() {
             content = fromBase64(d.content);
         }
         const lines = content.split('\n').map(l => l.trimEnd());
-        const idx   = lines.findIndex(l => l.toLowerCase().startsWith('sitemap:'));
+        // Ensure blank line before first Sitemap directive
+        const disallowIdx = lines.findIndex(l => l.toLowerCase().startsWith('disallow:'));
+        if (disallowIdx !== -1 && lines[disallowIdx + 1] !== '') {
+            lines.splice(disallowIdx + 1, 0, '');
+        }
+        // Ensure both Sitemap lines exist
+        const idx  = lines.findIndex(l => l.toLowerCase().startsWith('sitemap:') && l.includes('sitemap.xml') && !l.includes('sitemap_index'));
+        const idx2 = lines.findIndex(l => l.toLowerCase().startsWith('sitemap:') && l.includes('sitemap_index'));
         if (idx === -1) lines.push(CORRECT_SITEMAP);
         else lines[idx] = CORRECT_SITEMAP;
+        if (idx2 === -1) {
+            const insertAfter = lines.findIndex(l => l.toLowerCase().startsWith('sitemap:') && l.includes('sitemap.xml') && !l.includes('sitemap_index'));
+            lines.splice(insertAfter + 1, 0, CORRECT_SITEMAP2);
+        } else lines[idx2] = CORRECT_SITEMAP2;
         const newContent = lines.join('\n');
         // Use Git Data API — Contents API autocrlf would corrupt robots.txt with \r\n,
         // causing Google's robots.txt parser to misread the Sitemap: directive.
@@ -6054,28 +6066,35 @@ async function repairRobotsTxt() {
     btn.disabled = true;
     try {
         const ROBOTS_FILE = 'robots.txt';
-        const CORRECT_SITEMAP = 'Sitemap: https://uniqaidar.pages.dev/sitemap.xml';
+        const CORRECT_SITEMAP  = 'Sitemap: https://uniqaidar.pages.dev/sitemap.xml';
+        const CORRECT_SITEMAP2 = 'Sitemap: https://uniqaidar.pages.dev/sitemap_index.xml';
         // Fetch existing robots.txt
         const r = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${ROBOTS_FILE}?ref=${BRANCH}`,
             { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' }});
-        let existingContent = 'User-agent: *\nAllow: /\nDisallow: /admin.html\n' + CORRECT_SITEMAP;
+        let existingContent = 'User-agent: *\nAllow: /\nDisallow: /admin.html\n\n' + CORRECT_SITEMAP + '\n' + CORRECT_SITEMAP2;
         let robotsSha = undefined;
         if (r.ok) {
             const d = await r.json();
             robotsSha = d.sha;
             existingContent = fromBase64(d.content);
         }
-        // Check if sitemap line is correct
+        // Check and fix content
         const lines = existingContent.split('\n').map(l => l.trimEnd());
-        const sitemapIdx = lines.findIndex(l => l.toLowerCase().startsWith('sitemap:'));
-        let changed = false;
-        if (sitemapIdx === -1) {
-            lines.push(CORRECT_SITEMAP);
-            changed = true;
-        } else if (lines[sitemapIdx].trim() !== CORRECT_SITEMAP) {
-            lines[sitemapIdx] = CORRECT_SITEMAP;
-            changed = true;
+        // Ensure blank line before first Sitemap directive
+        const disallowIdx = lines.findIndex(l => l.toLowerCase().startsWith('disallow:'));
+        if (disallowIdx !== -1 && lines[disallowIdx + 1] !== '') {
+            lines.splice(disallowIdx + 1, 0, '');
         }
+        let changed = false;
+        const sitemapIdx  = lines.findIndex(l => l.toLowerCase().startsWith('sitemap:') && l.includes('sitemap.xml') && !l.includes('sitemap_index'));
+        const sitemapIdx2 = lines.findIndex(l => l.toLowerCase().startsWith('sitemap:') && l.includes('sitemap_index'));
+        if (sitemapIdx === -1) { lines.push(CORRECT_SITEMAP); changed = true; }
+        else if (lines[sitemapIdx].trim() !== CORRECT_SITEMAP) { lines[sitemapIdx] = CORRECT_SITEMAP; changed = true; }
+        if (sitemapIdx2 === -1) {
+            const insertAfter = lines.findIndex(l => l.toLowerCase().startsWith('sitemap:') && l.includes('sitemap.xml') && !l.includes('sitemap_index'));
+            lines.splice(insertAfter + 1, 0, CORRECT_SITEMAP2);
+            changed = true;
+        } else if (lines[sitemapIdx2].trim() !== CORRECT_SITEMAP2) { lines[sitemapIdx2] = CORRECT_SITEMAP2; changed = true; }
         if (!changed) {
             alert2(al, '✅ robots.txt is correct — Sitemap URL is valid, no changes needed.', 'ok');
             btn.disabled = false;
