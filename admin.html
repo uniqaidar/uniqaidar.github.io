@@ -607,6 +607,22 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                         <input type="text" id="pvb-telegram" placeholder="https://t.me/..." style="direction:ltr;">
                     </div>
                     <div class="form-group">
+                        <label>WhatsApp Phone Number (e.g. 07703320836)</label>
+                        <input type="text" id="pvb-whatsapp" placeholder="07703320836" value="07703320836" style="direction:ltr;">
+                    </div>
+                    <div class="form-group">
+                        <label>WhatsApp Message (Kurdish)</label>
+                        <input type="text" id="pvb-whatsapp-msg" placeholder="سڵاو.. حەزم کرد لە ڕێگەی واتسئەپەوە پەیوەندیتان پێوە بکەم." value="سڵاو.. حەزم کرد لە ڕێگەی واتسئەپەوە پەیوەندیتان پێوە بکەم.">
+                    </div>
+                    <div class="form-group">
+                        <label>Telegram Support Phone Number (e.g. 07501602485)</label>
+                        <input type="text" id="pvb-support" placeholder="07501602485" value="07501602485" style="direction:ltr;">
+                    </div>
+                    <div class="form-group">
+                        <label>Telegram Support Message (Kurdish)</label>
+                        <input type="text" id="pvb-support-msg" placeholder="سڵاو.. حەزم کرد لە ڕێگەی تێلیگرامەوە پەیوەندیتان پێوە بکەم." value="سڵاو.. حەزم کرد لە ڕێگەی تێلیگرامەوە پەیوەندیتان پێوە بکەم.">
+                    </div>
+                    <div class="form-group">
                         <label>Download URL</label>
                         <input type="text" id="pvb-dl-url" placeholder="https://drive.google.com/..." style="direction:ltr;">
                     </div>
@@ -2818,6 +2834,10 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         if (fbM) _pvbSet('pvb-facebook', fbM[1]);
         const tgM = RAW.match(/id="social-telegram" href="([^"]*)"/);
         if (tgM) _pvbSet('pvb-telegram', tgM[1]);
+        const waM = RAW.match(/id="contact-whatsapp" href="([^"]*)"/);
+        if (waM) { const waUrl = waM[1]; const waQ = waUrl.indexOf('?text='); const waBase = waQ>=0 ? waUrl.slice(0,waQ) : waUrl; const waNum = waBase.replace('https://wa.me/964','0'); _pvbSet('pvb-whatsapp', waNum); if (waQ>=0) _pvbSet('pvb-whatsapp-msg', decodeURIComponent(waUrl.slice(waQ+6))); }
+        const spM = RAW.match(/id="contact-support" href="([^"]*)"/);
+        if (spM) { const spUrl = spM[1]; const spQ = spUrl.indexOf('?text='); const spBase = spQ>=0 ? spUrl.slice(0,spQ) : spUrl; const spNum = spBase.replace('https://t.me/+964','0'); _pvbSet('pvb-support', spNum); if (spQ>=0) _pvbSet('pvb-support-msg', decodeURIComponent(spUrl.slice(spQ+6))); }
         const dlM = RAW.match(/<a id="dm-btn" href="([^"]*)"/);
         if (dlM) _pvbSet('pvb-dl-url', dlM[1]);
         const logoM = RAW.match(/id="logo-link" href="([^"]*)"/);
@@ -2952,6 +2972,12 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         let next = RAW;
         if (fb)   next = next.replace(/(<a id="social-facebook" href=")[^"]*"/,`$1${fb}"`);
         if (tg)   next = next.replace(/(<a id="social-telegram" href=")[^"]*"/,`$1${tg}"`);
+        const wa = document.getElementById('pvb-whatsapp').value;
+        const waMsg = document.getElementById('pvb-whatsapp-msg').value;
+        const sp = document.getElementById('pvb-support').value;
+        const spMsg = document.getElementById('pvb-support-msg').value;
+        if (wa) { const waPhone = wa.replace(/^0/,''); const waFull = waMsg ? 'https://wa.me/964'+waPhone+'?text='+encodeURIComponent(waMsg) : 'https://wa.me/964'+waPhone; next = next.replace(/(<a id="contact-whatsapp" href=")[^"]*"/,`$1${waFull}"`); }
+        if (sp) { const spPhone = sp.replace(/^0/,''); const spFull = spMsg ? 'https://t.me/+964'+spPhone+'?text='+encodeURIComponent(spMsg) : 'https://t.me/+964'+spPhone; next = next.replace(/(<a id="contact-support" href=")[^"]*"/,`$1${spFull}"`); }
         if (dl)   next = next.replace(/(<a id="dm-btn" href=")[^"]*"/,`$1${dl}"`);
         if (logo) {
             next = next.replace(/(<a id="logo-link" href=")[^"]*"/,`$1${logo}"`);
@@ -4746,6 +4772,12 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             const logo = document.getElementById('pvb-logo-url').value;
             if (fb)   captured = captured.replace(/(<a id="social-facebook" href=")[^"]*"/,`$1${fb}"`);
             if (tg)   captured = captured.replace(/(<a id="social-telegram" href=")[^"]*"/,`$1${tg}"`);
+            const wa_as = document.getElementById('pvb-whatsapp').value;
+            const waMsg_as = document.getElementById('pvb-whatsapp-msg').value;
+            const sp_as = document.getElementById('pvb-support').value;
+            const spMsg_as = document.getElementById('pvb-support-msg').value;
+            if (wa_as) { const waPhone_as = wa_as.replace(/^0/,''); const waFull_as = waMsg_as ? 'https://wa.me/964'+waPhone_as+'?text='+encodeURIComponent(waMsg_as) : 'https://wa.me/964'+waPhone_as; captured = captured.replace(/(<a id="contact-whatsapp" href=")[^"]*"/,`$1${waFull_as}"`); }
+            if (sp_as) { const spPhone_as = sp_as.replace(/^0/,''); const spFull_as = spMsg_as ? 'https://t.me/+964'+spPhone_as+'?text='+encodeURIComponent(spMsg_as) : 'https://t.me/+964'+spPhone_as; captured = captured.replace(/(<a id="contact-support" href=")[^"]*"/,`$1${spFull_as}"`); }
             if (dl)   captured = captured.replace(/(<a id="dm-btn" href=")[^"]*"/,`$1${dl}"`);
             if (logo) {
                 captured = captured.replace(/(<a id="logo-link" href=")[^"]*"/,`$1${logo}"`);
@@ -4860,6 +4892,45 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             </table>
             <div id="v-viral-footer" style="margin-top:8px;font-size:0.75rem;color:#2ecc71;text-align:center;"></div>
             <div id="v-viral-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
+          </div>
+
+          <!-- CONTACT CLICKS TABLE -->
+          <div class="section-label" style="margin-bottom:8px;margin-top:20px;"><span data-ku>📲 ئامارەکانی کلیکی سۆشیال میدیا و پەیوەندی</span><span data-en style="display:none">📲 Social Media &amp; Contact Click Stats</span></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;">
+            <select id="contact-channel-filter" onchange="renderContactTable()" style="max-width:220px;direction:ltr;">
+              <option value="">All Channels</option>
+              <option value="contact_whatsapp">💬 WhatsApp</option>
+              <option value="contact_telegram_support">💬 Telegram DM</option>
+              <option value="social_facebook">📘 Facebook</option>
+              <option value="social_telegram">📢 Telegram Channel</option>
+            </select>
+            <select id="contact-device-filter" onchange="renderContactTable()" style="max-width:160px;direction:ltr;">
+              <option value="">All Devices</option>
+              <option value="Mobile">Mobile</option>
+              <option value="PC">PC</option>
+            </select>
+            <input type="text" id="contact-country-filter" placeholder="Filter country..." oninput="renderContactTable()" style="max-width:160px;direction:ltr;">
+            <input type="date" id="contact-date-from" onchange="renderContactTable()" style="max-width:150px;direction:ltr;">
+            <input type="date" id="contact-date-to" onchange="renderContactTable()" style="max-width:150px;direction:ltr;">
+            <button class="btn" style="font-size:0.78rem;padding:5px 12px;" onclick="clearContactFilters()">✕ Clear</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.8rem;min-width:960px;">
+              <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);background:var(--surface2);">
+                <th style="padding:7px 10px;text-align:right;font-weight:normal;">#</th>
+                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortContactBy('event')"><span data-ku>کەناڵ ↕</span><span data-en style="display:none">Channel ↕</span></th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortContactBy('clickcount')"><span data-ku>ژمارەی کلیک ↕</span><span data-en style="display:none">Click Count ↕</span></th>
+                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortContactBy('country')"><span data-ku>وڵات ↕</span><span data-en style="display:none">Country ↕</span></th>
+                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortContactBy('city')"><span data-ku>شار ↕</span><span data-en style="display:none">City ↕</span></th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortContactBy('source')"><span data-ku>سەرچاوە ↕</span><span data-en style="display:none">Source ↕</span></th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortContactBy('device')"><span data-ku>ئامێر ↕</span><span data-en style="display:none">Device ↕</span></th>
+                <th style="padding:7px 10px;text-align:left;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortContactBy('url')"><span data-ku>لاپەڕە ↕</span><span data-en style="display:none">Page ↕</span></th>
+                <th style="padding:7px 10px;text-align:center;font-weight:normal;cursor:pointer;white-space:nowrap;" onclick="sortContactBy('ts')"><span data-ku>بەروار — کات ↕</span><span data-en style="display:none">Date — Time ↕</span></th>
+              </tr></thead>
+              <tbody id="v-contact-tbody"></tbody>
+            </table>
+            <div id="v-contact-footer" style="margin-top:8px;font-size:0.75rem;color:#2ecc71;text-align:center;"></div>
+            <div id="v-contact-pg" style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;"></div>
           </div>
 
           <!-- SEARCH KEYWORDS TABLE -->
@@ -7993,6 +8064,7 @@ function renderVisitStats() {
     const vvFooter = document.getElementById('v-viral-footer');
     if (vvFooter) vvFooter.textContent = `Total: ${vvTotal} records`;
     renderPgBar('v-viral-pg', vvPage, vvTotal, PG_SIZE, (p)=>{ PG.vviral=p; renderVisitStats(); });
+    renderContactTable();
 }
 
 // ── Viral / CopyLink sort state ──────────────────────────────────────
@@ -8001,6 +8073,94 @@ function sortViralBy(col) {
     if (VIRAL_SORT === col) VIRAL_SORT_DIR *= -1;
     else { VIRAL_SORT = col; VIRAL_SORT_DIR = -1; }
     renderVisitStats();
+}
+
+// ── Contact Clicks table ─────────────────────────────────────────────
+let CONTACT_SORT = 'ts', CONTACT_SORT_DIR = -1;
+function sortContactBy(col) {
+    if (CONTACT_SORT === col) CONTACT_SORT_DIR *= -1;
+    else { CONTACT_SORT = col; CONTACT_SORT_DIR = -1; }
+    if (!PG.vcontact) PG.vcontact = 1; else PG.vcontact = 1;
+    renderContactTable();
+}
+function clearContactFilters() {
+    ['contact-channel-filter','contact-device-filter','contact-country-filter','contact-date-from','contact-date-to'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    PG.vcontact = 1;
+    renderContactTable();
+}
+function renderContactTable() {
+    if (!DL_DATA) return;
+    const chF  = (document.getElementById('contact-channel-filter')?.value  || '').trim();
+    const dvF  = (document.getElementById('contact-device-filter')?.value   || '').trim();
+    const ctF  = (document.getElementById('contact-country-filter')?.value  || '').trim().toLowerCase();
+    const dfrom = document.getElementById('contact-date-from')?.value || '';
+    const dto   = document.getElementById('contact-date-to')?.value   || '';
+    let events = DL_DATA.filter(ev => ['contact_whatsapp','contact_telegram_support','social_facebook','social_telegram'].includes(ev.event||''));
+    if (chF)  events = events.filter(ev => (ev.event||'') === chF);
+    if (dvF)  events = events.filter(ev => (ev.device||'').toLowerCase() === dvF.toLowerCase());
+    if (ctF)  events = events.filter(ev => (ev.country||'').toLowerCase().includes(ctF) || fullCountryName(ev.country||'').toLowerCase().includes(ctF));
+    if (dfrom) events = events.filter(ev => { const d = (ev.ts||ev.date||'').slice(0,10); return d >= dfrom; });
+    if (dto)   events = events.filter(ev => { const d = (ev.ts||ev.date||'').slice(0,10); return d <= dto; });
+    // Build click-count per channel for summary badge
+    const clickCountMap = {};
+    events.forEach(ev => { const k = ev.event||''; clickCountMap[k] = (clickCountMap[k]||0)+1; });
+    // Sort
+    const sorted = [...events].sort((a,b) => {
+        if (CONTACT_SORT === 'clickcount') {
+            return ((clickCountMap[a.event||'']||0) - (clickCountMap[b.event||'']||0)) * CONTACT_SORT_DIR;
+        }
+        let va = a[CONTACT_SORT]||'', vb = b[CONTACT_SORT]||'';
+        if (CONTACT_SORT === 'city') { va = a.city||'—'; vb = b.city||'—'; }
+        if (CONTACT_SORT === 'url')  { va = a.url||''; vb = b.url||''; }
+        return (va < vb ? -1 : va > vb ? 1 : 0) * CONTACT_SORT_DIR;
+    });
+    const total = sorted.length;
+    const page  = PG.vcontact || 1;
+    const slice = sorted.slice((page-1)*PG_SIZE, page*PG_SIZE);
+    const tbody = document.getElementById('v-contact-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    const chColors = { contact_whatsapp: '#25D366', contact_telegram_support: '#29b6f6', social_facebook: '#1877f2', social_telegram: '#229ed9' };
+    const chLabels = { contact_whatsapp: '💬 WhatsApp', contact_telegram_support: '💬 Telegram DM', social_facebook: '📘 Facebook', social_telegram: '📢 Telegram Channel' };
+    const chRowBg  = { contact_whatsapp: 'rgba(37,211,102,0.05)', contact_telegram_support: 'rgba(41,182,246,0.05)', social_facebook: 'rgba(24,119,242,0.05)', social_telegram: 'rgba(34,158,217,0.05)' };
+    const chRowHov = { contact_whatsapp: 'rgba(37,211,102,0.12)', contact_telegram_support: 'rgba(41,182,246,0.12)', social_facebook: 'rgba(24,119,242,0.12)', social_telegram: 'rgba(34,158,217,0.12)' };
+    if (!slice.length) {
+        tbody.innerHTML = '<tr><td colspan="9" style="padding:20px;text-align:center;color:var(--muted);">No records found</td></tr>';
+    } else {
+        slice.forEach((ev, i) => {
+            const tr = document.createElement('tr');
+            const evKey   = ev.event||'';
+            const rowBg   = chRowBg[evKey]  || 'rgba(255,255,255,0.02)';
+            const rowHov  = chRowHov[evKey] || 'rgba(255,255,255,0.06)';
+            const evColor = chColors[evKey] || '#dfe6e9';
+            const evLabel = chLabels[evKey] || evKey;
+            const clickCount = clickCountMap[evKey] || 1;
+            const pageHtml = ev.url
+                ? `<a href="${ev.url}" target="_blank" style="color:var(--purple);text-decoration:none;font-size:0.72rem;" title="${ev.url}">${ev.url.replace(/^https?:\/\//,'').slice(0,30)}${ev.url.length>40?'…':''}</a>`
+                : '<span style="color:var(--muted);">—</span>';
+            tr.style.cssText = `border-bottom:1px solid var(--border);background:${rowBg};`;
+            tr.onmouseover = () => tr.style.background = rowHov;
+            tr.onmouseout  = () => tr.style.background = rowBg;
+            tr.innerHTML = `
+                <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;white-space:nowrap;">${(page-1)*PG_SIZE+i+1}</td>
+                <td style="padding:6px 10px;white-space:nowrap;"><span style="background:${evColor}22;color:${evColor};border:1px solid ${evColor}55;padding:2px 8px;border-radius:12px;font-size:0.72rem;">${evLabel}</span></td>
+                <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:${evColor}22;color:${evColor};padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${clickCount}</span></td>
+                <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
+                <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;" title="${ev.city||'—'}">${ev.city||'—'}</td>
+                <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
+                <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${deviceIcon(ev.device)}</td>
+                <td style="padding:6px 10px;font-size:0.72rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${pageHtml}</td>
+                <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);white-space:nowrap;" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
+            tbody.appendChild(tr);
+        });
+    }
+    const footer = document.getElementById('v-contact-footer');
+    const waCount = clickCountMap['contact_whatsapp'] || 0;
+    const tgCount = clickCountMap['contact_telegram_support'] || 0;
+        const fbCount = clickCountMap['social_facebook'] || 0;
+    const tgChCount = clickCountMap['social_telegram'] || 0;
+    if (footer) footer.innerHTML = `Total: ${total} records &nbsp;|&nbsp; <span style="color:#25D366;">💬 WhatsApp: ${waCount}</span> &nbsp;|&nbsp; <span style="color:#29b6f6;">💬 Telegram DM: ${tgCount}</span> &nbsp;|&nbsp; <span style="color:#0099ff;">📘 Facebook: ${fbCount}</span> &nbsp;|&nbsp; <span style="color:#229ed9;">📢 TG Channel: ${tgChCount}</span>`;
+    renderPgBar('v-contact-pg', page, total, PG_SIZE, (p) => { PG.vcontact = p; renderContactTable(); });
 }
 
 // ── SEARCH KEYWORDS ──────────────────────────

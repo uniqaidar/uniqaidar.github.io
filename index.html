@@ -1410,6 +1410,7 @@ a:active, button:active {
         position: static;
         justify-content: center;
         margin-bottom: 8px;
+        flex-wrap: wrap;
     }
 
     /* دوگمەی داگرتن */
@@ -2288,6 +2289,27 @@ body.dark-mode .card:focus-within {
     box-shadow: 0 4px 18px rgba(255,87,0,0.65) !important;
     transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1) !important;
 }
+/* WhatsApp brand green on hover */
+#contact-whatsapp:hover, #contact-whatsapp:active {
+    background: #25D366 !important;
+    border-color: #25D366 !important;
+    box-shadow: 0 4px 18px rgba(37,211,102,0.65) !important;
+}
+/* Telegram Support brand blue on hover */
+#contact-support:hover, #contact-support:active {
+    background: #29b6f6 !important;
+    border-color: #29b6f6 !important;
+    box-shadow: 0 4px 18px rgba(41,182,246,0.65) !important;
+}
+/* Divider between follow-us and contact-us icon groups */
+#social-icon-divider {
+    width: 1px;
+    height: 22px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 1px;
+    flex-shrink: 0;
+    align-self: center;
+}
 /* Theme toggle: rotate -20° + scale */
 #theme-toggle-btn:hover, #theme-toggle-btn:active {
     transform: rotate(-20deg) scale(1.15) !important;
@@ -2661,11 +2683,18 @@ body.dark-mode .card-body {
 <div class="header">
     <h1 class="sr-only" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">UniQaidar Fonts</h1>
     <div class="social-links">
-        <a id="social-facebook" href="https://www.facebook.com/UniQaiidarFonts" target="_blank" class="social-icon" aria-label="UniQaidar on Facebook" title="فەیسبووک">
+        <a id="social-facebook" href="https://www.facebook.com/UniQaiidarFonts" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="UniQaidar on Facebook" title="فەیسبووک" onclick="if(typeof trackViralEvent==='function')trackViralEvent('social_facebook','facebook');">
             <i class="fab fa-facebook-f"></i>
         </a>
-        <a id="social-telegram" href="https://t.me/UniQaidar_Fonts" target="_blank" class="social-icon" aria-label="UniQaidar on Telegram" title="تێلیگرام">
+        <a id="social-telegram" href="https://t.me/UniQaidar_Fonts" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="UniQaidar on Telegram" title="تێلیگرام" onclick="if(typeof trackViralEvent==='function')trackViralEvent('social_telegram','telegram');">
             <i class="fab fa-telegram-plane"></i>
+        </a>
+        <span id="social-icon-divider"></span>
+        <a id="contact-whatsapp" href="https://wa.me/9647703320836?text=%D8%B3%DA%B5%D8%A7%D9%88..%20%D8%AD%DB%95%D8%B2%D9%85%20%DA%A9%D8%B1%D8%AF%20%D9%84%DB%95%20%DA%95%DB%8E%DA%AF%DB%95%DB%8C%20%D9%88%D8%A7%D8%AA%D8%B3%D8%A6%DB%95%D9%BE%DB%95%D9%88%DB%95%20%D9%BE%DB%95%DB%8C%D9%88%DB%95%D9%86%D8%AF%DB%8C%D8%AA%D8%A7%D9%86%20%D9%BE%DB%8E%D9%88%DB%95%20%D8%A8%DA%A9%DB%95%D9%85." target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Contact via WhatsApp" title="نامەناردن لە ڕێگەی واتسئەپەوە">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+        <a id="contact-support" href="https://t.me/+9647501602485?text=%D8%B3%DA%B5%D8%A7%D9%88..%20%D8%AD%DB%95%D8%B2%D9%85%20%DA%A9%D8%B1%D8%AF%20%D9%84%DB%95%20%DA%95%DB%8E%DA%AF%DB%95%DB%8C%20%D8%AA%DB%8E%D9%84%DB%8C%DA%AF%D8%B1%D8%A7%D9%85%DB%95%D9%88%DB%95%20%D9%BE%DB%95%DB%8C%D9%88%DB%95%D9%86%D8%AF%DB%8C%D8%AA%D8%A7%D9%86%20%D9%BE%DB%8E%D9%88%DB%95%20%D8%A8%DA%A9%DB%95%D9%85." target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Contact via Telegram Support" title="نامەناردن لە ڕێگەوە تێلیگرامەوە">
+            <i class="fas fa-comment-dots"></i>
         </a>
 <button id="theme-toggle-btn" onclick="toggleTheme()" aria-label="گۆڕینی شێوازی ڕووکار" title="گۆڕینی شێوازی ڕووکار (تاریک / ڕووناک)"><i class="fas fa-sun"></i></button>
 
@@ -4947,6 +4976,13 @@ document.querySelector('.close-download').onclick = function() {
 };
 window.addEventListener('click', function(e) {
     if (e.target === downloadModal) closeModal(downloadModal);
+});
+
+document.getElementById('contact-whatsapp').addEventListener('click', function() {
+    if (typeof trackViralEvent === 'function') trackViralEvent('contact_whatsapp', 'whatsapp');
+});
+document.getElementById('contact-support').addEventListener('click', function() {
+    if (typeof trackViralEvent === 'function') trackViralEvent('contact_telegram_support', 'telegram-support');
 });
 
 </script>
