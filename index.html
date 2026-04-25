@@ -1221,6 +1221,41 @@ footer strong {
 .close-telegram-modal:active i {
     transform: rotate(360deg);
 }
+.close-facebook-modal {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 100;
+    transition: background-color 0.3s, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+    animation: uqClosePulse 3s infinite ease-in-out;
+    line-height: 1;
+}
+.close-facebook-modal i {
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.close-facebook-modal:hover,
+.close-facebook-modal:active {
+    background-color: #a71d2a;
+    transform: scale(1.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    animation: none;
+}
+.close-facebook-modal:hover i,
+.close-facebook-modal:active i {
+    transform: rotate(360deg);
+}
 
 .modal-content h2 {
     color: #339cff; 
@@ -1924,6 +1959,10 @@ body.dark-mode #tg-modal-title { color: #5ba3ff !important; }
 body.dark-mode #tg-modal-body { color: #ffffff !important; }
 body:not(.dark-mode) #tg-modal-title { color: #339cff !important; }
 body:not(.dark-mode) #tg-modal-body { color: #333 !important; }
+body.dark-mode #fb-modal-title { color: #5ba3ff !important; }
+body.dark-mode #fb-modal-body { color: #ffffff !important; }
+body:not(.dark-mode) #fb-modal-title { color: #339cff !important; }
+body:not(.dark-mode) #fb-modal-body { color: #333 !important; }
 /* About modal features box — always dark bg so text always white */
 /* About features box — always white text: the box has a hardcoded dark bg */
 #about-feat1-text, #about-feat2-text, #about-feat3-text, #about-feat4-text { color: #e0e0e0; }
@@ -4266,6 +4305,14 @@ async function downloadCategoryFonts() {
         return;
     }
 
+    // ── Facebook in-app browser detection ────────────────────────────────
+    var isFacebook = /FBAN|FBAV|FB_IAB|FBIOS|Facebook/i.test(ua);
+    if (isFacebook) {
+        var _fbUrl = window.location.href;
+        openFacebookModal(_fbUrl);
+        return;
+    }
+
     function setDisabled(v) {
         if (btn)  btn.disabled  = v;
         if (btnM) btnM.disabled = v;
@@ -5044,6 +5091,17 @@ document.getElementById('contact-support').addEventListener('click', function() 
     </div>
 </div>
 
+<div id="facebookModal" class="modal">
+    <div class="modal-content" style="max-width:480px;">
+        <div class="modal-inner-scroll" style="padding-top:54px;">
+        <button class="close-facebook-modal" aria-label="داخستن" title="داخستن"><i class="fas fa-times"></i></button>
+        <h2 id="fb-modal-title" style="font-size:1.4rem;letter-spacing:0.02em;font-weight:normal;">⚠️ ئاگاداری</h2>
+        <p id="fb-modal-body" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;font-size:1rem;color:#333;text-align:justify;line-height:2;">براوزەری فەیسبووک پشتیوانی داونلۆدکردنی فایلی زیپ ناکات. بۆ داگرتنی هەموو فۆنتەکان یاخود تەواوی فۆنتەکانی بەشێکی دیاریکراو پێویستە بە شێوەی زیپ بێت. لەبەر ئەو هۆکارە، تکایە وێبسایتەکە لە براوزەرێکی دیکەی مۆبایلەکەتدا بکەرەوە ئەگەر دەتەوێت زیاتر لە یەک فۆنت داونلۆد بکەیت بەیەک جار.</p>
+        <div id="fb-modal-btn-wrap" style="margin-top:12px;"></div>
+        </div>
+    </div>
+</div>
+
 <script>
 const aboutModal = document.getElementById('aboutModal');
 document.getElementById('aboutBtn').onclick = function(e) {
@@ -5110,6 +5168,59 @@ function openTelegramModal(pageUrl) {
 
     openModal(telegramModal);
 }
+
+const facebookModal = document.getElementById('facebookModal');
+document.querySelector('.close-facebook-modal').onclick = function() {
+    closeModal(facebookModal);
+};
+window.addEventListener('click', function(e) {
+    if (e.target === facebookModal) closeModal(facebookModal);
+});
+function openFacebookModal(pageUrl) {
+    var ua = navigator.userAgent || '';
+    var isAndroid = /Android/i.test(ua);
+    var wrap = document.getElementById('fb-modal-btn-wrap');
+    wrap.innerHTML = '';
+
+    if (isAndroid) {
+        // intent:// without package= → Android shows full installed-browser chooser
+        var intentUrl = 'intent://' + pageUrl.replace(/^https?:\/\//, '') + '#Intent;scheme=https;action=android.intent.action.VIEW;end';
+        var a = document.createElement('a');
+        a.href = intentUrl;
+        a.style.cssText = 'display:inline-block;margin-top:8px;padding:8px 18px;background:#ff5700;color:#fff;border-radius:8px;text-decoration:none;font-size:0.9rem;font-family:inherit;';
+        a.textContent = '🌐 کردنەوەی وێبسایتەکە لە براوزەرێکی دیکەی مۆبایلەکەت';
+        wrap.appendChild(a);
+    } else {
+        // iOS / other: copy URL to clipboard, show confirmation
+        var btn = document.createElement('button');
+        btn.style.cssText = 'display:inline-block;margin-top:8px;padding:8px 18px;background:#ff5700;color:#fff;border-radius:8px;border:none;cursor:pointer;font-size:0.9rem;font-family:inherit;';
+        btn.textContent = '📋 کۆپیکردنی لینکەکە';
+        btn.onclick = function() {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(pageUrl).then(function() {
+                    btn.textContent = '✅ لینکەکە کۆپی کرا — لە براوزەرەکەتدا جێبەجێ بکە';
+                    btn.style.background = '#27ae60';
+                });
+            } else {
+                // Fallback for older iOS
+                var ta = document.createElement('textarea');
+                ta.value = pageUrl;
+                ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+                document.body.appendChild(ta);
+                ta.focus(); ta.select();
+                try { document.execCommand('copy'); btn.textContent = '✅ لینکەکە کۆپی کرا — لە براوزەرەکەتدا جێبەجێ بکە'; btn.style.background = '#27ae60'; } catch(e) {}
+                document.body.removeChild(ta);
+            }
+        };
+        wrap.appendChild(btn);
+        var hint = document.createElement('div');
+        hint.style.cssText = 'margin-top:8px;font-size:0.8rem;opacity:0.75;font-family:inherit;';
+        hint.textContent = 'لینکەکە کۆپی بکە و لە Chrome یان براوزەرێکی دیکەدا بیکەرەوە.';
+        wrap.appendChild(hint);
+    }
+
+    openModal(facebookModal);
+}
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
@@ -5126,6 +5237,14 @@ async function downloadFontsDirectly() {
     if (isTelegram) {
         var _pgUrl2 = window.location.href;
         openTelegramModal(_pgUrl2);
+        return;
+    }
+
+    // ── Facebook in-app browser detection ────────────────────────────────
+    var isFacebook2 = /FBAN|FBAV|FB_IAB|FBIOS|Facebook/i.test(ua);
+    if (isFacebook2) {
+        var _fbUrl2 = window.location.href;
+        openFacebookModal(_fbUrl2);
         return;
     }
 
