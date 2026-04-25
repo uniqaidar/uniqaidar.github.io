@@ -7932,8 +7932,8 @@ function renderVisitStats() {
                     tr.onmouseout  = ()=>tr.style.background=_rowBg;
                     tr.innerHTML = `
                         <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;white-space:nowrap;">${(vtAggPage-1)*PG_SIZE+i+1}</td>
-                        <td style="padding:6px 10px;font-size:0.78rem;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${fullCountryName(cc)} (${cc})">${fullCountryName(cc)} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${cc})</span></td>
-                        <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;" title="${ci}">${ci}</td>
+                        <td style="padding:6px 10px;font-size:0.78rem;color:var(--green);white-space:nowrap;" title="${fullCountryName(cc)} (${cc})">${fullCountryName(cc)} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${cc})</span></td>
+                        <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;" title="${ci}">${ci}</td>
                         <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:var(--border);padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${vcountryVal}</span></td>
                         <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(41,182,246,0.15);color:#29b6f6;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;">${vcityVal}</span></td>
                         <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
@@ -7991,8 +7991,8 @@ function renderVisitStats() {
                     : '<span style="color:var(--muted);">—</span>';
                 tr.innerHTML = `
                     <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;white-space:nowrap;">${(vlPage-1)*PG_SIZE+i+1}</td>
-                    <td style="padding:6px 10px;font-size:0.78rem;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${fullCountryName(cc)} (${cc})">${fullCountryName(cc)} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${cc})</span></td>
-                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;" title="${ci}">${ci}</td>
+                    <td style="padding:6px 10px;font-size:0.78rem;color:var(--green);white-space:nowrap;" title="${fullCountryName(cc)} (${cc})">${fullCountryName(cc)} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${cc})</span></td>
+                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;" title="${ci}">${ci}</td>
                     <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:var(--border);padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${vcountry}</span></td>
                     <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(41,182,246,0.15);color:#29b6f6;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;">${vcity}</span></td>
                     <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
@@ -8088,9 +8088,9 @@ function renderVisitStats() {
                     tr.innerHTML = `
                         <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;white-space:nowrap;">${(viralAggPage-1)*PG_SIZE+i+1}</td>
                         <td style="padding:6px 10px;white-space:nowrap;">${evLabel ? `<span style="background:${evColor}22;color:${evColor};border:1px solid ${evColor}55;padding:2px 8px;border-radius:12px;font-size:0.72rem;">${evLabel}</span>` : '—'}</td>
-                        <td style="padding:6px 10px;font-family:var(--mono);font-size:0.74rem;color:var(--yellow);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${ev.font||''}">${ev.font||'—'}</td>
-                        <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
-                        <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;" title="${ev.city||'—'}">${ev.city||'—'}</td>
+                        <td style="padding:6px 10px;font-family:var(--mono);font-size:0.74rem;color:var(--yellow);white-space:nowrap;" title="${ev.font||''}">${ev.font||'—'}</td>
+                        <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
+                        <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;" title="${ev.city||'—'}">${ev.city||'—'}</td>
                         <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(253,121,168,0.15);color:#fd79a8;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${copyCountVal}</span></td>
                         <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
                         <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${deviceIcon(ev.device)}</td>
@@ -8127,9 +8127,9 @@ function renderVisitStats() {
                 tr.innerHTML = `
                     <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;white-space:nowrap;">${(vvPage-1)*PG_SIZE+i+1}</td>
                     <td style="padding:6px 10px;white-space:nowrap;">${evLabel ? `<span style="background:${evColor}22;color:${evColor};border:1px solid ${evColor}55;padding:2px 8px;border-radius:12px;font-size:0.72rem;">${evLabel}</span>` : '—'}</td>
-                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.74rem;color:var(--yellow);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${ev.font||''}">${ev.font||'—'}</td>
-                    <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
-                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;" title="${ev.city||'—'}">${ev.city||'—'}</td>
+                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.74rem;color:var(--yellow);white-space:nowrap;" title="${ev.font||''}">${ev.font||'—'}</td>
+                    <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
+                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;" title="${ev.city||'—'}">${ev.city||'—'}</td>
                     <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(253,121,168,0.15);color:#fd79a8;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${copyCount}</span></td>
                     <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
                     <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${deviceIcon(ev.device)}</td>
@@ -8271,8 +8271,8 @@ function renderContactTable() {
                 <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;white-space:nowrap;">${(page-1)*PG_SIZE+i+1}</td>
                 <td style="padding:6px 10px;white-space:nowrap;"><span style="background:${evColor}22;color:${evColor};border:1px solid ${evColor}55;padding:2px 8px;border-radius:12px;font-size:0.72rem;">${evLabel}</span></td>
                 <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:${evColor}22;color:${evColor};padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${clickCount}</span></td>
-                <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
-                <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;" title="${ev.city||'—'}">${ev.city||'—'}</td>
+                <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
+                <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;" title="${ev.city||'—'}">${ev.city||'—'}</td>
                 <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
                 <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${deviceIcon(ev.device)}</td>
                 <td style="padding:6px 10px;font-size:0.72rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${pageHtml}</td>
@@ -8452,8 +8452,8 @@ function renderSearchTable() {
                         <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;white-space:nowrap;">${(sqAggPage-1)*PG_SIZE+i+1}</td>
                         <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(41,182,246,0.15);color:#29b6f6;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${kwCountVal}</span></td>
                         <td style="padding:6px 10px;font-family:var(--mono);font-size:0.8rem;color:#29b6f6;" dir="rtl" title="${kw}">${kw}</td>
-                        <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
-                        <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;" title="${ev.city||'—'}">${ev.city||'—'}</td>
+                        <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
+                        <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;" title="${ev.city||'—'}">${ev.city||'—'}</td>
                         <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
                         <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${deviceIcon(ev.device)}</td>
                         <td style="padding:6px 10px;font-size:0.72rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${pageHtml}</td>
@@ -8497,9 +8497,9 @@ function renderSearchTable() {
                 tr.innerHTML = `
                     <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;white-space:nowrap;">${(PG.sqlog-1)*PG_SIZE+i+1}</td>
                     <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(41,182,246,0.15);color:#29b6f6;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${kwCount}</span></td>
-                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.8rem;color:#29b6f6;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" dir="rtl" title="${kw}">${kw}</td>
-                    <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
-                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;" title="${ev.city||'—'}">${ev.city||'—'}</td>
+                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.8rem;color:#29b6f6;white-space:nowrap;" dir="rtl" title="${kw}">${kw}</td>
+                    <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
+                    <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;" title="${ev.city||'—'}">${ev.city||'—'}</td>
                     <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
                     <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${deviceIcon(ev.device)}</td>
                     <td style="padding:6px 10px;font-size:0.72rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${pageHtml}</td>
@@ -8856,8 +8856,8 @@ function renderDlTable() {
                 <td class="font-name-cell" style="padding:6px 10px;font-family:var(--mono);font-size:0.78rem;direction:ltr;" title="${ev.font||''}"><a href="${evFontLink}" target="_blank" style="color:var(--accent);text-decoration:none;">${ev.font||'?'} ${evLinkIcon}</a></td>
                 <td style="padding:6px 10px;text-align:center;white-space:nowrap;" dir="rtl">${lbl}</td>
                 <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:${dlCount>=5?'var(--green)':'var(--border)'};color:${dlCount>=5?'#000':'var(--text)'};padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${dlCount}</span></td>
-                <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
-                <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;" title="${ev.city||'—'}">${ev.city||'—'}</td>
+                <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
+                <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;" title="${ev.city||'—'}">${ev.city||'—'}</td>
                 <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
                 <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${deviceIcon(ev.device)}</td>
                 <td style="padding:6px 10px;font-size:0.72rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${pageHtml}</td>
