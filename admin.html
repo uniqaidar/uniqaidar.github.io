@@ -7878,20 +7878,26 @@ function renderVisitStats() {
         if (!vlSlice.length) {
             ltbody.innerHTML = '<tr><td colspan="10" style="padding:20px;text-align:center;color:var(--muted);">No records found</td></tr>';
         } else {
-            // ── AGGREGATION MODE for count columns ──
-            const _vtIsAgg = (VT_LOG_SORT === 'vcountry' || VT_LOG_SORT === 'vcity' || VT_LOG_SORT === 'dcount');
+            // ── AGGREGATION MODE for all sort columns except ts ──
+            const _vtIsAgg = (VT_LOG_SORT !== 'ts');
 
             if (_vtIsAgg) {
                 // Group from full vtSorted array
                 const vtAggMap = {};
                 vtSorted.forEach(ev => {
-                    const cc = ev.country||'?';
-                    const ci = (ev.city||'—').trim()||'—';
-                    const dv = (ev.device||'—').trim()||'—';
+                    const cc = (ev.country||'?').trim().toLowerCase();
+                    const ci = (ev.city||'—').trim().toLowerCase()||'—';
+                    const dv = (ev.device||'—').trim().toLowerCase()||'—';
                     let groupKey;
                     if      (VT_LOG_SORT === 'vcountry') groupKey = cc;
                     else if (VT_LOG_SORT === 'vcity')    groupKey = ci;
-                    else                                 groupKey = dv;
+                    else if (VT_LOG_SORT === 'dcount')   groupKey = dv;
+                    else if (VT_LOG_SORT === 'country')  groupKey = cc;
+                    else if (VT_LOG_SORT === 'city')     groupKey = ci;
+                    else if (VT_LOG_SORT === 'device')   groupKey = dv;
+                    else if (VT_LOG_SORT === 'source')   groupKey = (ev.source||'—').trim().toLowerCase()||'—';
+                    else if (VT_LOG_SORT === 'url')      groupKey = (ev.url||'—').replace(/^https?:\/\//,'').split('/')[0].toLowerCase()||'—';
+                    else                                 groupKey = cc;
                     if (!vtAggMap[groupKey]) {
                         vtAggMap[groupKey] = { _key: groupKey, _count: 0, _latestTs: '', _latestEv: null };
                     }
@@ -7913,9 +7919,9 @@ function renderVisitStats() {
                     const ci = (ev.city||'—').trim()||'—';
                     const dv = (ev.device||'—').trim()||'—';
                     // Show aggregated count in the relevant column, live counts in others
-                    const vcountryVal = VT_LOG_SORT === 'vcountry' ? grp._count : (countryMap[cc]?.count||0);
-                    const vcityVal    = VT_LOG_SORT === 'vcity'    ? grp._count : (cityMap[ci]||0);
-                    const dcountVal   = VT_LOG_SORT === 'dcount'   ? grp._count : (deviceMap[dv]||0);
+                    const vcountryVal = (VT_LOG_SORT === 'vcountry' || VT_LOG_SORT === 'country') ? grp._count : (countryMap[cc]?.count||0);
+                    const vcityVal    = (VT_LOG_SORT === 'vcity'    || VT_LOG_SORT === 'city')    ? grp._count : (cityMap[ci]||0);
+                    const dcountVal   = (VT_LOG_SORT === 'dcount'   || VT_LOG_SORT === 'device')  ? grp._count : (deviceMap[dv]||0);
                     const pageHtml = ev.url
                         ? `<a href="${ev.url}" target="_blank" style="color:var(--purple);text-decoration:none;font-size:0.72rem;" title="${ev.url}">${ev.url.replace(/^https?:\/\//,'').slice(0,35)}${ev.url.length>45?'…':''}</a>`
                         : '<span style="color:var(--muted);">—</span>';
@@ -7946,12 +7952,14 @@ function renderVisitStats() {
             vlSlice.forEach((ev,i) => {
                 // Group shading when sorted by a count/category column
                 let _vtGrpV = null;
-                if (['country','city','device','source'].includes(VT_LOG_SORT)) {
+                if (['country','city','device','source','url','ts'].includes(VT_LOG_SORT)) {
                     const _cc2 = ev.country||'?', _ci2 = (ev.city||'—').trim()||'—', _dv2 = (ev.device||'—').trim()||'—';
                     if      (VT_LOG_SORT==='country')  _vtGrpV = _cc2;
                     else if (VT_LOG_SORT==='city')     _vtGrpV = _ci2;
                     else if (VT_LOG_SORT==='device')   _vtGrpV = _dv2;
                     else if (VT_LOG_SORT==='source')   _vtGrpV = ev.source||'';
+                    else if (VT_LOG_SORT==='url')      _vtGrpV = ev.url||'';
+                    else if (VT_LOG_SORT==='ts')       _vtGrpV = fmtSUL(ev.ts||ev.date||'').slice(0,10);
                     if (_vtGrpV !== _vtLastV) { _vtgi++; _vtLastV = _vtGrpV; }
                 }
                 const tr = document.createElement('tr');
@@ -8028,15 +8036,85 @@ function renderVisitStats() {
         } else {
             const evtColors = { copy_font: '#74b9ff', copy_category: '#a29bfe', copy_bulk_modal: '#fd79a8' };
             const evtLabels = { copy_font: '🔗 Font', copy_category: '📁 Category', copy_bulk_modal: '📦 Modal' };
+
+            // ── AGGREGATION MODE: every sort column except ts groups identical values ──
+            const _viralIsAgg = (VIRAL_SORT !== 'ts');
+
+            if (_viralIsAgg) {
+                const viralAggMap = {};
+                viralSorted.forEach(ev => {
+                    let groupKey;
+                    if      (VIRAL_SORT === 'copycount') groupKey = (ev.event||'')+'|'+(ev.font||'');
+                    else if (VIRAL_SORT === 'event')     groupKey = (ev.event||'—').trim().toLowerCase();
+                    else if (VIRAL_SORT === 'font')      groupKey = (ev.font||'—').trim().toLowerCase();
+                    else if (VIRAL_SORT === 'country')   groupKey = (ev.country||'—').trim().toLowerCase();
+                    else if (VIRAL_SORT === 'city')      groupKey = (ev.city||'—').trim().toLowerCase();
+                    else if (VIRAL_SORT === 'source')    groupKey = (ev.source||'—').trim().toLowerCase();
+                    else if (VIRAL_SORT === 'device')    groupKey = (ev.device||'—').trim().toLowerCase();
+                    else if (VIRAL_SORT === 'url')       groupKey = (ev.url||'—').replace(/^https?:\/\//,'').split('/')[0].toLowerCase();
+                    else                                 groupKey = (ev.event||'—').trim().toLowerCase();
+                    if (!viralAggMap[groupKey]) {
+                        viralAggMap[groupKey] = { _key: groupKey, _count: 0, _latestTs: '', _latestEv: null };
+                    }
+                    viralAggMap[groupKey]._count++;
+                    const evTs = ev.ts||ev.date||'';
+                    if (evTs > viralAggMap[groupKey]._latestTs) {
+                        viralAggMap[groupKey]._latestTs = evTs;
+                        viralAggMap[groupKey]._latestEv = ev;
+                    }
+                });
+                const viralAggArr = Object.values(viralAggMap).sort((a,b) => {
+                    if (VIRAL_SORT === 'copycount') return (a._count - b._count) * VIRAL_SORT_DIR;
+                    return (a._key < b._key ? -1 : a._key > b._key ? 1 : 0) * VIRAL_SORT_DIR;
+                });
+                const viralAggTotal = viralAggArr.length;
+                const viralAggPage  = PG.vviral || 1;
+                const viralAggSlice = viralAggArr.slice((viralAggPage-1)*PG_SIZE, viralAggPage*PG_SIZE);
+                viralAggSlice.forEach((grp, i) => {
+                    const ev = grp._latestEv;
+                    const tr = document.createElement('tr');
+                    const evColor  = evtColors[ev.event] || '#dfe6e9';
+                    const evLabel  = evtLabels[ev.event] || ev.event;
+                    const copyKey  = (ev.event||'')+'|'+(ev.font||'');
+                    const copyCountVal = (VIRAL_SORT === 'copycount') ? grp._count : (copyCountMap[copyKey]||1);
+                    const pageHtml = ev.url
+                        ? `<a href="${ev.url}" target="_blank" style="color:var(--purple);text-decoration:none;font-size:0.72rem;" title="${ev.url}">${ev.url.replace(/^https?:\/\//,'').slice(0,30)}${ev.url.length>40?'…':''}</a>`
+                        : '<span style="color:var(--muted);">—</span>';
+                    const _baseBg    = i%2===0 ? 'rgba(253,121,168,0.08)' : 'rgba(116,185,255,0.07)';
+                    const _hoverBg   = i%2===0 ? 'rgba(253,121,168,0.18)' : 'rgba(116,185,255,0.18)';
+                    tr.style.cssText = `border-top:2px solid rgba(255,255,255,0.18);background:${_baseBg};transition:background 0.12s;`;
+                    tr.onmouseover = ()=>tr.style.background=_hoverBg;
+                    tr.onmouseout  = ()=>tr.style.background=_baseBg;
+                    tr.innerHTML = `
+                        <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;white-space:nowrap;">${(viralAggPage-1)*PG_SIZE+i+1}</td>
+                        <td style="padding:6px 10px;white-space:nowrap;">${evLabel ? `<span style="background:${evColor}22;color:${evColor};border:1px solid ${evColor}55;padding:2px 8px;border-radius:12px;font-size:0.72rem;">${evLabel}</span>` : '—'}</td>
+                        <td style="padding:6px 10px;font-family:var(--mono);font-size:0.74rem;color:var(--yellow);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${ev.font||''}">${ev.font||'—'}</td>
+                        <td style="padding:6px 10px;font-size:0.75rem;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title="${fullCountryName(ev.country||'')} (${ev.country||'—'})">${fullCountryName(ev.country||'')} <span style="color:var(--muted);font-family:var(--mono);font-size:0.68rem;">(${ev.country||'—'})</span></td>
+                        <td style="padding:6px 10px;font-family:var(--mono);font-size:0.75rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;" title="${ev.city||'—'}">${ev.city||'—'}</td>
+                        <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(253,121,168,0.15);color:#fd79a8;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${copyCountVal}</span></td>
+                        <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
+                        <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${deviceIcon(ev.device)}</td>
+                        <td style="padding:6px 10px;font-size:0.72rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${pageHtml}</td>
+                        <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);white-space:nowrap;" dir="ltr">${fmtSUL(grp._latestTs)}</td>`;
+                    vtbody.appendChild(tr);
+                });
+                const vvFooterAgg = document.getElementById('v-viral-footer');
+                if (vvFooterAgg) vvFooterAgg.textContent = `Total: ${viralAggTotal} grouped records`;
+                renderPgBar('v-viral-pg', viralAggPage, viralAggTotal, PG_SIZE, (p)=>{ PG.vviral=p; renderVisitStats(); });
+            } else {
+            // ── LIVE LOG MODE (ts sort only) ──
+            const _viralGrouper = _makeGrouper(vvSlice, ev => fmtSUL(ev.ts||ev.date||'').slice(0,10));
+            let _viralPrevGi = 0;
             vvSlice.forEach((ev,i) => {
+                const _vGi = _viralGrouper(ev);
+                const _vNewGroup = (i > 0 && _vGi !== _viralPrevGi);
+                _viralPrevGi = _vGi;
                 const tr = document.createElement('tr');
-                const _evRowBg = ev.event==='copy_font' ? 'rgba(116,185,255,0.05)'
-                               : ev.event==='copy_category' ? 'rgba(162,155,254,0.05)'
-                               : 'rgba(253,121,168,0.05)';
-                const _evRowHover = ev.event==='copy_font' ? 'rgba(116,185,255,0.12)'
-                                  : ev.event==='copy_category' ? 'rgba(162,155,254,0.12)'
-                                  : 'rgba(253,121,168,0.12)';
-                tr.style.cssText = `border-bottom:1px solid var(--border);background:${_evRowBg};`;
+                const _evBase = ev.event==='copy_font' ? 'rgba(116,185,255,0.05)' : ev.event==='copy_category' ? 'rgba(162,155,254,0.05)' : 'rgba(253,121,168,0.05)';
+                const _evHover = ev.event==='copy_font' ? 'rgba(116,185,255,0.12)' : ev.event==='copy_category' ? 'rgba(162,155,254,0.12)' : 'rgba(253,121,168,0.12)';
+                const _evRowBg = _groupBg(_vGi) || _evBase;
+                const _evRowHover = _groupBgHover(_vGi) || _evHover;
+                tr.style.cssText = `border-top:${_vNewGroup ? '2px solid rgba(255,255,255,0.18)' : '1px solid var(--border)'};background:${_evRowBg};`;
                 tr.onmouseover = ()=>tr.style.background=_evRowHover;
                 tr.onmouseout  = ()=>tr.style.background=_evRowBg;
                 const evColor  = evtColors[ev.event] || '#dfe6e9';
@@ -8059,10 +8137,14 @@ function renderVisitStats() {
                     <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);white-space:nowrap;" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
                 vtbody.appendChild(tr);
             });
+            const vvFooter2 = document.getElementById('v-viral-footer');
+            if (vvFooter2) vvFooter2.textContent = `Total: ${vvTotal} records`;
+            renderPgBar('v-viral-pg', vvPage, vvTotal, PG_SIZE, (p)=>{ PG.vviral=p; renderVisitStats(); });
+            } // end live log mode
         }
     }
     const vvFooter = document.getElementById('v-viral-footer');
-    if (vvFooter) vvFooter.textContent = `Total: ${vvTotal} records`;
+    if (vvFooter && !vvFooter.textContent) vvFooter.textContent = `Total: ${vvTotal} records`;
     renderPgBar('v-viral-pg', vvPage, vvTotal, PG_SIZE, (p)=>{ PG.vviral=p; renderVisitStats(); });
     renderContactTable();
 }
@@ -8104,19 +8186,47 @@ function renderContactTable() {
     // Build click-count per channel for summary badge
     const clickCountMap = {};
     events.forEach(ev => { const k = ev.event||''; clickCountMap[k] = (clickCountMap[k]||0)+1; });
-    // Sort
-    const sorted = [...events].sort((a,b) => {
-        if (CONTACT_SORT === 'clickcount') {
-            return ((clickCountMap[a.event||'']||0) - (clickCountMap[b.event||'']||0)) * CONTACT_SORT_DIR;
-        }
-        let va = a[CONTACT_SORT]||'', vb = b[CONTACT_SORT]||'';
-        if (CONTACT_SORT === 'city') { va = a.city||'—'; vb = b.city||'—'; }
-        if (CONTACT_SORT === 'url')  { va = a.url||''; vb = b.url||''; }
-        return (va < vb ? -1 : va > vb ? 1 : 0) * CONTACT_SORT_DIR;
-    });
-    const total = sorted.length;
+
+    // ── AGGREGATION MODE: every sort column except ts groups identical values ──
+    const CONTACT_AGGREGATE = (CONTACT_SORT !== 'ts');
+    let displayRows;
+
+    if (CONTACT_AGGREGATE) {
+        // Build group key function
+        const _getContactKey = (ev) => {
+            if      (CONTACT_SORT === 'clickcount') return ev.event||'';
+            else if (CONTACT_SORT === 'event')      return (ev.event||'—').trim().toLowerCase();
+            else if (CONTACT_SORT === 'country')    return (ev.country||'—').trim().toLowerCase();
+            else if (CONTACT_SORT === 'city')       return (ev.city||'—').trim().toLowerCase();
+            else if (CONTACT_SORT === 'source')     return (ev.source||'—').trim().toLowerCase();
+            else if (CONTACT_SORT === 'device')     return (ev.device||'—').trim().toLowerCase();
+            else if (CONTACT_SORT === 'url')        return (ev.url||'—').replace(/^https?:\/\//,'').split('/')[0].toLowerCase();
+            return ev.event||'';
+        };
+        const groupMap = {};
+        events.forEach(ev => {
+            const k = _getContactKey(ev);
+            if (!groupMap[k]) groupMap[k] = { ev, latestTs: '', count: 0 };
+            groupMap[k].count++;
+            const ts = ev.ts||ev.date||'';
+            if (ts > groupMap[k].latestTs) { groupMap[k].latestTs = ts; groupMap[k].ev = ev; }
+        });
+        displayRows = Object.values(groupMap)
+            .map(g => ({ ...g.ev, aggCount: g.count }))
+            .sort((a, b) => (b.aggCount - a.aggCount) * CONTACT_SORT_DIR);
+    } else {
+        // Sort
+        displayRows = [...events].sort((a,b) => {
+            let va = a[CONTACT_SORT]||'', vb = b[CONTACT_SORT]||'';
+            if (CONTACT_SORT === 'city') { va = a.city||'—'; vb = b.city||'—'; }
+            if (CONTACT_SORT === 'url')  { va = a.url||''; vb = b.url||''; }
+            return (va < vb ? -1 : va > vb ? 1 : 0) * CONTACT_SORT_DIR;
+        });
+    }
+
+    const total = displayRows.length;
     const page  = PG.vcontact || 1;
-    const slice = sorted.slice((page-1)*PG_SIZE, page*PG_SIZE);
+    const slice = displayRows.slice((page-1)*PG_SIZE, page*PG_SIZE);
     const tbody = document.getElementById('v-contact-tbody');
     if (!tbody) return;
     tbody.innerHTML = '';
@@ -8127,18 +8237,34 @@ function renderContactTable() {
     if (!slice.length) {
         tbody.innerHTML = '<tr><td colspan="9" style="padding:20px;text-align:center;color:var(--muted);">No records found</td></tr>';
     } else {
+        const _contactGrouper = _makeGrouper(slice, ev => {
+            if (CONTACT_SORT==='country')    return ev.country||'';
+            if (CONTACT_SORT==='city')       return (ev.city||'—').trim();
+            if (CONTACT_SORT==='device')     return (ev.device||'—').trim();
+            if (CONTACT_SORT==='source')     return ev.source||'';
+            if (CONTACT_SORT==='ts')         return fmtSUL(ev.ts||ev.date||'').slice(0,10);
+            if (CONTACT_SORT==='clickcount') return ev.event||'';
+            return ev.event||'';
+        });
+        let _contPrevGi = 0;
         slice.forEach((ev, i) => {
+            const _cGi = _contactGrouper(ev);
+            const _cNewGroup = (i > 0 && _cGi !== _contPrevGi);
+            _contPrevGi = _cGi;
             const tr = document.createElement('tr');
             const evKey   = ev.event||'';
-            const rowBg   = chRowBg[evKey]  || 'rgba(255,255,255,0.02)';
-            const rowHov  = chRowHov[evKey] || 'rgba(255,255,255,0.06)';
+            const _cBase  = chRowBg[evKey]  || 'rgba(255,255,255,0.02)';
+            const _cHover = chRowHov[evKey] || 'rgba(255,255,255,0.06)';
+            const rowBg   = _groupBg(_cGi) || _cBase;
+            const rowHov  = _groupBgHover(_cGi) || _cHover;
             const evColor = chColors[evKey] || '#dfe6e9';
             const evLabel = chLabels[evKey] || evKey;
-            const clickCount = clickCountMap[evKey] || 1;
+            const clickCount = CONTACT_AGGREGATE ? (ev.aggCount||1) : (clickCountMap[evKey] || 1);
             const pageHtml = ev.url
                 ? `<a href="${ev.url}" target="_blank" style="color:var(--purple);text-decoration:none;font-size:0.72rem;" title="${ev.url}">${ev.url.replace(/^https?:\/\//,'').slice(0,30)}${ev.url.length>40?'…':''}</a>`
                 : '<span style="color:var(--muted);">—</span>';
-            tr.style.cssText = `border-bottom:1px solid var(--border);background:${rowBg};`;
+            const tsLabel = CONTACT_AGGREGATE ? '<span style="color:var(--muted);font-size:0.68rem;">Latest: </span>' : '';
+            tr.style.cssText = `border-top:${_cNewGroup ? '2px solid rgba(255,255,255,0.18)' : '1px solid var(--border)'};background:${rowBg};`;
             tr.onmouseover = () => tr.style.background = rowHov;
             tr.onmouseout  = () => tr.style.background = rowBg;
             tr.innerHTML = `
@@ -8150,7 +8276,7 @@ function renderContactTable() {
                 <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${sourceBadge(ev.source)}</td>
                 <td style="padding:6px 10px;text-align:center;white-space:nowrap;">${deviceIcon(ev.device)}</td>
                 <td style="padding:6px 10px;font-size:0.72rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${pageHtml}</td>
-                <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);white-space:nowrap;" dir="ltr">${fmtSUL(ev.ts||ev.date||'')}</td>`;
+                <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);white-space:nowrap;" dir="ltr">${tsLabel}${fmtSUL(ev.ts||ev.date||'')}</td>`;
             tbody.appendChild(tr);
         });
     }
@@ -8159,7 +8285,8 @@ function renderContactTable() {
     const tgCount = clickCountMap['contact_telegram_support'] || 0;
         const fbCount = clickCountMap['social_facebook'] || 0;
     const tgChCount = clickCountMap['social_telegram'] || 0;
-    if (footer) footer.innerHTML = `Total: ${total} records &nbsp;|&nbsp; <span style="color:#25D366;">💬 WhatsApp: ${waCount}</span> &nbsp;|&nbsp; <span style="color:#29b6f6;">💬 Telegram DM: ${tgCount}</span> &nbsp;|&nbsp; <span style="color:#0099ff;">📘 Facebook: ${fbCount}</span> &nbsp;|&nbsp; <span style="color:#229ed9;">📢 TG Channel: ${tgChCount}</span>`;
+    const contactModeLabel = CONTACT_AGGREGATE ? ' (Grouped)' : '';
+    if (footer) footer.innerHTML = `Total: ${total} records${contactModeLabel} &nbsp;|&nbsp; <span style="color:#25D366;">💬 WhatsApp: ${waCount}</span> &nbsp;|&nbsp; <span style="color:#29b6f6;">💬 Telegram DM: ${tgCount}</span> &nbsp;|&nbsp; <span style="color:#0099ff;">📘 Facebook: ${fbCount}</span> &nbsp;|&nbsp; <span style="color:#229ed9;">📢 TG Channel: ${tgChCount}</span>`;
     renderPgBar('v-contact-pg', page, total, PG_SIZE, (p) => { PG.vcontact = p; renderContactTable(); });
 }
 
@@ -8217,15 +8344,19 @@ function renderSearchTable() {
         const sqSTotal = kwArr.length;
         const sqSSlice = kwArr.slice((PG.sqsummary-1)*SQ_PG_SIZE, PG.sqsummary*SQ_PG_SIZE);
         sqSumBody.innerHTML = sqSSlice.length
-            ? sqSSlice.map((item,i) => `
-                <tr style="border-bottom:1px solid var(--border);background:rgba(41,182,246,0.04);"
-                    onmouseover="this.style.background='rgba(41,182,246,0.1)'"
-                    onmouseout="this.style.background='rgba(41,182,246,0.04)'">
+            ? sqSSlice.map((item,i) => {
+                const _sqSGi = SQ_SORT === 'count' ? (i > 0 && item.count === sqSSlice[i-1].count ? 0 : (i+1)) : 0;
+                const _sqSBg = _groupBg(_sqSGi) || 'rgba(41,182,246,0.04)';
+                const _sqSHov = _groupBgHover(_sqSGi) || 'rgba(41,182,246,0.1)';
+                return `
+                <tr style="border-bottom:1px solid var(--border);background:${_sqSBg};"
+                    onmouseover="this.style.background='${_sqSHov}'"
+                    onmouseout="this.style.background='${_sqSBg}'">
                     <td style="padding:6px 10px;color:var(--muted);font-family:var(--mono);font-size:0.72rem;">${(PG.sqsummary-1)*SQ_PG_SIZE+i+1}</td>
                     <td style="padding:6px 10px;font-family:var(--mono);font-size:0.8rem;color:#29b6f6;" dir="rtl">${item.query}</td>
                     <td style="padding:6px 10px;text-align:center;"><span style="background:rgba(41,182,246,0.15);color:#29b6f6;padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;font-weight:bold;">${item.count}</span></td>
                     <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.72rem;color:var(--text);" dir="ltr">${fmtSUL(item.last)}</td>
-                </tr>`).join('')
+                </tr>`;}).join('')
             : '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);"><span data-ku>هیچ گەڕانێک نییە</span><span data-en style="display:none">No searches found</span></td></tr>';
         renderPgBar('sq-summary-pg', PG.sqsummary, sqSTotal, SQ_PG_SIZE, (p)=>{ PG.sqsummary=p; renderSearchTable(); });
     }
@@ -8264,8 +8395,8 @@ function renderSearchTable() {
         if (!sqSlice.length) {
             sqLogBody.innerHTML = '<tr><td colspan="10" style="padding:20px;text-align:center;color:var(--muted);">No records found</td></tr>';
         } else {
-            // ── AGGREGATION MODE for count columns ──
-            const _sqIsAgg = (SQ_LOG_SORT === 'count' || SQ_LOG_SORT === 'dcount');
+            // ── AGGREGATION MODE for all sort columns except ts ──
+            const _sqIsAgg = (SQ_LOG_SORT !== 'ts');
 
             if (_sqIsAgg) {
                 // Build aggregated groups from full logSorted
@@ -8273,7 +8404,16 @@ function renderSearchTable() {
                 logSorted.forEach(ev => {
                     const kw = ev.font||ev.search||'?';
                     const dv = (ev.device||'—').trim()||'—';
-                    const groupKey = SQ_LOG_SORT === 'count' ? kw : dv;
+                    let groupKey;
+                    if      (SQ_LOG_SORT === 'count')   groupKey = kw;
+                    else if (SQ_LOG_SORT === 'dcount')  groupKey = dv;
+                    else if (SQ_LOG_SORT === 'query')   groupKey = kw.toLowerCase();
+                    else if (SQ_LOG_SORT === 'country') groupKey = (ev.country||'—').trim().toLowerCase();
+                    else if (SQ_LOG_SORT === 'city')    groupKey = (ev.city||'—').trim().toLowerCase();
+                    else if (SQ_LOG_SORT === 'source')  groupKey = (ev.source||'—').trim().toLowerCase();
+                    else if (SQ_LOG_SORT === 'device')  groupKey = dv.toLowerCase();
+                    else if (SQ_LOG_SORT === 'url')     groupKey = (ev.url||'—').replace(/^https?:\/\//,'').split('/')[0].toLowerCase();
+                    else                                groupKey = kw;
                     if (!sqAggMap[groupKey]) {
                         sqAggMap[groupKey] = { _key: groupKey, _count: 0, _latestTs: '', _latestEv: null };
                     }
@@ -8284,7 +8424,12 @@ function renderSearchTable() {
                         sqAggMap[groupKey]._latestEv = ev;
                     }
                 });
-                const sqAggArr = Object.values(sqAggMap).sort((a,b) => (a._count - b._count) * SQ_LOG_DIR);
+                const sqAggArr = Object.values(sqAggMap).sort((a,b) => {
+                    if (SQ_LOG_SORT === 'count' || SQ_LOG_SORT === 'dcount') {
+                        return (a._count - b._count) * SQ_LOG_DIR;
+                    }
+                    return (a._key < b._key ? -1 : a._key > b._key ? 1 : 0) * SQ_LOG_DIR;
+                });
                 const sqAggTotal = sqAggArr.length;
                 const sqAggPage  = PG.sqlog;
                 const sqAggSlice = sqAggArr.slice((sqAggPage-1)*PG_SIZE, sqAggPage*PG_SIZE);
@@ -8293,8 +8438,8 @@ function renderSearchTable() {
                     const tr = document.createElement('tr');
                     const kw = ev.font||ev.search||'?';
                     const dv = (ev.device||'—').trim()||'—';
-                    const kwCountVal = SQ_LOG_SORT === 'count'  ? grp._count : (kwCountMap[kw]||1);
-                    const dcountVal  = SQ_LOG_SORT === 'dcount' ? grp._count : (devMapSq[dv]||0);
+                    const kwCountVal = (SQ_LOG_SORT === 'count' || SQ_LOG_SORT === 'query') ? grp._count : (kwCountMap[kw]||1);
+                    const dcountVal  = (SQ_LOG_SORT === 'dcount' || SQ_LOG_SORT === 'device') ? grp._count : (devMapSq[dv]||0);
                     const pageHtml = ev.url
                         ? `<a href="${ev.url}" target="_blank" style="color:var(--purple);text-decoration:none;font-size:0.72rem;" title="${ev.url}">${ev.url.replace(/^https?:\/\//,'').slice(0,30)}${ev.url.length>40?'…':''}</a>`
                         : '<span style="color:var(--muted);">—</span>';
@@ -8321,11 +8466,27 @@ function renderSearchTable() {
                 renderPgBar('sq-log-pg', sqAggPage, sqAggTotal, PG_SIZE, (p)=>{ PG.sqlog=p; renderSearchTable(); });
             } else {
             // ── LIVE LOG MODE ──
+            const _sqGrouper = _makeGrouper(sqSlice, ev => {
+                const kw = ev.font||ev.search||'?';
+                if (SQ_LOG_SORT==='query')   return kw;
+                if (SQ_LOG_SORT==='country') return ev.country||'';
+                if (SQ_LOG_SORT==='city')    return (ev.city||'—').trim();
+                if (SQ_LOG_SORT==='device')  return (ev.device||'—').trim();
+                if (SQ_LOG_SORT==='source')  return ev.source||'';
+                if (SQ_LOG_SORT==='url')     return ev.url||'';
+                if (SQ_LOG_SORT==='ts')      return fmtSUL(ev.ts||ev.date||'').slice(0,10);
+                return '';
+            });
+            let _sqPrevGi = 0;
             sqSlice.forEach((ev,i) => {
+                const _sqGi = _sqGrouper(ev);
+                const _sqNewGroup = (i > 0 && _sqGi !== _sqPrevGi);
+                _sqPrevGi = _sqGi;
                 const tr = document.createElement('tr');
-                tr.style.cssText = 'border-bottom:1px solid var(--border);background:rgba(41,182,246,0.03);';
-                tr.onmouseover = ()=>tr.style.background='rgba(41,182,246,0.09)';
-                tr.onmouseout  = ()=>tr.style.background='rgba(41,182,246,0.03)';
+                const _sqBg = _groupBg(_sqGi) || 'rgba(41,182,246,0.03)';
+                tr.style.cssText = `border-top:${_sqNewGroup ? '2px solid rgba(255,255,255,0.18)' : '1px solid var(--border)'};background:${_sqBg};`;
+                tr.onmouseover = ()=>tr.style.background=_groupBgHover(_sqGi)||'rgba(41,182,246,0.09)';
+                tr.onmouseout  = ()=>tr.style.background=_sqBg;
                 const kw = ev.font||ev.search||'?';
                 const kwCount = kwCountMap[kw]||1;
                 const dv = (ev.device||'—').trim()||'—';
@@ -8410,6 +8571,31 @@ function getFilteredEvents() {
 function sortDlBy(col)    { if(DL_SORT===col) DL_SORT_DIR*=-1; else { DL_SORT=col; DL_SORT_DIR=-1; } PG.dlfont=1; renderDlTable(); }
 function sortDlLogBy(col) { if(DL_LOG_SORT===col) DL_LOG_DIR*=-1; else { DL_LOG_SORT=col; DL_LOG_DIR=-1; } PG.dllog=1; renderDlTable(); }
 
+
+// ── Universal row-grouping helper ──────────────────────────────────
+// Returns a function: (item) => groupIndex (integer, 1-based)
+// Rows with identical groupKey values get the same index.
+// Used for alternating background shading of grouped rows.
+function _makeGrouper(arr, keyFn) {
+    let gi = 0, lastKey = undefined;
+    const map = new Map();
+    arr.forEach(item => {
+        const k = keyFn(item);
+        if (k !== lastKey) { gi++; lastKey = k; }
+        map.set(item, gi);
+    });
+    return item => map.get(item) || 0;
+}
+// Returns alternating bg colours for a group index (0 = no grouping)
+function _groupBg(gi) {
+    if (!gi) return '';
+    return gi % 2 === 1 ? 'rgba(255,87,0,0.09)' : 'rgba(30,120,255,0.07)';
+}
+function _groupBgHover(gi) {
+    if (!gi) return 'var(--surface2)';
+    return gi % 2 === 1 ? 'rgba(255,87,0,0.20)' : 'rgba(30,120,255,0.18)';
+}
+// ───────────────────────────────────────────────────────────────
 function renderDlTable() {
     const filtered = getFilteredEvents();
 
@@ -8437,21 +8623,20 @@ function renderDlTable() {
     if (!dfSlice.length) {
         ftbody.innerHTML = '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--muted);"><span data-ku>هیچ داگرتنێک نییە</span><span data-en style="display:none">No downloads found</span></td></tr>';
     } else {
-        // Build count groups for visual grouping when sorted by count
-        const _countGroups1 = {};
-        if (DL_SORT === 'count') {
-            let _gi = 0, _lastC = null;
-            dfSlice.forEach(item => {
-                if (item.count !== _lastC) { _gi++; _lastC = item.count; }
-                _countGroups1[item.font] = _gi;
-            });
-        }
+        // Group rows by the current sort key for visual banding
+        const _dfGrouper = _makeGrouper(dfSlice, item => {
+            if (DL_SORT === 'count') return item.count;
+            if (DL_SORT === 'font')  return item.font;
+            if (DL_SORT === 'type')  return item.type;
+            if (DL_SORT === 'last')  return fmtSUL(item.last).slice(0,10); // group by date
+            return String(item[DL_SORT]||'');
+        });
         dfSlice.forEach((item,i) => {
-            const _grp = DL_SORT === 'count' ? _countGroups1[item.font] : 0;
-            const _grpBg = _grp ? (_grp % 2 === 0 ? 'rgba(255,87,0,0.07)' : 'rgba(255,255,255,0.03)') : '';
+            const _gi = _dfGrouper(item);
+            const _grpBg = _groupBg(_gi);
             const tr = document.createElement('tr');
             tr.style.cssText = 'border-bottom:1px solid var(--border);transition:background 0.15s;' + (_grpBg ? 'background:'+_grpBg+';' : '');
-            tr.onmouseover = ()=>tr.style.background='var(--surface2)';
+            tr.onmouseover = ()=>tr.style.background=_groupBgHover(_gi);
             tr.onmouseout  = ()=>tr.style.background=_grpBg||'';
             const lastSUL = item.last ? fmtSUL(item.last) : '—';
             const isBulkEntry    = item.type==='bulk' || item.font.includes('<span data-ku>داگرتنی تەواوی</span><span data-en style="display:none">Bulk Downloads</span>');
@@ -8522,17 +8707,24 @@ function renderDlTable() {
     if (!dlSlice.length) {
         ltbody.innerHTML = '<tr><td colspan="11" style="padding:20px;text-align:center;color:var(--muted);">No downloads found</td></tr>';
     } else {
-        // ── AGGREGATION MODE: when sorted by a count column, group rows ──
-        const _isAggMode = (DL_LOG_SORT === 'dlcount' || DL_LOG_SORT === 'dcount');
+        // ── AGGREGATION MODE: every sort column groups identical values ──
+        const _isAggMode = (DL_LOG_SORT !== 'ts');
 
         if (_isAggMode) {
             // Build aggregated groups from full logSorted (not just current page slice)
-            // Group key: font name (for dlcount) or device (for dcount)
             const aggMap = {};
             logSorted.forEach(ev => {
-                const groupKey = DL_LOG_SORT === 'dlcount'
-                    ? (ev.font || '?')
-                    : ((ev.device || '—').trim() || '—');
+                let groupKey;
+                if      (DL_LOG_SORT === 'dlcount') groupKey = ev.font || '?';
+                else if (DL_LOG_SORT === 'dcount')  groupKey = (ev.device || '—').trim() || '—';
+                else if (DL_LOG_SORT === 'font')    groupKey = ev.font || '?';
+                else if (DL_LOG_SORT === 'type')    groupKey = ev.type || 'single';
+                else if (DL_LOG_SORT === 'country') groupKey = (ev.country || '—').trim().toLowerCase() || '—';
+                else if (DL_LOG_SORT === 'city')    groupKey = (ev.city    || '—').trim().toLowerCase() || '—';
+                else if (DL_LOG_SORT === 'source')  groupKey = (ev.source  || '—').trim().toLowerCase() || '—';
+                else if (DL_LOG_SORT === 'device')  groupKey = (ev.device  || '—').trim().toLowerCase() || '—';
+                else if (DL_LOG_SORT === 'url')     groupKey = (ev.url     || '—').replace(/^https?:\/\//,'').split('/')[0].toLowerCase() || '—';
+                else                                groupKey = ev.font || '?';
                 if (!aggMap[groupKey]) {
                     aggMap[groupKey] = { _key: groupKey, _count: 0, _latestTs: '', _latestEv: null };
                 }
@@ -8577,9 +8769,9 @@ function renderDlTable() {
                     evFontLink = `https://uniqaidar.pages.dev/?cat=All&font=${encodeURIComponent(ev.font||'')}`;
                     evLinkIcon = '🔗';
                 }
-                const dlCountVal = DL_LOG_SORT === 'dlcount' ? grp._count : (dlFontCountMap[ev.font||'?']||1);
                 const dv         = (ev.device||'—').trim()||'—';
-                const dcountVal  = DL_LOG_SORT === 'dcount'  ? grp._count : (dlDevMap[dv]||0);
+                const dlCountVal = (DL_LOG_SORT === 'dlcount' || DL_LOG_SORT === 'font')    ? grp._count : (dlFontCountMap[ev.font||'?']||1);
+                const dcountVal  = (DL_LOG_SORT === 'dcount'  || DL_LOG_SORT === 'device')  ? grp._count : (dlDevMap[dv]||0);
                 const pageHtml   = ev.url
                     ? `<a href="${ev.url}" target="_blank" style="color:var(--purple);text-decoration:none;font-size:0.72rem;" title="${ev.url}">${ev.url.replace(/^https?:\/\//,'').slice(0,30)}${ev.url.length>40?'…':''}</a>`
                     : '<span style="color:var(--muted);">—</span>';
@@ -8609,19 +8801,22 @@ function renderDlTable() {
         }
 
         // ── LIVE LOG MODE (default — ts or any non-count sort) ──
-        let _dlgi = 0, _dlLastV = null, _prevDlgi = 0;
+        // Group rows by the active sort column
+        const _dlLogGrouper = _makeGrouper(dlSlice, ev => {
+            if (DL_LOG_SORT==='type')    return ev.type||'';
+            if (DL_LOG_SORT==='country') return ev.country||'';
+            if (DL_LOG_SORT==='city')    return (ev.city||'').trim();
+            if (DL_LOG_SORT==='device')  return (ev.device||'').trim();
+            if (DL_LOG_SORT==='source')  return ev.source||'';
+            if (DL_LOG_SORT==='font')    return ev.font||'';
+            if (DL_LOG_SORT==='ts')      return fmtSUL(ev.ts||ev.date||'').slice(0,10);
+            if (DL_LOG_SORT==='url')     return ev.url||'';
+            return '';
+        });
+        let _prevDlgi = 0;
         dlSlice.forEach((ev,i) => {
-            // Determine group index for this row
-            let _grpV = null;
-            if (['type','country','city','device','source','font'].includes(DL_LOG_SORT)) {
-                if      (DL_LOG_SORT==='type')    _grpV = ev.type||'';
-                else if (DL_LOG_SORT==='country') _grpV = ev.country||'';
-                else if (DL_LOG_SORT==='city')    _grpV = (ev.city||'').trim();
-                else if (DL_LOG_SORT==='device')  _grpV = (ev.device||'').trim();
-                else if (DL_LOG_SORT==='source')  _grpV = ev.source||'';
-                else if (DL_LOG_SORT==='font')    _grpV = ev.font||'';
-                if (_grpV !== _dlLastV) { _dlgi++; _dlLastV = _grpV; }
-            }
+            const _dlgi  = _dlLogGrouper(ev);
+            const _grpV  = _dlgi > 0 ? true : null;
             const tr  = document.createElement('tr');
             const isCatBulk = ev.type==='cat-bulk' || (ev.font||'').includes('داگرتنی کاتێگۆری');
             const isBulk    = !isCatBulk && (ev.type==='bulk' || (ev.font||'').includes('<span data-ku>داگرتنی تەواوی</span><span data-en style="display:none">Bulk Downloads</span>'));
@@ -8669,23 +8864,15 @@ function renderDlTable() {
                 <td style="padding:6px 10px;text-align:center;white-space:nowrap;"><span style="background:rgba(162,155,254,0.15);color:#a29bfe;padding:2px 9px;border-radius:20px;font-family:var(--mono);font-size:0.78rem;">${dcount}</span></td>
                 <td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-size:0.75rem;color:var(--text);white-space:nowrap;" dir="ltr">${evSUL}</td>`;
             // ── Group-boundary detection using before/after comparison ──
-            let _baseBg, _isNewGroup = false;
-            if (isCatBulk) {
-                _baseBg = 'rgba(162,155,254,0.06)';
-            } else if (isBulk) {
-                _baseBg = 'rgba(46,204,113,0.06)';
-            } else if (_grpV !== null) {
-                // _dlgi already incremented when group changed — odd/even gives alternating shades
-                _baseBg = (_dlgi % 2 === 1) ? 'rgba(255,87,0,0.09)' : 'rgba(30,120,255,0.07)';
-                _isNewGroup = (i > 0 && _dlgi !== _prevDlgi);
-            } else {
-                _baseBg = 'rgba(255,87,0,0.04)';
-            }
+            const _isNewGroup = (i > 0 && _dlgi !== _prevDlgi);
             _prevDlgi = _dlgi;
-
-            const _borderTop = _isNewGroup ? '2px solid rgba(255,255,255,0.18)' : '1px solid var(--border)';
+            let _baseBg;
+            if (isCatBulk)      _baseBg = 'rgba(162,155,254,0.06)';
+            else if (isBulk)    _baseBg = 'rgba(46,204,113,0.06)';
+            else                _baseBg = _groupBg(_dlgi) || 'rgba(255,87,0,0.04)';
+            const _borderTop = _isNewGroup ? '2px solid rgba(255,255,255,0.22)' : '1px solid var(--border)';
             tr.style.cssText = `background:${_baseBg};border-top:${_borderTop};transition:background 0.12s;`;
-            tr.onmouseover = () => tr.style.background = isCatBulk ? 'rgba(162,155,254,0.18)' : isBulk ? 'rgba(46,204,113,0.18)' : (_grpV !== null ? (_dlgi%2===1 ? 'rgba(255,87,0,0.20)' : 'rgba(30,120,255,0.18)') : 'rgba(255,87,0,0.12)');
+            tr.onmouseover = () => tr.style.background = isCatBulk ? 'rgba(162,155,254,0.18)' : isBulk ? 'rgba(46,204,113,0.18)' : _groupBgHover(_dlgi);
             tr.onmouseout  = () => tr.style.background = _baseBg;
             ltbody.appendChild(tr);
         });
