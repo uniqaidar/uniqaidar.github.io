@@ -133,8 +133,9 @@ jobs:
           if git diff --staged --quiet; then
             echo "Git sees no diff."
           else
-            git reset HEAD popular.json
+            git stash
             git pull --rebase
+            git stash pop
             git add popular.json
             git commit -m "Auto-update popular.json: top 25 trending fonts [$(TZ='Asia/Baghdad' date '+%Y-%m-%d %H:%M')]"
             git push
