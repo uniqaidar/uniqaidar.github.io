@@ -600,7 +600,7 @@ jobs:
               def compute_statistics(self) -> dict:
                   """Compute comprehensive statistics"""
                   if not self.font_counter:
-                      return {'fonts': 0, 'max': 0, 'mean': 0, 'median': 0, 'stddev': 0}
+                      return {'fonts': 0, 'total_downloads': 0, 'max': 0, 'min': 0, 'mean': 0, 'median': 0, 'stddev': 0}
                   
                   counts = list(self.font_counter.values())
                   return {
@@ -685,6 +685,14 @@ jobs:
                   
                   total = self.load_data()
                   self.process_events()
+                  
+                  if not self.font_counter:
+                      print("\n⚠️  No valid font events found - skipping update")
+                      from pathlib import Path
+                      Path('no_changes.flag').write_text('1')
+                      print(f"\n✅ Analysis complete at {self.timestamp_sdt}")
+                      return
+                  
                   top25 = self.get_top_fonts()
                   current = self.load_current()
                   changed, added, removed = self.detect_changes(top25, current)
