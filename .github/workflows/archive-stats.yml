@@ -2,7 +2,7 @@ name: Archive KV Stats
 
 on:
   schedule:
-    # Runs at 21:00 UTC daily (00:00 midnight Sulaymaniyah time, UTC+3)
+    # Runs at 21:00 UTC daily (00:00 midnight Sulaymaniyah, Iraq time, UTC+3)
     - cron: '0 21 * * *'
   workflow_dispatch:
     # Allow manual trigger
@@ -31,97 +31,219 @@ jobs:
         env:
           STATS_URL: https://uniqaidar.pages.dev/api/stats
           ARCHIVE_TOKEN: ${{ secrets.ARCHIVE_TOKEN }}
-          MAX_FILE_BYTES: 5000000 
+          MAX_FILE_BYTES: 5000000
         run: |
-          set -e
+          set -eo pipefail
+          trap 'echo "❌ Error on line $LINENO"; exit 1' ERR
 
-          # 1. Calculate date
-          YESTERDAY=$(TZ='Asia/Baghdad' date -d 'yesterday' '+%Y-%m-%d')
-          echo "Archiving data for: $YESTERDAY"
-
-          # 2. Fetch data
-          echo "Fetching stats from KV..."
-          RESPONSE=$(curl -sf \
-            -H "Authorization: Bearer ${ARCHIVE_TOKEN}" \
-            "${STATS_URL}?type=both&date=${YESTERDAY}" \
-            --max-time 60) || { echo "ERROR: Failed to fetch stats"; exit 1; }
-
-          # Verify response
-          OK=$(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('ok','false'))" 2>/dev/null || echo "false")
-          if [ "$OK" != "True" ] && [ "$OK" != "true" ]; then
-            echo "ERROR: API returned not-ok: $RESPONSE"
+          # Validate environment variables
+          if [ -z "$ARCHIVE_TOKEN" ]; then
+            echo "❌ ERROR: ARCHIVE_TOKEN not set"
             exit 1
           fi
 
-          # 3. Save to temp file FIRST
-          echo "$RESPONSE" > kv_response.json
+          WORK_DIR="${GITHUB_WORKSPACE}"
+          YESTERDAY=$(TZ='Asia/Baghdad' date -d 'yesterday' '+%Y-%m-%d')
+          echo "📅 Archiving data for: $YESTERDAY"
+          echo "📍 Working directory: $WORK_DIR"
 
-          # 4. Run Python Archiver
-          YESTERDAY="$YESTERDAY" MAX_FILE_BYTES="$MAX_FILE_BYTES" python3 << 'PYEOF'
-          import json, os
+          # Retry logic for fetching stats
+          MAX_RETRIES=3
+          RETRY_DELAY=5
+          attempt=0
 
-          yesterday = os.environ.get('YESTERDAY')
-          max_bytes = int(os.environ.get('MAX_FILE_BYTES', '5000000'))
-          arch_dir  = 'historicaldata'
-          os.makedirs(arch_dir, exist_ok=True)
+          while [ $attempt -lt $MAX_RETRIES ]; do
+            attempt=$((attempt + 1))
+            echo "🔄 Fetch attempt $attempt/$MAX_RETRIES..."
 
-          with open('kv_response.json', 'r') as f:
+            RESPONSE=$(curl -sf \
+              --connect-timeout 10 \
+              --max-time 60 \
+              -H "Authorization: Bearer ${ARCHIVE_TOKEN}" \
+              "${STATS_URL}?type=both&date=${YESTERDAY}") && break || {
+              if [ $attempt -lt $MAX_RETRIES ]; then
+                echo "   ️  Attempt $attempt failed, retrying in ${RETRY_DELAY}s..."
+                sleep $RETRY_DELAY
+              else
+                echo "❌ ERROR: Failed to fetch stats after $MAX_RETRIES attempts"
+                exit 1
+              fi
+            }
+          done
+
+          # Verify response is not empty
+          if [ -z "$RESPONSE" ]; then
+            echo "❌ ERROR: Empty response from API"
+            exit 1
+          fi
+
+          # Verify response structure
+          OK=$(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('ok','false'))" 2>/dev/null || echo "false")
+          if [ "$OK" != "True" ] && [ "$OK" != "true" ]; then
+            echo "❌ ERROR: API returned not-ok"
+            echo "Response: $RESPONSE"
+            exit 1
+          fi
+
+          # Save response to temp file with absolute path
+          TEMP_FILE="${WORK_DIR}/kv_response.json"
+          echo "$RESPONSE" > "$TEMP_FILE"
+          echo "✓ Saved response to $TEMP_FILE"
+
+          # Verify temp file exists and is readable
+          if [ ! -f "$TEMP_FILE" ]; then
+            echo "❌ ERROR: Temp file not created at $TEMP_FILE"
+            exit 1
+          fi
+
+          # Run Python Archiver
+          YESTERDAY="$YESTERDAY" MAX_FILE_BYTES="$MAX_FILE_BYTES" WORK_DIR="$WORK_DIR" python3 << 'PYEOF'
+          import json
+          import os
+          import sys
+
+          try:
+            yesterday = os.environ.get('YESTERDAY')
+            max_bytes = int(os.environ.get('MAX_FILE_BYTES', '5000000'))
+            work_dir = os.environ.get('WORK_DIR', os.getcwd())
+            arch_dir = os.path.join(work_dir, 'historicaldata')
+
+            if not yesterday:
+              print("❌ ERROR: YESTERDAY environment variable not set", file=sys.stderr)
+              sys.exit(1)
+
+            # Create archive directory
+            os.makedirs(arch_dir, exist_ok=True)
+            print(f"✓ Archive directory: {arch_dir}")
+
+            # Read and parse response
+            temp_file = os.path.join(work_dir, 'kv_response.json')
+            if not os.path.exists(temp_file):
+              print(f"❌ ERROR: Temp file not found at {temp_file}", file=sys.stderr)
+              sys.exit(1)
+
+            with open(temp_file, 'r', encoding='utf-8') as f:
               data = json.load(f)
 
-          new_entry = {
-              'date': yesterday,
-              'downloads': data.get('downloads', []),
-              'visits': data.get('visits', [])
-          }
+            # Check for data
+            downloads = data.get('downloads', [])
+            visits = data.get('visits', [])
+            total_entries = len(downloads) + len(visits)
+            print(f"📊 Found {len(downloads)} downloads and {len(visits)} visits")
 
-          idx = 1
-          while True:
+            if total_entries == 0:
+              print(f"⚠️  No data for {yesterday} — skipping archive")
+              sys.exit(0)
+
+            new_entry = {
+              'date': yesterday,
+              'downloads': downloads,
+              'visits': visits
+            }
+
+            # Find appropriate archive file
+            idx = 1
+            max_files = 1000
+            path = None
+
+            while idx <= max_files:
               path = os.path.join(arch_dir, f'archive_{idx}.json')
               if not os.path.exists(path):
-                  current = []
-                  break
+                current = []
+                print(f"✓ Creating new archive file: archive_{idx}.json")
+                break
+
+              # Check file size
               size = os.path.getsize(path)
               entry_size = len(json.dumps(new_entry, separators=(',',':')).encode('utf-8'))
-              if size + entry_size + 2 < max_bytes:
-                  with open(path, 'r', encoding='utf-8') as f:
-                      current = json.load(f)
-                  break
+              needed_size = size + entry_size + 2
+
+              if needed_size < max_bytes:
+                with open(path, 'r', encoding='utf-8') as f:
+                  current = json.load(f)
+                print(f"✓ Appending to archive_{idx}.json (current size: {size} bytes)")
+                break
+
               idx += 1
 
-          current.append(new_entry)
-          with open(path, 'w', encoding='utf-8') as f:
+            if idx > max_files:
+              print("❌ ERROR: Too many archive files (max 1000)", file=sys.stderr)
+              sys.exit(1)
+
+            if path is None:
+              print("❌ ERROR: Could not determine archive path", file=sys.stderr)
+              sys.exit(1)
+
+            # Write archive file
+            current.append(new_entry)
+            with open(path, 'w', encoding='utf-8') as f:
               json.dump(current, f, separators=(',',':'), ensure_ascii=False)
 
-          all_files = sorted([fn for fn in os.listdir(arch_dir) if fn.startswith('archive_') and fn.endswith('.json')])
-          index = {'files': all_files, 'updated': yesterday}
-          with open(os.path.join(arch_dir, 'index.json'), 'w') as f:
+            # Update index
+            all_files = sorted([fn for fn in os.listdir(arch_dir)
+                              if fn.startswith('archive_') and fn.endswith('.json')])
+            index = {'files': all_files, 'updated': yesterday, 'total_entries': len(current)}
+            index_path = os.path.join(arch_dir, 'index.json')
+            with open(index_path, 'w', encoding='utf-8') as f:
               json.dump(index, f, separators=(',',':'))
 
-          print(f'Successfully written to {path}')
+            print(f"✅ Successfully written to {os.path.basename(path)} ({len(current)} entries)")
+            print(f"✅ Updated index with {len(all_files)} archive files")
+
+          except json.JSONDecodeError as e:
+            print(f"❌ ERROR: Invalid JSON response: {e}", file=sys.stderr)
+            sys.exit(1)
+          except FileNotFoundError as e:
+            print(f"❌ ERROR: File not found: {e}", file=sys.stderr)
+            sys.exit(1)
+          except Exception as e:
+            print(f"❌ ERROR: {type(e).__name__}: {e}", file=sys.stderr)
+            sys.exit(1)
           PYEOF
 
+          # Clean up temp file
+          if [ -f "$TEMP_FILE" ]; then
+            rm -f "$TEMP_FILE"
+            echo "✓ Cleaned up temp file"
+          fi
+
+          echo "✅ Archive step completed successfully"
+
       - name: Commit archived data
+        if: success()
         run: |
           git config user.name "UniQaidar Admin"
           git config user.email "uniqaidar@gmail.com"
           git add historicaldata/
           if git diff --staged --quiet; then
-            echo "No changes to commit."
+            echo "ℹ️  No changes to commit."
           else
-            git pull --rebase
+            echo "📤 Pushing changes..."
+            git pull --rebase --autostash --strategy=recursive --strategy-option=theirs
             git commit -m "Auto-archive stats: $(TZ='Asia/Baghdad' date -d 'yesterday' '+%Y-%m-%d')"
             git push
+            echo "✅ Commit pushed successfully"
           fi
 
       - name: Purge yesterday's KV keys
+        if: always()
+        continue-on-error: true
         env:
           PURGE_URL: https://uniqaidar.pages.dev/api/purge
           ARCHIVE_TOKEN: ${{ secrets.ARCHIVE_TOKEN }}
         run: |
           YESTERDAY=$(TZ='Asia/Baghdad' date -d 'yesterday' '+%Y-%m-%d')
+          echo "🗑️  Purging KV data for: $YESTERDAY"
+          
           curl -sf -X POST \
+            --max-time 30 \
             -H "Authorization: Bearer ${ARCHIVE_TOKEN}" \
             -H "Content-Type: application/json" \
             -d "{\"date\":\"${YESTERDAY}\"}" \
-            "${PURGE_URL}" \
-            --max-time 30 && echo "KV Purge successful." || echo "Purge failed."
+            "${PURGE_URL}" && echo "✅ KV Purge successful" || echo "⚠️  Purge encountered an issue (non-blocking)"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Workflow failed. Check logs above for details."
+          exit 1
