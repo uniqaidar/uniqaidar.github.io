@@ -87,9 +87,9 @@ jobs:
               font = (ev.get('font') or '').strip()
               if not font:
                   continue
-              if '\u062f\u0627\u06af\u0631\u062a\u0646\u06cc \u06a9\u0627\u062a\u06ce\u06af\u06c6\u0631\u06cc' in font:
+              if 'داگرتنی کاتێگۆری' in font:
                   continue
-              if '\u062f\u0627\u06af\u0631\u062a\u0646\u06cc \u062a\u06d5\u0648\u0627\u0648\u06cc' in font:
+              if 'داگرتنی تەواوی' in font:
                   continue
               count_map[font] = count_map.get(font, 0) + 1
 
@@ -113,7 +113,7 @@ jobs:
               entered = set(top25) - set(current)
               left = set(current) - set(top25)
               print(f"Changed! In: {entered} | Out: {left} | Top5: {top25[:5]}")
-              with open(popular_path, 'w', encoding='utf-8') as f:
+              with open('popular.json', 'w', encoding='utf-8') as f:
                   json.dump(top25, f, indent=2, ensure_ascii=False)
               print(f"Written {len(top25)} fonts.")
           PYEOF
@@ -133,7 +133,9 @@ jobs:
           if git diff --staged --quiet; then
             echo "Git sees no diff."
           else
+            git reset HEAD popular.json
             git pull --rebase
+            git add popular.json
             git commit -m "Auto-update popular.json: top 25 trending fonts [$(TZ='Asia/Baghdad' date '+%Y-%m-%d %H:%M')]"
             git push
             echo "Committed and pushed."
