@@ -155,7 +155,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
         .social-links {
             position: absolute;
             top: 15px;
-            left: 15px;
+            left: 40px;
             display: flex;
             gap: 8px;
             align-items: center;
@@ -164,7 +164,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
         .header-logo {
     position: absolute;
     top: 65%;
-    right: 10px;
+    right: 40px;
     transform: translateY(-50%);
     z-index: 2;
 }
@@ -1010,7 +1010,7 @@ body.is-scrolled .filter-container {
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     height: 100%;
     order: -1; /* RTL: order:-1 pushes it to the visual far-right, immediately beside the hamburger */
     transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
@@ -1031,9 +1031,12 @@ body.is-scrolled .filter-container {
     pointer-events: none;
 }
 body.is-scrolled .filter-bar-logo-desktop {
-    width: 180px;
+    width: 148px;
     opacity: 1;
-    padding: 0 4px 0 4px;
+    padding: 0 8px 0 10px;
+}
+body.is-scrolled #desktop-toggle > button:first-of-type {
+    padding-right: 10px !important;
 }
 
 /* ── Mobile scroll-logo: hidden by default, slides in above row1 ── */
@@ -4039,7 +4042,7 @@ function uqWelcomeToggle() {}
             </div>
             <!-- Top orange fade line -->
             <!-- Hamburger + label: clickable zone -->
-            <button onclick="toggleDesktopCats()" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;height:100%;background:transparent;border:none;color:#fff;padding:0 10px;cursor:pointer;direction:rtl;font-family:'UniQAIDAR_Peregraf 01',Tahoma,sans-serif;font-size:1.2rem;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
+            <button onclick="toggleDesktopCats()" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;height:100%;background:transparent;border:none;color:#fff;padding:0 40px 0 10px;cursor:pointer;direction:rtl;font-family:'UniQAIDAR_Peregraf 01',Tahoma,sans-serif;font-size:1.2rem;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
                 <span style="font-size:1.1rem;opacity:0.65;flex-shrink:0;">&#9776;</span>
                 <span id="desktop-active-label" style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;font-size:1.2rem;"></span>
                 <span class="toggle-arrow" style="transition:transform 0.25s;font-size:0.75rem;flex-shrink:0;opacity:0.5;margin-right:auto;">&#9660;</span>
@@ -4087,7 +4090,7 @@ function uqWelcomeToggle() {}
         <div id="mob-filter-row1" style="display:flex;align-items:center;height:54px;direction:rtl;background:#111;border-top:1px solid rgba(255,255,255,0.08);overflow:visible;">
             <!-- Hamburger + label: full flex, min-width:0 so label can shrink -->
             <button class="filter-mobile-toggle" id="mobile-toggle" onclick="toggleMobileCats()"
-                style="flex:1;min-width:0;height:100%;padding:0 11px;display:flex;align-items:center;gap:7px;border:none;background:transparent;color:#fff;cursor:pointer;direction:rtl;font-family:'UniQAIDAR_Peregraf 01',Tahoma,sans-serif;overflow:hidden;">
+                style="flex:1;min-width:0;height:100%;padding:0 15px;display:flex;align-items:center;gap:7px;border:none;background:transparent;color:#fff;cursor:pointer;direction:rtl;font-family:'UniQAIDAR_Peregraf 01',Tahoma,sans-serif;overflow:hidden;">
                 <span style="font-size:1rem;opacity:0.65;flex-shrink:0;">&#9776;</span>
                 <span id="mobile-active-label" style="flex:1;min-width:0;white-space:nowrap;overflow:visible;font-size:1.2rem;text-align:right;display:block;"></span>
                 <span class="toggle-arrow" style="font-size:0.72rem;opacity:0.5;flex-shrink:0;margin-right:4px;">&#9660;</span>
