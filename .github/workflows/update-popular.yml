@@ -506,8 +506,10 @@ jobs:
             echo '{"events":[],"files":0,"errors":[]}' > archive_data.json
             echo "⚠️  archive_data.json missing — using empty fallback"
           fi
-          echo "✓ live_stats.json: $(python3 -c \"import json; d=json.load(open('live_stats.json')); print(len(d.get('downloads',[])))\" ) events"
-          echo "✓ archive_data.json: $(python3 -c \"import json; d=json.load(open('archive_data.json')); print(len(d.get('events',[])))\" ) events"
+          LIVE_COUNT=$(python3 -c 'import json; d=json.load(open("live_stats.json")); print(len(d.get("downloads",[])))')
+          echo "✓ live_stats.json: $LIVE_COUNT events"
+          ARCHIVE_COUNT=$(python3 -c 'import json; d=json.load(open("archive_data.json")); print(len(d.get("events",[])))')
+          echo "✓ archive_data.json: $ARCHIVE_COUNT events"
       
       - name: '🧮 Advanced Analysis & Computation'
         id: analysis
