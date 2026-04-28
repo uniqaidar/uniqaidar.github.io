@@ -138,7 +138,7 @@ jobs:
           echo "iso=$ISO_TIME" >> $GITHUB_OUTPUT
       
       - name: '📊 Checkout Repository'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
           ref: main
@@ -362,7 +362,7 @@ jobs:
     
     steps:
       - name: '📊 Checkout Repository'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 1
       
@@ -466,7 +466,7 @@ jobs:
     
     steps:
       - name: '📊 Checkout'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
       
@@ -765,7 +765,7 @@ jobs:
           echo "⏱️  $(TZ='Asia/Baghdad' date '+%Y-%m-%d %H:%M:%S %Z')"
       
       - name: '🔓 Checkout'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
           token: ${{ github.token }}
