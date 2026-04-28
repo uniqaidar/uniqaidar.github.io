@@ -138,7 +138,7 @@ jobs:
           echo "iso=$ISO_TIME" >> $GITHUB_OUTPUT
       
       - name: '📊 Checkout Repository'
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: main
@@ -346,6 +346,13 @@ jobs:
           echo "status=success" >> $GITHUB_OUTPUT
           echo "is_fallback=$IS_FALLBACK" >> $GITHUB_OUTPUT
           echo "✓ Live data fetch completed in ${DURATION}s"
+      
+      - name: '📤 Upload Live Stats Artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-stats
+          path: live_stats.json
+          retention-days: 1
 
   fetch-archive-data:
     name: '📦 Process Archive Files'
@@ -362,7 +369,7 @@ jobs:
     
     steps:
       - name: '📊 Checkout Repository'
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
       
@@ -442,6 +449,13 @@ jobs:
           echo "total_events=$ARCHIVE_EVENTS" >> $GITHUB_OUTPUT
           echo "size_mb=$SIZE_MB" >> $GITHUB_OUTPUT
           echo "status=success" >> $GITHUB_OUTPUT
+      
+      - name: '📤 Upload Archive Data Artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: archive-data
+          path: archive_data.json
+          retention-days: 1
 
   # ═══════════════════════════════════════════════════════════════════════════
   # PHASE 3: ANALYSIS & COMPUTATION
@@ -466,19 +480,34 @@ jobs:
     
     steps:
       - name: '📊 Checkout'
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       
-      - name: '📥 Download Data Artifacts'
+      - name: '📥 Download Live Stats Artifact'
+        uses: actions/download-artifact@v4
+        with:
+          name: live-stats
+        continue-on-error: true
+      
+      - name: '📥 Download Archive Data Artifact'
+        uses: actions/download-artifact@v4
+        with:
+          name: archive-data
+        continue-on-error: true
+      
+      - name: '📥 Ensure Data Files Exist'
         run: |
-          # Ensure data files exist
           if [ ! -f live_stats.json ]; then
             echo '{"ok":true,"downloads":[],"fallback":true}' > live_stats.json
+            echo "⚠️  live_stats.json missing — using empty fallback"
           fi
           if [ ! -f archive_data.json ]; then
             echo '{"events":[],"files":0,"errors":[]}' > archive_data.json
+            echo "⚠️  archive_data.json missing — using empty fallback"
           fi
+          echo "✓ live_stats.json: $(python3 -c \"import json; d=json.load(open('live_stats.json')); print(len(d.get('downloads',[])))\" ) events"
+          echo "✓ archive_data.json: $(python3 -c \"import json; d=json.load(open('archive_data.json')); print(len(d.get('events',[])))\" ) events"
       
       - name: '🧮 Advanced Analysis & Computation'
         id: analysis
@@ -765,7 +794,7 @@ jobs:
           echo "⏱️  $(TZ='Asia/Baghdad' date '+%Y-%m-%d %H:%M:%S %Z')"
       
       - name: '🔓 Checkout'
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ github.token }}
