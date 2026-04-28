@@ -813,22 +813,30 @@ jobs:
           git add popular.json
           
           # Commit
-          COMMIT_MSG="chore(fonts): auto-update popular.json [$(TZ='Asia/Baghdad' date '+%Y-%m-%d %H:%M:%S %Z')]
-
-📊 Analytics Report:
-- Added: ${{ needs.analyze-compute.outputs.added_count }} fonts
-- Removed: ${{ needs.analyze-compute.outputs.removed_count }} fonts
-- Unique fonts: ${{ needs.analyze-compute.outputs.total_unique }}
-- Total events analyzed: ${{ needs.analyze-compute.outputs.total_events }}
-- Confidence: ${{ needs.analyze-compute.outputs.confidence }}%
-- Duration: ${{ needs.analyze-compute.outputs.analysis_duration }}
-
-Data Sources:
-- Live stats: ${{ needs.fetch-live-data.outputs.live_count }} events (fallback: ${{ needs.fetch-live-data.outputs.is_fallback }})
-- Archive files: ${{ needs.fetch-archive-data.outputs.archive_count }} files (${{ needs.fetch-archive-data.outputs.archive_size_mb }} MB)
-
-Timezone: Asia/Baghdad (Sulaymaniyah Iraq GMT+3)
-Engine: UniQaidar Font Analytics v3.0"
+          ADDED="${{ needs.analyze-compute.outputs.added_count }}"
+          REMOVED="${{ needs.analyze-compute.outputs.removed_count }}"
+          UNIQUE="${{ needs.analyze-compute.outputs.total_unique }}"
+          EVENTS="${{ needs.analyze-compute.outputs.total_events }}"
+          CONFIDENCE="${{ needs.analyze-compute.outputs.confidence }}"
+          DURATION="${{ needs.analyze-compute.outputs.analysis_duration }}"
+          LIVE_COUNT="${{ needs.fetch-live-data.outputs.live_count }}"
+          IS_FALLBACK="${{ needs.fetch-live-data.outputs.is_fallback }}"
+          ARCHIVE_COUNT="${{ needs.fetch-archive-data.outputs.archive_count }}"
+          ARCHIVE_SIZE="${{ needs.fetch-archive-data.outputs.archive_size_mb }}"
+          RUN_TIME=$(TZ='Asia/Baghdad' date '+%Y-%m-%d %H:%M:%S %Z')
+          COMMIT_MSG=$(printf '%s\n\n%s\n%s\n%s\n%s\n%s\n%s\n\n%s\n%s\n%s\n\n%s\n%s' \
+            "chore(fonts): auto-update popular.json [${RUN_TIME}]" \
+            "Analytics Report:" \
+            "- Added: ${ADDED} fonts" \
+            "- Removed: ${REMOVED} fonts" \
+            "- Unique fonts: ${UNIQUE}" \
+            "- Total events: ${EVENTS}" \
+            "- Confidence: ${CONFIDENCE}% | Duration: ${DURATION}" \
+            "Data Sources:" \
+            "- Live stats: ${LIVE_COUNT} events (fallback=${IS_FALLBACK})" \
+            "- Archive files: ${ARCHIVE_COUNT} files (${ARCHIVE_SIZE} MB)" \
+            "Timezone: Asia/Baghdad (Sulaymaniyah Iraq GMT+3)" \
+            "Engine: UniQaidar Font Analytics v3.0")
           
           if git commit -m "$COMMIT_MSG" --quiet; then
             echo "✅ Committed successfully"
