@@ -3154,8 +3154,25 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             var tagM  = next.match(tagRe);
             var tag   = tagM ? tagM[1].toLowerCase() : 'p';
             var re = new RegExp('(id="' + cfg.id + '"[^>]*>)([\\s\\S]*?)(<\\/' + tag + '>)', 'i');
-            if (re.test(next)) {
-                next = next.replace(re, '$1' + newVal + '$3');
+            var existingMatch = next.match(re);
+            if (existingMatch) {
+                var existingInner = existingMatch[2];
+                // Preserve any leading <span style="color:..."> wrapper so
+                // color edits made directly in index.html are not wiped on save.
+                var spanMatch = existingInner.match(/^(<span[^>]*style="[^"]*color:[^"]*"[^>]*>[\s\S]*?<\/span>)([\s\S]*)$/i);
+                var replacement;
+                if (spanMatch) {
+                    var spanHtml = spanMatch[1];
+                    var spanText = spanHtml.replace(/<[^>]+>/g, '').trim();
+                    var afterLabel = newVal;
+                    if (newVal.indexOf(spanText) === 0) {
+                        afterLabel = newVal.slice(spanText.length).trim();
+                    }
+                    replacement = spanHtml + (afterLabel ? afterLabel : '');
+                } else {
+                    replacement = newVal;
+                }
+                next = next.replace(re, '$1' + replacement + '$3');
                 changed++;
             }
         });
@@ -3180,7 +3197,28 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             if(!inp || !inp.value.trim()) return;
             var newVal = inp.value.trim();
             var re = new RegExp('(<li[^>]*data-pvb="'+t[1]+'"[^>]*>)([\\s\\S]*?)(<\\/li>)','i');
-            if(re.test(next)){ next = next.replace(re,'$1'+newVal+'$3'); changed++; }
+            var existingMatch = next.match(re);
+            if(existingMatch){
+                var existingInner = existingMatch[2];
+                // If the existing inner HTML has a leading colored span, preserve it and
+                // only update the text that follows it. The plain-text value from the textarea
+                // already contains both the label and the description concatenated.
+                var spanMatch = existingInner.match(/^(<span[^>]*style="[^"]*color:[^"]*"[^>]*>[\s\S]*?<\/span>)([\s\S]*)$/i);
+                var replacement;
+                if(spanMatch){
+                    var spanHtml   = spanMatch[1];
+                    var spanText   = spanHtml.replace(/<[^>]+>/g,'').trim();
+                    var afterLabel = newVal;
+                    if(newVal.indexOf(spanText) === 0){
+                        afterLabel = newVal.slice(spanText.length).trim();
+                    }
+                    replacement = spanHtml + (afterLabel ? ' ' + afterLabel : '');
+                } else {
+                    replacement = newVal;
+                }
+                next = next.replace(re, '$1' + replacement + '$3');
+                changed++;
+            }
         });
         if (next === RAW) return alert2(al, '⚠️ No changes were made.', 'inf');
         alert2(al, '⏳ Saving ' + changed + ' fields to GitHub...', 'inf');
@@ -6924,6 +6962,7 @@ async function saveEditFont() {
     if (editLineHVal)                          updatedEntry.lineHeight = editLineHVal;
     if (date)                                updatedEntry.dateAdded = date;
     if (displayName && displayName !== name) updatedEntry.displayName = displayName;
+    if (origFont.size)                       updatedEntry.size = origFont.size;
 
     // ── Update @font-face in index.html if name changed ──
     let next = RAW;
