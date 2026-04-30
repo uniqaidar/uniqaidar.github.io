@@ -1706,6 +1706,17 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                         </div>
                     </div>
                     <div class="form-group">
+                        <label><span data-ku>ڕەنگی وشەی دیاریکراو</span><span data-en style="display:none">Keyword Color</span></label>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <button type="button" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:11px;"
+                                    onclick="(function(btn){var cur=document.getElementById('uq-cfg-sp-visit-kw-color').value.replace('#','');uqOpenPicker(cur,function(hex){document.getElementById('uq-cfg-sp-visit-kw-color').value='#'+hex;btn.querySelector('.uq-css-dot').style.background='#'+hex;_uqRefreshAllPreviews();});})(this)">
+                                <span class="uq-css-dot" id="uq-cfg-sp-visit-kw-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffa71e;"></span>
+                                <span data-ku>هەڵبژێرنی ڕەنگ</span><span data-en style="display:none">Pick Color</span>
+                            </button>
+                            <input type="text" id="uq-cfg-sp-visit-kw-color" value="#ffa71e" style="direction:ltr;width:160px;font-family:var(--mono);font-size:0.8rem;" oninput="_uqSyncDot('uq-cfg-sp-visit-kw-dot',this.value);_uqRefreshAllPreviews();">
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label><span data-ku>قەبارەی فۆنتی دەق (rem)</span><span data-en style="display:none">Text Font Size (rem)</span></label>
                         <input type="number" id="uq-cfg-sp-visit-size" min="0.5" max="3" step="0.05" value="0.85" style="direction:ltr;" oninput="_uqRefreshAllPreviews();">
                     </div>
@@ -1752,6 +1763,17 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                                 <span data-ku>هەڵبژێرنی ڕەنگ</span><span data-en style="display:none">Pick Color</span>
                             </button>
                             <input type="text" id="uq-cfg-sp-dl-num-color" value="#07beff" style="direction:ltr;width:160px;font-family:var(--mono);font-size:0.8rem;" oninput="_uqSyncDot('uq-cfg-sp-dl-num-dot',this.value);_uqRefreshAllPreviews();">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><span data-ku>ڕەنگی وشەی دیاریکراو</span><span data-en style="display:none">Keyword Color</span></label>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <button type="button" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:11px;"
+                                    onclick="(function(btn){var cur=document.getElementById('uq-cfg-sp-dl-kw-color').value.replace('#','');uqOpenPicker(cur,function(hex){document.getElementById('uq-cfg-sp-dl-kw-color').value='#'+hex;btn.querySelector('.uq-css-dot').style.background='#'+hex;_uqRefreshAllPreviews();});})(this)">
+                                <span class="uq-css-dot" id="uq-cfg-sp-dl-kw-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffa71e;"></span>
+                                <span data-ku>هەڵبژێرنی ڕەنگ</span><span data-en style="display:none">Pick Color</span>
+                            </button>
+                            <input type="text" id="uq-cfg-sp-dl-kw-color" value="#ffa71e" style="direction:ltr;width:160px;font-family:var(--mono);font-size:0.8rem;" oninput="_uqSyncDot('uq-cfg-sp-dl-kw-dot',this.value);_uqRefreshAllPreviews();">
                         </div>
                     </div>
                     <div class="form-group">
@@ -12062,12 +12084,12 @@ window._uqRefreshAllPreviews = function() {
         parseFloat(gV('uq-cfg-dl-num-size')) || 1.1);
     _uqRenderPreview('uq-cfg-sp-visit-preview',
         gV('uq-cfg-sp-visit-tpl'), 3197,
-        gV('uq-cfg-sp-visit-num-color'), gV('uq-cfg-sp-visit-text-color'), null,
+        gV('uq-cfg-sp-visit-num-color'), gV('uq-cfg-sp-visit-text-color'), gV('uq-cfg-sp-visit-kw-color'),
         parseFloat(gV('uq-cfg-sp-visit-size')) || 0.85,
         parseFloat(gV('uq-cfg-sp-visit-num-size')) || 1.05);
     _uqRenderPreview('uq-cfg-sp-dl-preview',
         gV('uq-cfg-sp-dl-tpl'), 84209,
-        gV('uq-cfg-sp-dl-num-color'), gV('uq-cfg-sp-dl-text-color'), null,
+        gV('uq-cfg-sp-dl-num-color'), gV('uq-cfg-sp-dl-text-color'), gV('uq-cfg-sp-dl-kw-color'),
         parseFloat(gV('uq-cfg-sp-dl-size')) || 0.85,
         parseFloat(gV('uq-cfg-sp-dl-num-size')) || 1.05);
 };
@@ -12113,8 +12135,10 @@ window.pvbCounterConfigLoad = function() {
     _setColor('uq-cfg-dl-kw-color',          'uq-cfg-dl-kw-dot',          cfg.downloadKeywordColor      || '#ffa71e');
     _setColor('uq-cfg-sp-visit-text-color',  'uq-cfg-sp-visit-text-dot',  cfg.splashVisitorTextColor    || 'rgba(220,220,220,0.88)');
     _setColor('uq-cfg-sp-visit-num-color',   'uq-cfg-sp-visit-num-dot',   cfg.splashVisitorNumberColor  || '#07beff');
+    _setColor('uq-cfg-sp-visit-kw-color',    'uq-cfg-sp-visit-kw-dot',    cfg.splashVisitorKeywordColor || '#ffa71e');
     _setColor('uq-cfg-sp-dl-text-color',     'uq-cfg-sp-dl-text-dot',     cfg.splashDownloadTextColor   || 'rgba(220,220,220,0.88)');
     _setColor('uq-cfg-sp-dl-num-color',      'uq-cfg-sp-dl-num-dot',      cfg.splashDownloadNumberColor || '#07beff');
+    _setColor('uq-cfg-sp-dl-kw-color',       'uq-cfg-sp-dl-kw-dot',       cfg.splashDownloadKeywordColor|| '#ffa71e');
 
     // Font sizes (text and number are independent — preserved as-is)
     _setNum('uq-cfg-visit-size',        cfg.visitorFontSize,             '1');
@@ -12165,10 +12189,12 @@ window.pvbCounterConfigSave = async function() {
         splashDownloadTemplate:       gT('uq-cfg-sp-dl-tpl'),
         splashVisitorTextColor:       gT('uq-cfg-sp-visit-text-color'),
         splashVisitorNumberColor:     gT('uq-cfg-sp-visit-num-color'),
+        splashVisitorKeywordColor:    gT('uq-cfg-sp-visit-kw-color'),
         splashVisitorFontSize:        gN('uq-cfg-sp-visit-size'),
         splashVisitorNumberFontSize:  gN('uq-cfg-sp-visit-num-size'),
         splashDownloadTextColor:      gT('uq-cfg-sp-dl-text-color'),
         splashDownloadNumberColor:    gT('uq-cfg-sp-dl-num-color'),
+        splashDownloadKeywordColor:   gT('uq-cfg-sp-dl-kw-color'),
         splashDownloadFontSize:       gN('uq-cfg-sp-dl-size'),
         splashDownloadNumberFontSize: gN('uq-cfg-sp-dl-num-size')
     };
