@@ -97,6 +97,23 @@ body {
     min-height: 200px;
 }
 
+/* Counter number digital font — loaded via FontFace API (display:block) in JS below */
+/* CSS @font-face intentionally omitted here to prevent font-display:swap fallback flicker */
+.uq-counter-num,
+span.uq-counter-num,
+body span.uq-counter-num,
+* .uq-counter-num {
+    font-family: 'UniQAIDAR_DIGITAL', 'Courier New', monospace !important;
+    font-size: 1.13em;
+    direction: ltr;
+    display: inline-block;
+}
+/* Mobile-only line break inside splash download line */
+.uq-mob-br { display: none; }
+@media (max-width: 600px) {
+    .uq-mob-br { display: block; }
+}
+
 
 body, 
 .header, .header *, 
@@ -3080,8 +3097,38 @@ body.dark-mode .card-body {
 }
 </style>
 
+<!-- ── Counter config — persisted by ghPut; read by aggregator IIFE ── -->
+<script id="uq-counter-config" type="application/json">
+{
+  "visitorTemplate": "بەخێربێیت.. تۆ [N]ـەمینی میوانی ئەم ماڵپەڕەیت..",
+  "downloadTemplate": "تاوەکو ئێستا [M] داونلۆد لەڕێگەی ئەم ماڵپەڕەوە بۆ فۆنتەکان ئەنجام دراوە",
+  "visitorTextColor": "rgba(220,220,220,0.88)",
+  "visitorNumberColor": "#07beff",
+  "visitorKeywordColor": "#ffa71e",
+  "visitorFontSize": "1",
+  "visitorLineHeight": "1.6",
+  "downloadTextColor": "rgba(220,220,220,0.88)",
+  "downloadNumberColor": "#07beff",
+  "downloadKeywordColor": "#ffa71e",
+  "downloadFontSize": "1",
+  "downloadLineHeight": "1.6",
+  "splashVisitorTemplate": "بەخێربێیت.. تۆ [N]ـەمینی میوانی ئەم ماڵپەڕەیت..",
+  "splashDownloadTemplate": "تاوەکو ئێستا [M] داونلۆد لەڕێگەی ئەم ماڵپەڕەوە بۆ فۆنتەکان ئەنجام دراوە",
+  "splashVisitorTextColor": "rgba(220,220,220,0.88)",
+  "splashVisitorNumberColor": "#07beff",
+  "splashDownloadTextColor": "rgba(220,220,220,0.88)",
+  "splashDownloadNumberColor": "#07beff",
+  "visitorNumberFontSize": "1.1",
+  "downloadNumberFontSize": "1.1",
+  "splashVisitorNumberFontSize": "1.05",
+  "splashDownloadNumberFontSize": "1.05"
+}
+</script>
+
 <div id="splash">
     <img id="splash-logo" src="Logo.png" alt="UniQaidar">
+    <div id="splash-visitor-line" dir="rtl" style="text-align:center; color:#ddd; font-size:0.85rem; min-height:1.2em;"></div>
+    <div id="splash-download-line" dir="rtl" style="text-align:center; color:#ddd; font-size:0.85rem; min-height:1.2em;"></div>
     <div id="splash-bar"><div id="splash-bar-fill"></div></div>
 </div>
 
@@ -3491,10 +3538,12 @@ body.dark-mode .card-body {
                 <span class="uq-wbtn-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1.6em" viewBox="0 0 24 36" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><polyline class="uq-chv uq-chv1" points="6 4 12 10 18 4"/><polyline class="uq-chv uq-chv2" points="6 14 12 20 18 14"/><polyline class="uq-chv uq-chv3" points="6 24 12 30 18 24"/></svg></span>
             </button>
             <div id="uq-welcome-tagline-anim">
-                <span class="uq-tagline-item active" data-pvb="tagline-1">🎨 زیاتر لە ٤٢٠ فۆنتی کوردی بۆ داگرتن</span>
-                <span class="uq-tagline-item" data-pvb="tagline-2">✨ داگرتنی خێرا و ئاسان</span>
-                <span class="uq-tagline-item" data-pvb="tagline-3">🖋 فۆنتی پیشەیی بۆ هەموو بوارەکان</span>
-                <span class="uq-tagline-item" data-pvb="tagline-4">📱 گونجاو بۆ مۆبایل، کۆمپیوتەر و تابلێت</span>
+                <span class="uq-tagline-item active" dir="rtl" data-pvb="tagline-1"></span>
+                <span class="uq-tagline-item" dir="rtl" data-pvb="tagline-2"></span>
+                <span class="uq-tagline-item" data-pvb="tagline-3">🎨 زیاتر لە ٤٢٠ فۆنتی کوردی بۆ داگرتن</span>
+                <span class="uq-tagline-item" data-pvb="tagline-4">✨ داگرتنی خێرا و ئاسان</span>
+                <span class="uq-tagline-item" data-pvb="tagline-5">🖋 فۆنتی پیشەیی بۆ هەموو بوارەکان</span>
+                <span class="uq-tagline-item" data-pvb="tagline-6">📱 گونجاو بۆ مۆبایل، کۆمپیوتەر و تابلێت</span>
             </div>
             <div class="uq-d-dots" style="transform:scaleX(-1);">
                 <span class="uq-d-dot" style="animation-delay:0s"></span>
@@ -3796,11 +3845,11 @@ body.dark-mode .card-body {
 #uq-welcome-tagline-anim {
     position: relative;
     height: 28px;
-    overflow: hidden;
+    overflow: visible;
     margin-bottom: 0;
     z-index: 1;
     min-width: 120px;
-    max-width: 340px;
+    max-width: 420px;
     flex: 1;
     text-align: center;
     direction: ltr;
@@ -3831,6 +3880,41 @@ body.dark-mode .card-body {
 .uq-tagline-item.leaving {
     opacity: 0;
     transform: translateY(-18px);
+}
+/* Counter slots (tagline-1, tagline-2) need to wrap long Kurdish text */
+.uq-tagline-item[data-pvb="tagline-1"],
+.uq-tagline-item[data-pvb="tagline-2"] {
+    white-space: normal;
+    line-height: 1.5;
+    top: 50%;
+    transform: translateY(calc(-50% + 18px));
+}
+.uq-tagline-item[data-pvb="tagline-1"].active,
+.uq-tagline-item[data-pvb="tagline-2"].active {
+    opacity: 1;
+    transform: translateY(-50%);
+}
+.uq-tagline-item[data-pvb="tagline-1"].leaving,
+.uq-tagline-item[data-pvb="tagline-2"].leaving {
+    opacity: 0;
+    transform: translateY(calc(-50% - 18px));
+}
+
+/* ── DIGITAL font override for counter number spans ──
+   Must come AFTER .uq-tagline-item { font-family:...!important } to win.
+   Targets every possible ancestor so specificity always beats parent rules. */
+.uq-tagline-item .uq-counter-num,
+.uq-tagline-item span.uq-counter-num,
+#splash-visitor-line .uq-counter-num,
+#splash-download-line .uq-counter-num,
+#splash-visitor-line span.uq-counter-num,
+#splash-download-line span.uq-counter-num,
+span.uq-counter-num,
+.uq-counter-num {
+    font-family: 'UniQAIDAR_DIGITAL', 'Courier New', monospace !important;
+    direction: ltr !important;
+    display: inline-block !important;
+    unicode-bidi: isolate !important;
 }
 
 /* ── Bottom hairline of hero ── */
@@ -3991,15 +4075,18 @@ body.dark-mode #uq-welcome-section h2 { color: #ff6a20 !important; }
         width: 100%;
         max-width: 100%;
         flex: none;
-        height: 22px;
+        height: 36px;
         text-align: center;
         direction: ltr;
         padding: 0;
         display: flex;
         align-items: center;
         justify-content: center;
+        overflow: visible;
     }
     .uq-tagline-item { font-size: 0.68rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center !important; left: 0 !important; right: 0 !important; padding: 0 8px; }
+    .uq-tagline-item[data-pvb="tagline-1"],
+    .uq-tagline-item[data-pvb="tagline-2"] { white-space: normal; overflow: visible; text-overflow: clip; font-size: 0.65rem; padding: 0 6px; }
     .uq-d-dots { gap: 3px; }
     .uq-d-dot { width: 4px; height: 4px; }
     #uq-welcome-section h1 { font-size: 1.05rem; }
@@ -4026,6 +4113,297 @@ function uqExpandWelcome(btn) {
     }
 }
 
+// ══════════════════════════════════════════════════════════
+//  UniQAIDAR_DIGITAL font enforcement — v4 FINAL
+//
+//  Root cause: .uq-tagline-item has font-family !important
+//  set directly on it. This is inherited by child spans.
+//  Even JS setProperty on a child only wins when the font
+//  file is ALREADY loaded. font-display:swap means the
+//  browser shows the fallback font for the entire odometer
+//  animation because the file hasn't arrived yet.
+//
+//  Fix: FontFace API with display:'block' (zero fallback) +
+//  createElement so setProperty runs BEFORE the node enters
+//  the DOM — guaranteeing the font is both loaded and applied.
+// ══════════════════════════════════════════════════════════
+
+// Backward-compat shims
+function forceDigitalFont() {}
+function upgradeCounterSpans() {}
+
+// ── Load font via FontFace API (display:block = no fallback ever) ──
+// _UQ_DIGITAL_FONT_PROMISE resolves only after the font file is loaded
+// and added to document.fonts, guaranteeing zero fallback flicker.
+var _UQ_DIGITAL_FONT_PROMISE = (function() {
+    try {
+        var digitalFont = new FontFace(
+            'UniQAIDAR_DIGITAL',
+            'url("UniQaidarFonts/UniQAIDAR_DIGITAL.ttf") format("truetype")',
+            { display: 'block' }
+        );
+        return digitalFont.load().then(function(face) {
+            document.fonts.add(face);
+            return face;
+        }).catch(function() { return null; });
+    } catch(e) { return Promise.resolve(null); }
+})();
+
+// ── Digit span factory: setProperty called BEFORE DOM insertion ────
+// Inline !important on the element itself always wins over any
+// stylesheet !important, including on parent elements.
+function makeDigitSpan(numStr, color, numFontSizeRem) {
+    var sp = document.createElement('span');
+    sp.className = 'uq-counter-num';
+    sp.textContent = numStr;
+    sp.style.setProperty('font-family', "'UniQAIDAR_DIGITAL','Courier New',monospace", 'important');
+    sp.style.setProperty('color', color || '#07beff', 'important');
+    sp.style.setProperty('direction', 'ltr', 'important');
+    sp.style.setProperty('display', 'inline-block', 'important');
+    sp.style.setProperty('font-style', 'normal', 'important');
+    sp.style.setProperty('font-weight', 'normal', 'important');
+    sp.style.setProperty('unicode-bidi', 'isolate', 'important');
+    if (numFontSizeRem) sp.style.setProperty('font-size', numFontSizeRem + 'rem', 'important');
+    return sp;
+}
+
+// ── Placeholder tokens for toKurdishNum ───────────────────────────
+var _UQN_SEP = '\x1F';
+var _UQN_PFX = '\x02UQN\x02';
+
+// toKurdishNum returns a placeholder token string.
+// renderTemplate / renderSplashLine parse it and call makeDigitSpan.
+function toKurdishNum(n, color, numFontSizeRem) {
+    return _UQN_PFX + Math.round(n).toString() + _UQN_SEP + (color || '#07beff') + _UQN_SEP + (numFontSizeRem || '') + _UQN_PFX;
+}
+
+// ── Build a DOM fragment from a template that contains UQN placeholders ──
+// This replaces innerHTML-based rendering for counter lines so that
+// digit spans are always created via makeDigitSpan (CSS-proof).
+function buildCounterNode(tpl, value, numColor, textColor, kwColor, keywords, numFontSize) {
+    var raw = tpl.replace(/\[N\]|\[M\]/g, toKurdishNum(value, numColor, numFontSize));
+    // Mark keywords
+    var kws = keywords || [];
+    kws.forEach(function(kw) {
+        raw = raw.split(kw).join('\x03' + kw + '\x04');
+    });
+    var outer = document.createElement('span');
+    outer.style.color = textColor;
+    var parts = raw.split(_UQN_PFX);
+    parts.forEach(function(part) {
+        if (part === '') return;
+        if (part.indexOf(_UQN_SEP) !== -1) {
+            // Digit placeholder
+            var sub = part.split(_UQN_SEP);
+            outer.appendChild(makeDigitSpan(sub[0], sub[1], sub[2] ? parseFloat(sub[2]) : null));
+        } else {
+            // Text — split on keyword markers
+            var kparts = part.split('\x03');
+            kparts.forEach(function(kp, ki) {
+                if (ki === 0) {
+                    if (kp) outer.appendChild(document.createTextNode(kp));
+                } else {
+                    var kparts2 = kp.split('\x04');
+                    var kwSpan = document.createElement('span');
+                    kwSpan.style.color = kwColor;
+                    kwSpan.textContent = kparts2[0];
+                    outer.appendChild(kwSpan);
+                    if (kparts2[1]) outer.appendChild(document.createTextNode(kparts2[1]));
+                }
+            });
+        }
+    });
+    return outer;
+}
+
+// ── Counter aggregator IIFE ───────────────────────────────
+(function() {
+    // Read config from embedded JSON block
+    var cfg = {};
+    try {
+        var cfgEl = document.getElementById('uq-counter-config');
+        if (cfgEl) cfg = JSON.parse(cfgEl.textContent);
+    } catch(e) {}
+
+    var visitTpl    = cfg.visitorTemplate  || 'بەخێربێیت.. تۆ [N]ـەمینی میوانی ئەم ماڵپەڕەیت..';
+    var dlTpl       = cfg.downloadTemplate || 'تاوەکو ئێستا [M] داونلۆد لەڕێگەی ئەم ماڵپەڕەوە بۆ فۆنتەکان ئەنجام دراوە';
+    var numColorV   = cfg.visitorNumberColor  || '#07beff';
+    var numColorD   = cfg.downloadNumberColor || '#07beff';
+    var numFontV    = parseFloat(cfg.visitorNumberFontSize)          || 1.1;
+    var numFontD    = parseFloat(cfg.downloadNumberFontSize)         || 1.1;
+    var spNumFontV  = parseFloat(cfg.splashVisitorNumberFontSize)    || 1.05;
+    var spNumFontD  = parseFloat(cfg.splashDownloadNumberFontSize)   || 1.05;
+    var kwColor     = cfg.visitorKeywordColor || '#ffa71e';
+    var textColorV  = cfg.visitorTextColor    || 'rgba(220,220,220,0.88)';
+    var textColorD  = cfg.downloadTextColor   || 'rgba(220,220,220,0.88)';
+    var spVTpl      = cfg.splashVisitorTemplate  || visitTpl;
+    var spDTpl      = cfg.splashDownloadTemplate || dlTpl;
+    var spNumColorV = cfg.splashVisitorNumberColor  || '#07beff';
+    var spNumColorD = cfg.splashDownloadNumberColor || '#07beff';
+
+    var visitKeywords = ['بەخێربێیت'];
+    var dlKeywords    = ['داونلۆد', 'ئەنجام دراوە'];
+
+    function renderTemplate(tpl, value, numColor, textColor, extraKws, numFontSize) {
+        // Use buildCounterNode (DOM-based) so digit spans are created via
+        // makeDigitSpan with setProperty — no CSS can interfere.
+        var kws = (extraKws || []).concat(visitKeywords).concat(dlKeywords);
+        return buildCounterNode(tpl, value, numColor, textColor, kwColor, kws, numFontSize);
+    }
+
+    function renderSplashLine(el, tpl, value, numColor, textColor, isMobBr, numFontSize) {
+        if (!el) return;
+        // Build DOM node instead of using innerHTML
+        var node = buildCounterNode(tpl, value, numColor, textColor, kwColor, [], numFontSize);
+        // Mobile line-break for download line
+        if (isMobBr) {
+            var walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
+            var tn;
+            while ((tn = walker.nextNode())) {
+                if (tn.textContent.indexOf('بۆ فۆنتەکان') !== -1) {
+                    var parts = tn.textContent.split('بۆ فۆنتەکان');
+                    var br = document.createElement('br');
+                    br.className = 'uq-mob-br';
+                    var after = document.createTextNode('بۆ فۆنتەکان' + parts.slice(1).join('بۆ فۆنتەکان'));
+                    var before = document.createTextNode(parts[0]);
+                    var parent = tn.parentNode;
+                    parent.insertBefore(before, tn);
+                    parent.insertBefore(br, tn);
+                    parent.insertBefore(after, tn);
+                    parent.removeChild(tn);
+                    break;
+                }
+            }
+        }
+        el.innerHTML = '';
+        el.appendChild(node);
+    }
+
+    // Odometer animation
+    function animateOdometer(from, to, durationMs, onTick, onDone) {
+        var start = null;
+        var range = to - from;
+        function step(ts) {
+            if (!start) start = ts;
+            var elapsed = ts - start;
+            var progress = Math.min(elapsed / durationMs, 1);
+            // Ease-out cubic
+            var ease = 1 - Math.pow(1 - progress, 3);
+            // Add random jitter that reduces as we near the end
+            var jitter = (1 - ease) * range * 0.15 * (Math.random() - 0.5);
+            var current = Math.round(from + ease * range + jitter);
+            current = Math.max(0, Math.min(current, to));
+            if (progress >= 1) current = to;
+            onTick(current);
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            } else {
+                onTick(to);
+                if (onDone) onDone();
+            }
+        }
+        requestAnimationFrame(step);
+    }
+
+    var totalVisits = 0;
+    var totalDownloads = 0;
+
+    function applyCounters(v, d) {
+        // Update tagline slots 1 & 2 using DOM nodes (not innerHTML)
+        // so digit spans are created via makeDigitSpan before insertion.
+        var t1 = document.querySelector('[data-pvb="tagline-1"]');
+        var t2 = document.querySelector('[data-pvb="tagline-2"]');
+        if (t1) { t1.innerHTML = ''; t1.appendChild(renderTemplate(visitTpl, v, numColorV, textColorV, null, numFontV)); }
+        if (t2) { t2.innerHTML = ''; t2.appendChild(renderTemplate(dlTpl,    d, numColorD, textColorD, null, numFontD)); }
+        // Update splash lines
+        var sl1 = document.getElementById('splash-visitor-line');
+        var sl2 = document.getElementById('splash-download-line');
+        renderSplashLine(sl1, spVTpl, v, spNumColorV, 'rgba(220,220,220,0.88)', false, spNumFontV);
+        renderSplashLine(sl2, spDTpl, d, spNumColorD, 'rgba(220,220,220,0.88)', true,  spNumFontD);
+    }
+
+    function startAnimation(finalV, finalD) {
+        applyCounters(0, 0);
+        // Phase 1: splash phase ~700ms
+        animateOdometer(0, Math.round(finalV * 0.7), 700, function(v) {
+            var dProp = Math.round(finalD * v / Math.max(finalV, 1));
+            applyCounters(v, dProp);
+        }, function() {
+            // Phase 2: settle to final over ~1000ms
+            var startV = Math.round(finalV * 0.7);
+            var startD = Math.round(finalD * 0.7);
+            animateOdometer(startV, finalV, 1000, function(v) {
+                var d = Math.round(startD + (finalD - startD) * (v - startV) / Math.max(finalV - startV, 1));
+                applyCounters(v, d);
+            }, function() {
+                applyCounters(finalV, finalD);
+            });
+        });
+    }
+
+    // Fetch all data in parallel
+    var BASE = 'https://uniqaidar.pages.dev/';
+    // todayIQ: YYYY-MM-DD in Asia/Baghdad timezone — matches admin's todaySUL()
+    var todayIQ = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });
+    Promise.all([
+        fetch(BASE + 'historicaldata/index.json').then(function(r) { return r.ok ? r.json() : {files:[]}; }).catch(function() { return {files:[]}; }),
+        // Fetch full arrays (type=both&date=today) exactly as admin does, so we can
+        // apply the same !e.event || e.event==='download' filter on live data too.
+        fetch(BASE + 'api/stats?type=both&date=' + todayIQ).then(function(r) { return r.ok ? r.json() : {ok:false}; }).catch(function() { return {ok:false}; })
+    ]).then(function(results) {
+        var idxData  = results[0];
+        var liveData = results[1];
+        var files = (idxData && Array.isArray(idxData.files)) ? idxData.files : [];
+        // Live arrays (same shape admin uses — full entry objects, not integers)
+        var liveDl = (liveData && liveData.ok && Array.isArray(liveData.downloads)) ? liveData.downloads : [];
+        var liveVt = (liveData && liveData.ok && Array.isArray(liveData.visits))    ? liveData.visits    : [];
+
+        // Fetch all archive files in parallel
+        return Promise.all(
+            files.map(function(f) {
+                return fetch(BASE + 'historicaldata/' + f)
+                    .then(function(r) { return r.ok ? r.json() : []; })
+                    .catch(function() { return []; });
+            })
+        ).then(function(archives) {
+            var v = 0, d = 0;
+            archives.forEach(function(archive) {
+                if (!Array.isArray(archive)) return;
+                archive.forEach(function(day) {
+                    if (Array.isArray(day.visits)) v += day.visits.length;
+                    if (Array.isArray(day.downloads)) {
+                        day.downloads.forEach(function(entry) {
+                            var e = entry.event;
+                            // Exact match of admin panel (admin.html updateDlSummary):
+                            // realDl = DL_DATA.filter(e => !e.event || e.event === 'download')
+                            // No type filter — all types count if event is falsy or 'download'
+                            if (!e || e === 'download') { d++; }
+                        });
+                    }
+                });
+            });
+            // Add live data — apply identical filter to live entries (not a raw integer)
+            v += liveVt.length;
+            liveDl.forEach(function(entry) {
+                var e = entry.event;
+                if (!e || e === 'download') { d++; }
+            });
+            totalVisits    = v;
+            totalDownloads = d;
+            // Nuclear gate: animation MUST NOT start until BOTH the digital font
+            // file is fully loaded (via FontFace API, display:block — no fallback)
+            // AND document.fonts.ready resolves. This dual-promise gate guarantees
+            // zero fallback-font flicker for the odometer animation.
+            Promise.all([_UQ_DIGITAL_FONT_PROMISE, document.fonts.ready]).then(function() {
+                startAnimation(totalVisits, totalDownloads);
+            });
+        });
+    }).catch(function() {
+        // Silent fail — show zeros
+        applyCounters(0, 0);
+    });
+})();
+
 // ── Welcome section tagline carousel (looping) ───────────
 (function() {
     var items = document.querySelectorAll('.uq-tagline-item');
@@ -4040,6 +4418,10 @@ function uqExpandWelcome(btn) {
         setTimeout(function() { items[prev].classList.remove('leaving'); }, 650);
     }, 3200);
 })();
+// MutationObserver no longer needed: digit spans are created via
+// makeDigitSpan (createElement + setProperty) inside applyCounters,
+// so every update already has the correct font before DOM insertion.
+
 // uqWelcomeToggle kept as no-op for admin panel compatibility
 function uqWelcomeToggle() {}
 </script>
