@@ -459,6 +459,51 @@ textarea { resize: vertical; min-height: 80px; line-height: 1.7; }
     .pvb-stab { font-size: 0.5rem; padding: 6px 1px; }
 }
 
+/* ── Welcome Section Editor — mobile responsive ── */
+@media (max-width: 768px) {
+    /* Override inline grid-column:2 — on 1-col grid these push fields off-screen */
+    .form-grid .form-group[style*="grid-column:2"] {
+        grid-column: 1 !important;
+        text-align: right !important;
+    }
+    /* RTE toolbar: wrap gracefully, don't overflow */
+    .uq-rte-toolbar {
+        flex-wrap: wrap !important;
+        gap: 4px !important;
+    }
+    /* RTE contenteditable box: never exceed viewport */
+    .uq-rte {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+    /* RTE size/lh number inputs: shrink on tight screens */
+    .uq-rte-toolbar input[type="number"] {
+        width: 40px !important;
+    }
+    /* Color picker: cap width to viewport so it doesn't clip */
+    #uq-cp-box {
+        width: min(440px, 96vw) !important;
+    }
+    /* Tagline inputs: always full width on mobile */
+    #pvb-wlc-tag4,
+    #pvb-wlc-tag6 {
+        text-align: right !important;
+        width: 100% !important;
+    }
+}
+@media (max-width: 480px) {
+    /* Color picker body: stack gradient + controls vertically */
+    #uq-cp-body {
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    #uq-cp-gradient {
+        width: 100% !important;
+        max-width: 260px !important;
+    }
+}
+
 /* ── Bilingual interface: English mode ── */
 body.lang-en [data-ku]  { display: none !important; }
 body.lang-en [data-en]  { display: inline !important; }
