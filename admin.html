@@ -12006,7 +12006,17 @@ window.pvbCounterConfigSave = async function() {
         if (al) alert2(al, '❌ RAW not loaded — connect to GitHub first', 'err');
         return;
     }
-    function gT(id) { var el=document.getElementById(id); return el?el.value.trim():''; }
+    function gT(id) {
+        var el = document.getElementById(id);
+        if (!el) return '';
+        // If the textarea has a paired RTE contenteditable div, read its innerText
+        // so we get plain text (with [N]/[M] intact) — not raw HTML with color spans.
+        var rte = el.nextElementSibling;
+        if (rte && rte.classList && rte.classList.contains('uq-rte')) {
+            return (rte.innerText || rte.textContent || '').trim();
+        }
+        return el.value.trim();
+    }
     function gN(id) { var el=document.getElementById(id); return el?el.value:''; }
 
     var cfg = {
