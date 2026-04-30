@@ -1312,6 +1312,13 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     <div class="form-group">
                         <label>Modal Title</label>
                         <input type="text" id="dm-title-inp" placeholder="داگرتنی تەواوی فۆنتەکان" style="direction:rtl;">
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                            <label style="font-size:10px;color:#aaa;margin:0;">☀️ Light:</label>
+                            <button type="button" id="dm-title-light-color" data-hex="#339cff" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})(this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#339cff;"></span>Pick</button>
+                            <label style="font-size:10px;color:#aaa;margin:0;margin-right:6px;">🌙 Dark:</label>
+                            <button type="button" id="dm-title-dark-color" data-hex="#07beff" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})(this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#07beff;"></span>Pick</button>
+                            <span style="font-size:10px;color:#666;">applies to both Download &amp; About modal titles</span>
+                        </div>
                     </div>
                     <div class="form-group full">
                         <label>Description</label>
@@ -1350,10 +1357,15 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     <div class="form-group">
                         <label>Title</label>
                         <input type="text" id="about-title-inp" placeholder="دەربارەی یونیقەیدار" style="direction:rtl;">
+                        <div style="margin-top:3px;font-size:10px;color:#666;">🌙 Dark color: shared with Download Modal Title above</div>
                     </div>
                     <div class="form-group">
                         <label>Features Section Title</label>
                         <input type="text" id="about-features-title-inp" placeholder="تایبەتمەندییەکانی ماڵپەڕ" style="direction:rtl;">
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                            <label style="font-size:10px;color:#aaa;margin:0;">🌙 Dark:</label>
+                            <button type="button" id="about-features-title-dark-color" data-hex="#ffa71e" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})(this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffa71e;"></span>Pick</button>
+                        </div>
                     </div>
                     <div class="form-group full">
                         <label>Content / Description</label>
@@ -1398,6 +1410,10 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     <div class="form-group">
                         <label>Developer Name</label>
                         <input type="text" id="about-dev-inp" placeholder="Qaidar Rahim" style="direction:ltr;">
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                            <label style="font-size:10px;color:#aaa;margin:0;">🌙 Dark:</label>
+                            <button type="button" id="about-dev-dark-color" data-hex="#ffa71e" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})(this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffa71e;"></span>Pick</button>
+                        </div>
                     </div>
                 </div>
                 <div id="about-alert" class="alert" style="margin-top:10px;"></div>
@@ -7339,11 +7355,55 @@ function loadAllSettings() {
             if (_textHtml !== null) set('about-feat' + _i + '-text-inp', _textHtml.trim());
         }
 
-        var _launchTxt = _rawInnerWithElColor('about-launch-date');
+        var _launchTxt = _rawInner('about-launch-date');
         if (_launchTxt !== null) set('about-launch-inp', _launchTxt);
 
         var _devTxt = _rawInnerWithElColor('about-developer');
         if (_devTxt !== null) set('about-dev-inp', _devTxt);
+
+        // ── Load dark mode CSS colors from RAW style block ──
+        // These colors live in CSS rules (body.dark-mode ...), not inline element styles.
+        (function() {
+            // Extract color from a CSS rule matching a given selector fragment
+            function _darkCssColor(selectorFragment) {
+                // Find: body.dark-mode <selectorFragment> { color: #HEX !important; }
+                var re = new RegExp(
+                    'body\.dark-mode\s+' + selectorFragment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +
+                    '\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})', 'i'
+                );
+                var m = RAW.match(re);
+                return m ? m[1] : null;
+            }
+
+            // dm-title + about-title light mode: .modal-content h2 { color: #HEX }
+            var _h2LightRe = /\.modal-content h2\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i;
+            var _h2LightM = RAW.match(_h2LightRe);
+            if (_h2LightM) {
+                var swL = document.getElementById('dm-title-light-color');
+                if (swL) { swL.dataset.hex=_h2LightM[1]; var dotL=swL.querySelector('.uq-css-dot'); if(dotL) dotL.style.background=_h2LightM[1]; }
+            }
+
+            // dm-title + about-title dark mode: body.dark-mode .modal-content h2
+            var _h2Dark = _darkCssColor('\.modal-content h2');
+            if (_h2Dark) {
+                var sw = document.getElementById('dm-title-dark-color');
+                if (sw) { sw.dataset.hex=_h2Dark; var dotD=sw.querySelector('.uq-css-dot'); if(dotD) dotD.style.background=_h2Dark; }
+            }
+
+            // about-features-title: body.dark-mode #about-features-title
+            var _featTitleDark = _darkCssColor('#about-features-title');
+            if (_featTitleDark) {
+                var sw2 = document.getElementById('about-features-title-dark-color');
+                if (sw2) { sw2.dataset.hex=_featTitleDark; var dot2=sw2.querySelector('.uq-css-dot'); if(dot2) dot2.style.background=_featTitleDark; }
+            }
+
+            // about-developer: body.dark-mode #about-developer
+            var _devDark = _darkCssColor('#about-developer');
+            if (_devDark) {
+                var sw3 = document.getElementById('about-dev-dark-color');
+                if (sw3) { sw3.dataset.hex=_devDark; var dot3=sw3.querySelector('.uq-css-dot'); if(dot3) dot3.style.background=_devDark; }
+            }
+        })();
     }
 
     // ── SEO ──
@@ -7582,6 +7642,27 @@ async function saveDownloadModal() {
     // Download URL is an attribute, not innerHTML — use regex
     next = next.replace(/(<a id="dm-btn" href=")[^"]*"/, `$1${url}"`);
 
+    // ── Light mode CSS color: .modal-content h2 ──
+    const _h2LightEl = document.getElementById('dm-title-light-color');
+    if (_h2LightEl) {
+        const _h2LightHex = (_h2LightEl.dataset.hex || _h2LightEl.value || '').replace('#','');
+        next = next.replace(
+            /(\.modal-content h2\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i,
+            '$1' + _h2LightHex
+        );
+    }
+
+    // ── Dark mode CSS color: body.dark-mode .modal-content h2 ──
+    // Shared between Download Modal Title and About Modal Title
+    const _h2DarkEl = document.getElementById('dm-title-dark-color');
+    if (_h2DarkEl) {
+        const _h2DarkHex = (_h2DarkEl.dataset.hex || _h2DarkEl.value || '').replace('#','');
+        next = next.replace(
+            /(body\.dark-mode\s+\.modal-content h2\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i,
+            '$1' + _h2DarkHex
+        );
+    }
+
     alert2(al,'Saving...','inf');
     const ok = await ghPut(next,'Update: download modal');
     if (ok) { RAW = next; alert2(al,'✅ سەیڤکرا!','ok'); }
@@ -7643,6 +7724,24 @@ async function saveAbout() {
     if (launch) next = next.replace(/(<span id="about-launch-date"[^>]*>)([^<]*)(<\/span>)/, `$1${launch}$3`);
     const dev = _stripWrapperSpan(v('about-dev-inp'));
     if (dev)    next = next.replace(/(<span id="about-developer"[^>]*>)([^<]*)(<\/span>)/, `$1${dev}$3`);
+
+    // ── Dark mode CSS colors ──
+    const _featTitleDarkEl = document.getElementById('about-features-title-dark-color');
+    if (_featTitleDarkEl) {
+        const _featTitleDarkHex = (_featTitleDarkEl.dataset.hex || _featTitleDarkEl.value || '').replace('#','');
+        next = next.replace(
+            /(body\.dark-mode\s+#about-features-title\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i,
+            '$1' + _featTitleDarkHex
+        );
+    }
+    const _devDarkEl = document.getElementById('about-dev-dark-color');
+    if (_devDarkEl) {
+        const _devDarkHex = (_devDarkEl.dataset.hex || _devDarkEl.value || '').replace('#','');
+        next = next.replace(
+            /(body\.dark-mode\s+#about-developer\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i,
+            '$1' + _devDarkHex
+        );
+    }
 
     if (next === RAW) return alert2(al,'❌ هیچ گۆڕانکارییەک نەدۆزرایەوە یان ئێلیمێنتەکان نەدۆزرایەوە!','err');
     alert2(al,'Saving...','inf');
@@ -10901,7 +11000,7 @@ async function submitBingSitemapFull() {
           <div class="uq-cp-row"><label>Y:</label><input type="number" id="uq-y" min="0" max="100"><span class="uq-cp-pct">%</span></div>
           <div class="uq-cp-row" style="grid-column:2;"><label>K:</label><input type="number" id="uq-k" min="0" max="100"><span class="uq-cp-pct">%</span></div>
         </div>
-        <div id="uq-cp-hex-row"><label>#</label><input type="text" id="uq-cp-hex" maxlength="6" spellcheck="false"></div>
+        <div id="uq-cp-hex-row"><label>#</label><input type="text" id="uq-cp-hex" maxlength="7" spellcheck="false"></div>
       </div>
     </div>
     <div id="uq-cp-footer">
@@ -11040,6 +11139,53 @@ function uqOpenPicker(currentHex, onOkCb){
 }
 window.uqOpenPicker=uqOpenPicker;
 
+/* ── Wire hex text inputs next to CSS swatch buttons ── */
+(function(){
+  var CSS_SWATCHES=['dm-title-light-color','dm-title-dark-color',
+                    'about-features-title-dark-color','about-dev-dark-color'];
+  CSS_SWATCHES.forEach(function(id){
+    var btn=document.getElementById(id);
+    if(!btn) return;
+    // Create a small hex text input right after the button
+    var inp=document.createElement('input');
+    inp.type='text';
+    inp.maxLength=7;
+    inp.placeholder='#rrggbb';
+    inp.spellcheck=false;
+    inp.style.cssText='width:66px;padding:2px 5px;font-size:11px;background:#1e1e1e;border:1px solid #555;border-radius:3px;color:#eee;font-family:monospace;letter-spacing:.04em;direction:ltr;';
+    // Set initial value from button's data-hex
+    inp.value=btn.dataset.hex||'';
+    // Sync: text → swatch instantly
+    inp.addEventListener('input',function(){
+      var v=inp.value.replace(/^#/,'').trim();
+      if(v.length===3&&/^[0-9a-fA-F]{3}$/.test(v)) v=v.split('').map(function(c){return c+c;}).join('');
+      if(v.length===6&&/^[0-9a-fA-F]{6}$/.test(v)){
+        var hex='#'+v;
+        btn.dataset.hex=hex;
+        var dot=btn.querySelector('.uq-css-dot');
+        if(dot) dot.style.background=hex;
+      }
+    });
+    // When picker closes with OK, sync text input
+    var origOnclick=btn.onclick;
+    btn.onclick=null;
+    btn.addEventListener('click',function(){
+      var cur=(btn.dataset.hex||'07beff').replace('#','');
+      uqOpenPicker(cur,function(hex){
+        btn.dataset.hex=hex;
+        var dot=btn.querySelector('.uq-css-dot');
+        if(dot) dot.style.background=hex;
+        inp.value=hex;
+      });
+    });
+    // Insert text input right after button
+    btn.parentNode.insertBefore(inp,btn.nextSibling);
+    // Focus styling
+    inp.addEventListener('focus',function(){inp.style.borderColor='#07beff';inp.style.outline='1px solid #07beff';});
+    inp.addEventListener('blur',function(){inp.style.borderColor='#555';inp.style.outline='none';});
+  });
+})();
+
 /* ── close ── */
 function uqClose(){overlay.classList.remove('uq-cp-open');}
 document.getElementById('uq-cp-close-btn').onclick=uqClose;
@@ -11078,15 +11224,21 @@ hueCanvas.addEventListener('mousedown',e=>{draggingHue=true;huePick(e);});
 document.addEventListener('mousemove',e=>{if(draggingHue)huePick(e);});
 document.addEventListener('mouseup',()=>{draggingHue=false;});
 
-/* ── hex input ── */
+/* ── hex input — instant update, accepts #RRGGBB or RRGGBB or #RGB ── */
 hexInput.addEventListener('input',()=>{
-  const v=hexInput.value.replace('#','');
+  let v=hexInput.value.replace(/^#/,'').trim();
+  if(v.length===3&&/^[0-9a-fA-F]{3}$/.test(v)){
+    v=v.split('').map(c=>c+c).join('');
+  }
   if(v.length===6&&/^[0-9a-fA-F]{6}$/.test(v)){
     const rgb=hexToRgb(v);
     _hsv=rgbToHsv(...rgb);
     drawGradient();syncAll();
-    hexInput.value=v;
+    hexInput.value=v; // normalize: strip # so display is always 6 chars
   }
+});
+hexInput.addEventListener('paste',()=>{
+  setTimeout(()=>hexInput.dispatchEvent(new Event('input')),0);
 });
 
 /* ── number fields → update ── */
