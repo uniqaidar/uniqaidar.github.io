@@ -1310,19 +1310,24 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                         <input type="text" id="dm-header-btn-inp" placeholder="داگرتنی تەواوی فۆنتەکان" style="direction:rtl;">
                     </div>
                     <div class="form-group">
-                        <label>Modal Title</label>
+                        <label>Modal Title <span style="font-size:10px;color:#666;">(shared with About Modal title)</span></label>
                         <input type="text" id="dm-title-inp" placeholder="داگرتنی تەواوی فۆنتەکان" style="direction:rtl;">
                         <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
-                            <label style="font-size:10px;color:#aaa;margin:0;">☀️ Light:</label>
-                            <button type="button" id="dm-title-light-color" data-hex="#339cff" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})(this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#339cff;"></span>Pick</button>
-                            <label style="font-size:10px;color:#aaa;margin:0;margin-right:6px;">🌙 Dark:</label>
-                            <button type="button" id="dm-title-dark-color" data-hex="#07beff" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})(this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#07beff;"></span>Pick</button>
-                            <span style="font-size:10px;color:#666;">applies to both Download &amp; About modal titles</span>
+                            <label style="font-size:10px;color:#aaa;margin:0;">☀️</label>
+                            <button type="button" id="dm-title-light-color" data-hex="#339cff" title="Light mode: .modal-content h2" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#339cff;"></span>Pick</button>
+                            <label style="font-size:10px;color:#aaa;margin:0;">🌙</label>
+                            <button type="button" id="dm-title-dark-color" data-hex="#07beff" title="Dark mode: body.dark-mode .modal-content h2" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#07beff;"></span>Pick</button>
                         </div>
                     </div>
                     <div class="form-group full">
                         <label>Description</label>
                         <textarea id="dm-desc-inp" style="direction:rtl;height:64px;" placeholder="پێناسەی مۆدالی داگرتن..."></textarea>
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                            <label style="font-size:10px;color:#aaa;margin:0;">☀️</label>
+                            <button type="button" id="dm-desc-light-color" data-hex="#111111" title="Light mode: body:not(.dark-mode) #dm-desc color" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#111111;"></span>Pick</button>
+                            <label style="font-size:10px;color:#aaa;margin:0;">🌙</label>
+                            <button type="button" id="dm-desc-dark-color" data-hex="#ffffff" title="Dark mode: body.dark-mode #dm-desc color" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffffff;"></span>Pick</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Download Button Label</label>
@@ -1355,64 +1360,119 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             <div class="box-body">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Title</label>
+                        <label>Title <span style="font-size:10px;color:#666;">(color shared with Download title above)</span></label>
                         <input type="text" id="about-title-inp" placeholder="دەربارەی یونیقەیدار" style="direction:rtl;">
-                        <div style="margin-top:3px;font-size:10px;color:#666;">🌙 Dark color: shared with Download Modal Title above</div>
                     </div>
                     <div class="form-group">
                         <label>Features Section Title</label>
                         <input type="text" id="about-features-title-inp" placeholder="تایبەتمەندییەکانی ماڵپەڕ" style="direction:rtl;">
-                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
-                            <label style="font-size:10px;color:#aaa;margin:0;">🌙 Dark:</label>
-                            <button type="button" id="about-features-title-dark-color" data-hex="#ffa71e" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})(this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffa71e;"></span>Pick</button>
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                            <label style="font-size:10px;color:#aaa;margin:0;">☀️</label>
+                            <button type="button" id="about-features-title-light-color" data-hex="#cc3d00" title="Light mode: body:not(.dark-mode) #about-features-title" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#cc3d00;"></span>Pick</button>
+                            <label style="font-size:10px;color:#aaa;margin:0;">🌙</label>
+                            <button type="button" id="about-features-title-dark-color" data-hex="#ffa71e" title="Dark mode: body.dark-mode #about-features-title" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffa71e;"></span>Pick</button>
                         </div>
                     </div>
                     <div class="form-group full">
                         <label>Content / Description</label>
                         <textarea id="about-text" style="direction:rtl;height:100px;" placeholder="دەربارەی ماڵپەڕ..."></textarea>
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                            <label style="font-size:10px;color:#aaa;margin:0;">☀️</label>
+                            <button type="button" id="about-content-light-color" data-hex="#333333" title="Light mode: body:not(.dark-mode) #about-content" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#333333;"></span>Pick</button>
+                            <label style="font-size:10px;color:#aaa;margin:0;">🌙</label>
+                            <button type="button" id="about-content-dark-color" data-hex="#ffffff" title="Dark mode: body.dark-mode #about-content" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffffff;"></span>Pick</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Feature 1 — Icon</label>
                         <input type="text" id="about-feat1-icon-inp" placeholder="🎨" style="direction:ltr;">
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                            <label style="font-size:10px;color:#aaa;margin:0;">☀️</label>
+                            <button type="button" id="about-feat1-icon-light-color" data-hex="#cc3d00" title="Light mode icon color" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#cc3d00;"></span>Pick</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Feature 1 — Text</label>
                         <input type="text" id="about-feat1-text-inp" style="direction:rtl;">
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                            <label style="font-size:10px;color:#aaa;margin:0;">☀️</label>
+                            <button type="button" id="about-feat1-text-light-color" data-hex="#2a2a2a" title="Light mode feat text" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#2a2a2a;"></span>Pick</button>
+                            <label style="font-size:10px;color:#aaa;margin:0;">🌙</label>
+                            <button type="button" id="about-feat1-text-dark-color" data-hex="#e0e0e0" title="Dark mode feat text" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#e0e0e0;"></span>Pick</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Feature 2 — Icon</label>
                         <input type="text" id="about-feat2-icon-inp" placeholder="🖋" style="direction:ltr;">
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                            <label style="font-size:10px;color:#aaa;margin:0;">☀️</label>
+                            <button type="button" id="about-feat2-icon-light-color" data-hex="#cc3d00" title="Light mode icon color" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#cc3d00;"></span>Pick</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Feature 2 — Text</label>
                         <input type="text" id="about-feat2-text-inp" style="direction:rtl;">
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                            <label style="font-size:10px;color:#aaa;margin:0;">☀️</label>
+                            <button type="button" id="about-feat2-text-light-color" data-hex="#2a2a2a" title="Light mode feat text" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#2a2a2a;"></span>Pick</button>
+                            <label style="font-size:10px;color:#aaa;margin:0;">🌙</label>
+                            <button type="button" id="about-feat2-text-dark-color" data-hex="#e0e0e0" title="Dark mode feat text" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#e0e0e0;"></span>Pick</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Feature 3 — Icon</label>
                         <input type="text" id="about-feat3-icon-inp" placeholder="📦" style="direction:ltr;">
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                            <label style="font-size:10px;color:#aaa;margin:0;">☀️</label>
+                            <button type="button" id="about-feat3-icon-light-color" data-hex="#cc3d00" title="Light mode icon color" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#cc3d00;"></span>Pick</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Feature 3 — Text</label>
                         <input type="text" id="about-feat3-text-inp" style="direction:rtl;">
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                            <label style="font-size:10px;color:#aaa;margin:0;">☀️</label>
+                            <button type="button" id="about-feat3-text-light-color" data-hex="#2a2a2a" title="Light mode feat text" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#2a2a2a;"></span>Pick</button>
+                            <label style="font-size:10px;color:#aaa;margin:0;">🌙</label>
+                            <button type="button" id="about-feat3-text-dark-color" data-hex="#e0e0e0" title="Dark mode feat text" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#e0e0e0;"></span>Pick</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Feature 4 — Icon</label>
                         <input type="text" id="about-feat4-icon-inp" placeholder="🌐" style="direction:ltr;">
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                            <label style="font-size:10px;color:#aaa;margin:0;">☀️</label>
+                            <button type="button" id="about-feat4-icon-light-color" data-hex="#cc3d00" title="Light mode icon color" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#cc3d00;"></span>Pick</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Feature 4 — Text</label>
                         <input type="text" id="about-feat4-text-inp" style="direction:rtl;">
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                            <label style="font-size:10px;color:#aaa;margin:0;">☀️</label>
+                            <button type="button" id="about-feat4-text-light-color" data-hex="#2a2a2a" title="Light mode feat text" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#2a2a2a;"></span>Pick</button>
+                            <label style="font-size:10px;color:#aaa;margin:0;">🌙</label>
+                            <button type="button" id="about-feat4-text-dark-color" data-hex="#e0e0e0" title="Dark mode feat text" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#e0e0e0;"></span>Pick</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Launch Date</label>
                         <input type="text" id="about-launch-inp" placeholder="٢٠٢٥" style="direction:rtl;">
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                            <label style="font-size:10px;color:#aaa;margin:0;">☀️</label>
+                            <button type="button" id="about-launch-light-color" data-hex="#444444" title="Light mode: body:not(.dark-mode) #about-launch-date" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#444444;"></span>Pick</button>
+                            <label style="font-size:10px;color:#aaa;margin:0;">🌙</label>
+                            <button type="button" id="about-launch-dark-color" data-hex="#ffffff" title="Dark mode: body.dark-mode #about-launch-date" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffffff;"></span>Pick</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Developer Name</label>
                         <input type="text" id="about-dev-inp" placeholder="Qaidar Rahim" style="direction:ltr;">
-                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
-                            <label style="font-size:10px;color:#aaa;margin:0;">🌙 Dark:</label>
-                            <button type="button" id="about-dev-dark-color" data-hex="#ffa71e" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})(this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffa71e;"></span>Pick</button>
+                        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                            <label style="font-size:10px;color:#aaa;margin:0;">☀️</label>
+                            <button type="button" id="about-dev-light-color" data-hex="#ff5700" title="Light mode: body:not(.dark-mode) #about-developer" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ff5700;"></span>Pick</button>
+                            <label style="font-size:10px;color:#aaa;margin:0;">🌙</label>
+                            <button type="button" id="about-dev-dark-color" data-hex="#ffa71e" title="Dark mode: body.dark-mode #about-developer" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffa71e;"></span>Pick</button>
                         </div>
                     </div>
                 </div>
@@ -7361,48 +7421,58 @@ function loadAllSettings() {
         var _devTxt = _rawInnerWithElColor('about-developer');
         if (_devTxt !== null) set('about-dev-inp', _devTxt);
 
-        // ── Load dark mode CSS colors from RAW style block ──
-        // These colors live in CSS rules (body.dark-mode ...), not inline element styles.
+        // ── Load all light/dark CSS colors from RAW ──
         (function() {
-            // Extract color from a CSS rule matching a given selector fragment
-            function _darkCssColor(selectorFragment) {
-                // Find: body.dark-mode <selectorFragment> { color: #HEX !important; }
-                var re = new RegExp(
-                    'body\.dark-mode\s+' + selectorFragment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +
-                    '\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})', 'i'
-                );
-                var m = RAW.match(re);
+            function _cssColor(pattern) {
+                var m = RAW.match(pattern);
                 return m ? m[1] : null;
             }
-
-            // dm-title + about-title light mode: .modal-content h2 { color: #HEX }
-            var _h2LightRe = /\.modal-content h2\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i;
-            var _h2LightM = RAW.match(_h2LightRe);
-            if (_h2LightM) {
-                var swL = document.getElementById('dm-title-light-color');
-                if (swL) { swL.dataset.hex=_h2LightM[1]; var dotL=swL.querySelector('.uq-css-dot'); if(dotL) dotL.style.background=_h2LightM[1]; }
+            function _setSwatch(id, hex) {
+                if (!hex) return;
+                var btn = document.getElementById(id);
+                if (!btn) return;
+                btn.dataset.hex = hex;
+                var dot = btn.querySelector('.uq-css-dot');
+                if (dot) dot.style.background = hex;
             }
 
-            // dm-title + about-title dark mode: body.dark-mode .modal-content h2
-            var _h2Dark = _darkCssColor('\.modal-content h2');
-            if (_h2Dark) {
-                var sw = document.getElementById('dm-title-dark-color');
-                if (sw) { sw.dataset.hex=_h2Dark; var dotD=sw.querySelector('.uq-css-dot'); if(dotD) dotD.style.background=_h2Dark; }
+            // ── Modal h2 title (Download + About) ──
+            _setSwatch('dm-title-light-color',  _cssColor(/\.modal-content h2\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
+            _setSwatch('dm-title-dark-color',   _cssColor(/body\.dark-mode\s+\.modal-content h2\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
+
+            // ── dm-desc ──
+            _setSwatch('dm-desc-light-color',   _cssColor(/body:not\(\.dark-mode\)\s+#dm-desc\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
+            _setSwatch('dm-desc-dark-color',    _cssColor(/body\.dark-mode\s+#dm-desc\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
+
+            // ── about-content ──
+            _setSwatch('about-content-light-color', _cssColor(/body:not\(\.dark-mode\)\s+#about-content\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
+            _setSwatch('about-content-dark-color',  _cssColor(/body\.dark-mode\s+#about-content\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
+
+            // ── about-features-title ──
+            _setSwatch('about-features-title-light-color', _cssColor(/body:not\(\.dark-mode\)\s+#about-features-title\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
+            _setSwatch('about-features-title-dark-color',  _cssColor(/body\.dark-mode\s+#about-features-title\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
+
+            // ── feat1-4 text (shared rule) ──
+            var _featTextLight = _cssColor(/body:not\(\.dark-mode\)\s+#about-feat1-text[^{]*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i);
+            var _featTextDark  = _cssColor(/body\.dark-mode\s+#about-feat1-text[^{]*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i);
+            for (var _fi = 1; _fi <= 4; _fi++) {
+                _setSwatch('about-feat' + _fi + '-text-light-color', _featTextLight);
+                _setSwatch('about-feat' + _fi + '-text-dark-color',  _featTextDark);
             }
 
-            // about-features-title: body.dark-mode #about-features-title
-            var _featTitleDark = _darkCssColor('#about-features-title');
-            if (_featTitleDark) {
-                var sw2 = document.getElementById('about-features-title-dark-color');
-                if (sw2) { sw2.dataset.hex=_featTitleDark; var dot2=sw2.querySelector('.uq-css-dot'); if(dot2) dot2.style.background=_featTitleDark; }
+            // ── feat1-4 icon (light only, shared rule) ──
+            var _featIconLight = _cssColor(/body:not\(\.dark-mode\)\s+#about-feat1-icon[^{]*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i);
+            for (var _ii = 1; _ii <= 4; _ii++) {
+                _setSwatch('about-feat' + _ii + '-icon-light-color', _featIconLight);
             }
 
-            // about-developer: body.dark-mode #about-developer
-            var _devDark = _darkCssColor('#about-developer');
-            if (_devDark) {
-                var sw3 = document.getElementById('about-dev-dark-color');
-                if (sw3) { sw3.dataset.hex=_devDark; var dot3=sw3.querySelector('.uq-css-dot'); if(dot3) dot3.style.background=_devDark; }
-            }
+            // ── about-launch-date ──
+            _setSwatch('about-launch-light-color', _cssColor(/body:not\(\.dark-mode\)\s+#about-launch-date\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
+            _setSwatch('about-launch-dark-color',  _cssColor(/body\.dark-mode\s+#about-launch-date\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
+
+            // ── about-developer ──
+            _setSwatch('about-dev-light-color', _cssColor(/body:not\(\.dark-mode\)\s+#about-developer\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
+            _setSwatch('about-dev-dark-color',  _cssColor(/body\.dark-mode\s+#about-developer\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
         })();
     }
 
@@ -7642,26 +7712,23 @@ async function saveDownloadModal() {
     // Download URL is an attribute, not innerHTML — use regex
     next = next.replace(/(<a id="dm-btn" href=")[^"]*"/, `$1${url}"`);
 
-    // ── Light mode CSS color: .modal-content h2 ──
-    const _h2LightEl = document.getElementById('dm-title-light-color');
-    if (_h2LightEl) {
-        const _h2LightHex = (_h2LightEl.dataset.hex || _h2LightEl.value || '').replace('#','');
-        next = next.replace(
-            /(\.modal-content h2\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i,
-            '$1' + _h2LightHex
-        );
+    // ── CSS color saves for Download Modal ──
+    function _swHex(id) {
+        var el = document.getElementById(id);
+        return el ? (el.dataset.hex || '').replace('#','') : null;
+    }
+    function _cssReplace(raw, pattern, hex) {
+        if (!hex) return raw;
+        return raw.replace(pattern, '$1#' + hex);
     }
 
-    // ── Dark mode CSS color: body.dark-mode .modal-content h2 ──
-    // Shared between Download Modal Title and About Modal Title
-    const _h2DarkEl = document.getElementById('dm-title-dark-color');
-    if (_h2DarkEl) {
-        const _h2DarkHex = (_h2DarkEl.dataset.hex || _h2DarkEl.value || '').replace('#','');
-        next = next.replace(
-            /(body\.dark-mode\s+\.modal-content h2\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i,
-            '$1' + _h2DarkHex
-        );
-    }
+    // h2 title (shared with About Modal)
+    next = _cssReplace(next, /(\.modal-content h2\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHex('dm-title-light-color'));
+    next = _cssReplace(next, /(body\.dark-mode\s+\.modal-content h2\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHex('dm-title-dark-color'));
+
+    // dm-desc text color
+    next = _cssReplace(next, /(body:not\(\.dark-mode\)\s+#dm-desc\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHex('dm-desc-light-color'));
+    next = _cssReplace(next, /(body\.dark-mode\s+#dm-desc\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHex('dm-desc-dark-color'));
 
     alert2(al,'Saving...','inf');
     const ok = await ghPut(next,'Update: download modal');
@@ -7725,23 +7792,38 @@ async function saveAbout() {
     const dev = _stripWrapperSpan(v('about-dev-inp'));
     if (dev)    next = next.replace(/(<span id="about-developer"[^>]*>)([^<]*)(<\/span>)/, `$1${dev}$3`);
 
-    // ── Dark mode CSS colors ──
-    const _featTitleDarkEl = document.getElementById('about-features-title-dark-color');
-    if (_featTitleDarkEl) {
-        const _featTitleDarkHex = (_featTitleDarkEl.dataset.hex || _featTitleDarkEl.value || '').replace('#','');
-        next = next.replace(
-            /(body\.dark-mode\s+#about-features-title\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i,
-            '$1' + _featTitleDarkHex
-        );
+    // ── CSS color saves for About Modal ──
+    function _swHexA(id) {
+        var el = document.getElementById(id);
+        return el ? (el.dataset.hex || '').replace('#','') : null;
     }
-    const _devDarkEl = document.getElementById('about-dev-dark-color');
-    if (_devDarkEl) {
-        const _devDarkHex = (_devDarkEl.dataset.hex || _devDarkEl.value || '').replace('#','');
-        next = next.replace(
-            /(body\.dark-mode\s+#about-developer\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i,
-            '$1' + _devDarkHex
-        );
+    function _cssReplaceA(raw, pattern, hex) {
+        if (!hex) return raw;
+        return raw.replace(pattern, '$1#' + hex);
     }
+
+    // about-content
+    next = _cssReplaceA(next, /(body:not\(\.dark-mode\)\s+#about-content\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHexA('about-content-light-color'));
+    next = _cssReplaceA(next, /(body\.dark-mode\s+#about-content\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHexA('about-content-dark-color'));
+
+    // about-features-title
+    next = _cssReplaceA(next, /(body:not\(\.dark-mode\)\s+#about-features-title\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHexA('about-features-title-light-color'));
+    next = _cssReplaceA(next, /(body\.dark-mode\s+#about-features-title\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHexA('about-features-title-dark-color'));
+
+    // feat text (shared CSS rule — all 4 share one rule per mode)
+    next = _cssReplaceA(next, /(body:not\(\.dark-mode\)\s+#about-feat1-text[^{]*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHexA('about-feat1-text-light-color'));
+    next = _cssReplaceA(next, /(body\.dark-mode\s+#about-feat1-text[^{]*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHexA('about-feat1-text-dark-color'));
+
+    // feat icon (light only, shared rule)
+    next = _cssReplaceA(next, /(body:not\(\.dark-mode\)\s+#about-feat1-icon[^{]*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHexA('about-feat1-icon-light-color'));
+
+    // about-launch-date
+    next = _cssReplaceA(next, /(body:not\(\.dark-mode\)\s+#about-launch-date\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHexA('about-launch-light-color'));
+    next = _cssReplaceA(next, /(body\.dark-mode\s+#about-launch-date\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHexA('about-launch-dark-color'));
+
+    // about-developer
+    next = _cssReplaceA(next, /(body:not\(\.dark-mode\)\s+#about-developer\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHexA('about-dev-light-color'));
+    next = _cssReplaceA(next, /(body\.dark-mode\s+#about-developer\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHexA('about-dev-dark-color'));
 
     if (next === RAW) return alert2(al,'❌ هیچ گۆڕانکارییەک نەدۆزرایەوە یان ئێلیمێنتەکان نەدۆزرایەوە!','err');
     alert2(al,'Saving...','inf');
@@ -11139,52 +11221,7 @@ function uqOpenPicker(currentHex, onOkCb){
 }
 window.uqOpenPicker=uqOpenPicker;
 
-/* ── Wire hex text inputs next to CSS swatch buttons ── */
-(function(){
-  var CSS_SWATCHES=['dm-title-light-color','dm-title-dark-color',
-                    'about-features-title-dark-color','about-dev-dark-color'];
-  CSS_SWATCHES.forEach(function(id){
-    var btn=document.getElementById(id);
-    if(!btn) return;
-    // Create a small hex text input right after the button
-    var inp=document.createElement('input');
-    inp.type='text';
-    inp.maxLength=7;
-    inp.placeholder='#rrggbb';
-    inp.spellcheck=false;
-    inp.style.cssText='width:66px;padding:2px 5px;font-size:11px;background:#1e1e1e;border:1px solid #555;border-radius:3px;color:#eee;font-family:monospace;letter-spacing:.04em;direction:ltr;';
-    // Set initial value from button's data-hex
-    inp.value=btn.dataset.hex||'';
-    // Sync: text → swatch instantly
-    inp.addEventListener('input',function(){
-      var v=inp.value.replace(/^#/,'').trim();
-      if(v.length===3&&/^[0-9a-fA-F]{3}$/.test(v)) v=v.split('').map(function(c){return c+c;}).join('');
-      if(v.length===6&&/^[0-9a-fA-F]{6}$/.test(v)){
-        var hex='#'+v;
-        btn.dataset.hex=hex;
-        var dot=btn.querySelector('.uq-css-dot');
-        if(dot) dot.style.background=hex;
-      }
-    });
-    // When picker closes with OK, sync text input
-    var origOnclick=btn.onclick;
-    btn.onclick=null;
-    btn.addEventListener('click',function(){
-      var cur=(btn.dataset.hex||'07beff').replace('#','');
-      uqOpenPicker(cur,function(hex){
-        btn.dataset.hex=hex;
-        var dot=btn.querySelector('.uq-css-dot');
-        if(dot) dot.style.background=hex;
-        inp.value=hex;
-      });
-    });
-    // Insert text input right after button
-    btn.parentNode.insertBefore(inp,btn.nextSibling);
-    // Focus styling
-    inp.addEventListener('focus',function(){inp.style.borderColor='#07beff';inp.style.outline='1px solid #07beff';});
-    inp.addEventListener('blur',function(){inp.style.borderColor='#555';inp.style.outline='none';});
-  });
-})();
+
 
 /* ── close ── */
 function uqClose(){overlay.classList.remove('uq-cp-open');}
