@@ -2201,7 +2201,7 @@ body.dark-mode .modal-content h2 { color: #07beff !important; }
 body.dark-mode #dm-desc { color: #ffffff !important; }
 body.dark-mode #about-content { color: #fff !important; }
 body.dark-mode #about-launch-date { color: #ffffff !important; }
-body.dark-mode #about-developer { color: #ffa71e !important; }
+body.dark-mode #about-developer { color: ffa71e !important; }
 body.dark-mode #tg-modal-title { color: #5ba3ff !important; }
 body.dark-mode #tg-modal-body { color: #ffffff !important; }
 body:not(.dark-mode) #tg-modal-title { color: #339cff !important; }
@@ -2263,7 +2263,7 @@ body.dark-mode #about-features-box {
     background: linear-gradient(135deg, #1a1008, #1f1208) !important;
     border: none;
 }
-body.dark-mode #about-features-title { color: #ffa71e !important; }
+body.dark-mode #about-features-title { color: ffa71e !important; }
 body.dark-mode #about-feat1-text,
 body.dark-mode #about-feat2-text,
 body.dark-mode #about-feat3-text,
@@ -5616,7 +5616,9 @@ document.getElementById('contact-support').addEventListener('click', function() 
     <div class="modal-content" style="max-width:620px;">
         <div class="modal-inner-scroll">
         <button class="close-btn" aria-label="داخستن" title="داخستن"><i class="fas fa-times"></i></button>
-        <h2 id="about-title" style="font-size:1.6rem;letter-spacing:0.02em;font-weight:normal;">دەربارەی پڕۆژە</h2>
+        <h2 id="about-title" style="font-size:1.6rem;letter-spacing:0.02em;font-weight:normal;">
+            دەربارەی پڕۆژە
+        </h2>
 
         <p id="about-content" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;font-size:1.05rem;color:#333;text-align:justify;line-height:2;">
             پڕۆژەی یونی‌قەیدار لە ساڵی ٢٠٠٩ دەستی پێکرد، کاتێک قەیدار ڕەحیم یەکەم گورزەی فۆنتەکانی کوردی بڵاوکردەوە. ئامانجەکە یەک بوو — دروستکردنی فۆنتی کوردی بەکوالیتی بەرز کە بتوانێت لەگەڵ سیستەمی یونیکۆد کار بکات و ئاسانکاری بۆ کارەکانی دیزاین و نووسینی کوردی بکات.
@@ -5624,31 +5626,39 @@ document.getElementById('contact-support').addEventListener('click', function() 
 
         <div id="about-features-box" style="background:linear-gradient(135deg,#1a1008,#1f1208);border-radius:16px;padding:20px 24px;margin:18px 0;text-align:right;">
             <div id="about-features-title" style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;font-size:1rem;color:#ff5700;margin-bottom:14px;border-bottom:1px solid rgba(255,87,0,0.3);padding-bottom:8px;">
-                ✦ تایبەتمەندییە سەرەکییەکان
-            </div>
+            <span style="color: rgb(214, 69, 0);">✦ تایبەتمەندییە سەرەکییەکان</span>
+        </div>
             <div style="display:flex;flex-direction:column;gap:10px;">
                 <div style="display:flex;align-items:flex-start;gap:10px;color:#e0e0e0;">
                     <span id="about-feat1-icon" style="color:#ff5700;font-size:1.1rem;flex-shrink:0;">🎨</span>
-                    <span id="about-feat1-text" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;text-align:justify;text-align-last:right;direction:rtl;display:block;color:#e0e0e0;"><strong style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;">گونجاو بۆ گشت بوارەکان:</strong> لە دیزاینی گرافیکەوە تا نووسینی دەقی درێژ.</span>
+                    <span id="about-feat1-text" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;text-align:justify;text-align-last:right;direction:rtl;display:block;color:#e0e0e0;">
+            <strong style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;">گونجاو بۆ گشت بوارەکان:</strong> لە دیزاینی گرافیکەوە تا نووسینی دەقی درێژ.
+        </span>
                 </div>
                 <div style="display:flex;align-items:flex-start;gap:10px;color:#e0e0e0;">
                     <span id="about-feat2-icon" style="color:#ff5700;font-size:1.1rem;flex-shrink:0;">✒️</span>
-                    <span id="about-feat2-text" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;text-align:justify;text-align-last:right;direction:rtl;display:block;color:#e0e0e0;"><strong style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;">دیزاینی مۆدێرن:</strong> هەر فۆنتێک بە وردی دیزاین کراوە بۆ ئەوەی لە شاشەی دیجیتاڵ و چاپدا جوان بکاتەوە.</span>
+                    <span id="about-feat2-text" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;text-align:justify;text-align-last:right;direction:rtl;display:block;color:#e0e0e0;">
+            <strong style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;">دیزاینی مۆدێرن:</strong> هەر فۆنتێک بە وردی دیزاین کراوە بۆ ئەوەی لە شاشەی دیجیتاڵ و چاپدا جوان بکاتەوە.
+        </span>
                 </div>
                 <div style="display:flex;align-items:flex-start;gap:10px;color:#e0e0e0;">
                     <span id="about-feat3-icon" style="color:#ff5700;font-size:1.1rem;flex-shrink:0;">🌐</span>
-                    <span id="about-feat3-text" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;text-align:justify;text-align-last:right;direction:rtl;display:block;color:#e0e0e0;"><strong style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;">یونیکۆدی تەواو:</strong> هەموو فۆنتەکان Unicode TTF-ن و بەبێ کێشە لە هەموو ئامێر و بەرنامەکاندا کار دەکەن.</span>
+                    <span id="about-feat3-text" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;text-align:justify;text-align-last:right;direction:rtl;display:block;color:#e0e0e0;">
+            <strong style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;">یونیکۆدی تەواو:</strong> هەموو فۆنتەکان Unicode TTF-ن و بەبێ کێشە لە هەموو ئامێر و بەرنامەکاندا کار دەکەن.
+        </span>
                 </div>
                 <div style="display:flex;align-items:flex-start;gap:10px;color:#e0e0e0;">
                     <span id="about-feat4-icon" style="color:#ff5700;font-size:1.1rem;flex-shrink:0;">🏆</span>
-                    <span id="about-feat4-text" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;text-align:justify;text-align-last:right;direction:rtl;display:block;color:#e0e0e0;">زیاتر لە <strong style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;">١٦ ساڵ</strong> مێژووی بەردەوامی دروستکردن و گەشەپێدانی فۆنتی کوردی.</span>
+                    <span id="about-feat4-text" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;text-align:justify;text-align-last:right;direction:rtl;display:block;color:#e0e0e0;">
+            زیاتر لە <strong style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;">١٦ ساڵ</strong> مێژووی بەردەوامی دروستکردن و گەشەپێدانی فۆنتی کوردی.
+        </span>
                 </div>
             </div>
         </div>
 
         <div id="about-footer-bar" style="background:rgba(255,87,0,0.07);border-radius:12px;padding:14px 18px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border:1px solid rgba(255,87,0,0.18);">
             <span id="about-launch-date" style="font-family:'UniQAIDAR_Peregraf 02',Tahoma,Arial,sans-serif !important;font-weight:normal !important;color:#444;font-size:0.9rem;">🗓 یەکەم گورزە: مانگی ئابی ساڵی ٢٠٠٩</span>
-            <span id="about-developer" style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;color:#ff5700;font-size:0.9rem;">گەشەپێدەر: قەیدار ڕەحیم</span>
+            <span id="about-developer" style="font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif !important;font-weight:normal !important;color:#ff5700;font-size:0.9rem;"><span style="color: rgb(255, 140, 0);"><span style="color: rgb(214, 69, 0);">گەشەپێدەر: قەیدار ڕەحیم</span></span></span>
         </div>
         </div><!-- /modal-inner-scroll -->
     </div>
