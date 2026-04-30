@@ -476,6 +476,56 @@ body.lang-en input[dir="rtl"], body.lang-en textarea[dir="rtl"],
 body.lang-en .preview-box, body.lang-en [style*="direction:rtl"],
 body.lang-en .cat-pills, body.lang-en #arc-full-list,
 body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
+
+/* ── UQ Color Picker (Photoshop-style) ── */
+#uq-cp-overlay{position:fixed;inset:0;z-index:999999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);}
+#uq-cp-overlay.uq-cp-open{display:flex;}
+#uq-cp-box{width:440px;background:#3c3c3c;border:1px solid #1a1a1a;border-radius:4px;box-shadow:0 8px 40px rgba(0,0,0,.7);font-family:Arial,sans-serif;font-size:12px;color:#ccc;user-select:none;direction:ltr;text-align:left;}
+#uq-cp-titlebar{background:#2a2a2a;padding:7px 12px;font-size:12px;color:#ccc;display:flex;justify-content:space-between;align-items:center;border-radius:4px 4px 0 0;cursor:move;}
+#uq-cp-titlebar span{font-size:11px;color:#999;}
+#uq-cp-close-btn{cursor:pointer;font-size:15px;color:#aaa;line-height:1;padding:0 2px;}
+#uq-cp-close-btn:hover{color:#fff;}
+#uq-cp-body{display:flex;gap:10px;padding:12px;align-items:flex-start;}
+#uq-cp-gradient{width:200px;height:200px;border:1px solid #111;cursor:crosshair;position:relative;flex-shrink:0;border-radius:2px;}
+#uq-cp-gradient-cursor{position:absolute;width:10px;height:10px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #000;transform:translate(-50%,-50%);pointer-events:none;top:0;left:100%;}
+#uq-cp-hue-wrap{display:flex;flex-direction:column;gap:6px;}
+#uq-cp-hue{width:20px;height:200px;border:1px solid #111;cursor:crosshair;position:relative;border-radius:2px;background:linear-gradient(to bottom,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00);}
+#uq-cp-hue-cursor{position:absolute;left:-3px;width:26px;height:4px;background:transparent;border:2px solid #fff;box-shadow:0 0 0 1px #000;transform:translateY(-50%);pointer-events:none;border-radius:1px;top:0;}
+#uq-cp-right{flex:1;display:flex;flex-direction:column;gap:8px;}
+#uq-cp-swatches{display:flex;flex-direction:column;gap:3px;}
+#uq-cp-new-swatch,#uq-cp-cur-swatch{height:24px;border:1px solid #111;border-radius:2px;}
+#uq-cp-swatch-labels{display:flex;flex-direction:column;font-size:10px;color:#999;gap:11px;text-align:right;}
+.uq-cp-warn{width:16px;height:16px;background:#f90;clip-path:polygon(50% 0%,100% 100%,0% 100%);display:none;cursor:pointer;}
+.uq-cp-warn.uq-cp-show{display:block;}
+#uq-cp-fields{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;margin-top:2px;}
+#uq-cp-fields .uq-cp-row{display:flex;align-items:center;gap:4px;}
+#uq-cp-fields label{font-size:11px;color:#ccc;width:14px;text-align:right;}
+#uq-cp-fields input[type=number]{width:44px;background:#1e1e1e;border:1px solid #555;color:#eee;padding:2px 4px;font-size:11px;border-radius:2px;text-align:center;}
+#uq-cp-fields input[type=number]:focus{outline:1px solid #07beff;border-color:#07beff;}
+#uq-cp-fields .uq-cp-pct{font-size:10px;color:#999;width:12px;}
+#uq-cp-hex-row{display:flex;align-items:center;gap:6px;margin-top:4px;}
+#uq-cp-hex-row label{font-size:11px;color:#ccc;width:8px;}
+#uq-cp-hex{width:72px;background:#1e1e1e;border:1px solid #555;color:#eee;padding:2px 5px;font-size:11px;border-radius:2px;letter-spacing:.04em;font-family:monospace;}
+#uq-cp-hex:focus{outline:1px solid #07beff;border-color:#07beff;}
+#uq-cp-footer{display:flex;gap:8px;padding:8px 12px 12px;justify-content:flex-end;align-items:center;border-top:1px solid #2a2a2a;margin-top:4px;}
+.uq-cp-fbtn{padding:5px 20px;border-radius:3px;font-size:12px;cursor:pointer;border:1px solid #555;}
+#uq-cp-ok{background:#5a5a5a;color:#fff;border-color:#777;}
+#uq-cp-ok:hover{background:#07beff;border-color:#07beff;color:#fff;}
+#uq-cp-cancel{background:#3c3c3c;color:#ccc;}
+#uq-cp-cancel:hover{background:#555;color:#fff;}
+/* trigger button that appears next to focused rich inputs */
+.uq-cp-trigger{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;margin-top:4px;}
+.uq-cp-trigger:hover{border-color:#07beff;color:#07beff;}
+.uq-cp-trigger-swatch{width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;background:#555;}
+/* ── Website font available inside admin RTEs ── */
+@font-face{font-family:'UniQAIDAR_Peregraf 01';src:url('UniQaidarFonts/UniQAIDAR_Peregraf 01.ttf') format('truetype');font-display:swap;font-weight:normal;}
+@font-face{font-family:'UniQAIDAR_Peregraf 02';src:url('UniQaidarFonts/UniQAIDAR_Peregraf 02.ttf') format('truetype');font-display:swap;font-weight:normal;}
+/* rich text editors replace plain inputs/textareas */
+.uq-rte{min-height:38px;background:#1e1e1e;border:1px solid #555;border-radius:4px;padding:7px 10px;color:#eee;font-size:0.88rem;outline:none;cursor:text;line-height:1.7;white-space:pre-wrap;word-break:break-word;font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif;font-weight:normal;}
+.uq-rte:focus{border-color:#07beff;}
+.uq-rte[dir=rtl]{direction:rtl;text-align:right;}
+/* typography toolbar wrapping the color + size + spacing controls */
+.uq-rte-toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px;}
 </style>
 </head>
 <body class="lang-en">
@@ -3087,38 +3137,102 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         { field: 'pvb-wlc-apps-h2',     id: 'uq-welcome-apps-h2'  },
         { field: 'pvb-wlc-apps-lead',   id: 'uq-welcome-apps-lead' },
         { field: 'pvb-wlc-feats-h2',    id: 'uq-welcome-feats-h2' },
-        { field: 'pvb-wlc-close',       id: 'uq-welcome-close'    },
-        { field: 'pvb-wlc-toggle-lbl',  id: 'uq-welcome-toggle-lbl' }
+        { field: 'pvb-wlc-close',       id: 'uq-welcome-close'    }
     ];
 
-    // ── Load: read RAW → fill admin fields ──────────────────────────
-    function pvbWelcomeLoad() {
-        var al = document.getElementById('pvb-wlc-alert');
-        if (!RAW) return alert2(al, '❌ RAW not loaded yet.', 'err');
-        var loaded = 0;
-        _pvbWelcomeFields.forEach(function(cfg) {
-            // Match full element content: stop at the closing tag of the SAME element type
-            // Determine tag by looking at what element has this id
-            var tagRe = new RegExp('<(h[1-6]|p|div|span|li)[^>]*id="' + cfg.id + '"', 'i');
-            var tagM  = RAW.match(tagRe);
-            var tag   = tagM ? tagM[1].toLowerCase() : 'p';
-            var re = new RegExp('id="' + cfg.id + '"[^>]*>([\\s\\S]*?)<\\/' + tag + '>', 'i');
-            var m = RAW.match(re);
-            var inp = document.getElementById(cfg.field);
-            if (m && inp) {
-                // Strip all inner HTML tags for plain text display
-                inp.value = m[1].replace(/<[^>]+>/g, '').trim();
-                loaded++;
+    // ── Detect font-family for a given index.html element ID ──
+    // Accepts an optional already-parsed DOM element (from DOMParser vDoc) for efficiency.
+    function _detectFontForId(elementId, domEl) {
+        // 1. Check inline style on the already-parsed element (fastest, most reliable)
+        if (domEl && domEl.style && domEl.style.fontFamily) {
+            return domEl.style.fontFamily;
+        }
+        // 2. Fall back to regex-scanning <style> blocks in RAW
+        // Handles both single-selector (#id {...}) and multi-selector (#id, #other {...}) rules.
+        var styleBlocks = RAW.match(/<style[^>]*>([\s\S]*?)<\/style>/gi) || [];
+        for (var s = 0; s < styleBlocks.length; s++) {
+            var cssText = styleBlocks[s].replace(/<\/?style[^>]*>/gi, '');
+            // Split by closing brace to get individual rule blocks
+            var ruleBlocks = cssText.split('}');
+            for (var r = 0; r < ruleBlocks.length; r++) {
+                var block = ruleBlocks[r];
+                // Check if this block's selector contains the target ID
+                var braceIdx = block.indexOf('{');
+                if (braceIdx === -1) continue;
+                var selector = block.substring(0, braceIdx);
+                var declarations = block.substring(braceIdx + 1);
+                // Match #elementId as a whole selector token (not as part of another ID)
+                var idPattern = new RegExp('(?:^|[\\s,])#' + elementId + '(?:[\\s,:{]|$)', 'i');
+                if (!idPattern.test(selector)) continue;
+                var ffM = declarations.match(/font-family\s*:\s*([^;!]+)/i);
+                if (ffM) return ffM[1].trim();
             }
+        }
+        return null;
+    }
+
+    // ── Load: read RAW → fill admin fields ──────────────────────────
+    // ── Raw-regex helper: extract innerHTML of element by id from RAW string ──
+    // Does NOT use DOMParser — preserves exact style="color:#hex" values without
+    // browser normalization to rgb(...). This is critical for color swatch sync.
+    function _pvbRawInner(id) {
+        // Match opening tag with this id (any tag name, any attrs), capture inner content
+        var re = new RegExp('<([a-zA-Z][a-zA-Z0-9]*)(?=[\\s>])[^>]*\\bid=["\\\']' + id + '["\\\'][^>]*>([\\s\\S]*?)<\\/\\1>', 'i');
+        var m = RAW.match(re);
+        return m ? m[2] : null;
+    }
+
+    // ── Raw-regex helper: extract innerHTML of element by data-pvb attribute ──
+    // Matches <span data-pvb="val"...>...</span> or <li data-pvb="val"...>...</li>
+    function _pvbRawInnerData(tagName, pvbVal) {
+        var escapedVal = pvbVal.replace(/-/g, '\\-');
+        var re = new RegExp('<(' + tagName + ')(?=[\\s>])[^>]*data-pvb=["\\\']' + escapedVal + '["\\\'][^>]*>([\\s\\S]*?)<\\/\\1>', 'i');
+        var m = RAW.match(re);
+        return m ? m[2] : null;
+    }
+
+    // ── Helper: set a field value + sync its paired RTE ──
+    function _setField(fieldId, rawHtml, fontFamily) {
+        var inp = document.getElementById(fieldId);
+        if (!inp) return false;
+        inp.value = rawHtml;
+        var rte = inp.nextElementSibling;
+        if (rte && rte.classList && rte.classList.contains('uq-rte')) {
+            if (document.activeElement !== rte) {
+                rte.innerHTML = rawHtml;
+                if (fontFamily) rte.style.fontFamily = fontFamily;
+                if (typeof window.syncSwatchFromRte === 'function') window.syncSwatchFromRte(rte, fieldId);
+            }
+        }
+        return true;
+    }
+
+    // pvbWelcomeLoad is declared at global scope (plain <script>, not IIFE),
+    // so it is already window.pvbWelcomeLoad — no wrapper needed.
+    function pvbWelcomeLoad(silent) {
+        var al = document.getElementById('pvb-wlc-alert');
+        if (!RAW) { if(!silent) alert2(al, '❌ RAW not loaded yet.', 'err'); return; }
+        var loaded = 0;
+
+        // Load named-ID fields using raw regex (preserves hex color values exactly)
+        _pvbWelcomeFields.forEach(function(cfg) {
+            var rawHtml = _pvbRawInner(cfg.id);
+            if (rawHtml === null) return;
+            rawHtml = rawHtml.trim();
+            var font = _detectFontForId(cfg.id, null);
+            if (_setField(cfg.field, rawHtml, font)) loaded++;
         });
-        // Load taglines (data-pvb spans)
-        [['pvb-wlc-tag1','tagline-1'],['pvb-wlc-tag2','tagline-2'],['pvb-wlc-tag3','tagline-3'],['pvb-wlc-tag4','tagline-4']].forEach(function(t){
-            var re = new RegExp('data-pvb="'+t[1]+'"[^>]*>([^<]*)<','i');
-            var m = RAW.match(re);
-            var inp = document.getElementById(t[0]);
-            if(m && inp){ inp.value = m[1].trim(); loaded++; }
+
+        // Load taglines (data-pvb spans) using raw regex
+        [['pvb-wlc-tag1','tagline-1'],['pvb-wlc-tag2','tagline-2'],
+         ['pvb-wlc-tag3','tagline-3'],['pvb-wlc-tag4','tagline-4']].forEach(function(t){
+            var rawHtml = _pvbRawInnerData('span', t[1]);
+            if (rawHtml === null) return;
+            rawHtml = rawHtml.trim();
+            if (_setField(t[0], rawHtml, null)) loaded++;
         });
-        // Load list items (data-pvb li items — strip all inner tags for display)
+
+        // Load list items (data-pvb li items) using raw regex
         [
             ['pvb-wlc-cat-1','cat-1'],['pvb-wlc-cat-2','cat-2'],['pvb-wlc-cat-3','cat-3'],
             ['pvb-wlc-cat-4','cat-4'],['pvb-wlc-cat-5','cat-5'],['pvb-wlc-cat-6','cat-6'],
@@ -3127,16 +3241,39 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             ['pvb-wlc-feat-1','feat-1'],['pvb-wlc-feat-2','feat-2'],
             ['pvb-wlc-feat-3','feat-3'],['pvb-wlc-feat-4','feat-4']
         ].forEach(function(t){
-            var re = new RegExp('<li[^>]*data-pvb="'+t[1]+'"[^>]*>([\\s\\S]*?)<\\/li>','i');
-            var m = RAW.match(re);
-            var inp = document.getElementById(t[0]);
-            if(m && inp){
-                // Strip ALL inner HTML tags, preserve text content only
-                inp.value = m[1].replace(/<[^>]+>/g, '').trim();
-                loaded++;
-            }
+            var rawHtml = _pvbRawInnerData('li', t[1]);
+            if (rawHtml === null) return;
+            rawHtml = rawHtml.trim();
+            if (_setField(t[0], rawHtml, null)) loaded++;
         });
-        alert2(al, loaded > 0 ? ('✅ Loaded — ' + loaded + ' items') : '⚠️ No items found — load the canvas or fetch RAW', loaded > 0 ? 'ok' : 'inf');
+
+        // Load toggle button text — lives inside <span class="uq-wbtn-short"> inside #uq-welcome-btn
+        // There is no id="uq-welcome-toggle-lbl" in index.html so we use a class-based regex.
+        var _toggleM = RAW.match(/<span\s[^>]*class="uq-wbtn-short"[^>]*>([\s\S]*?)<\/span>/i);
+        if (_toggleM) {
+            var _toggleTxt = _toggleM[1].trim();
+            if (_setField('pvb-wlc-toggle-lbl', _toggleTxt, null)) loaded++;
+        }
+
+        if(!silent) alert2(al, loaded > 0 ? ('✅ Loaded — ' + loaded + ' items') : '⚠️ No items found — load the canvas or fetch RAW', loaded > 0 ? 'ok' : 'inf');
+
+        // Final sync: ensure all RTEs in this tab reflect their hidden input values
+        // RTE_IDS lives inside the color-picker IIFE — access via window.RTE_IDS.
+        setTimeout(function(){
+            var ids = window.RTE_IDS;
+            if(!ids) return;
+            ids.forEach(function(id){
+                var el=document.getElementById(id);
+                if(!el||!el.dataset.uqRte) return;
+                var rte=el.nextElementSibling;
+                if(rte&&rte.classList&&rte.classList.contains('uq-rte')&&el.value){
+                    if(document.activeElement !== rte) {
+                        rte.innerHTML=el.value;
+                        if(typeof window.syncSwatchFromRte === 'function') window.syncSwatchFromRte(rte, id);
+                    }
+                }
+            });
+        }, 50);
     }
 
     // ── Save: push all changed fields to GitHub via ghPut ──────────
@@ -3145,46 +3282,38 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         if (!RAW) return alert2(al, '❌ RAW not loaded yet.', 'err');
         var next = RAW;
         var changed = 0;
+
+        // ── Helper: get innerHTML from RTE or textarea value ──
+        function _rteVal(id) {
+            var inp = document.getElementById(id);
+            if (!inp) return '';
+            var rte = inp.nextElementSibling;
+            return (rte && rte.classList && rte.classList.contains('uq-rte'))
+                ? rte.innerHTML.trim() : inp.value.trim();
+        }
+
+        // ── Save named-ID fields via _rawReplaceInner (DOMParser-based, no brittle regex) ──
         _pvbWelcomeFields.forEach(function(cfg) {
-            var inp = document.getElementById(cfg.field);
-            if (!inp || !inp.value.trim()) return;
-            var newVal = inp.value.trim();
-            // Determine tag type from RAW
-            var tagRe = new RegExp('<(h[1-6]|p|div|span|li)[^>]*id="' + cfg.id + '"', 'i');
-            var tagM  = next.match(tagRe);
-            var tag   = tagM ? tagM[1].toLowerCase() : 'p';
-            var re = new RegExp('(id="' + cfg.id + '"[^>]*>)([\\s\\S]*?)(<\\/' + tag + '>)', 'i');
-            var existingMatch = next.match(re);
-            if (existingMatch) {
-                var existingInner = existingMatch[2];
-                // Preserve any leading <span style="color:..."> wrapper so
-                // color edits made directly in index.html are not wiped on save.
-                var spanMatch = existingInner.match(/^(<span[^>]*style="[^"]*color:[^"]*"[^>]*>[\s\S]*?<\/span>)([\s\S]*)$/i);
-                var replacement;
-                if (spanMatch) {
-                    var spanHtml = spanMatch[1];
-                    var spanText = spanHtml.replace(/<[^>]+>/g, '').trim();
-                    var afterLabel = newVal;
-                    if (newVal.indexOf(spanText) === 0) {
-                        afterLabel = newVal.slice(spanText.length).trim();
-                    }
-                    replacement = spanHtml + (afterLabel ? afterLabel : '');
-                } else {
-                    replacement = newVal;
-                }
-                next = next.replace(re, '$1' + replacement + '$3');
-                changed++;
-            }
+            var newVal = _rteVal(cfg.field);
+            if (!newVal) return;
+            var updated = _rawReplaceInner(next, cfg.id, newVal, false);
+            if (updated !== next) { next = updated; changed++; }
         });
-        // Save taglines (data-pvb spans)
-        [['pvb-wlc-tag1','tagline-1'],['pvb-wlc-tag2','tagline-2'],['pvb-wlc-tag3','tagline-3'],['pvb-wlc-tag4','tagline-4']].forEach(function(t){
-            var inp = document.getElementById(t[0]);
-            if(!inp || !inp.value.trim()) return;
-            var newVal = inp.value.trim();
-            var re = new RegExp('(data-pvb="'+t[1]+'"[^>]*>)([^<]*)(<)','i');
-            if(re.test(next)){ next = next.replace(re,'$1'+newVal+'$3'); changed++; }
+
+        // ── Save taglines (data-pvb spans) — direct innerHTML replacement ──
+        // Uses correct [\s\S] escaping and replaces full innerHTML to preserve character-level color spans.
+        [['pvb-wlc-tag1','tagline-1'],['pvb-wlc-tag2','tagline-2'],
+         ['pvb-wlc-tag3','tagline-3'],['pvb-wlc-tag4','tagline-4']].forEach(function(t){
+            var newVal = _rteVal(t[0]);
+            if (!newVal) return;
+            // [\s\S]*? requires double-escaped \\ inside new RegExp() string
+            var re = new RegExp('(data-pvb="' + t[1] + '"[^>]*>)([\\s\\S]*?)(<\\/span>)', 'i');
+            var updated = next.replace(re, '$1' + newVal + '$3');
+            if (updated !== next) { next = updated; changed++; }
         });
-        // Save list items (data-pvb li items)
+
+        // ── Save list items (data-pvb li items) — direct innerHTML replacement ──
+        // Full innerHTML of each RTE div replaces the element content so color spans survive.
         [
             ['pvb-wlc-cat-1','cat-1'],['pvb-wlc-cat-2','cat-2'],['pvb-wlc-cat-3','cat-3'],
             ['pvb-wlc-cat-4','cat-4'],['pvb-wlc-cat-5','cat-5'],['pvb-wlc-cat-6','cat-6'],
@@ -3193,33 +3322,22 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             ['pvb-wlc-feat-1','feat-1'],['pvb-wlc-feat-2','feat-2'],
             ['pvb-wlc-feat-3','feat-3'],['pvb-wlc-feat-4','feat-4']
         ].forEach(function(t){
-            var inp = document.getElementById(t[0]);
-            if(!inp || !inp.value.trim()) return;
-            var newVal = inp.value.trim();
-            var re = new RegExp('(<li[^>]*data-pvb="'+t[1]+'"[^>]*>)([\\s\\S]*?)(<\\/li>)','i');
-            var existingMatch = next.match(re);
-            if(existingMatch){
-                var existingInner = existingMatch[2];
-                // If the existing inner HTML has a leading colored span, preserve it and
-                // only update the text that follows it. The plain-text value from the textarea
-                // already contains both the label and the description concatenated.
-                var spanMatch = existingInner.match(/^(<span[^>]*style="[^"]*color:[^"]*"[^>]*>[\s\S]*?<\/span>)([\s\S]*)$/i);
-                var replacement;
-                if(spanMatch){
-                    var spanHtml   = spanMatch[1];
-                    var spanText   = spanHtml.replace(/<[^>]+>/g,'').trim();
-                    var afterLabel = newVal;
-                    if(newVal.indexOf(spanText) === 0){
-                        afterLabel = newVal.slice(spanText.length).trim();
-                    }
-                    replacement = spanHtml + (afterLabel ? ' ' + afterLabel : '');
-                } else {
-                    replacement = newVal;
-                }
-                next = next.replace(re, '$1' + replacement + '$3');
-                changed++;
-            }
+            var newVal = _rteVal(t[0]);
+            if (!newVal) return;
+            // [\s\S]*? requires double-escaped \\ inside new RegExp() string
+            var re = new RegExp('(<li[^>]*data-pvb="' + t[1] + '"[^>]*>)([\\s\\S]*?)(<\\/li>)', 'i');
+            var updated = next.replace(re, '$1' + newVal + '$3');
+            if (updated !== next) { next = updated; changed++; }
         });
+
+        // ── Save toggle button text — targets <span class="uq-wbtn-short"> (no ID) ──
+        var _toggleNewVal = _rteVal('pvb-wlc-toggle-lbl');
+        if (_toggleNewVal) {
+            var _toggleSaveRe = /(<span\s[^>]*class="uq-wbtn-short"[^>]*>)([\s\S]*?)(<\/span>)/i;
+            var _toggleUpdated = next.replace(_toggleSaveRe, '$1' + _toggleNewVal + '$3');
+            if (_toggleUpdated !== next) { next = _toggleUpdated; changed++; }
+        }
+
         if (next === RAW) return alert2(al, '⚠️ No changes were made.', 'inf');
         alert2(al, '⏳ Saving ' + changed + ' fields to GitHub...', 'inf');
         var ok = await ghPut(next, 'Welcome Section: update ' + changed + ' fields');
@@ -3249,7 +3367,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         var _origPop = pvbPopulateLogic;
         pvbPopulateLogic = function() {
             _origPop.apply(this, arguments);
-            if (RAW) { setTimeout(pvbWelcomeLoad, 100); }
+            if (RAW) { setTimeout(function(){ pvbWelcomeLoad(true); }, 100); }
         };
     })();
 
@@ -6272,6 +6390,11 @@ async function loadIndex() {
                     if (RAW) return; // GitHub loaded in the meantime
                     RAW = text;
                     SHA = '';
+                    // Ensure RTEs exist before loadAllSettings queues pvbWelcomeLoad
+                    if (typeof window.attachRtesForTab === 'function') {
+                        window.attachRtesForTab('t-site');
+                        window.attachRtesForTab('t-modals');
+                    }
                     // Populate site settings and pvb logic fields
                     if (typeof loadAllSettings === 'function') loadAllSettings();
                     if (typeof pvbPopulateLogic === 'function') pvbPopulateLogic();
@@ -7117,45 +7240,111 @@ function loadAllSettings() {
     const footerMatch = RAW.match(/<p id="footer-text"[^>]*>([\s\S]*?)<\/p>/);
     if (footerMatch) set('h-footer', footerMatch[1].trim());
 
-    // ── Download Modal ──
-    const dmHeaderBtn = RAW.match(/<span id="header-btn-label">([^<]*)<\/span>/);
-    if (dmHeaderBtn) set('dm-header-btn-inp', dmHeaderBtn[1]);
-    const dmTitle = RAW.match(/<h2 id="dm-title"[^>]*>\s*([^<\n]+)/);
-    if (dmTitle) set('dm-title-inp', dmTitle[1].trim());
-    const dmDesc = RAW.match(/<p id="dm-desc"[^>]*>([^<]*)<\/p>/);
-    if (dmDesc) set('dm-desc-inp', dmDesc[1]);
-    const dmBtnLabel = RAW.match(/<span id="dm-btn-label">([^<]*)<\/span>/);
-    if (dmBtnLabel) set('dm-btn-inp', dmBtnLabel[1]);
-    const dmHref = RAW.match(/<a id="dm-btn" href="([^"]*)"/);
-    if (dmHref) set('dl-url', dmHref[1]);
-    const dmDirectLabel = RAW.match(/<span id="dm-direct-label">([^<]*)<\/span>/);
-    if (dmDirectLabel) set('dm-direct-inp', dmDirectLabel[1]);
+    // ── Download Modal + About Modal ──────────────────────────────────────────
+    // IMPORTANT: Extract innerHTML directly from the RAW string using regex.
+    // DOMParser normalizes inline CSS colors (e.g. #ff5700 → rgb(255,87,0)),
+    // which destroys original hex colors. Direct regex preserves them exactly.
+    {
+        // Generic helper: extract innerHTML of first element with given id from RAW.
+        // Returns the raw HTML string between the opening and closing tag — exact bytes
+        // from index.html with no browser normalization applied.
+        function _rawInner(id) {
+            // Match the opening tag (any attrs), then capture everything until closing tag.
+            // Uses a non-greedy [\s\S]*? so it stops at the FIRST closing tag of the same type.
+            var tagRe = new RegExp('<([a-zA-Z][a-zA-Z0-9]*)(?=[\\s>])[^>]*\\bid=["\']' + id + '["\'][^>]*>([\\s\\S]*?)<\\/\\1>', 'i');
+            var m = RAW.match(tagRe);
+            return m ? m[2] : null;
+        }
+        // Variant: strip any <button …>…</button> AND inline <style>…</style> tags.
+        // This prevents animation CSS (e.g. dmTitleGlow) from leaking into the admin RTE.
+        function _rawInnerNoBtn(id) {
+            var html = _rawInner(id);
+            if (!html) return null;
+            html = html.replace(/<button[\s\S]*?<\/button>/gi, '');
+            html = html.replace(/<style[\s\S]*?<\/style>/gi, '');
+            return html.trim();
+        }
+        // Variant: text-only (strips all tags).
+        function _rawText(id) {
+            var html = _rawInner(id);
+            if (!html) return null;
+            return html.replace(/<[^>]+>/g, '').trim();
+        }
+        // Variant: returns innerHTML wrapped in a color span if the element itself
+        // has a style="color:..." on its own tag (not a child span). Used for fields
+        // like about-developer and about-launch-date where color is on the element.
+        // Does NOT use DOMParser — reads directly from RAW to preserve hex values.
+        function _rawInnerWithElColor(id) {
+            var inner = _rawInner(id);
+            if (inner === null) return null;
+            inner = inner.trim();
+            // If inner already contains a color span, return as-is
+            if (/style\s*=\s*["'][^"']*color\s*:/i.test(inner)) return inner;
+            // Extract color from the element's OWN opening tag in RAW
+            var tagRe = new RegExp('<[a-zA-Z][a-zA-Z0-9]*(?=[\\s>])[^>]*\\bid=["\\\']' + id + '["\\\'][^>]*>', 'i');
+            var tagMatch = RAW.match(tagRe);
+            if (!tagMatch) return inner;
+            var colorMatch = tagMatch[0].match(/color\s*:\s*(#[0-9a-fA-F]{3,8})/i);
+            if (!colorMatch) return inner;
+            var color = colorMatch[1];
+            // Wrap innerHTML in a color span for RTE display
+            return '<span style="color:' + color + ';">' + inner + '</span>';
+        }
 
-    // ── Category download button label ──
-    const catDlLabel = RAW.match(/<span id="cat-download-btn-label"[^>]*>([^<]*)<\/span>/);
-    if (catDlLabel) set('dm-cat-dl-inp', catDlLabel[1].trim());
+        // Download Modal fields
+        var _hBtn = _rawInner('header-btn-label');
+        if (_hBtn !== null) set('dm-header-btn-inp', _hBtn.trim());
 
-    // ── Fonts per page ──
-    const perPageMatch = RAW.match(/var FONTS_PER_PAGE\s*=\s*(\d+);\s*\/\/ admin:perpage/);
-    if (perPageMatch) set('dm-perpage-inp', perPageMatch[1]);
+        var _dmTitle = _rawInnerNoBtn('dm-title');
+        if (_dmTitle !== null) set('dm-title-inp', _dmTitle);
 
-    // ── About Modal ──
-    const aboutTitle = RAW.match(/<h2 id="about-title"[^>]*>([^<]*)<\/h2>/);
-    if (aboutTitle) set('about-title-inp', aboutTitle[1]);
-    const aboutContent = RAW.match(/<p id="about-content"[^>]*>([\s\S]*?)<\/p>/);
-    if (aboutContent) set('about-text', aboutContent[1].replace(/<br\s*\/?>/g,'\n').trim());
-    const aboutFeatTitle = RAW.match(/<div id="about-features-title"[^>]*>\s*([^<]*)\s*<\/div>/);
-    if (aboutFeatTitle) set('about-features-title-inp', aboutFeatTitle[1].trim());
-    for (let i=1;i<=4;i++) {
-        const iconM = RAW.match(new RegExp(`<span id="about-feat${i}-icon"[^>]*>([^<]*)<\\/span>`));
-        if (iconM) set(`about-feat${i}-icon-inp`, iconM[1]);
-        const textM = RAW.match(new RegExp(`<span id="about-feat${i}-text"[^>]*>([\\s\\S]*?)<\\/span>`));
-        if (textM) set(`about-feat${i}-text-inp`, textM[1].replace(/<[^>]+>/g,'').trim());
+        var _dmDesc = _rawInner('dm-desc');
+        if (_dmDesc !== null) set('dm-desc-inp', _dmDesc.trim());
+
+        var _dmBtnLbl = _rawInner('dm-btn-label');
+        if (_dmBtnLbl !== null) set('dm-btn-inp', _dmBtnLbl.trim());
+
+        // Download URL — extract from href attribute (not innerHTML)
+        var _dmHrefM = RAW.match(/<a\s[^>]*\bid="dm-btn"[^>]*\bhref="([^"]*)"[^>]*>/i)
+                    || RAW.match(/<a\s[^>]*\bhref="([^"]*)"[^>]*\bid="dm-btn"[^>]*>/i);
+        if (_dmHrefM) set('dl-url', _dmHrefM[1]);
+
+        var _dmDirect = _rawInner('dm-direct-label');
+        if (_dmDirect !== null) set('dm-direct-inp', _dmDirect.trim());
+
+        var _catDl = _rawInner('cat-download-btn-label');
+        if (_catDl !== null) set('dm-cat-dl-inp', _catDl.trim());
+
+        // Fonts per page — JS variable, must use regex
+        var _perPageMatch = RAW.match(/var FONTS_PER_PAGE\s*=\s*(\d+);\s*\/\/ admin:perpage/);
+        if (_perPageMatch) set('dm-perpage-inp', _perPageMatch[1]);
+
+        // About Modal
+        var _aboutTitle = _rawInner('about-title');
+        if (_aboutTitle !== null) set('about-title-inp', _aboutTitle.trim());
+
+        var _aboutContent = _rawInner('about-content');
+        if (_aboutContent !== null) set('about-text', _aboutContent.trim());
+
+        var _aboutFeatTitle = _rawInnerWithElColor('about-features-title');
+        if (_aboutFeatTitle !== null) set('about-features-title-inp', _aboutFeatTitle.trim());
+
+        for (var _i = 1; _i <= 4; _i++) {
+            // Icon: text only (emojis, no HTML needed)
+            var _iconHtml = _rawText('about-feat' + _i + '-icon');
+            if (_iconHtml !== null) set('about-feat' + _i + '-icon-inp', _iconHtml);
+
+            // Text: full innerHTML + element-level color to preserve all color info
+            var _textHtml = _rawInnerWithElColor('about-feat' + _i + '-text');
+            if (_textHtml !== null) set('about-feat' + _i + '-text-inp', _textHtml.trim());
+        }
+
+        var _launchTxt = _rawInnerWithElColor('about-launch-date');
+        if (_launchTxt !== null) set('about-launch-inp', _launchTxt);
+
+        var _devTxt = _rawInnerWithElColor('about-developer');
+        if (_devTxt !== null) set('about-dev-inp', _devTxt);
     }
-    const launchM = RAW.match(/<span id="about-launch-date"[^>]*>([^<]*)<\/span>/);
-    if (launchM) set('about-launch-inp', launchM[1]);
-    const devM = RAW.match(/<span id="about-developer"[^>]*>([^<]*)<\/span>/);
-    if (devM) set('about-dev-inp', devM[1]);
 
     // ── SEO ──
     const titleM = RAW.match(/<title>([^<]*)<\/title>/);
@@ -7182,9 +7371,34 @@ function loadAllSettings() {
     });
 
     // ── Also populate welcome section editor fields ──
+    // 150ms: fires after go() wrapper creates RTEs at 80ms, so _setField
+    // can set both el.value and rte.innerHTML in a single call.
     if (typeof pvbWelcomeLoad === 'function') {
-        setTimeout(pvbWelcomeLoad, 120);
+        setTimeout(function(){ pvbWelcomeLoad(true); }, 150);
     }
+
+    // ── Force all RTEs to reflect newly-loaded values ──
+    // Runs at 400ms — gives pvbWelcomeLoad (150ms) time to fire and set el.value.
+    // RTE_IDS/makeRte are inside the color-picker IIFE — access via window.*.
+    setTimeout(function(){
+        var ids = window.RTE_IDS;
+        if (!ids) return;
+        ids.forEach(function(id){
+            var el=document.getElementById(id);
+            if(!el) return;
+            if(!el.dataset.uqRte) {
+                if(typeof window.makeRte === 'function') window.makeRte(el);
+                return;
+            }
+            var rte=el.nextElementSibling;
+            if(rte&&rte.classList&&rte.classList.contains('uq-rte')&&el.value){
+                if(document.activeElement !== rte) {
+                    rte.innerHTML=el.value;
+                    if(typeof window.syncSwatchFromRte === 'function') window.syncSwatchFromRte(rte, id);
+                }
+            }
+        });
+    }, 400);
 }
 
 // ══════════════════════════════════════════
@@ -7274,73 +7488,167 @@ async function saveFooter() {
 }
 
 // ══════════════════════════════════════════
+// Shared: Direct innerHTML replacement in RAW
+// Uses DOMParser to locate exact tag boundaries, then string surgery.
+// Preserves ALL attributes, siblings, and button children untouched.
+// For dm-title: pass stripButtons=true to remove <button> before replacing text.
+// ══════════════════════════════════════════
+function _rawReplaceInner(rawStr, elementId, newInner, stripButtons) {
+    // Step 1: Use regex to locate the element's tag type
+    const tagMatch = rawStr.match(new RegExp('<([a-zA-Z][a-zA-Z0-9]*)[^>]*id="' + elementId + '"'));
+    if (!tagMatch) return rawStr;
+    const tag = tagMatch[1].toLowerCase();
+
+    // Step 2: For elements where we must preserve child non-text nodes (e.g. <button>),
+    // extract those children directly from rawStr — NOT from DOMParser — so their exact
+    // HTML (including hex colors, inline styles) is preserved without browser normalization.
+    let preservedChildren = '';
+    if (stripButtons) {
+        const re = new RegExp('(id="' + elementId + '"[^>]*>)([\\s\\S]*?)(<\\/' + tag + '>)', 'i');
+        const existingM = rawStr.match(re);
+        if (existingM) {
+            const existingInner = existingM[2];
+            // Extract each <button …>…</button> verbatim
+            const btnRe = /<button[\s\S]*?<\/button>/gi;
+            let bm;
+            while ((bm = btnRe.exec(existingInner)) !== null) {
+                preservedChildren += bm[0];
+            }
+            // Also extract any inline <style> blocks that belong to those buttons
+            const styleRe = /<style[\s\S]*?<\/style>/gi;
+            let sm;
+            while ((sm = styleRe.exec(existingInner)) !== null) {
+                preservedChildren += sm[0];
+            }
+        }
+    }
+
+    // Step 3: Build the final inner HTML to inject
+    const finalInner = stripButtons
+        ? (newInner + (preservedChildren ? '\n            ' + preservedChildren : ''))
+        : newInner;
+
+    // Step 4: Regex-based surgical replacement using the elementId as anchor
+    const re  = new RegExp('(id="' + elementId + '"[^>]*>)([\\s\\S]*?)(<\\/' + tag + '>)');
+    return rawStr.replace(re, function(_, open, _old, close) {
+        return open + '\n            ' + finalInner + '\n        ' + close;
+    });
+}
+
+// ══════════════════════════════════════════
 // Save: Download Modal
 // ══════════════════════════════════════════
 async function saveDownloadModal() {
-    const headerBtn = v('dm-header-btn-inp');
-    const title     = v('dm-title-inp');
-    const desc      = v('dm-desc-inp');
-    const btnLabel  = v('dm-btn-inp');
-    const url       = v('dl-url');
-    const directLbl = v('dm-direct-inp');
-    const catDlLbl  = v('dm-cat-dl-inp');
     const al        = document.getElementById('dl-alert');
+    const url       = v('dl-url');
     if (!url) return alert2(al,'لینکی داگرتن پڕ بکەرەوە!','err');
 
-    let next = RAW;
-    if (headerBtn) next = next.replace(/<span id="header-btn-label">[^<]*<\/span>/, `<span id="header-btn-label">${headerBtn}</span>`);
-    if (title) {
-        // Only replace the text node — preserve the copy-link button inside the h2
-        next = next.replace(/(<h2 id="dm-title"[^>]*>)\s*[^<\n]+/, `$1\n            ${title}\n            `);
+    // Helper: get full innerHTML from RTE if present, else fall back to .value
+    function rteVal(id) {
+        const inp = document.getElementById(id);
+        if (!inp) return null;
+        const rte = inp.nextElementSibling;
+        return (rte && rte.classList && rte.classList.contains('uq-rte'))
+            ? rte.innerHTML.trim() : inp.value.trim();
     }
-    if (desc)      next = next.replace(/<p id="dm-desc"[^>]*>[^<]*<\/p>/, `<p id="dm-desc" style="font-size:1.05rem;margin-bottom:24px;color:#444;line-height:1.8;background:#f4f7ff;border-radius:12px;padding:14px 18px;border:1px solid #d8e3ff;">${desc}</p>`);
-    if (btnLabel)  next = next.replace(/<span id="dm-btn-label">[^<]*<\/span>/, `<span id="dm-btn-label">${btnLabel}</span>`);
-    if (directLbl) next = next.replace(/<span id="dm-direct-label">[^<]*<\/span>/, `<span id="dm-direct-label">${directLbl}</span>`);
-    next = next.replace(/(<a id="dm-btn" href=")[^"]*"/, `$1${url}"`);
 
-    // Category download button label
-    if (catDlLbl) next = next.replace(/<span id="cat-download-btn-label"[^>]*>[^<]*<\/span>/, `<span id="cat-download-btn-label" style="display:none">${catDlLbl}</span>`);
+    // Helper: strip display-wrapper span added by _rawInnerWithElColor (color is on the element itself)
+    function _stripWrapperSpanDm(val) {
+        if (!val) return val;
+        var m = val.match(/^<span[^>]*style\s*=\s*["'][^"']*color\s*:[^"']*["'][^>]*>([\s\S]*?)<\/span>$/i);
+        return m ? m[1].trim() : val;
+    }
+
+    const headerBtn = rteVal('dm-header-btn-inp');
+    const title     = rteVal('dm-title-inp');
+    const desc      = rteVal('dm-desc-inp');
+    const btnLabel  = rteVal('dm-btn-inp');
+    const directLbl = rteVal('dm-direct-inp');
+    const catDlLbl  = rteVal('dm-cat-dl-inp');
+
+    let next = RAW;
+
+    // Direct replacements via shared utility
+    if (headerBtn) next = _rawReplaceInner(next, 'header-btn-label', headerBtn, false);
+
+    // dm-title: preserve the existing <button id="dm-copy-link-btn"> inside the h2
+    if (title)    next = _rawReplaceInner(next, 'dm-title', title, true);
+
+    if (desc)     next = _rawReplaceInner(next, 'dm-desc', desc, false);
+    if (btnLabel) next = _rawReplaceInner(next, 'dm-btn-label', btnLabel, false);
+    if (directLbl)next = _rawReplaceInner(next, 'dm-direct-label', directLbl, false);
+    if (catDlLbl) next = _rawReplaceInner(next, 'cat-download-btn-label', catDlLbl, false);
+
+    // Download URL is an attribute, not innerHTML — use regex
+    next = next.replace(/(<a id="dm-btn" href=")[^"]*"/, `$1${url}"`);
 
     alert2(al,'Saving...','inf');
     const ok = await ghPut(next,'Update: download modal');
-    ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
+    if (ok) { RAW = next; alert2(al,'✅ سەیڤکرا!','ok'); }
+    else alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
 }
+
 
 // ══════════════════════════════════════════
 // Save: About Modal
 // ══════════════════════════════════════════
 async function saveAbout() {
     const al = document.getElementById('about-alert');
+
+    // Helper: get full innerHTML from RTE if present, else fall back to .value
+    function rteVal(id) {
+        const inp = document.getElementById(id);
+        if (!inp) return null;
+        const rte = inp.nextElementSibling;
+        return (rte && rte.classList && rte.classList.contains('uq-rte'))
+            ? rte.innerHTML.trim() : inp.value.trim();
+    }
+
     let next = RAW;
 
-    const title = v('about-title-inp');
-    if (title) next = next.replace(/<h2 id="about-title"[^>]*>[^<]*<\/h2>/, `<h2 id="about-title" style="font-size:1.6rem;letter-spacing:0.02em;">${title}</h2>`);
+    // All text-rich fields use _rawReplaceInner for safe innerHTML injection
+    const title = rteVal('about-title-inp');
+    if (title) next = _rawReplaceInner(next, 'about-title', title, false);
 
-    const text = document.getElementById('about-text').value.trim();
-    if (text) {
-        const htmlText = text.replace(/\n/g,'<br>\n');
-        next = next.replace(/<p id="about-content"[\s\S]*?<\/p>/, `<p id="about-content" style="font-size:1.05rem;color:#333;text-align:justify;line-height:2;">\n            ${htmlText}\n        </p>`);
+    const text = rteVal('about-text');
+    if (text)  next = _rawReplaceInner(next, 'about-content', text, false);
+
+    // Plain text fields (color is on the element itself, not a child span)
+    // Strip any display-wrapper span added by _rawInnerWithElColor before saving.
+    function _stripWrapperSpan(val) {
+        if (!val) return val;
+        var m = val.match(/^<span[^>]*style\s*=\s*["'][^"']*color\s*:[^"']*["'][^>]*>([\s\S]*?)<\/span>$/i);
+        return m ? m[1].trim() : val;
     }
 
-    const featTitle = v('about-features-title-inp');
-    if (featTitle) next = next.replace(/(<div id="about-features-title"[^>]*>)[^<]*(<\/div>)/, `$1\n                ${featTitle}\n            $2`);
+    // about-features-title: color is on element itself — strip wrapper before saving
+    const featTitle = _stripWrapperSpan(rteVal('about-features-title-inp'));
+    if (featTitle) next = _rawReplaceInner(next, 'about-features-title', featTitle, false);
 
-    for (let i=1;i<=4;i++) {
-        const icon = v(`about-feat${i}-icon-inp`);
-        const txt  = v(`about-feat${i}-text-inp`);
-        if (icon) next = next.replace(new RegExp(`(<span id="about-feat${i}-icon"[^>]*>)[^<]*(<\\/span>)`), `$1${icon}$2`);
-        if (txt)  next = next.replace(new RegExp(`<span id="about-feat${i}-text">[\\s\\S]*?<\\/span>`), `<span id="about-feat${i}-text">${txt}</span>`);
+    for (let i = 1; i <= 4; i++) {
+        const icon = v('about-feat' + i + '-icon-inp');
+        const txt  = rteVal('about-feat' + i + '-text-inp');
+        // Icon is plain text — use simple text-node regex (no nested HTML expected)
+        if (icon) next = next.replace(
+            new RegExp('(<span id="about-feat' + i + '-icon"[^>]*>)([^<]*?)(<\/span>)'),
+            '$1' + icon + '$3'
+        );
+        // Text may contain styled spans — strip display wrapper, then use safe replacement
+        const _strippedTxt = _stripWrapperSpan(txt);
+        if (_strippedTxt) next = _rawReplaceInner(next, 'about-feat' + i + '-text', _strippedTxt, false);
     }
 
-    const launch = v('about-launch-inp');
-    if (launch) next = next.replace(/(<span id="about-launch-date"[^>]*>)[^<]*(<\/span>)/, `$1${launch}$2`);
-    const dev = v('about-dev-inp');
-    if (dev)    next = next.replace(/(<span id="about-developer"[^>]*>)[^<]*(<\/span>)/, `$1${dev}$2`);
+    // Plain text fields (color is on the element itself, not a child span)
+    const launch = _stripWrapperSpan(v('about-launch-inp'));
+    if (launch) next = next.replace(/(<span id="about-launch-date"[^>]*>)([^<]*)(<\/span>)/, `$1${launch}$3`);
+    const dev = _stripWrapperSpan(v('about-dev-inp'));
+    if (dev)    next = next.replace(/(<span id="about-developer"[^>]*>)([^<]*)(<\/span>)/, `$1${dev}$3`);
 
-    if (next===RAW) return alert2(al,'❌ هیچ گۆڕانکارییەک نەدۆزرایەوە یان ئێلیمێنتەکان نەدۆزرایەوە!','err');
+    if (next === RAW) return alert2(al,'❌ هیچ گۆڕانکارییەک نەدۆزرایەوە یان ئێلیمێنتەکان نەدۆزرایەوە!','err');
     alert2(al,'Saving...','inf');
     const ok = await ghPut(next,'Update: about modal');
-    ok ? alert2(al,'✅ سەیڤکرا!','ok') : alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
+    if (ok) { RAW = next; alert2(al,'✅ سەیڤکرا!','ok'); }
+    else alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
 }
 
 // ══════════════════════════════════════════
@@ -7552,7 +7860,32 @@ function setReady(val) {
     document.getElementById('fbtn').disabled = !val;
     document.getElementById('cbtn').disabled = !val;
     if (val) {
+        // ── Ensure RTEs exist BEFORE loadAllSettings queues pvbWelcomeLoad(150ms) ──
+        // attachRtesForTab and RTE_IDS live inside an IIFE — must use window.* to access them.
+        if (typeof window.attachRtesForTab === 'function') {
+            window.attachRtesForTab('t-site');
+            window.attachRtesForTab('t-modals');
+        }
         loadAllSettings();
+        // ── Hard sync at 500ms: after pvbWelcomeLoad (150ms) has fired and set el.value,
+        // push every value into its paired RTE div to guarantee visible content.
+        // RTE_IDS lives inside the color-picker IIFE — access via window.RTE_IDS.
+        setTimeout(function() {
+            var ids = window.RTE_IDS;
+            if (!ids) return;
+            ids.forEach(function(rid) {
+                var el = document.getElementById(rid);
+                if (!el) return;
+                if (!el.dataset.uqRte && typeof window.makeRte === 'function') { window.makeRte(el); return; }
+                var rte = el.nextElementSibling;
+                if (rte && rte.classList && rte.classList.contains('uq-rte') && el.value) {
+                    if (document.activeElement !== rte) {
+                        rte.innerHTML = el.value;
+                        if (typeof window.syncSwatchFromRte === 'function') window.syncSwatchFromRte(rte, rid);
+                    }
+                }
+            });
+        }, 500);
         // Pre-load stats immediately on login — historical archive + today's live data
         loadAllStats(false);
         // ── Self-Healing Watchdog: runs 5s after connect, silently fixes any sitemap issues ──
@@ -7579,7 +7912,55 @@ function go(id, btn) {
 function showOverlay(msg) { document.getElementById('overlay-msg').textContent = msg||'...'; document.getElementById('overlay').classList.add('show'); }
 function hideOverlay()    { document.getElementById('overlay').classList.remove('show'); }
 function v(id)   { return document.getElementById(id)?.value?.trim()||''; }
-function set(id,val) { const el=document.getElementById(id); if(el) el.value=val; }
+function set(id,val) {
+    const el=document.getElementById(id);
+    if(!el) return;
+    el.value=val;
+    // push raw HTML into paired RTE if present
+    const rte=el.nextElementSibling;
+    if(rte && rte.classList && rte.classList.contains('uq-rte')) {
+        rte.innerHTML=val||'';
+        // Apply font from index.html so the preview matches the website
+        if(val && typeof RAW !== 'undefined' && RAW) {
+            // Extract the element id from the input's id (strip -inp suffix for modal fields)
+            var srcId = id.replace(/-inp$/, '');
+            // Map admin input IDs to index.html element IDs
+            var idMap = {
+                'dm-header-btn-inp':'header-btn-label','dm-title-inp':'dm-title',
+                'dm-desc-inp':'dm-desc','dm-btn-inp':'dm-btn-label',
+                'dm-direct-inp':'dm-direct-label','dm-cat-dl-inp':'cat-download-btn-label',
+                'about-title-inp':'about-title','about-text':'about-content',
+                'about-features-title-inp':'about-features-title',
+                'about-feat1-text-inp':'about-feat1-text','about-feat2-text-inp':'about-feat2-text',
+                'about-feat3-text-inp':'about-feat3-text','about-feat4-text-inp':'about-feat4-text',
+                'about-dev-inp':'about-developer','about-launch-inp':'about-launch-date'
+            };
+            var indexId = idMap[id] || srcId;
+            // Try to find font-family for this element in a <style> block in RAW
+            try {
+                var styleBlocks = RAW.match(/<style[^>]*>([\s\S]*?)<\/style>/gi) || [];
+                var detected = null;
+                for (var _si = 0; _si < styleBlocks.length && !detected; _si++) {
+                    var cssText = styleBlocks[_si].replace(/<\/?style[^>]*>/gi,'');
+                    var rules = cssText.split('}');
+                    for (var _ri = 0; _ri < rules.length && !detected; _ri++) {
+                        var bIdx = rules[_ri].indexOf('{');
+                        if (bIdx === -1) continue;
+                        var sel = rules[_ri].substring(0, bIdx);
+                        var decl = rules[_ri].substring(bIdx+1);
+                        var idPat = new RegExp('(?:^|[\\s,])#' + indexId + '(?:[\\s,:{]|$)','i');
+                        if (!idPat.test(sel)) continue;
+                        var ffM = decl.match(/font-family\s*:\s*([^;!]+)/i);
+                        if (ffM) detected = ffM[1].trim();
+                    }
+                }
+                if (detected) rte.style.fontFamily = detected;
+            } catch(e) {}
+        }
+        // update the swatch to reflect the first color found in the content
+        if(val) setTimeout(()=>{ if(typeof window.syncSwatchFromRte === 'function') window.syncSwatchFromRte(rte, id); }, 0);
+    }
+}
 // ══════════════════════════════════════════
 // Downloads Statistics Tab — powered by GA4 Data API
 // ══════════════════════════════════════════
@@ -10476,6 +10857,644 @@ async function submitBingSitemapFull() {
             highlightHeader('vt-log-table', col, dir);
         }, 10);
     };
+})();
+</script>
+
+<!-- ── UQ Photoshop Color Picker ── -->
+<div id="uq-cp-overlay">
+  <div id="uq-cp-box">
+    <div id="uq-cp-titlebar">Color Picker (Foreground Color)<span id="uq-cp-close-btn">✕</span></div>
+    <div id="uq-cp-body">
+      <!-- Gradient canvas -->
+      <canvas id="uq-cp-gradient" width="200" height="200"></canvas>
+      <div id="uq-cp-gradient-cursor"></div>
+      <!-- Hue strip -->
+      <div id="uq-cp-hue-wrap">
+        <canvas id="uq-cp-hue" width="20" height="200"></canvas>
+        <div id="uq-cp-hue-cursor"></div>
+      </div>
+      <!-- Right panel -->
+      <div id="uq-cp-right">
+        <div style="display:flex;gap:6px;align-items:stretch;">
+          <div id="uq-cp-swatch-labels"><span>new</span><span>current</span></div>
+          <div style="display:flex;flex-direction:column;flex:1;gap:2px;">
+            <div id="uq-cp-new-swatch"></div>
+            <div id="uq-cp-cur-swatch"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;padding-top:2px;">
+            <div class="uq-cp-warn" id="uq-cp-warn" title="Not web-safe color"></div>
+          </div>
+        </div>
+        <!-- HSB / LAB / CMYK fields -->
+        <div id="uq-cp-fields">
+          <div class="uq-cp-row"><label>H:</label><input type="number" id="uq-h" min="0" max="360"><span class="uq-cp-pct">°</span></div>
+          <div class="uq-cp-row"><label>L:</label><input type="number" id="uq-l" min="0" max="100"></div>
+          <div class="uq-cp-row"><label>S:</label><input type="number" id="uq-s" min="0" max="100"><span class="uq-cp-pct">%</span></div>
+          <div class="uq-cp-row"><label>a:</label><input type="number" id="uq-la" min="-128" max="127"></div>
+          <div class="uq-cp-row"><label>B:</label><input type="number" id="uq-b" min="0" max="100"><span class="uq-cp-pct">%</span></div>
+          <div class="uq-cp-row"><label>b:</label><input type="number" id="uq-lb" min="-128" max="127"></div>
+          <div class="uq-cp-row"><label>R:</label><input type="number" id="uq-r" min="0" max="255"></div>
+          <div class="uq-cp-row"><label>C:</label><input type="number" id="uq-c" min="0" max="100"><span class="uq-cp-pct">%</span></div>
+          <div class="uq-cp-row"><label>G:</label><input type="number" id="uq-g" min="0" max="255"></div>
+          <div class="uq-cp-row"><label>M:</label><input type="number" id="uq-m" min="0" max="100"><span class="uq-cp-pct">%</span></div>
+          <div class="uq-cp-row"><label>B:</label><input type="number" id="uq-bv" min="0" max="255"></div>
+          <div class="uq-cp-row"><label>Y:</label><input type="number" id="uq-y" min="0" max="100"><span class="uq-cp-pct">%</span></div>
+          <div class="uq-cp-row" style="grid-column:2;"><label>K:</label><input type="number" id="uq-k" min="0" max="100"><span class="uq-cp-pct">%</span></div>
+        </div>
+        <div id="uq-cp-hex-row"><label>#</label><input type="text" id="uq-cp-hex" maxlength="6" spellcheck="false"></div>
+      </div>
+    </div>
+    <div id="uq-cp-footer">
+      <button class="uq-cp-fbtn" id="uq-cp-ok">OK</button>
+      <button class="uq-cp-fbtn" id="uq-cp-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════
+   UQ Photoshop-Style Color Picker  —  surgical add-on
+   Attaches to t-site and t-modals text inputs/textareas
+   as rich-text (contenteditable) editors with per-char
+   color support.
+   ════════════════════════════════════════════════════════ */
+(function(){
+'use strict';
+
+/* ── helpers ── */
+function hsvToRgb(h,s,v){
+  s/=100;v/=100;
+  const i=Math.floor(h/60)%6,f=h/60-Math.floor(h/60),
+    p=v*(1-s),q=v*(1-f*s),t=v*(1-((1-f)*s));
+  const m=[[v,t,p],[q,v,p],[p,v,t],[p,q,v],[t,p,v],[v,p,q]][i];
+  return m.map(x=>Math.round(x*255));
+}
+function rgbToHsv(r,g,b){
+  r/=255;g/=255;b/=255;
+  const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;
+  let h=0;
+  if(d){
+    if(max===r) h=((g-b)/d+6)%6;
+    else if(max===g) h=(b-r)/d+2;
+    else h=(r-g)/d+4;
+    h*=60;
+  }
+  return[h, max?d/max*100:0, max*100];
+}
+function hexToRgb(hex){
+  hex=hex.replace('#','');
+  if(hex.length===3) hex=hex.split('').map(c=>c+c).join('');
+  const n=parseInt(hex,16);
+  return[(n>>16)&255,(n>>8)&255,n&255];
+}
+function rgbToHex(r,g,b){
+  return[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+function rgbToLab(r,g,b){
+  let R=r/255,G=g/255,B=b/255;
+  [R,G,B]=[R,G,B].map(c=>c>0.04045?Math.pow((c+0.055)/1.055,2.4):c/12.92);
+  let X=(R*0.4124+G*0.3576+B*0.1805)/0.95047,
+      Y=(R*0.2126+G*0.7152+B*0.0722)/1.00000,
+      Z=(R*0.0193+G*0.1192+B*0.9505)/1.08883;
+  [X,Y,Z]=[X,Y,Z].map(v=>v>0.008856?Math.cbrt(v):(7.787*v+16/116));
+  return[116*Y-16, 500*(X-Y), 200*(Y-Z)];
+}
+function rgbToCmyk(r,g,b){
+  r/=255;g/=255;b/=255;
+  const k=1-Math.max(r,g,b);
+  if(k===1) return[0,0,0,100];
+  return[(1-r-k)/(1-k),(1-g-k)/(1-k),(1-b-k)/(1-k),k].map(v=>Math.round(v*100));
+}
+
+/* ── state ── */
+let _hsv=[196,97,100], _curHex='07beff', _savedRange=null, _savedEl=null, _onOk=null;
+
+/* ── DOM refs ── */
+const overlay=document.getElementById('uq-cp-overlay');
+const box=document.getElementById('uq-cp-box');
+const gradCanvas=document.getElementById('uq-cp-gradient');
+const gradCtx=gradCanvas.getContext('2d');
+const gradCursor=document.getElementById('uq-cp-gradient-cursor');
+const hueCanvas=document.getElementById('uq-cp-hue');
+const hueCtx=hueCanvas.getContext('2d');
+const hueCursor=document.getElementById('uq-cp-hue-cursor');
+const newSwatch=document.getElementById('uq-cp-new-swatch');
+const curSwatch=document.getElementById('uq-cp-cur-swatch');
+const hexInput=document.getElementById('uq-cp-hex');
+
+/* ── draw hue strip ── */
+function drawHue(){
+  const grad=hueCtx.createLinearGradient(0,0,0,200);
+  ['#f00','#ff0','#0f0','#0ff','#00f','#f0f','#f00'].forEach((c,i)=>grad.addColorStop(i/6,c));
+  hueCtx.fillStyle=grad;
+  hueCtx.fillRect(0,0,20,200);
+}
+drawHue();
+
+/* ── draw gradient for current hue ── */
+function drawGradient(){
+  const [h]=_hsv;
+  const [r,g,b]=hsvToRgb(h,100,100);
+  const base=`rgb(${r},${g},${b})`;
+  gradCtx.clearRect(0,0,200,200);
+  const wg=gradCtx.createLinearGradient(0,0,200,0);
+  wg.addColorStop(0,'#fff');wg.addColorStop(1,base);
+  gradCtx.fillStyle=wg;gradCtx.fillRect(0,0,200,200);
+  const bg=gradCtx.createLinearGradient(0,0,0,200);
+  bg.addColorStop(0,'rgba(0,0,0,0)');bg.addColorStop(1,'#000');
+  gradCtx.fillStyle=bg;gradCtx.fillRect(0,0,200,200);
+}
+
+/* ── sync cursors & fields from _hsv ── */
+function syncAll(){
+  const [h,s,v]=_hsv;
+  // gradient cursor position
+  gradCursor.style.left=(s/100*200)+'px';
+  gradCursor.style.top=((1-v/100)*200)+'px';
+  // hue cursor position
+  hueCursor.style.top=(h/360*200)+'px';
+  // RGB
+  const [r,g,b]=hsvToRgb(h,s,v);
+  _curHex=rgbToHex(r,g,b);
+  newSwatch.style.background='#'+_curHex;
+  hexInput.value=_curHex;
+  // fields
+  const set=(id,v2)=>{const el=document.getElementById(id);if(el)el.value=Math.round(v2);};
+  set('uq-h',h);set('uq-s',s);set('uq-b',v);
+  set('uq-r',r);set('uq-g',g);set('uq-bv',b);
+  const [L,a,lb]=rgbToLab(r,g,b);
+  set('uq-l',Math.round(L));set('uq-la',Math.round(a));set('uq-lb',Math.round(lb));
+  const [c,m,y,k]=rgbToCmyk(r,g,b);
+  set('uq-c',c);set('uq-m',m);set('uq-y',y);set('uq-k',k);
+}
+
+/* ── open picker ── */
+function uqOpenPicker(currentHex, onOkCb){
+  const rgb=hexToRgb(currentHex||'07beff');
+  _hsv=rgbToHsv(...rgb);
+  _onOk=onOkCb;
+  curSwatch.style.background='#'+(currentHex||'07beff');
+  drawGradient();
+  syncAll();
+  overlay.classList.add('uq-cp-open');
+}
+window.uqOpenPicker=uqOpenPicker;
+
+/* ── close ── */
+function uqClose(){overlay.classList.remove('uq-cp-open');}
+document.getElementById('uq-cp-close-btn').onclick=uqClose;
+document.getElementById('uq-cp-cancel').onclick=uqClose;
+overlay.addEventListener('mousedown',e=>{if(e.target===overlay)uqClose();});
+
+/* ── OK ── */
+document.getElementById('uq-cp-ok').onclick=()=>{
+  if(_onOk) _onOk('#'+_curHex);
+  uqClose();
+};
+
+/* ── gradient drag ── */
+let draggingGrad=false;
+function gradPick(e){
+  const rect=gradCanvas.getBoundingClientRect();
+  const x=Math.max(0,Math.min(200,e.clientX-rect.left));
+  const y=Math.max(0,Math.min(200,e.clientY-rect.top));
+  _hsv[1]=x/200*100;
+  _hsv[2]=(1-y/200)*100;
+  drawGradient();syncAll();
+}
+gradCanvas.addEventListener('mousedown',e=>{draggingGrad=true;gradPick(e);});
+document.addEventListener('mousemove',e=>{if(draggingGrad)gradPick(e);});
+document.addEventListener('mouseup',()=>{draggingGrad=false;});
+
+/* ── hue drag ── */
+let draggingHue=false;
+function huePick(e){
+  const rect=hueCanvas.getBoundingClientRect();
+  const y=Math.max(0,Math.min(200,e.clientY-rect.top));
+  _hsv[0]=y/200*360;
+  drawGradient();syncAll();
+}
+hueCanvas.addEventListener('mousedown',e=>{draggingHue=true;huePick(e);});
+document.addEventListener('mousemove',e=>{if(draggingHue)huePick(e);});
+document.addEventListener('mouseup',()=>{draggingHue=false;});
+
+/* ── hex input ── */
+hexInput.addEventListener('input',()=>{
+  const v=hexInput.value.replace('#','');
+  if(v.length===6&&/^[0-9a-fA-F]{6}$/.test(v)){
+    const rgb=hexToRgb(v);
+    _hsv=rgbToHsv(...rgb);
+    drawGradient();syncAll();
+    hexInput.value=v;
+  }
+});
+
+/* ── number fields → update ── */
+function fieldUpdate(){
+  const g=(id)=>parseInt(document.getElementById(id)?.value||0);
+  const src=document.activeElement?.id;
+  if(['uq-h','uq-s','uq-b'].includes(src)){
+    _hsv=[g('uq-h'),g('uq-s'),g('uq-b')];
+  } else if(['uq-r','uq-g','uq-bv'].includes(src)){
+    _hsv=rgbToHsv(g('uq-r'),g('uq-g'),g('uq-bv'));
+  }
+  drawGradient();syncAll();
+}
+['uq-h','uq-s','uq-b','uq-r','uq-g','uq-bv'].forEach(id=>{
+  document.getElementById(id)?.addEventListener('change',fieldUpdate);
+});
+
+/* ── drag picker window ── */
+let drgX=0,drgY=0,drgOn=false;
+const tb=document.getElementById('uq-cp-titlebar');
+tb.addEventListener('mousedown',e=>{
+  drgOn=true;
+  const r=box.getBoundingClientRect();
+  drgX=e.clientX-r.left;drgY=e.clientY-r.top;
+});
+document.addEventListener('mousemove',e=>{
+  if(!drgOn)return;
+  box.style.position='fixed';
+  box.style.left=(e.clientX-drgX)+'px';
+  box.style.top=(e.clientY-drgY)+'px';
+  box.style.margin='0';
+});
+document.addEventListener('mouseup',()=>{drgOn=false;});
+
+/* ══════════════════════════════════════════════════
+   Rich-text editors for t-site and t-modals inputs
+   ══════════════════════════════════════════════════ */
+const RTE_TABS=['t-site','t-modals'];
+// IDs to convert to rich text editors
+const RTE_IDS=[
+  // t-site text fields
+  'pvb-wlc-h1','pvb-wlc-h2','pvb-wlc-lead',
+  'pvb-wlc-intro','pvb-wlc-platform','pvb-wlc-cats-h2',
+  'pvb-wlc-cat-1','pvb-wlc-cat-2','pvb-wlc-cat-3','pvb-wlc-cat-4','pvb-wlc-cat-5','pvb-wlc-cat-6',
+  'pvb-wlc-apps-h2','pvb-wlc-apps-lead',
+  'pvb-wlc-app-1','pvb-wlc-app-2','pvb-wlc-app-3','pvb-wlc-app-4',
+  'pvb-wlc-feats-h2',
+  'pvb-wlc-feat-1','pvb-wlc-feat-2','pvb-wlc-feat-3','pvb-wlc-feat-4',
+  'pvb-wlc-close','pvb-wlc-toggle-lbl',
+  'pvb-wlc-tag1','pvb-wlc-tag2','pvb-wlc-tag3','pvb-wlc-tag4',
+  'pvb-search-desktop','pvb-search-mobile',
+  // t-modals text fields
+  'dm-header-btn-inp','dm-title-inp','dm-desc-inp','dm-btn-inp','dm-direct-inp','dm-cat-dl-inp',
+  'about-title-inp','about-features-title-inp','about-text',
+  'about-feat1-text-inp','about-feat2-text-inp','about-feat3-text-inp','about-feat4-text-inp',
+  'about-dev-inp','about-launch-inp'
+];
+
+// Reads the first color span inside an RTE and updates the swatch indicator to match
+function syncSwatchFromRte(rteEl, elId){
+  const sw = document.getElementById('uq-ts-' + elId);
+  if (!sw) return;
+  // Use regex on the raw innerHTML string — avoids browser normalization of hex→rgb
+  const raw = rteEl.innerHTML || '';
+  // Find the first style="...color: #xxxxxx..." or style="...color:rgb(...)..." in any span/element
+  const colorMatch = raw.match(/style="[^"]*color\s*:\s*(#[0-9a-fA-F]{3,8}|rgb\([^)]+\))/i);
+  if (colorMatch) {
+    const hex = cssColorToHex(colorMatch[1]);
+    if (hex) { sw.style.background = '#' + hex; return; }
+  }
+  // fallback: keep default swatch color
+}
+
+function makeRte(el){
+  if(el.dataset.uqRte) return;
+  el.dataset.uqRte='1';
+  const dir=el.style.direction||el.getAttribute('dir')||'rtl';
+  const ph=el.placeholder||el.getAttribute('placeholder')||'';
+  const isTA=el.tagName==='TEXTAREA';
+
+  // create contenteditable div
+  const rte=document.createElement('div');
+  rte.className='uq-rte';
+  rte.contentEditable='true';
+  rte.dir=dir;
+  rte.dataset.placeholder=ph;
+  rte.dataset.forId=el.id;
+  rte.style.minHeight=isTA?(el.style.height||'64px'):'38px';
+
+  // transfer existing value
+  const initVal=el.value||'';
+  if(initVal) rte.innerHTML=initVal;
+
+  // ── Toolbar: Color + Font Size + Line Spacing ──
+  const toolbar = document.createElement('div');
+  toolbar.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px;';
+
+  // Color trigger button
+  const trigger=document.createElement('button');
+  trigger.type='button';
+  trigger.className='uq-cp-trigger';
+  trigger.innerHTML='<span class="uq-cp-trigger-swatch" id="uq-ts-'+el.id+'"></span> 🎨 Color';
+
+  trigger.addEventListener('click',()=>{
+    const sel=window.getSelection();
+    // save selection
+    if(sel&&sel.rangeCount>0&&!sel.isCollapsed&&rte.contains(sel.anchorNode)){
+      _savedRange=sel.getRangeAt(0).cloneRange();
+      _savedEl=rte;
+    }
+    // get current color of selection
+    let curHex='07beff';
+    if(_savedRange){
+      const span=document.createElement('span');
+      _savedRange.surroundContents&&(_savedRange.collapsed||(()=>{
+        try{
+          const testSpan=_savedRange.cloneContents().querySelector('span[style]');
+          if(testSpan){const c=testSpan.style.color;if(c)curHex=cssColorToHex(c)||curHex;}
+        }catch(e){}
+      })());
+    }
+    uqOpenPicker(curHex,(hex)=>{
+      if(!_savedRange||!_savedEl) return;
+      _savedEl.focus();
+      const s=window.getSelection();
+      s.removeAllRanges();
+      s.addRange(_savedRange);
+      // wrap selection in colored span
+      try{
+        const range=s.getRangeAt(0);
+        const span=document.createElement('span');
+        span.style.color=hex;
+        range.surroundContents(span);
+      }catch(e){
+        // partial selection across nodes — use execCommand fallback
+        document.execCommand('foreColor',false,hex);
+      }
+      // update swatch
+      const sw=document.getElementById('uq-ts-'+el.id);
+      if(sw) sw.style.background=hex;
+      // sync back to hidden input
+      syncRteBack(rte,el);
+    });
+  });
+
+  // ── Font Size input ──
+  const sizeLabel = document.createElement('label');
+  sizeLabel.style.cssText = 'font-size:10px;color:#aaa;display:flex;align-items:center;gap:3px;';
+  sizeLabel.textContent = '📐 px';
+  const sizeInp = document.createElement('input');
+  sizeInp.type = 'number';
+  sizeInp.min = '8'; sizeInp.max = '120'; sizeInp.placeholder = 'size';
+  sizeInp.style.cssText = 'width:48px;padding:2px 4px;font-size:11px;background:#1e1e1e;border:1px solid #555;border-radius:3px;color:#eee;direction:ltr;';
+  sizeInp.title = 'Font size (px) — select text first';
+  sizeLabel.prepend(sizeInp);
+
+  sizeInp.addEventListener('change', () => {
+    const px = parseFloat(sizeInp.value);
+    if (!px || !_savedRange) return;
+    rte.focus();
+    const s = window.getSelection();
+    s.removeAllRanges();
+    s.addRange(_savedRange);
+    try {
+      const range = s.getRangeAt(0);
+      const span = document.createElement('span');
+      span.style.fontSize = px + 'px';
+      range.surroundContents(span);
+    } catch(e) {
+      // partial selection — wrap extracted contents
+      try {
+        const range2 = s.getRangeAt(0);
+        const frag = range2.extractContents();
+        const span = document.createElement('span');
+        span.style.fontSize = px + 'px';
+        span.appendChild(frag);
+        range2.insertNode(span);
+      } catch(e2) {}
+    }
+    syncRteBack(rte, el);
+  });
+
+  // Re-save selection when user focuses the size input
+  sizeInp.addEventListener('focus', () => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && !sel.isCollapsed && rte.contains(sel.anchorNode)) {
+      _savedRange = sel.getRangeAt(0).cloneRange();
+      _savedEl = rte;
+    }
+  });
+
+  // ── Line Spacing input ──
+  const lhLabel = document.createElement('label');
+  lhLabel.style.cssText = 'font-size:10px;color:#aaa;display:flex;align-items:center;gap:3px;';
+  lhLabel.textContent = '↕ lh';
+  const lhInp = document.createElement('input');
+  lhInp.type = 'number';
+  lhInp.min = '0.8'; lhInp.max = '5'; lhInp.step = '0.1'; lhInp.placeholder = 'lh';
+  lhInp.style.cssText = 'width:48px;padding:2px 4px;font-size:11px;background:#1e1e1e;border:1px solid #555;border-radius:3px;color:#eee;direction:ltr;';
+  lhInp.title = 'Line height (e.g. 1.5) — select text first';
+  lhLabel.prepend(lhInp);
+
+  lhInp.addEventListener('change', () => {
+    const lh = parseFloat(lhInp.value);
+    if (!lh || !_savedRange) return;
+    rte.focus();
+    const s = window.getSelection();
+    s.removeAllRanges();
+    s.addRange(_savedRange);
+    try {
+      const range = s.getRangeAt(0);
+      const span = document.createElement('span');
+      span.style.lineHeight = String(lh);
+      range.surroundContents(span);
+    } catch(e) {
+      try {
+        const range2 = s.getRangeAt(0);
+        const frag = range2.extractContents();
+        const span = document.createElement('span');
+        span.style.lineHeight = String(lh);
+        span.appendChild(frag);
+        range2.insertNode(span);
+      } catch(e2) {}
+    }
+    syncRteBack(rte, el);
+  });
+
+  lhInp.addEventListener('focus', () => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && !sel.isCollapsed && rte.contains(sel.anchorNode)) {
+      _savedRange = sel.getRangeAt(0).cloneRange();
+      _savedEl = rte;
+    }
+  });
+
+  toolbar.appendChild(trigger);
+  toolbar.appendChild(sizeLabel);
+  toolbar.appendChild(lhLabel);
+
+  // sync back to original element on input
+  rte.addEventListener('input',()=>syncRteBack(rte,el));
+
+  // hide original, insert rte + toolbar after it
+  el.style.display='none';
+  el.parentNode.insertBefore(rte,el.nextSibling);
+  el.parentNode.insertBefore(toolbar,rte.nextSibling);
+
+  // Reflect any colors already in the content onto the swatch
+  if(initVal) setTimeout(()=>syncSwatchFromRte(rte, el.id), 0);
+}
+
+function syncRteBack(rte,el){
+  el.value=rte.innerHTML;
+}
+
+function cssColorToHex(c){
+  if(!c) return null;
+  if(c.startsWith('#')) return c.replace('#','');
+  const m=c.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+  if(m) return rgbToHex(+m[1],+m[2],+m[3]);
+  return null;
+}
+
+// Attach RTEs when tabs are shown
+function attachRtesForTab(tabId){
+  if(!RTE_TABS.includes(tabId)) return;
+  RTE_IDS.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    if(!el.dataset.uqRte){
+      makeRte(el);
+    } else {
+      // RTE already exists — always re-sync from el.value so colors loaded
+      // by loadAllSettings/pvbWelcomeLoad are reflected immediately
+      const rte=el.nextElementSibling;
+      if(rte&&rte.classList.contains('uq-rte')&&el.value){
+        if(document.activeElement !== rte) {
+          rte.innerHTML=el.value;
+          syncSwatchFromRte(rte, id);
+        }
+      }
+    }
+  });
+}
+
+// Hook into existing go() tab switcher
+const _origGo=window.go;
+window.go=function(id,btn){
+  if(_origGo) _origGo.call(this,id,btn);
+  // First pass at 80ms: create any missing RTEs
+  setTimeout(()=>{
+    attachRtesForTab(id);
+  },80);
+  // Second pass at 200ms: by now pvbWelcomeLoad (queued at 150ms by
+  // loadAllSettings) has fired and populated el.value for all welcome
+  // fields. Push those values into the RTEs and sync swatches.
+  if(RTE_TABS.includes(id)){
+    setTimeout(()=>{
+      RTE_IDS.forEach(rid=>{
+        const el=document.getElementById(rid);
+        if(!el) return;
+        if(!el.dataset.uqRte){ makeRte(el); return; }
+        const rte=el.nextElementSibling;
+        if(rte&&rte.classList.contains('uq-rte')&&el.value){
+          if(document.activeElement !== rte) {
+            rte.innerHTML=el.value;
+            syncSwatchFromRte(rte, rid);
+          }
+        }
+      });
+    },200);
+  }
+};
+
+// Also attach on page load for whichever tab is active
+document.addEventListener('DOMContentLoaded',()=>{
+  const active=document.querySelector('.tab-content.active');
+  if(active) attachRtesForTab(active.id);
+});
+
+// Try attaching immediately for t-site which is common default
+setTimeout(()=>attachRtesForTab('t-site'),300);
+setTimeout(()=>attachRtesForTab('t-modals'),300);
+
+// Re-sync after RAW has likely loaded (GitHub fetch takes ~1-3s).
+// ── Bulletproof RTE boot: interval-retry until RAW is ready and fields load ──
+// Abandons the broken timer-chain approach entirely.
+// Polls every 400ms; once RAW is available it runs a full load+sync cycle,
+// then keeps polling (silently) until the welcome fields are actually non-empty,
+// so slow GitHub connections and cached-page reopens both work correctly.
+var _rteBootInterval = null;
+var _rteBootDone = false;
+var _rteLoadAllCalled = false; // ensure loadAllSettings is only called once from boot cycle
+
+function _rteBootCycle() {
+  var rawNow = (typeof RAW !== 'undefined') ? RAW : '';
+  if (!rawNow) return; // RAW not yet loaded — keep waiting
+
+  // Step 1: ensure RTEs exist for both tabs
+  attachRtesForTab('t-site');
+  attachRtesForTab('t-modals');
+
+  // Step 2: run loadAllSettings only once — calling it every 400ms stacks up
+  // many overlapping pvbWelcomeLoad timers which race and cause content to
+  // appear then disappear. One call is enough.
+  if (!_rteLoadAllCalled && typeof loadAllSettings === 'function') {
+    _rteLoadAllCalled = true;
+    loadAllSettings();
+  }
+
+  // Step 3: after pvbWelcomeLoad's 150ms timer has fired, do a hard push of
+  // every el.value into its paired RTE so colors and content are visible.
+  // Use 400ms (well past pvbWelcomeLoad's 150ms) to be safe.
+  function _syncAllRtes() {
+    if (typeof RTE_IDS === 'undefined') return;
+    RTE_IDS.forEach(function(rid) {
+      var el = document.getElementById(rid);
+      if (!el) return;
+      if (!el.dataset.uqRte && typeof makeRte === 'function') { makeRte(el); }
+      var rte = el.nextElementSibling;
+      if (rte && rte.classList && rte.classList.contains('uq-rte') && el.value) {
+        if (document.activeElement !== rte) {
+          rte.innerHTML = el.value;
+          if (typeof window.syncSwatchFromRte === 'function') window.syncSwatchFromRte(rte, rid);
+        }
+      }
+    });
+    // Check if welcome fields actually got populated
+    var leadEl = document.getElementById('pvb-wlc-lead');
+    return !!(leadEl && leadEl.value);
+  }
+
+  setTimeout(function() {
+    var ok = _syncAllRtes();
+    if (ok) {
+      if (_rteBootInterval) { clearInterval(_rteBootInterval); _rteBootInterval = null; }
+      _rteBootDone = true;
+    }
+  }, 400);
+
+  // Extra safety pass at 800ms — catches slow GitHub connections
+  setTimeout(function() {
+    if (_rteBootDone) return;
+    _syncAllRtes();
+    var leadEl = document.getElementById('pvb-wlc-lead');
+    if (leadEl && leadEl.value) {
+      if (_rteBootInterval) { clearInterval(_rteBootInterval); _rteBootInterval = null; }
+      _rteBootDone = true;
+    }
+  }, 800);
+}
+
+// Start polling immediately and keep retrying every 400ms
+_rteBootInterval = setInterval(function() {
+  if (_rteBootDone) { clearInterval(_rteBootInterval); _rteBootInterval = null; return; }
+  _rteBootCycle();
+}, 400);
+
+// Also fire immediately (catches cases where RAW was already loaded before script ran)
+setTimeout(_rteBootCycle, 50);
+
+// Expose attachRtesForTab globally so setReady() and local-load callback can call it
+// before the IIFE's own timers fire (fixes Welcome Section fields showing empty on GitHub load)
+window.attachRtesForTab = attachRtesForTab;
+window.RTE_IDS = RTE_IDS;
+window.makeRte = makeRte;
+window.syncSwatchFromRte = syncSwatchFromRte;
+
 })();
 </script>
 </body>
