@@ -4893,7 +4893,51 @@ function renderFonts(data, text, resetPage) {
                 var lbl = dlLink.querySelector('.dl-label');
                 if (!lbl || dlLink._dlAnimating) return;
                 dlLink._dlAnimating = true;
-                lbl.textContent = 'فۆنتەکەت دابەزاند ✓';
+
+                // ── Session download counter (persists across cards, resets on page reload) ──
+                if (typeof window._uqDlCount === 'undefined') window._uqDlCount = 0;
+                window._uqDlCount++;
+                var n = window._uqDlCount;
+
+                // ── Milestone messages every 5th download, up to 100 ──
+                var milestones = {
+                    5:   '٥ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    10:  '١٠ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    15:  '١٥ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    20:  '٢٠ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    25:  '٢٥ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    30:  '٣٠ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    35:  '٣٥ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    40:  '٤٠ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    45:  '٤٥ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    50:  '٥٠ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    55:  '٥٥ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    60:  '٦٠ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    65:  '٦٥ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    70:  '٧٠ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    75:  '٧٥ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    80:  '٨٠ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    85:  '٨٥ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    90:  '٩٠ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    95:  '٩٥ فۆنتت دابەزاندووە — هەر بژی! 🏆',
+                    100: '١٠٠ فۆنتت دابەزاندووە — هەر بژی! 🏆'
+                };
+
+                // ── Regular rotating messages (non-milestone) ──
+                var regular = [
+                    'هەربژی، فۆنتەکەت دابەزاند ✓',
+                    'پیرۆزە، فۆنتەکەت داونلۆد کرد 🎉',
+                    'فۆنتەکە گەیشتە دەستت، بژی 🙌',
+                    'فۆنتی جوانت هەڵبژاردووە 💪',
+                    'دەستڕەنگین بیت، فۆنتەکە دابەزی ✨',
+                    'پیرۆزە، فۆنتەکەت لایە ئێستا 🎨',
+                    'دەستخۆش، فۆنتەکە دابەزی 👏',
+                    'پیرۆزە، فۆنتەکەت ئامادەی بەکارهێنانەیە 🖋'
+                ];
+
+                var msg = milestones[n] || regular[(n - 1) % regular.length];
+
+                lbl.textContent = msg;
                 dlLink.style.background = 'linear-gradient(90deg, rgba(10,74,34,1) 0%, rgba(46,204,113,1) 40%, rgba(39,174,96,1) 60%, rgba(10,74,34,1) 100%)';
                 dlLink.style.backgroundSize = '200% auto';
                 dlLink.style.animation = 'uqGreenMoving 2s linear infinite';

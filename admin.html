@@ -820,6 +820,14 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                         <label>⚡ Tagline 4</label>
                         <input type="text" id="pvb-wlc-tag4" style="direction:rtl;text-align:right;">
                     </div>
+                    <div class="form-group">
+                        <label>⚡ Tagline 5</label>
+                        <input type="text" id="pvb-wlc-tag5" style="direction:rtl;" placeholder="🖋 فۆنتی پیشەیی بۆ هەموو بوارەکان">
+                    </div>
+                    <div class="form-group" style="grid-column:2;text-align:right;">
+                        <label>⚡ Tagline 6</label>
+                        <input type="text" id="pvb-wlc-tag6" style="direction:rtl;text-align:right;" placeholder="📱 گونجاو بۆ مۆبایل، کۆمپیوتەر و تابلێت">
+                    </div>
                 </div>
                 <div id="pvb-wlc-alert" class="alert" style="margin-top:10px;"></div>
                 <div class="btn-row">
@@ -1881,6 +1889,14 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                             <div class="pvb-field">
                                 <label class="pvb-label">⚡ Tagline 4</label>
                                 <input type="text" id="_pvb_pvb-wlc-tag4" class="pvb-input" style="direction:rtl;" placeholder="📱 گونجاو بۆ مۆبایل، کۆمپیوتەر و تابلێت">
+                            </div>
+                            <div class="pvb-field">
+                                <label class="pvb-label">⚡ Tagline 5</label>
+                                <input type="text" id="_pvb_pvb-wlc-tag5" class="pvb-input" style="direction:rtl;" placeholder="🖋 فۆنتی پیشەیی بۆ هەموو بوارەکان">
+                            </div>
+                            <div class="pvb-field">
+                                <label class="pvb-label">⚡ Tagline 6</label>
+                                <input type="text" id="_pvb_pvb-wlc-tag6" class="pvb-input" style="direction:rtl;" placeholder="📱 گونجاو بۆ مۆبایل، کۆمپیوتەر و تابلێت">
                             </div>
                             <div style="font-size:0.68rem;color:var(--yellow);font-family:var(--mono);margin:6px 0 4px;">⚠ Double-click list items (li) in the canvas to edit them directly</div>
                             <div id="_pvb_pvb-wlc-alert" class="alert"></div>
@@ -3552,7 +3568,8 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
 
         // Load taglines (data-pvb spans) using raw regex
         [['pvb-wlc-tag1','tagline-1'],['pvb-wlc-tag2','tagline-2'],
-         ['pvb-wlc-tag3','tagline-3'],['pvb-wlc-tag4','tagline-4']].forEach(function(t){
+         ['pvb-wlc-tag3','tagline-3'],['pvb-wlc-tag4','tagline-4'],
+         ['pvb-wlc-tag5','tagline-5'],['pvb-wlc-tag6','tagline-6']].forEach(function(t){
             var rawHtml = _pvbRawInnerData('span', t[1]);
             if (rawHtml === null) return;
             rawHtml = rawHtml.trim();
@@ -3630,7 +3647,8 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         // ── Save taglines (data-pvb spans) — direct innerHTML replacement ──
         // Uses correct [\s\S] escaping and replaces full innerHTML to preserve character-level color spans.
         [['pvb-wlc-tag1','tagline-1'],['pvb-wlc-tag2','tagline-2'],
-         ['pvb-wlc-tag3','tagline-3'],['pvb-wlc-tag4','tagline-4']].forEach(function(t){
+         ['pvb-wlc-tag3','tagline-3'],['pvb-wlc-tag4','tagline-4'],
+         ['pvb-wlc-tag5','tagline-5'],['pvb-wlc-tag6','tagline-6']].forEach(function(t){
             var newVal = _rteVal(t[0]);
             if (!newVal) return;
             // [\s\S]*? requires double-escaped \\ inside new RegExp() string
@@ -11578,6 +11596,7 @@ const RTE_IDS=[
   'pvb-wlc-feat-1','pvb-wlc-feat-2','pvb-wlc-feat-3','pvb-wlc-feat-4',
   'pvb-wlc-close','pvb-wlc-toggle-lbl',
   'pvb-wlc-tag1','pvb-wlc-tag2','pvb-wlc-tag3','pvb-wlc-tag4',
+  'pvb-wlc-tag5','pvb-wlc-tag6',
   'pvb-search-desktop','pvb-search-mobile',
   // t-modals text fields
   'dm-header-btn-inp','dm-title-inp','dm-desc-inp','dm-btn-inp','dm-direct-inp','dm-cat-dl-inp',
