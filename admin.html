@@ -1545,251 +1545,110 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
     <!-- ══════════════════════════════════════════════════════ -->
     <div id="t-counter" class="tab-content">
 
-        <!-- ─── Group 1: Visitor Counter (Tagline 1) ─── -->
+        <!-- ─── Slot 1: Visitor Counter (Tagline 1) ─── -->
         <div class="box">
             <div class="box-header"><div class="dot" style="background:var(--accent)"></div> 👤 <span data-ku>سلۆتی ١ — ژمێرەری میوان (تاگلاین ١)</span><span data-en style="display:none">Slot 1 — Visitor Counter (Tagline 1)</span></div>
             <div class="box-body">
                 <div class="form-grid">
                     <div class="form-group full">
                         <label><span data-ku>تەمپلێت — بەکارهێنە [N] بۆ ژمارەکە</span><span data-en style="display:none">Template — use [N] for the number</span></label>
-                        <input type="text" id="uq-cfg-visit-tpl" dir="rtl" style="direction:rtl;" placeholder="بەخێربێیت.. تۆ [N]ـەمینی میوانی ئەم ماڵپەڕەیت..">
-                    </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی دەق</span><span data-en style="display:none">Text Color</span></label>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <button type="button" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:11px;"
-                                    onclick="(function(btn){var cur=document.getElementById('uq-cfg-visit-text-color').value.replace('#','');uqOpenPicker(cur,function(hex){document.getElementById('uq-cfg-visit-text-color').value='#'+hex;btn.querySelector('.uq-css-dot').style.background='#'+hex;_uqRefreshAllPreviews();});})(this)">
-                                <span class="uq-css-dot" id="uq-cfg-visit-text-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:rgba(220,220,220,0.88);"></span>
-                                <span data-ku>هەڵبژێرنی ڕەنگ</span><span data-en style="display:none">Pick Color</span>
-                            </button>
-                            <input type="text" id="uq-cfg-visit-text-color" value="rgba(220,220,220,0.88)" style="direction:ltr;width:160px;font-family:var(--mono);font-size:0.8rem;" oninput="_uqSyncDot('uq-cfg-visit-text-dot',this.value);_uqRefreshAllPreviews();">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی ژمارە (UniQAIDAR_DIGITAL)</span><span data-en style="display:none">Number Color (UniQAIDAR_DIGITAL)</span></label>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <button type="button" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:11px;"
-                                    onclick="(function(btn){var cur=document.getElementById('uq-cfg-visit-num-color').value.replace('#','');uqOpenPicker(cur,function(hex){document.getElementById('uq-cfg-visit-num-color').value='#'+hex;btn.querySelector('.uq-css-dot').style.background='#'+hex;_uqRefreshAllPreviews();});})(this)">
-                                <span class="uq-css-dot" id="uq-cfg-visit-num-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#07beff;"></span>
-                                <span data-ku>هەڵبژێرنی ڕەنگ</span><span data-en style="display:none">Pick Color</span>
-                            </button>
-                            <input type="text" id="uq-cfg-visit-num-color" value="#07beff" style="direction:ltr;width:160px;font-family:var(--mono);font-size:0.8rem;" oninput="_uqSyncDot('uq-cfg-visit-num-dot',this.value);_uqRefreshAllPreviews();">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی وشەی دیاریکراو</span><span data-en style="display:none">Keyword Color</span></label>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <button type="button" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:11px;"
-                                    onclick="(function(btn){var cur=document.getElementById('uq-cfg-visit-kw-color').value.replace('#','');uqOpenPicker(cur,function(hex){document.getElementById('uq-cfg-visit-kw-color').value='#'+hex;btn.querySelector('.uq-css-dot').style.background='#'+hex;_uqRefreshAllPreviews();});})(this)">
-                                <span class="uq-css-dot" id="uq-cfg-visit-kw-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffa71e;"></span>
-                                <span data-ku>هەڵبژێرنی ڕەنگ</span><span data-en style="display:none">Pick Color</span>
-                            </button>
-                            <input type="text" id="uq-cfg-visit-kw-color" value="#ffa71e" style="direction:ltr;width:160px;font-family:var(--mono);font-size:0.8rem;" oninput="_uqSyncDot('uq-cfg-visit-kw-dot',this.value);_uqRefreshAllPreviews();">
-                        </div>
+                        <textarea id="uq-cfg-visit-tpl" dir="rtl" style="direction:rtl;height:56px;" placeholder="بەخێربێیت.. تۆ [N]ـەمینی میوانی ئەم ماڵپەڕەیت.."></textarea>
                     </div>
                     <div class="form-group">
                         <label><span data-ku>قەبارەی فۆنتی دەق (rem)</span><span data-en style="display:none">Text Font Size (rem)</span></label>
-                        <input type="number" id="uq-cfg-visit-size" min="0.5" max="3" step="0.05" value="1" style="direction:ltr;" oninput="_uqRefreshAllPreviews();">
+                        <input type="number" id="uq-cfg-visit-size" min="0.5" max="3" step="0.05" value="1" style="direction:ltr;">
                     </div>
                     <div class="form-group">
-                        <label><span data-ku>قەبارەی فۆنتی ژمارە (rem) — جیاواز لە دەق</span><span data-en style="display:none">Number Font Size (rem) — independent from text</span></label>
-                        <input type="number" id="uq-cfg-visit-num-size" min="0.5" max="4" step="0.05" value="1.1" style="direction:ltr;" oninput="_uqRefreshAllPreviews();">
+                        <label><span data-ku>ڕەنگی ژمارە [N]</span><span data-en style="display:none">Number Color [N]</span></label>
+                        <input type="text" id="uq-cfg-visit-num-color" value="#07beff" style="direction:ltr;font-family:var(--mono);font-size:0.8rem;">
+                    </div>
+                    <div class="form-group">
+                        <label><span data-ku>قەبارەی فۆنتی ژمارە (rem)</span><span data-en style="display:none">Number Font Size (rem)</span></label>
+                        <input type="number" id="uq-cfg-visit-num-size" min="0.5" max="4" step="0.05" value="1.1" style="direction:ltr;">
                     </div>
                     <div class="form-group">
                         <label><span data-ku>بەرزی هێڵ</span><span data-en style="display:none">Line Height</span></label>
-                        <input type="number" id="uq-cfg-visit-lh" min="1" max="3" step="0.1" value="1.6" style="direction:ltr;" oninput="_uqRefreshAllPreviews();">
+                        <input type="number" id="uq-cfg-visit-lh" min="1" max="3" step="0.1" value="1.6" style="direction:ltr;">
                     </div>
-                </div>
-                <div style="margin-top:10px;">
-                    <label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:5px;">
-                        <span data-ku>پێشبینی (نموونە: ٣١٩٧) — ژمارە بە UniQAIDAR_DIGITAL فۆنت دەردەکەوێت</span>
-                        <span data-en style="display:none">Preview (sample: 3197) — number shown in UniQAIDAR_DIGITAL font</span>
-                    </label>
-                    <div id="uq-cfg-visit-preview" dir="rtl" style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 14px;min-height:34px;font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- ─── Group 2: Download Counter (Tagline 2) ─── -->
+        <!-- ─── Slot 2: Download Counter (Tagline 2) ─── -->
         <div class="box">
             <div class="box-header"><div class="dot" style="background:var(--accent)"></div> 📥 <span data-ku>سلۆتی ٢ — ژمێرەری داونلۆد (تاگلاین ٢)</span><span data-en style="display:none">Slot 2 — Download Counter (Tagline 2)</span></div>
             <div class="box-body">
                 <div class="form-grid">
                     <div class="form-group full">
                         <label><span data-ku>تەمپلێت — بەکارهێنە [M] بۆ ژمارەکە</span><span data-en style="display:none">Template — use [M] for the number</span></label>
-                        <input type="text" id="uq-cfg-dl-tpl" dir="rtl" style="direction:rtl;" placeholder="تاوەکو ئێستا [M] داونلۆد لەڕێگەی ئەم ماڵپەڕەوە بۆ فۆنتەکان ئەنجام دراوە">
-                    </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی دەق</span><span data-en style="display:none">Text Color</span></label>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <button type="button" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:11px;"
-                                    onclick="(function(btn){var cur=document.getElementById('uq-cfg-dl-text-color').value.replace('#','');uqOpenPicker(cur,function(hex){document.getElementById('uq-cfg-dl-text-color').value='#'+hex;btn.querySelector('.uq-css-dot').style.background='#'+hex;_uqRefreshAllPreviews();});})(this)">
-                                <span class="uq-css-dot" id="uq-cfg-dl-text-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:rgba(220,220,220,0.88);"></span>
-                                <span data-ku>هەڵبژێرنی ڕەنگ</span><span data-en style="display:none">Pick Color</span>
-                            </button>
-                            <input type="text" id="uq-cfg-dl-text-color" value="rgba(220,220,220,0.88)" style="direction:ltr;width:160px;font-family:var(--mono);font-size:0.8rem;" oninput="_uqSyncDot('uq-cfg-dl-text-dot',this.value);_uqRefreshAllPreviews();">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی ژمارە (UniQAIDAR_DIGITAL)</span><span data-en style="display:none">Number Color (UniQAIDAR_DIGITAL)</span></label>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <button type="button" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:11px;"
-                                    onclick="(function(btn){var cur=document.getElementById('uq-cfg-dl-num-color').value.replace('#','');uqOpenPicker(cur,function(hex){document.getElementById('uq-cfg-dl-num-color').value='#'+hex;btn.querySelector('.uq-css-dot').style.background='#'+hex;_uqRefreshAllPreviews();});})(this)">
-                                <span class="uq-css-dot" id="uq-cfg-dl-num-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#07beff;"></span>
-                                <span data-ku>هەڵبژێرنی ڕەنگ</span><span data-en style="display:none">Pick Color</span>
-                            </button>
-                            <input type="text" id="uq-cfg-dl-num-color" value="#07beff" style="direction:ltr;width:160px;font-family:var(--mono);font-size:0.8rem;" oninput="_uqSyncDot('uq-cfg-dl-num-dot',this.value);_uqRefreshAllPreviews();">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی وشەی دیاریکراو</span><span data-en style="display:none">Keyword Color</span></label>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <button type="button" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:11px;"
-                                    onclick="(function(btn){var cur=document.getElementById('uq-cfg-dl-kw-color').value.replace('#','');uqOpenPicker(cur,function(hex){document.getElementById('uq-cfg-dl-kw-color').value='#'+hex;btn.querySelector('.uq-css-dot').style.background='#'+hex;_uqRefreshAllPreviews();});})(this)">
-                                <span class="uq-css-dot" id="uq-cfg-dl-kw-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffa71e;"></span>
-                                <span data-ku>هەڵبژێرنی ڕەنگ</span><span data-en style="display:none">Pick Color</span>
-                            </button>
-                            <input type="text" id="uq-cfg-dl-kw-color" value="#ffa71e" style="direction:ltr;width:160px;font-family:var(--mono);font-size:0.8rem;" oninput="_uqSyncDot('uq-cfg-dl-kw-dot',this.value);_uqRefreshAllPreviews();">
-                        </div>
+                        <textarea id="uq-cfg-dl-tpl" dir="rtl" style="direction:rtl;height:56px;" placeholder="تاوەکو ئێستا [M] داونلۆد لەڕێگەی ئەم ماڵپەڕەوە بۆ فۆنتەکان ئەنجام دراوە"></textarea>
                     </div>
                     <div class="form-group">
                         <label><span data-ku>قەبارەی فۆنتی دەق (rem)</span><span data-en style="display:none">Text Font Size (rem)</span></label>
-                        <input type="number" id="uq-cfg-dl-size" min="0.5" max="3" step="0.05" value="1" style="direction:ltr;" oninput="_uqRefreshAllPreviews();">
+                        <input type="number" id="uq-cfg-dl-size" min="0.5" max="3" step="0.05" value="1" style="direction:ltr;">
                     </div>
                     <div class="form-group">
-                        <label><span data-ku>قەبارەی فۆنتی ژمارە (rem) — جیاواز لە دەق</span><span data-en style="display:none">Number Font Size (rem) — independent from text</span></label>
-                        <input type="number" id="uq-cfg-dl-num-size" min="0.5" max="4" step="0.05" value="1.1" style="direction:ltr;" oninput="_uqRefreshAllPreviews();">
+                        <label><span data-ku>ڕەنگی ژمارە [M]</span><span data-en style="display:none">Number Color [M]</span></label>
+                        <input type="text" id="uq-cfg-dl-num-color" value="#07beff" style="direction:ltr;font-family:var(--mono);font-size:0.8rem;">
+                    </div>
+                    <div class="form-group">
+                        <label><span data-ku>قەبارەی فۆنتی ژمارە (rem)</span><span data-en style="display:none">Number Font Size (rem)</span></label>
+                        <input type="number" id="uq-cfg-dl-num-size" min="0.5" max="4" step="0.05" value="1.1" style="direction:ltr;">
                     </div>
                     <div class="form-group">
                         <label><span data-ku>بەرزی هێڵ</span><span data-en style="display:none">Line Height</span></label>
-                        <input type="number" id="uq-cfg-dl-lh" min="1" max="3" step="0.1" value="1.6" style="direction:ltr;" oninput="_uqRefreshAllPreviews();">
+                        <input type="number" id="uq-cfg-dl-lh" min="1" max="3" step="0.1" value="1.6" style="direction:ltr;">
                     </div>
-                </div>
-                <div style="margin-top:10px;">
-                    <label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:5px;">
-                        <span data-ku>پێشبینی</span><span data-en style="display:none">Preview</span>
-                    </label>
-                    <div id="uq-cfg-dl-preview" dir="rtl" style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 14px;min-height:34px;font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- ─── Group 3: Splash — Visitor Line ─── -->
+        <!-- ─── Splash: Visitor Line ─── -->
         <div class="box">
             <div class="box-header"><div class="dot" style="background:var(--purple)"></div> 💫 <span data-ku>سپلاش — هێڵی میوان</span><span data-en style="display:none">Splash — Visitor Line</span></div>
             <div class="box-body">
                 <div class="form-grid">
                     <div class="form-group full">
                         <label><span data-ku>تەمپلێت — بەکارهێنە [N]</span><span data-en style="display:none">Template — use [N]</span></label>
-                        <input type="text" id="uq-cfg-sp-visit-tpl" dir="rtl" style="direction:rtl;">
-                    </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی دەق</span><span data-en style="display:none">Text Color</span></label>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <button type="button" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:11px;"
-                                    onclick="(function(btn){var cur=document.getElementById('uq-cfg-sp-visit-text-color').value.replace('#','');uqOpenPicker(cur,function(hex){document.getElementById('uq-cfg-sp-visit-text-color').value='#'+hex;btn.querySelector('.uq-css-dot').style.background='#'+hex;_uqRefreshAllPreviews();});})(this)">
-                                <span class="uq-css-dot" id="uq-cfg-sp-visit-text-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:rgba(220,220,220,0.88);"></span>
-                                <span data-ku>هەڵبژێرنی ڕەنگ</span><span data-en style="display:none">Pick Color</span>
-                            </button>
-                            <input type="text" id="uq-cfg-sp-visit-text-color" value="rgba(220,220,220,0.88)" style="direction:ltr;width:160px;font-family:var(--mono);font-size:0.8rem;" oninput="_uqSyncDot('uq-cfg-sp-visit-text-dot',this.value);_uqRefreshAllPreviews();">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی ژمارە (UniQAIDAR_DIGITAL)</span><span data-en style="display:none">Number Color (UniQAIDAR_DIGITAL)</span></label>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <button type="button" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:11px;"
-                                    onclick="(function(btn){var cur=document.getElementById('uq-cfg-sp-visit-num-color').value.replace('#','');uqOpenPicker(cur,function(hex){document.getElementById('uq-cfg-sp-visit-num-color').value='#'+hex;btn.querySelector('.uq-css-dot').style.background='#'+hex;_uqRefreshAllPreviews();});})(this)">
-                                <span class="uq-css-dot" id="uq-cfg-sp-visit-num-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#07beff;"></span>
-                                <span data-ku>هەڵبژێرنی ڕەنگ</span><span data-en style="display:none">Pick Color</span>
-                            </button>
-                            <input type="text" id="uq-cfg-sp-visit-num-color" value="#07beff" style="direction:ltr;width:160px;font-family:var(--mono);font-size:0.8rem;" oninput="_uqSyncDot('uq-cfg-sp-visit-num-dot',this.value);_uqRefreshAllPreviews();">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی وشەی دیاریکراو</span><span data-en style="display:none">Keyword Color</span></label>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <button type="button" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:11px;"
-                                    onclick="(function(btn){var cur=document.getElementById('uq-cfg-sp-visit-kw-color').value.replace('#','');uqOpenPicker(cur,function(hex){document.getElementById('uq-cfg-sp-visit-kw-color').value='#'+hex;btn.querySelector('.uq-css-dot').style.background='#'+hex;_uqRefreshAllPreviews();});})(this)">
-                                <span class="uq-css-dot" id="uq-cfg-sp-visit-kw-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffa71e;"></span>
-                                <span data-ku>هەڵبژێرنی ڕەنگ</span><span data-en style="display:none">Pick Color</span>
-                            </button>
-                            <input type="text" id="uq-cfg-sp-visit-kw-color" value="#ffa71e" style="direction:ltr;width:160px;font-family:var(--mono);font-size:0.8rem;" oninput="_uqSyncDot('uq-cfg-sp-visit-kw-dot',this.value);_uqRefreshAllPreviews();">
-                        </div>
+                        <textarea id="uq-cfg-sp-visit-tpl" dir="rtl" style="direction:rtl;height:56px;"></textarea>
                     </div>
                     <div class="form-group">
                         <label><span data-ku>قەبارەی فۆنتی دەق (rem)</span><span data-en style="display:none">Text Font Size (rem)</span></label>
-                        <input type="number" id="uq-cfg-sp-visit-size" min="0.5" max="3" step="0.05" value="0.85" style="direction:ltr;" oninput="_uqRefreshAllPreviews();">
+                        <input type="number" id="uq-cfg-sp-visit-size" min="0.5" max="3" step="0.05" value="0.85" style="direction:ltr;">
+                    </div>
+                    <div class="form-group">
+                        <label><span data-ku>ڕەنگی ژمارە [N]</span><span data-en style="display:none">Number Color [N]</span></label>
+                        <input type="text" id="uq-cfg-sp-visit-num-color" value="#07beff" style="direction:ltr;font-family:var(--mono);font-size:0.8rem;">
                     </div>
                     <div class="form-group">
                         <label><span data-ku>قەبارەی فۆنتی ژمارە (rem)</span><span data-en style="display:none">Number Font Size (rem)</span></label>
-                        <input type="number" id="uq-cfg-sp-visit-num-size" min="0.5" max="4" step="0.05" value="1.05" style="direction:ltr;" oninput="_uqRefreshAllPreviews();">
+                        <input type="number" id="uq-cfg-sp-visit-num-size" min="0.5" max="4" step="0.05" value="1.05" style="direction:ltr;">
                     </div>
-                </div>
-                <div style="margin-top:10px;">
-                    <label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:5px;">
-                        <span data-ku>پێشبینی</span><span data-en style="display:none">Preview</span>
-                    </label>
-                    <div id="uq-cfg-sp-visit-preview" dir="rtl" style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 14px;min-height:34px;font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- ─── Group 4: Splash — Download Line ─── -->
+        <!-- ─── Splash: Download Line ─── -->
         <div class="box">
             <div class="box-header"><div class="dot" style="background:var(--purple)"></div> 💫 <span data-ku>سپلاش — هێڵی داونلۆد</span><span data-en style="display:none">Splash — Download Line</span></div>
             <div class="box-body">
                 <div class="form-grid">
                     <div class="form-group full">
                         <label><span data-ku>تەمپلێت — بەکارهێنە [M]</span><span data-en style="display:none">Template — use [M]</span></label>
-                        <input type="text" id="uq-cfg-sp-dl-tpl" dir="rtl" style="direction:rtl;">
-                    </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی دەق</span><span data-en style="display:none">Text Color</span></label>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <button type="button" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:11px;"
-                                    onclick="(function(btn){var cur=document.getElementById('uq-cfg-sp-dl-text-color').value.replace('#','');uqOpenPicker(cur,function(hex){document.getElementById('uq-cfg-sp-dl-text-color').value='#'+hex;btn.querySelector('.uq-css-dot').style.background='#'+hex;_uqRefreshAllPreviews();});})(this)">
-                                <span class="uq-css-dot" id="uq-cfg-sp-dl-text-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:rgba(220,220,220,0.88);"></span>
-                                <span data-ku>هەڵبژێرنی ڕەنگ</span><span data-en style="display:none">Pick Color</span>
-                            </button>
-                            <input type="text" id="uq-cfg-sp-dl-text-color" value="rgba(220,220,220,0.88)" style="direction:ltr;width:160px;font-family:var(--mono);font-size:0.8rem;" oninput="_uqSyncDot('uq-cfg-sp-dl-text-dot',this.value);_uqRefreshAllPreviews();">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی ژمارە (UniQAIDAR_DIGITAL)</span><span data-en style="display:none">Number Color (UniQAIDAR_DIGITAL)</span></label>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <button type="button" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:11px;"
-                                    onclick="(function(btn){var cur=document.getElementById('uq-cfg-sp-dl-num-color').value.replace('#','');uqOpenPicker(cur,function(hex){document.getElementById('uq-cfg-sp-dl-num-color').value='#'+hex;btn.querySelector('.uq-css-dot').style.background='#'+hex;_uqRefreshAllPreviews();});})(this)">
-                                <span class="uq-css-dot" id="uq-cfg-sp-dl-num-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#07beff;"></span>
-                                <span data-ku>هەڵبژێرنی ڕەنگ</span><span data-en style="display:none">Pick Color</span>
-                            </button>
-                            <input type="text" id="uq-cfg-sp-dl-num-color" value="#07beff" style="direction:ltr;width:160px;font-family:var(--mono);font-size:0.8rem;" oninput="_uqSyncDot('uq-cfg-sp-dl-num-dot',this.value);_uqRefreshAllPreviews();">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی وشەی دیاریکراو</span><span data-en style="display:none">Keyword Color</span></label>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <button type="button" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:11px;"
-                                    onclick="(function(btn){var cur=document.getElementById('uq-cfg-sp-dl-kw-color').value.replace('#','');uqOpenPicker(cur,function(hex){document.getElementById('uq-cfg-sp-dl-kw-color').value='#'+hex;btn.querySelector('.uq-css-dot').style.background='#'+hex;_uqRefreshAllPreviews();});})(this)">
-                                <span class="uq-css-dot" id="uq-cfg-sp-dl-kw-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffa71e;"></span>
-                                <span data-ku>هەڵبژێرنی ڕەنگ</span><span data-en style="display:none">Pick Color</span>
-                            </button>
-                            <input type="text" id="uq-cfg-sp-dl-kw-color" value="#ffa71e" style="direction:ltr;width:160px;font-family:var(--mono);font-size:0.8rem;" oninput="_uqSyncDot('uq-cfg-sp-dl-kw-dot',this.value);_uqRefreshAllPreviews();">
-                        </div>
+                        <textarea id="uq-cfg-sp-dl-tpl" dir="rtl" style="direction:rtl;height:56px;"></textarea>
                     </div>
                     <div class="form-group">
                         <label><span data-ku>قەبارەی فۆنتی دەق (rem)</span><span data-en style="display:none">Text Font Size (rem)</span></label>
-                        <input type="number" id="uq-cfg-sp-dl-size" min="0.5" max="3" step="0.05" value="0.85" style="direction:ltr;" oninput="_uqRefreshAllPreviews();">
+                        <input type="number" id="uq-cfg-sp-dl-size" min="0.5" max="3" step="0.05" value="0.85" style="direction:ltr;">
+                    </div>
+                    <div class="form-group">
+                        <label><span data-ku>ڕەنگی ژمارە [M]</span><span data-en style="display:none">Number Color [M]</span></label>
+                        <input type="text" id="uq-cfg-sp-dl-num-color" value="#07beff" style="direction:ltr;font-family:var(--mono);font-size:0.8rem;">
                     </div>
                     <div class="form-group">
                         <label><span data-ku>قەبارەی فۆنتی ژمارە (rem)</span><span data-en style="display:none">Number Font Size (rem)</span></label>
-                        <input type="number" id="uq-cfg-sp-dl-num-size" min="0.5" max="4" step="0.05" value="1.05" style="direction:ltr;" oninput="_uqRefreshAllPreviews();">
+                        <input type="number" id="uq-cfg-sp-dl-num-size" min="0.5" max="4" step="0.05" value="1.05" style="direction:ltr;">
                     </div>
-                </div>
-                <div style="margin-top:10px;">
-                    <label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:5px;">
-                        <span data-ku>پێشبینی</span><span data-en style="display:none">Preview</span>
-                    </label>
-                    <div id="uq-cfg-sp-dl-preview" dir="rtl" style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px 14px;min-height:34px;font-family:'UniQAIDAR_Peregraf 01',Tahoma,Arial,sans-serif;"></div>
                 </div>
             </div>
         </div>
@@ -11650,7 +11509,7 @@ document.addEventListener('mouseup',()=>{drgOn=false;});
 /* ══════════════════════════════════════════════════
    Rich-text editors for t-site and t-modals inputs
    ══════════════════════════════════════════════════ */
-const RTE_TABS=['t-site','t-modals'];
+const RTE_TABS=['t-site','t-modals','t-counter'];
 // IDs to convert to rich text editors
 const RTE_IDS=[
   // t-site text fields
@@ -11665,6 +11524,9 @@ const RTE_IDS=[
   'pvb-wlc-tag1','pvb-wlc-tag2','pvb-wlc-tag3','pvb-wlc-tag4',
   'pvb-wlc-tag5','pvb-wlc-tag6',
   'pvb-search-desktop','pvb-search-mobile',
+  // t-counter template fields
+  'uq-cfg-visit-tpl','uq-cfg-dl-tpl',
+  'uq-cfg-sp-visit-tpl','uq-cfg-sp-dl-tpl',
   // t-modals text fields
   'dm-header-btn-inp','dm-title-inp','dm-desc-inp','dm-btn-inp','dm-direct-inp','dm-cat-dl-inp',
   'about-title-inp','about-features-title-inp','about-text',
@@ -12070,29 +11932,7 @@ function _uqRenderPreview(previewId, tpl, sampleNum, numColor, textColor, kwColo
 }
 
 // ── Refresh all four previews ─────────────────────────────────────────
-window._uqRefreshAllPreviews = function() {
-    function gV(id) { var el = document.getElementById(id); return el ? el.value : ''; }
-    _uqRenderPreview('uq-cfg-visit-preview',
-        gV('uq-cfg-visit-tpl'), 3197,
-        gV('uq-cfg-visit-num-color'), gV('uq-cfg-visit-text-color'), gV('uq-cfg-visit-kw-color'),
-        parseFloat(gV('uq-cfg-visit-size')) || 1,
-        parseFloat(gV('uq-cfg-visit-num-size')) || 1.1);
-    _uqRenderPreview('uq-cfg-dl-preview',
-        gV('uq-cfg-dl-tpl'), 84209,
-        gV('uq-cfg-dl-num-color'), gV('uq-cfg-dl-text-color'), gV('uq-cfg-dl-kw-color'),
-        parseFloat(gV('uq-cfg-dl-size')) || 1,
-        parseFloat(gV('uq-cfg-dl-num-size')) || 1.1);
-    _uqRenderPreview('uq-cfg-sp-visit-preview',
-        gV('uq-cfg-sp-visit-tpl'), 3197,
-        gV('uq-cfg-sp-visit-num-color'), gV('uq-cfg-sp-visit-text-color'), gV('uq-cfg-sp-visit-kw-color'),
-        parseFloat(gV('uq-cfg-sp-visit-size')) || 0.85,
-        parseFloat(gV('uq-cfg-sp-visit-num-size')) || 1.05);
-    _uqRenderPreview('uq-cfg-sp-dl-preview',
-        gV('uq-cfg-sp-dl-tpl'), 84209,
-        gV('uq-cfg-sp-dl-num-color'), gV('uq-cfg-sp-dl-text-color'), gV('uq-cfg-sp-dl-kw-color'),
-        parseFloat(gV('uq-cfg-sp-dl-size')) || 0.85,
-        parseFloat(gV('uq-cfg-sp-dl-num-size')) || 1.05);
-};
+window._uqRefreshAllPreviews = function() { /* no-op: previews replaced by RTE contenteditable boxes */ };
 
 // ── Helper: set a text input + sync its dot ───────────────────────────
 function _setColor(inputId, dotId, val) {
@@ -12119,26 +11959,26 @@ window.pvbCounterConfigLoad = function() {
         return;
     }
 
-    // Templates
-    function sV(id, v) { var el=document.getElementById(id); if(el) el.value = v||''; }
-    sV('uq-cfg-visit-tpl',    cfg.visitorTemplate         || '');
-    sV('uq-cfg-dl-tpl',       cfg.downloadTemplate        || '');
-    sV('uq-cfg-sp-visit-tpl', cfg.splashVisitorTemplate   || '');
-    sV('uq-cfg-sp-dl-tpl',    cfg.splashDownloadTemplate  || '');
+    // Templates — use set() so the paired RTE contenteditable is also populated
+    if (typeof set === 'function') {
+        set('uq-cfg-visit-tpl',    cfg.visitorTemplate         || '');
+        set('uq-cfg-dl-tpl',       cfg.downloadTemplate        || '');
+        set('uq-cfg-sp-visit-tpl', cfg.splashVisitorTemplate   || '');
+        set('uq-cfg-sp-dl-tpl',    cfg.splashDownloadTemplate  || '');
+    } else {
+        function sV(id, v) { var el=document.getElementById(id); if(el) el.value = v||''; }
+        sV('uq-cfg-visit-tpl',    cfg.visitorTemplate         || '');
+        sV('uq-cfg-dl-tpl',       cfg.downloadTemplate        || '');
+        sV('uq-cfg-sp-visit-tpl', cfg.splashVisitorTemplate   || '');
+        sV('uq-cfg-sp-dl-tpl',    cfg.splashDownloadTemplate  || '');
+    }
 
-    // Colors
-    _setColor('uq-cfg-visit-text-color',     'uq-cfg-visit-text-dot',     cfg.visitorTextColor          || 'rgba(220,220,220,0.88)');
-    _setColor('uq-cfg-visit-num-color',      'uq-cfg-visit-num-dot',      cfg.visitorNumberColor        || '#07beff');
-    _setColor('uq-cfg-visit-kw-color',       'uq-cfg-visit-kw-dot',       cfg.visitorKeywordColor       || '#ffa71e');
-    _setColor('uq-cfg-dl-text-color',        'uq-cfg-dl-text-dot',        cfg.downloadTextColor         || 'rgba(220,220,220,0.88)');
-    _setColor('uq-cfg-dl-num-color',         'uq-cfg-dl-num-dot',         cfg.downloadNumberColor       || '#07beff');
-    _setColor('uq-cfg-dl-kw-color',          'uq-cfg-dl-kw-dot',          cfg.downloadKeywordColor      || '#ffa71e');
-    _setColor('uq-cfg-sp-visit-text-color',  'uq-cfg-sp-visit-text-dot',  cfg.splashVisitorTextColor    || 'rgba(220,220,220,0.88)');
-    _setColor('uq-cfg-sp-visit-num-color',   'uq-cfg-sp-visit-num-dot',   cfg.splashVisitorNumberColor  || '#07beff');
-    _setColor('uq-cfg-sp-visit-kw-color',    'uq-cfg-sp-visit-kw-dot',    cfg.splashVisitorKeywordColor || '#ffa71e');
-    _setColor('uq-cfg-sp-dl-text-color',     'uq-cfg-sp-dl-text-dot',     cfg.splashDownloadTextColor   || 'rgba(220,220,220,0.88)');
-    _setColor('uq-cfg-sp-dl-num-color',      'uq-cfg-sp-dl-num-dot',      cfg.splashDownloadNumberColor || '#07beff');
-    _setColor('uq-cfg-sp-dl-kw-color',       'uq-cfg-sp-dl-kw-dot',       cfg.splashDownloadKeywordColor|| '#ffa71e');
+    // Number colors — simple inputs (text/keyword colors are now set via RTE inline spans)
+    function sC(id, val) { var el=document.getElementById(id); if(el) el.value = val||''; }
+    sC('uq-cfg-visit-num-color',     cfg.visitorNumberColor        || '#07beff');
+    sC('uq-cfg-dl-num-color',        cfg.downloadNumberColor       || '#07beff');
+    sC('uq-cfg-sp-visit-num-color',  cfg.splashVisitorNumberColor  || '#07beff');
+    sC('uq-cfg-sp-dl-num-color',     cfg.splashDownloadNumberColor || '#07beff');
 
     // Font sizes (text and number are independent — preserved as-is)
     _setNum('uq-cfg-visit-size',        cfg.visitorFontSize,             '1');
@@ -12152,7 +11992,6 @@ window.pvbCounterConfigLoad = function() {
     _setNum('uq-cfg-sp-dl-size',        cfg.splashDownloadFontSize,      '0.85');
     _setNum('uq-cfg-sp-dl-num-size',    cfg.splashDownloadNumberFontSize,'1.05');
 
-    _uqRefreshAllPreviews();
     if (al) alert2(al, '✅ Loaded from site', 'ok');
 };
 
@@ -12172,29 +12011,21 @@ window.pvbCounterConfigSave = async function() {
 
     var cfg = {
         visitorTemplate:              gT('uq-cfg-visit-tpl'),
-        downloadTemplate:             gT('uq-cfg-dl-tpl'),
-        visitorTextColor:             gT('uq-cfg-visit-text-color'),
         visitorNumberColor:           gT('uq-cfg-visit-num-color'),
-        visitorKeywordColor:          gT('uq-cfg-visit-kw-color'),
         visitorFontSize:              gN('uq-cfg-visit-size'),
         visitorNumberFontSize:        gN('uq-cfg-visit-num-size'),
         visitorLineHeight:            gN('uq-cfg-visit-lh'),
-        downloadTextColor:            gT('uq-cfg-dl-text-color'),
+        downloadTemplate:             gT('uq-cfg-dl-tpl'),
         downloadNumberColor:          gT('uq-cfg-dl-num-color'),
-        downloadKeywordColor:         gT('uq-cfg-dl-kw-color'),
         downloadFontSize:             gN('uq-cfg-dl-size'),
         downloadNumberFontSize:       gN('uq-cfg-dl-num-size'),
         downloadLineHeight:           gN('uq-cfg-dl-lh'),
         splashVisitorTemplate:        gT('uq-cfg-sp-visit-tpl'),
-        splashDownloadTemplate:       gT('uq-cfg-sp-dl-tpl'),
-        splashVisitorTextColor:       gT('uq-cfg-sp-visit-text-color'),
         splashVisitorNumberColor:     gT('uq-cfg-sp-visit-num-color'),
-        splashVisitorKeywordColor:    gT('uq-cfg-sp-visit-kw-color'),
         splashVisitorFontSize:        gN('uq-cfg-sp-visit-size'),
         splashVisitorNumberFontSize:  gN('uq-cfg-sp-visit-num-size'),
-        splashDownloadTextColor:      gT('uq-cfg-sp-dl-text-color'),
+        splashDownloadTemplate:       gT('uq-cfg-sp-dl-tpl'),
         splashDownloadNumberColor:    gT('uq-cfg-sp-dl-num-color'),
-        splashDownloadKeywordColor:   gT('uq-cfg-sp-dl-kw-color'),
         splashDownloadFontSize:       gN('uq-cfg-sp-dl-size'),
         splashDownloadNumberFontSize: gN('uq-cfg-sp-dl-num-size')
     };
