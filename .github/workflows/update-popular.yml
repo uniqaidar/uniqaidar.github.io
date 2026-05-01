@@ -531,14 +531,18 @@ jobs:
           echo 'aW1wb3J0IGpzb24sIG9zCmxhc3RfdXBkYXRlZCA9IG9zLmVudmlyb25bJ1BZTUVUQVdSSVRFX0xBU1RfVVBEQVRFRCddCnJ1bl9pZCAgICAgICA9IG9zLmVudmlyb25bJ1BZTUVUQVdSSVRFX1JVTl9JRCddCm1ldGEgPSB7J2xhc3RfdXBkYXRlZCc6IGxhc3RfdXBkYXRlZCwgJ3J1bl9pZCc6IHJ1bl9pZH0Kd2l0aCBvcGVuKCdwb3B1bGFyLm1ldGEuanNvbicsICd3JywgZW5jb2Rpbmc9J3V0Zi04JykgYXMgZmg6CiAgICBqc29uLmR1bXAobWV0YSwgZmgsIGVuc3VyZV9hc2NpaT1GYWxzZSkKcHJpbnQoJ1dyb3RlIHBvcHVsYXIubWV0YS5qc29uOiAnICsgbGFzdF91cGRhdGVkICsgJyAgcnVuPScgKyBydW5faWQp' | base64 -d | python3
           
           # ── SAFE GIT SEQUENCE ────────────────────────────────────────────
-          # 1. Save computed content to temp files (outside git index)
-          # 2. Fetch + rebase on a CLEAN working tree (no staged changes)
-          # 3. Restore computed content AFTER rebase
-          # 4. Stage and commit
-          # This fixes: "cannot rebase: Your index contains uncommitted changes"
+          # 1. Save computed content to /tmp (survives git operations)
+          # 2. Hard-reset working tree so rebase sees a perfectly clean state
+          #    (fixes both "staged" and "unstaged changes" rebase errors)
+          # 3. Fetch + rebase on clean tree
+          # 4. Restore computed content and stage AFTER rebase
           
           cp popular.json      /tmp/_computed_popular.json
           cp popular.meta.json /tmp/_computed_popular_meta.json
+          
+          # Clean the working tree completely before rebase
+          git reset HEAD -- . 2>/dev/null || true   # unstage anything staged
+          git checkout -- .  2>/dev/null || true    # discard unstaged changes
           
           # Fetch and rebase on clean tree
           echo "🔄 Fetching latest..."
@@ -552,12 +556,12 @@ jobs:
             exit 1
           fi
           
-          # Restore computed files from /tmp — simple and reliable
+          # Restore computed files from /tmp — these are our source of truth
           cp /tmp/_computed_popular.json      popular.json
           cp /tmp/_computed_popular_meta.json popular.meta.json
-          echo "✓ Restored computed popular.json + popular.meta.json after rebase" 
+          echo "✓ Restored computed popular.json + popular.meta.json after rebase"
           
-          # Stage AFTER rebase — index is clean at this point
+          # Stage AFTER rebase — working tree is clean at this point
           git add popular.json popular.meta.json
           
           # Commit
@@ -612,6 +616,8 @@ jobs:
               echo "⟳ Push rejected — re-fetching and rebasing before retry..."
               cp popular.json      /tmp/_computed_popular.json
               cp popular.meta.json /tmp/_computed_popular_meta.json
+              git reset HEAD -- . 2>/dev/null || true
+              git checkout -- .  2>/dev/null || true
               git fetch origin main --prune --quiet
               if git rebase origin/main --quiet; then
                 cp /tmp/_computed_popular.json      popular.json
