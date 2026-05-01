@@ -594,7 +594,12 @@ jobs:
             echo "✅ Committed successfully"
             SHA=$(git rev-parse --short HEAD)
             echo "sha=$SHA" >> $GITHUB_OUTPUT
-            echo "message=$COMMIT_MSG" >> $GITHUB_OUTPUT
+            # Multi-line values require heredoc syntax in GITHUB_OUTPUT
+            {
+              echo "message<<__EOF__"
+              echo "$COMMIT_MSG"
+              echo "__EOF__"
+            } >> $GITHUB_OUTPUT
           else
             echo "⚠️  Nothing to commit"
             echo "push_status=no_changes" >> $GITHUB_OUTPUT
