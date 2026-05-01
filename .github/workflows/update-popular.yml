@@ -138,7 +138,7 @@ jobs:
           echo "iso=$ISO_TIME" >> $GITHUB_OUTPUT
       
       - name: '📊 Checkout Repository'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
           ref: main
@@ -294,7 +294,7 @@ jobs:
           echo "✓ Live data fetch completed in ${DURATION}s"
       
       - name: '📤 Upload Live Stats Artifact'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: live-stats
           path: live_stats.json
@@ -315,7 +315,7 @@ jobs:
     
     steps:
       - name: '📊 Checkout Repository'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 1
       
@@ -339,7 +339,7 @@ jobs:
           echo "status=success" >> $GITHUB_OUTPUT
       
       - name: '📤 Upload Archive Data Artifact'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: archive-data
           path: archive_data.json
@@ -368,18 +368,18 @@ jobs:
     
     steps:
       - name: '📊 Checkout'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
       
       - name: '📥 Download Live Stats Artifact'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.2.1
         with:
           name: live-stats
         continue-on-error: true
       
       - name: '📥 Download Archive Data Artifact'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.2.1
         with:
           name: archive-data
         continue-on-error: true
@@ -481,7 +481,7 @@ jobs:
           echo "⏱️  $(TZ='Asia/Baghdad' date '+%Y-%m-%d %H:%M:%S %Z')"
       
       - name: '🔓 Checkout'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
           token: ${{ github.token }}
