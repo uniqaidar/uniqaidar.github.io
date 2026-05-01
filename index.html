@@ -2401,6 +2401,44 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     pointer-events: none;
 }
 .trinity-dl:hover,.trinity-dl:active { background: #0773c5; }
+@keyframes dlGreenFadeIn  { from { opacity: 0; } to   { opacity: 1; } }
+@keyframes dlGreenFadeOut { from { opacity: 1; } to   { opacity: 0; } }
+.trinity-dl.dl-green-active,
+.trinity-dl.dl-green-active:hover,
+.trinity-dl.dl-green-active:active,
+.trinity-dl.dl-green-fadeout,
+.trinity-dl.dl-green-fadeout:hover,
+.trinity-dl.dl-green-fadeout:active {
+    border-radius: 12px !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+/* Green overlay via ::before — fades in/out over the blue base */
+.trinity-dl.dl-green-active::before,
+.trinity-dl.dl-green-fadeout::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgba(10,74,34,1) 0%, rgba(46,204,113,1) 40%, rgba(39,174,96,1) 60%, rgba(10,74,34,1) 100%);
+    background-size: 200% auto;
+    pointer-events: none;
+    z-index: 1;
+}
+.trinity-dl.dl-green-active::before {
+    animation: dlGreenFadeIn 0.5s ease forwards, uqGreenMoving 2s 0.5s linear infinite;
+}
+.trinity-dl.dl-green-fadeout::before {
+    animation: dlGreenFadeOut 0.5s ease forwards;
+}
+/* Keep label text and icon above the overlay */
+.trinity-dl.dl-green-active .dl-label,
+.trinity-dl.dl-green-fadeout .dl-label,
+.trinity-dl.dl-green-active .modern-dl-icon,
+.trinity-dl.dl-green-fadeout .modern-dl-icon {
+    position: relative;
+    z-index: 2;
+}
 
 /* MIDDLE — Para toggle */
 .trinity-para {
@@ -2537,7 +2575,7 @@ body.dark-mode .card:focus-within {
     animation: none !important;
 }
 /* Trinity download (blue): lift + blue shadow */
-.trinity-dl:hover, .trinity-dl:active {
+.trinity-dl:not(.dl-green-active):hover, .trinity-dl:not(.dl-green-active):active {
     transform: translateY(-3px) !important;
     box-shadow: 0 8px 22px rgba(9,132,227,0.55) !important;
     background: #0773c5 !important;
@@ -4975,22 +5013,30 @@ function renderFonts(data, text, resetPage) {
                     'دەستڕەنگین بیت، فۆنتەکە دابەزی ✨',
                     'پیرۆزە، فۆنتەکەت لایە ئێستا 🎨',
                     'دەستخۆش، فۆنتەکە دابەزی 👏',
-                    'پیرۆزە، فۆنتەکەت ئامادەی بەکارهێنانەیە 🖋'
+                    'پیرۆزە، فۆنتەکەت ئامادەی بەکارهێنانە 🖋'
                 ];
 
                 var msg = milestones[n] || regular[(n - 1) % regular.length];
 
                 lbl.textContent = msg;
-                dlLink.style.background = 'linear-gradient(90deg, rgba(10,74,34,1) 0%, rgba(46,204,113,1) 40%, rgba(39,174,96,1) 60%, rgba(10,74,34,1) 100%)';
-                dlLink.style.backgroundSize = '200% auto';
-                dlLink.style.animation = 'uqGreenMoving 2s linear infinite';
+                // Hide sibling elements — dl button expands to fill the bar
+                var wrap = dlLink.closest('.download-btn-wrap');
+                var siblings = wrap ? wrap.querySelectorAll('.trinity-copy, .trinity-para, .trinity-size') : [];
+                for (var si = 0; si < siblings.length; si++) { siblings[si].style.display = 'none'; }
+                // Fade IN to green
+                dlLink.classList.add('dl-green-active');
                 setTimeout(function() {
+                    // Begin fade OUT
                     lbl.textContent = 'دابە‌زاندنی فۆنت';
-                    dlLink.style.background = '';
-                    dlLink.style.backgroundSize = '';
-                    dlLink.style.animation = '';
-                    dlLink._dlAnimating = false;
-                }, 3000);
+                    dlLink.classList.remove('dl-green-active');
+                    dlLink.classList.add('dl-green-fadeout');
+                    // After fade-out finishes (500ms), fully restore
+                    setTimeout(function() {
+                        dlLink.classList.remove('dl-green-fadeout');
+                        for (var si = 0; si < siblings.length; si++) { siblings[si].style.display = ''; }
+                        dlLink._dlAnimating = false;
+                    }, 500);
+                }, 7000);
             });
         })(card.querySelector('.trinity-dl'), font);
         // Staggered entry animation — one card at a time (RTL: right→left, row by row)
