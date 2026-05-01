@@ -345,13 +345,13 @@ jobs:
           
           print(f"\n💾 Saved to live_stats.json ({len(live_events)} events)")
           print(f"🔄 Fallback mode: {'YES' if is_fallback else 'NO'}")
-          PYFETCH
+PYFETCH
           
           END_TIME=$(date +%s)
           DURATION=$((END_TIME - START_TIME))
           
-          LIVE_COUNT=$(python3 -c "import json; d=json.load(open('live_stats.json')); print(d.get('count', 0))")
-          IS_FALLBACK=$(python3 -c "import json; d=json.load(open('live_stats.json')); print('true' if d.get('fallback') else 'false')")
+          LIVE_COUNT=$(python3 -c "import json; d=json.load(open('live_stats.json', encoding='utf-8')); print(d.get('count', 0))")
+          IS_FALLBACK=$(python3 -c "import json; d=json.load(open('live_stats.json', encoding='utf-8')); print('true' if d.get('fallback') else 'false')")
           
           echo ""
           echo "count=$LIVE_COUNT" >> $GITHUB_OUTPUT
@@ -401,7 +401,7 @@ jobs:
           
           if not os.path.isdir(ARCHIVE_DIR):
               print(f"⚠️  Archive directory not found: {ARCHIVE_DIR}")
-              with open('archive_data.json', 'w') as f:
+              with open('archive_data.json', 'w', encoding='utf-8') as f:
                   json.dump({'events': [], 'files': 0, 'errors': []}, f)
               exit(0)
           
@@ -451,11 +451,11 @@ jobs:
           print(f"   • Events: {len(all_events)}")
           print(f"   • Size: {size_mb:.2f} MB")
           print(f"   • Errors: {len(errors)}")
-          PYARCH
+PYARCH
           
-          ARCHIVE_COUNT=$(python3 -c "import json; d=json.load(open('archive_data.json')); print(d.get('files', 0))")
-          ARCHIVE_EVENTS=$(python3 -c "import json; d=json.load(open('archive_data.json')); print(len(d.get('events', [])))")
-          SIZE_MB=$(python3 -c "import json; d=json.load(open('archive_data.json')); print(d.get('total_size_mb', 0))")
+          ARCHIVE_COUNT=$(python3 -c "import json; d=json.load(open('archive_data.json', encoding='utf-8')); print(d.get('files', 0))")
+          ARCHIVE_EVENTS=$(python3 -c "import json; d=json.load(open('archive_data.json', encoding='utf-8')); print(len(d.get('events', [])))")
+          SIZE_MB=$(python3 -c "import json; d=json.load(open('archive_data.json', encoding='utf-8')); print(d.get('total_size_mb', 0))")
           
           echo ""
           echo "archive_count=$ARCHIVE_COUNT" >> $GITHUB_OUTPUT
@@ -855,7 +855,7 @@ jobs:
           # Execute
           engine = AdvancedFontAnalytics()
           engine.run()
-          PYANALYSIS
+PYANALYSIS
           
           END=$(date +%s%N)
           DURATION=$(( (END - START) / 1000000 ))
@@ -867,12 +867,12 @@ jobs:
           if [ -f analysis_results.json ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
             
-            TOP25=$(python3 -c "import json; d=json.load(open('analysis_results.json')); print(json.dumps(d['top25']))")
-            ADDED=$(python3 -c "import json; d=json.load(open('analysis_results.json')); print(len(d.get('added', [])))")
-            REMOVED=$(python3 -c "import json; d=json.load(open('analysis_results.json')); print(len(d.get('removed', [])))")
-            METRICS=$(python3 -c "import json; d=json.load(open('analysis_results.json')); m=d['metrics']; print(f'Fonts:{m[\"fonts\"]} Downloads:{m[\"total_downloads\"]} Mean:{m[\"mean\"]}')")
-            UNIQUE=$(python3 -c "import json; d=json.load(open('analysis_results.json')); print(d['metrics']['fonts'])")
-            TOTAL=$(python3 -c "import json; d=json.load(open('analysis_results.json')); print(d['metrics']['total_downloads'])")
+            TOP25=$(python3 -c "import json; d=json.load(open('analysis_results.json', encoding='utf-8')); print(json.dumps(d['top25']))")
+            ADDED=$(python3 -c "import json; d=json.load(open('analysis_results.json', encoding='utf-8')); print(len(d.get('added', [])))")
+            REMOVED=$(python3 -c "import json; d=json.load(open('analysis_results.json', encoding='utf-8')); print(len(d.get('removed', [])))")
+            METRICS=$(python3 -c "import json; d=json.load(open('analysis_results.json', encoding='utf-8')); m=d['metrics']; print(f'Fonts:{m[\"fonts\"]} Downloads:{m[\"total_downloads\"]} Mean:{m[\"mean\"]}')")
+            UNIQUE=$(python3 -c "import json; d=json.load(open('analysis_results.json', encoding='utf-8')); print(d['metrics']['fonts'])")
+            TOTAL=$(python3 -c "import json; d=json.load(open('analysis_results.json', encoding='utf-8')); print(d['metrics']['total_downloads'])")
             CONFIDENCE="100"
             
             echo "top25_json=$TOP25" >> $GITHUB_OUTPUT
@@ -881,10 +881,11 @@ jobs:
             echo "unique_fonts=$UNIQUE" >> $GITHUB_OUTPUT
             echo "total_events=$TOTAL" >> $GITHUB_OUTPUT
             echo "confidence=$CONFIDENCE" >> $GITHUB_OUTPUT
+            echo "duration=${DURATION}ms" >> $GITHUB_OUTPUT
             
             # Copy to popular.json
             cp analysis_results.json popular.json.tmp
-            python3 -c "import json; d=json.load(open('analysis_results.json')); json.dump(d['top25'], open('popular.json', 'w'), ensure_ascii=False, indent=2)"
+            python3 -c "import json; d=json.load(open('analysis_results.json', encoding='utf-8')); json.dump(d['top25'], open('popular.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=2)"
             
             echo "✅ Analysis completed in ${DURATION}ms"
             echo "📊 Metrics: $METRICS"
@@ -893,6 +894,14 @@ jobs:
             echo "added_count=0" >> $GITHUB_OUTPUT
             echo "removed_count=0" >> $GITHUB_OUTPUT
             echo "duration=${DURATION}ms" >> $GITHUB_OUTPUT
+            # Fix: even when changed=false, export current popular.json as top25_json
+            # so that force_regenerate=true can still produce a valid commit.
+            if [ -f popular.json ]; then
+              CURRENT_TOP25=$(python3 -c "import json; print(json.dumps(json.load(open('popular.json', encoding='utf-8'))))" 2>/dev/null || echo "")
+              if [ -n "$CURRENT_TOP25" ]; then
+                echo "top25_json=$CURRENT_TOP25" >> $GITHUB_OUTPUT
+              fi
+            fi
           fi
 
   # ═══════════════════════════════════════════════════════════════════════════
@@ -928,12 +937,12 @@ jobs:
           # This is the ONLY source of truth — do NOT rely on the checked-out file.
           TOP25_JSON='${{ needs.analyze-compute.outputs.top25 }}'
           if [ -n "$TOP25_JSON" ] && [ "$TOP25_JSON" != "null" ] && [ "$TOP25_JSON" != "[]" ]; then
-            echo "$TOP25_JSON" | python3 -c "
+            echo "$TOP25_JSON" | python3 << 'PYWRITE'
 import json, sys
 data = json.load(sys.stdin)
-json.dump(data, open('popular.json', 'w'), ensure_ascii=False, indent=2)
-print(f'✓ Wrote popular.json with ' + str(len(data)) + ' fonts')
-"
+json.dump(data, open('popular.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
+print('✓ Wrote popular.json with ' + str(len(data)) + ' fonts')
+PYWRITE
           else
             echo "⚠️  top25 output empty — keeping repo popular.json as-is"
           fi
@@ -967,20 +976,20 @@ print(f'✓ Wrote popular.json with ' + str(len(data)) + ' fonts')
           # ALWAYS has a real byte change to commit every single run.
           LAST_UPDATED=$(TZ='Asia/Baghdad' date '+%Y-%m-%d %H:%M:%S %Z')
           RUN_ID="${{ github.run_id }}"
-          python3 -c "
-import json
-meta = {'last_updated': '$LAST_UPDATED', 'run_id': '$RUN_ID'}
-json.dump(meta, open('popular.meta.json', 'w'), ensure_ascii=False)
-print('✓ Wrote popular.meta.json: $LAST_UPDATED  run=$RUN_ID')
-"
+          export PYMETAWRITE_LAST_UPDATED="$LAST_UPDATED"
+          export PYMETAWRITE_RUN_ID="$RUN_ID"
+          python3 << 'PYMETAWRITE'
+import json, os
+last_updated = os.environ['PYMETAWRITE_LAST_UPDATED']
+run_id       = os.environ['PYMETAWRITE_RUN_ID']
+meta = {'last_updated': last_updated, 'run_id': run_id}
+with open('popular.meta.json', 'w', encoding='utf-8') as fh:
+    json.dump(meta, fh, ensure_ascii=False)
+print('Wrote popular.meta.json: ' + last_updated + '  run=' + run_id)
+PYMETAWRITE
           
           # Stage both files
           git add popular.json popular.meta.json
-          
-          if git diff --cached --quiet; then
-            echo "⚠️  WARNING: git diff found no changes despite sentinel file — forcing empty commit to advance timestamp"
-            git commit --allow-empty -m "chore(fonts): force clock reset [$(TZ='Asia/Baghdad' date '+%Y-%m-%d %H:%M:%S %Z')]" --quiet || true
-          fi
           
           # Fetch and rebase
           echo "🔄 Fetching latest..."
@@ -999,19 +1008,24 @@ print('✓ Wrote popular.meta.json: $LAST_UPDATED  run=$RUN_ID')
           # from origin/main, clobbering our computed content.
           TOP25_JSON='${{ needs.analyze-compute.outputs.top25 }}'
           if [ -n "$TOP25_JSON" ] && [ "$TOP25_JSON" != "null" ] && [ "$TOP25_JSON" != "[]" ]; then
-            echo "$TOP25_JSON" | python3 -c "
+            echo "$TOP25_JSON" | python3 << 'PYREWRITE'
 import json, sys
 data = json.load(sys.stdin)
-json.dump(data, open('popular.json', 'w'), ensure_ascii=False, indent=2)
-print(f'✓ Re-wrote popular.json after rebase (' + str(len(data)) + ' fonts)')
-"
+json.dump(data, open('popular.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
+print('Re-wrote popular.json after rebase (' + str(len(data)) + ' fonts)')
+PYREWRITE
           fi
-          python3 -c "
-import json
-meta = {'last_updated': '$LAST_UPDATED', 'run_id': '$RUN_ID'}
-json.dump(meta, open('popular.meta.json', 'w'), ensure_ascii=False)
-print('✓ Re-wrote popular.meta.json after rebase')
-"
+          export PYMETAREWRITE_LAST_UPDATED="$LAST_UPDATED"
+          export PYMETAREWRITE_RUN_ID="$RUN_ID"
+          python3 << 'PYMETAREWRITE'
+import json, os
+last_updated = os.environ['PYMETAREWRITE_LAST_UPDATED']
+run_id       = os.environ['PYMETAREWRITE_RUN_ID']
+meta = {'last_updated': last_updated, 'run_id': run_id}
+with open('popular.meta.json', 'w', encoding='utf-8') as fh:
+    json.dump(meta, fh, ensure_ascii=False)
+print('Re-wrote popular.meta.json after rebase  run=' + run_id)
+PYMETAREWRITE
           
           git add popular.json popular.meta.json
           
@@ -1160,7 +1174,7 @@ print('✓ Re-wrote popular.meta.json after rebase')
           ---
           
           ✨ *UniQaidar Font Analytics Engine v3.0 - Enterprise Grade*
-          REPORT
+REPORT
           
           cat EXECUTION_REPORT.md
       
