@@ -182,6 +182,19 @@ jobs:
           # Check secrets
           if [ -z "${{ secrets.ARCHIVE_TOKEN }}" ]; then
             echo "❌ ARCHIVE_TOKEN not configured"
+            echo ""
+            echo "════════════════════════════════════════════════════════════════"
+            echo "🚨 SECRET FAILURE DIAGNOSTIC"
+            echo "════════════════════════════════════════════════════════════════"
+            echo "  Reason : ARCHIVE_TOKEN secret is empty or missing"
+            echo "  Time   : $(TZ='Asia/Baghdad' date '+%Y-%m-%d %H:%M:%S %Z')"
+            echo "  Fix    : Go to GitHub → Settings → Secrets → Actions"
+            echo "           → Set ARCHIVE_TOKEN to a valid Cloudflare API token"
+            echo "           with KV read permissions for your namespace"
+            echo "  Impact : Live stats fetch will fail. Archive processing"
+            echo "           will still run from committed historicaldata/ files."
+            echo "           popular.json WILL NOT update until token is restored."
+            echo "════════════════════════════════════════════════════════════════"
             PROCEED=false
           else
             echo "✓ ARCHIVE_TOKEN configured"
@@ -613,19 +626,37 @@ jobs:
                   return True
               
               def process_events(self):
-                  """Process and count fonts"""
-                  print("\n🔄 Processing events...")
-                  
-                  all_events = self.arch_events + self.live_events
-                  valid = 0
-                  
-                  for event in all_events:
+                  """Process and count fonts — ALL-TIME, no date filter.
+
+                  Every single archive event is counted regardless of age.
+                  Live events (already recent by definition) are always counted.
+                  The 36-hour staleness override and SHA-256 hash comparison
+                  remain fully active to prevent the skip-loop issue.
+                  """
+                  print("\n🔄 Processing events (ALL-TIME — no date cutoff)...")
+
+                  # Archive events: count every single one, no date filter
+                  arch_valid = 0
+                  for event in self.arch_events:
+                      if not self.is_valid_event(event):
+                          continue
+                      font = event.get('font', '').strip()
+                      self.font_counter[font] += 1
+                      arch_valid += 1
+
+                  # Live events: always count in full
+                  live_valid = 0
+                  for event in self.live_events:
                       if self.is_valid_event(event):
                           font = event.get('font', '').strip()
                           self.font_counter[font] += 1
-                          valid += 1
-                  
-                  print(f"  ✓ Valid events: {valid}/{len(all_events)}")
+                          live_valid += 1
+
+                  total_valid = arch_valid + live_valid
+                  total_all = len(self.arch_events) + len(self.live_events)
+                  print(f"  ✓ Archive events counted (all-time): {arch_valid}")
+                  print(f"  ✓ Live events: {live_valid}")
+                  print(f"  ✓ Valid events: {total_valid}/{total_all}")
                   print(f"  ✓ Unique fonts: {len(self.font_counter)}")
               
               def compute_statistics(self) -> dict:
@@ -901,7 +932,7 @@ jobs:
 import json, sys
 data = json.load(sys.stdin)
 json.dump(data, open('popular.json', 'w'), ensure_ascii=False, indent=2)
-print(f'✓ Wrote popular.json with {len(data)} fonts')
+print(f'✓ Wrote popular.json with ' + str(len(data)) + ' fonts')
 "
           else
             echo "⚠️  top25 output empty — keeping repo popular.json as-is"
@@ -957,8 +988,11 @@ print('✓ Wrote popular.meta.json: $LAST_UPDATED  run=$RUN_ID')
           
           echo "📌 Rebasing..."
           if ! git rebase origin/main --quiet; then
-            echo "⚠️  Rebase conflict, resolving..."
+            echo "⚠️  Rebase conflict detected — aborting cleanly"
             git rebase --abort --quiet
+            echo "❌ Rebase failed — stopping job to prevent pushing stale data"
+            echo "   Re-run the workflow manually to retry."
+            exit 1
           fi
           
           # Re-write BOTH files after rebase — rebase restores old versions
@@ -969,7 +1003,7 @@ print('✓ Wrote popular.meta.json: $LAST_UPDATED  run=$RUN_ID')
 import json, sys
 data = json.load(sys.stdin)
 json.dump(data, open('popular.json', 'w'), ensure_ascii=False, indent=2)
-print(f'✓ Re-wrote popular.json after rebase ({len(data)} fonts)')
+print(f'✓ Re-wrote popular.json after rebase (' + str(len(data)) + ' fonts)')
 "
           fi
           python3 -c "
