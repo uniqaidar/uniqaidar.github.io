@@ -278,7 +278,7 @@ jobs:
           echo "🔄 Retries: ${{ env.RETRY_ATTEMPTS }}"
           echo ""
           
-          python3 << 'PYFETCH'
+          python3 <<- 'PYFETCH'
           import os, json, sys, time
           from datetime import datetime
           import urllib.request
@@ -345,7 +345,7 @@ jobs:
           
           print(f"\n💾 Saved to live_stats.json ({len(live_events)} events)")
           print(f"🔄 Fallback mode: {'YES' if is_fallback else 'NO'}")
-PYFETCH
+	PYFETCH
           
           END_TIME=$(date +%s)
           DURATION=$((END_TIME - START_TIME))
@@ -393,7 +393,7 @@ PYFETCH
           echo "📦 ARCHIVE PROCESSING"
           echo "════════════════════════════════════════════════════════════════"
           
-          python3 << 'PYARCH'
+          python3 <<- 'PYARCH'
           import os, json, glob
           from pathlib import Path
           
@@ -451,7 +451,7 @@ PYFETCH
           print(f"   • Events: {len(all_events)}")
           print(f"   • Size: {size_mb:.2f} MB")
           print(f"   • Errors: {len(errors)}")
-PYARCH
+	PYARCH
           
           ARCHIVE_COUNT=$(python3 -c "import json; d=json.load(open('archive_data.json', encoding='utf-8')); print(d.get('files', 0))")
           ARCHIVE_EVENTS=$(python3 -c "import json; d=json.load(open('archive_data.json', encoding='utf-8')); print(len(d.get('events', [])))")
@@ -535,7 +535,7 @@ PYARCH
           echo "⏱️  Time: $(TZ='Asia/Baghdad' date '+%Y-%m-%d %H:%M:%S %Z')"
           echo ""
           
-          python3 << 'PYANALYSIS'
+          python3 <<- 'PYANALYSIS'
           #!/usr/bin/env python3
           # -*- coding: utf-8 -*-
           """
@@ -855,7 +855,7 @@ PYARCH
           # Execute
           engine = AdvancedFontAnalytics()
           engine.run()
-PYANALYSIS
+	PYANALYSIS
           
           END=$(date +%s%N)
           DURATION=$(( (END - START) / 1000000 ))
@@ -937,12 +937,12 @@ PYANALYSIS
           # This is the ONLY source of truth — do NOT rely on the checked-out file.
           TOP25_JSON='${{ needs.analyze-compute.outputs.top25 }}'
           if [ -n "$TOP25_JSON" ] && [ "$TOP25_JSON" != "null" ] && [ "$TOP25_JSON" != "[]" ]; then
-            echo "$TOP25_JSON" | python3 << 'PYWRITE'
+            echo "$TOP25_JSON" | python3 <<- 'PYWRITE'
 import json, sys
 data = json.load(sys.stdin)
 json.dump(data, open('popular.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
 print('✓ Wrote popular.json with ' + str(len(data)) + ' fonts')
-PYWRITE
+	PYWRITE
           else
             echo "⚠️  top25 output empty — keeping repo popular.json as-is"
           fi
@@ -978,7 +978,7 @@ PYWRITE
           RUN_ID="${{ github.run_id }}"
           export PYMETAWRITE_LAST_UPDATED="$LAST_UPDATED"
           export PYMETAWRITE_RUN_ID="$RUN_ID"
-          python3 << 'PYMETAWRITE'
+          python3 <<- 'PYMETAWRITE'
 import json, os
 last_updated = os.environ['PYMETAWRITE_LAST_UPDATED']
 run_id       = os.environ['PYMETAWRITE_RUN_ID']
@@ -986,7 +986,7 @@ meta = {'last_updated': last_updated, 'run_id': run_id}
 with open('popular.meta.json', 'w', encoding='utf-8') as fh:
     json.dump(meta, fh, ensure_ascii=False)
 print('Wrote popular.meta.json: ' + last_updated + '  run=' + run_id)
-PYMETAWRITE
+	PYMETAWRITE
           
           # Stage both files
           git add popular.json popular.meta.json
@@ -1008,16 +1008,16 @@ PYMETAWRITE
           # from origin/main, clobbering our computed content.
           TOP25_JSON='${{ needs.analyze-compute.outputs.top25 }}'
           if [ -n "$TOP25_JSON" ] && [ "$TOP25_JSON" != "null" ] && [ "$TOP25_JSON" != "[]" ]; then
-            echo "$TOP25_JSON" | python3 << 'PYREWRITE'
+            echo "$TOP25_JSON" | python3 <<- 'PYREWRITE'
 import json, sys
 data = json.load(sys.stdin)
 json.dump(data, open('popular.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
 print('Re-wrote popular.json after rebase (' + str(len(data)) + ' fonts)')
-PYREWRITE
+	PYREWRITE
           fi
           export PYMETAREWRITE_LAST_UPDATED="$LAST_UPDATED"
           export PYMETAREWRITE_RUN_ID="$RUN_ID"
-          python3 << 'PYMETAREWRITE'
+          python3 <<- 'PYMETAREWRITE'
 import json, os
 last_updated = os.environ['PYMETAREWRITE_LAST_UPDATED']
 run_id       = os.environ['PYMETAREWRITE_RUN_ID']
@@ -1025,7 +1025,7 @@ meta = {'last_updated': last_updated, 'run_id': run_id}
 with open('popular.meta.json', 'w', encoding='utf-8') as fh:
     json.dump(meta, fh, ensure_ascii=False)
 print('Re-wrote popular.meta.json after rebase  run=' + run_id)
-PYMETAREWRITE
+	PYMETAREWRITE
           
           git add popular.json popular.meta.json
           
@@ -1108,7 +1108,7 @@ PYMETAREWRITE
       
       - name: '📊 Generate Execution Report'
         run: |
-          cat > EXECUTION_REPORT.md << 'REPORT'
+          cat > EXECUTION_REPORT.md <<- 'REPORT'
           # 📊 UniQaidar Font Analytics - Execution Report
           
           **Generated**: $(TZ='Asia/Baghdad' date '+%Y-%m-%d %H:%M:%S %Z')  
@@ -1174,7 +1174,7 @@ PYMETAREWRITE
           ---
           
           ✨ *UniQaidar Font Analytics Engine v3.0 - Enterprise Grade*
-REPORT
+	REPORT
           
           cat EXECUTION_REPORT.md
       
