@@ -645,8 +645,11 @@ jobs:
                   }
               
               def get_top_fonts(self) -> List[str]:
-                  """Get top N fonts"""
-                  top = [name for name, _ in self.font_counter.most_common(self.MAX_FONTS)]
+                  """Get top N fonts — deterministic sort stable across all Python versions"""
+                  # Sort by (-count, name): ties broken alphabetically so the order
+                  # is identical on Python 3.10, 3.12, 3.15, 3.20 ... forever.
+                  sorted_fonts = sorted(self.font_counter.items(), key=lambda x: (-x[1], x[0]))
+                  top = [name for name, _ in sorted_fonts[:self.MAX_FONTS]]
                   
                   self.metrics = self.compute_statistics()
                   
@@ -676,22 +679,33 @@ jobs:
                   reordered = (new != current) and (new_set == current_set)
                   
                   # ── Staleness guard ──────────────────────────────────────────
-                  # If popular.json has not changed in more than 6 days, force an
-                  # update regardless of list comparison — this is the fix for the
-                  # "stuck-in-skip" problem observed over 1+ month.
-                  popular_path = os.getenv('POPULAR_JSON', 'popular.json')
+                  # Use `git log` for the real last-commit date of popular.json.
+                  # File mtime is USELESS in CI — a fresh checkout always sets
+                  # mtime to now, so mtime-based staleness would never fire.
+                  import subprocess
                   stale = False
                   reason = ''
                   try:
-                      mtime = os.path.getmtime(popular_path)
-                      age_days = (datetime.now().timestamp() - mtime) / 86400
-                      if age_days > 6:
+                      popular_path = os.getenv('POPULAR_JSON', 'popular.json')
+                      result = subprocess.run(
+                          ['git', 'log', '-1', '--format=%ct', '--', popular_path],
+                          capture_output=True, text=True, timeout=15
+                      )
+                      git_ts = result.stdout.strip()
+                      if git_ts:
+                          age_days = (datetime.now().timestamp() - float(git_ts)) / 86400
+                          if age_days > 1.5:  # 36 hours
+                              stale = True
+                              reason = f'staleness({age_days:.1f}d>36h)'
+                              print(f"\n⚠️  STALENESS OVERRIDE: popular.json last committed {age_days:.1f}d ago — forcing update")
+                      else:
+                          # No git history for the file — treat as stale
                           stale = True
-                          reason = f'staleness({age_days:.1f}d>6d)'
-                          print(f"\n⚠️  STALENESS OVERRIDE: popular.json is {age_days:.1f} days old — forcing update")
-                  except Exception:
+                          reason = 'staleness(no-git-history)'
+                          print(f"\n⚠️  STALENESS OVERRIDE: popular.json has no git history — forcing update")
+                  except Exception as e:
                       stale = True
-                      reason = 'staleness(unreadable mtime)'
+                      reason = f'staleness(git-error:{e})'
                   
                   # ── Position-aware hash comparison ───────────────────────────
                   # Compare the ORDERED list as a string hash, not just set equality.
@@ -703,10 +717,11 @@ jobs:
                   changed = bool(added or removed or hash_changed or stale)
                   
                   if not reason:
-                      if added:    reason = f'added({len(added)})'
-                      elif removed: reason = f'removed({len(removed)})'
-                      elif hash_changed: reason = f'reordered(hash {cur_hash}→{new_hash})'
-                      else: reason = 'no_change'
+                      if added and removed: reason = f'added({len(added)})+removed({len(removed)})'
+                      elif added:           reason = f'added({len(added)})'
+                      elif removed:         reason = f'removed({len(removed)})'
+                      elif hash_changed:    reason = f'reordered(hash {cur_hash}→{new_hash})'
+                      else:                 reason = 'no_change'
                   
                   if changed:
                       print(f"\n✨ CHANGES DETECTED — reason: {reason}")
@@ -745,6 +760,42 @@ jobs:
                       Path('no_changes.flag').write_text('1')
                       print(f"⏭️  Genuine skip — list is fresh and identical")
               
+              def _check_staleness_only(self) -> bool:
+                  """Check git-based staleness when no font data is available.
+                  Returns True and force-writes analysis_results.json if stale,
+                  so the commit job still runs and resets the clock."""
+                  import subprocess
+                  try:
+                      popular_path = os.getenv('POPULAR_JSON', 'popular.json')
+                      result = subprocess.run(
+                          ['git', 'log', '-1', '--format=%ct', '--', popular_path],
+                          capture_output=True, text=True, timeout=15
+                      )
+                      git_ts = result.stdout.strip()
+                      if git_ts:
+                          age_days = (datetime.now().timestamp() - float(git_ts)) / 86400
+                          if age_days > 1.5:
+                              print(f"\n⚠️  STALENESS OVERRIDE (no-data path): popular.json is {age_days:.1f}d old — forcing re-save")
+                              current = self.load_current()
+                              if current:
+                                  output = {
+                                      'top25': current,
+                                      'added': [],
+                                      'removed': [],
+                                      'metrics': {'fonts': len(current), 'total_downloads': 0, 'max': 0, 'min': 0, 'mean': 0, 'median': 0, 'stddev': 0},
+                                      'timestamp': self.timestamp_sdt,
+                                      'timezone': 'Asia/Baghdad',
+                                      'version': '3.0.0',
+                                      'change_reason': f'staleness({age_days:.1f}d>36h,no-data)',
+                                  }
+                                  with open('analysis_results.json', 'w', encoding='utf-8') as f:
+                                      json.dump(output, f, ensure_ascii=False, indent=2)
+                                  print(f"  ✓ Re-saved existing {len(current)}-font list to reset staleness clock")
+                                  return True
+                  except Exception as e:
+                      print(f"  ⚠️  Staleness check failed: {e}")
+                  return False
+
               def run(self):
                   """Main execution pipeline"""
                   print("🚀 Starting Font Analytics Engine v3.0\n")
@@ -753,9 +804,13 @@ jobs:
                   self.process_events()
                   
                   if not self.font_counter:
-                      print("\n⚠️  No valid font events found - skipping update")
-                      from pathlib import Path
-                      Path('no_changes.flag').write_text('1')
+                      print("\n⚠️  No valid font events found")
+                      # Still check staleness — repeated data failures must not
+                      # trap the file in a permanent skip loop.
+                      if not self._check_staleness_only():
+                          from pathlib import Path
+                          Path('no_changes.flag').write_text('1')
+                          print("  ⏭️  Data empty and file is fresh — genuine skip")
                       print(f"\n✅ Analysis complete at {self.timestamp_sdt}")
                       return
                   
@@ -836,11 +891,20 @@ jobs:
           fetch-depth: 0
           token: ${{ github.token }}
       
-      - name: '📥 Download Analysis Results'
+      - name: '📥 Write computed popular.json from analysis output'
         run: |
-          if [ ! -f popular.json ]; then
-            echo "⚠️  popular.json not found, will create"
-            echo '[]' > popular.json
+          # Write the top25 computed by analyze-compute directly from job output.
+          # This is the ONLY source of truth — do NOT rely on the checked-out file.
+          TOP25_JSON='${{ needs.analyze-compute.outputs.top25 }}'
+          if [ -n "$TOP25_JSON" ] && [ "$TOP25_JSON" != "null" ] && [ "$TOP25_JSON" != "[]" ]; then
+            echo "$TOP25_JSON" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+json.dump(data, open('popular.json', 'w'), ensure_ascii=False, indent=2)
+print(f'✓ Wrote popular.json with {len(data)} fonts')
+"
+          else
+            echo "⚠️  top25 output empty — keeping repo popular.json as-is"
           fi
       
       - name: '🔐 Git Configuration'
@@ -866,12 +930,25 @@ jobs:
           python3 -m json.tool popular.json > /dev/null || exit 1
           echo "✓ popular.json is valid JSON"
           
-          # Check for changes
-          git add popular.json
+          # Write sentinel file — popular.json stays a plain array (website
+          # reads it as Array.isArray — must never be wrapped in a dict).
+          # popular.meta.json always gets a unique run_id + timestamp so git
+          # ALWAYS has a real byte change to commit every single run.
+          LAST_UPDATED=$(TZ='Asia/Baghdad' date '+%Y-%m-%d %H:%M:%S %Z')
+          RUN_ID="${{ github.run_id }}"
+          python3 -c "
+import json
+meta = {'last_updated': '$LAST_UPDATED', 'run_id': '$RUN_ID'}
+json.dump(meta, open('popular.meta.json', 'w'), ensure_ascii=False)
+print('✓ Wrote popular.meta.json: $LAST_UPDATED  run=$RUN_ID')
+"
+          
+          # Stage both files
+          git add popular.json popular.meta.json
           
           if git diff --cached --quiet; then
-            echo "⏭️  No differences to commit"
-            exit 0
+            echo "⚠️  WARNING: git diff found no changes despite sentinel file — forcing empty commit to advance timestamp"
+            git commit --allow-empty -m "chore(fonts): force clock reset [$(TZ='Asia/Baghdad' date '+%Y-%m-%d %H:%M:%S %Z')]" --quiet || true
           fi
           
           # Fetch and rebase
@@ -884,7 +961,25 @@ jobs:
             git rebase --abort --quiet
           fi
           
-          git add popular.json
+          # Re-write BOTH files after rebase — rebase restores old versions
+          # from origin/main, clobbering our computed content.
+          TOP25_JSON='${{ needs.analyze-compute.outputs.top25 }}'
+          if [ -n "$TOP25_JSON" ] && [ "$TOP25_JSON" != "null" ] && [ "$TOP25_JSON" != "[]" ]; then
+            echo "$TOP25_JSON" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+json.dump(data, open('popular.json', 'w'), ensure_ascii=False, indent=2)
+print(f'✓ Re-wrote popular.json after rebase ({len(data)} fonts)')
+"
+          fi
+          python3 -c "
+import json
+meta = {'last_updated': '$LAST_UPDATED', 'run_id': '$RUN_ID'}
+json.dump(meta, open('popular.meta.json', 'w'), ensure_ascii=False)
+print('✓ Re-wrote popular.meta.json after rebase')
+"
+          
+          git add popular.json popular.meta.json
           
           # Commit
           ADDED="${{ needs.analyze-compute.outputs.added_count }}"
