@@ -666,30 +666,64 @@ jobs:
                   data = self.safe_json_load(path)
                   return data if isinstance(data, list) else []
               
-              def detect_changes(self, new: List[str], current: List[str]) -> Tuple[bool, Set, Set]:
-                  """Detect changes with details"""
+              def detect_changes(self, new: List[str], current: List[str]) -> Tuple[bool, Set, Set, str]:
+                  """Detect changes with details — never gets stuck in skip loop"""
                   new_set = set(new)
                   current_set = set(current)
                   
                   added = new_set - current_set
                   removed = current_set - new_set
                   reordered = (new != current) and (new_set == current_set)
-                  changed = bool(added or removed or reordered)
+                  
+                  # ── Staleness guard ──────────────────────────────────────────
+                  # If popular.json has not changed in more than 6 days, force an
+                  # update regardless of list comparison — this is the fix for the
+                  # "stuck-in-skip" problem observed over 1+ month.
+                  popular_path = os.getenv('POPULAR_JSON', 'popular.json')
+                  stale = False
+                  reason = ''
+                  try:
+                      mtime = os.path.getmtime(popular_path)
+                      age_days = (datetime.now().timestamp() - mtime) / 86400
+                      if age_days > 6:
+                          stale = True
+                          reason = f'staleness({age_days:.1f}d>6d)'
+                          print(f"\n⚠️  STALENESS OVERRIDE: popular.json is {age_days:.1f} days old — forcing update")
+                  except Exception:
+                      stale = True
+                      reason = 'staleness(unreadable mtime)'
+                  
+                  # ── Position-aware hash comparison ───────────────────────────
+                  # Compare the ORDERED list as a string hash, not just set equality.
+                  # Two fonts swapping rank #3/#4 will always produce a different hash.
+                  new_hash = hashlib.sha256('|'.join(new).encode()).hexdigest()[:12]
+                  cur_hash = hashlib.sha256('|'.join(current).encode()).hexdigest()[:12]
+                  hash_changed = new_hash != cur_hash
+                  
+                  changed = bool(added or removed or hash_changed or stale)
+                  
+                  if not reason:
+                      if added:    reason = f'added({len(added)})'
+                      elif removed: reason = f'removed({len(removed)})'
+                      elif hash_changed: reason = f'reordered(hash {cur_hash}→{new_hash})'
+                      else: reason = 'no_change'
                   
                   if changed:
-                      print(f"\n✨ CHANGES DETECTED:")
+                      print(f"\n✨ CHANGES DETECTED — reason: {reason}")
                       if added:
                           print(f"  ➕ Added ({len(added)}): {list(added)[:3]}")
                       if removed:
                           print(f"  ➖ Removed ({len(removed)}): {list(removed)[:3]}")
-                      if reordered:
-                          print(f"  🔄 Reordered (positions changed)")
+                      if hash_changed and not added and not removed:
+                          print(f"  🔄 Reordered — hash {cur_hash} → {new_hash}")
+                      if stale and not added and not removed and not hash_changed:
+                          print(f"  📅 Content identical but file is stale — refreshing")
                   else:
-                      print(f"\n✓ NO CHANGES - List is stable")
+                      print(f"\n✓ NO CHANGES — list is genuinely identical and fresh")
                   
-                  return changed, added, removed
+                  return changed, added, removed, reason
               
-              def save_results(self, top25: List[str], changed: bool, added: Set, removed: Set):
+              def save_results(self, top25: List[str], changed: bool, added: Set, removed: Set, reason: str = ''):
                   """Save analysis results"""
                   if changed:
                       output = {
@@ -700,15 +734,16 @@ jobs:
                           'timestamp': self.timestamp_sdt,
                           'timezone': 'Asia/Baghdad',
                           'version': '3.0.0',
+                          'change_reason': reason,
                       }
                       
                       with open('analysis_results.json', 'w', encoding='utf-8') as f:
                           json.dump(output, f, ensure_ascii=False, indent=2)
                       
-                      print(f"\n💾 Results saved to analysis_results.json")
+                      print(f"\n💾 Results saved to analysis_results.json (reason: {reason})")
                   else:
                       Path('no_changes.flag').write_text('1')
-                      print(f"⏭️  No changes - skipping update")
+                      print(f"⏭️  Genuine skip — list is fresh and identical")
               
               def run(self):
                   """Main execution pipeline"""
@@ -726,8 +761,8 @@ jobs:
                   
                   top25 = self.get_top_fonts()
                   current = self.load_current()
-                  changed, added, removed = self.detect_changes(top25, current)
-                  self.save_results(top25, changed, added, removed)
+                  changed, added, removed, reason = self.detect_changes(top25, current)
+                  self.save_results(top25, changed, added, removed, reason)
                   
                   print(f"\n✅ Analysis complete at {self.timestamp_sdt}")
           
