@@ -530,32 +530,34 @@ jobs:
           export PYMETAWRITE_RUN_ID="$RUN_ID"
           echo 'aW1wb3J0IGpzb24sIG9zCmxhc3RfdXBkYXRlZCA9IG9zLmVudmlyb25bJ1BZTUVUQVdSSVRFX0xBU1RfVVBEQVRFRCddCnJ1bl9pZCAgICAgICA9IG9zLmVudmlyb25bJ1BZTUVUQVdSSVRFX1JVTl9JRCddCm1ldGEgPSB7J2xhc3RfdXBkYXRlZCc6IGxhc3RfdXBkYXRlZCwgJ3J1bl9pZCc6IHJ1bl9pZH0Kd2l0aCBvcGVuKCdwb3B1bGFyLm1ldGEuanNvbicsICd3JywgZW5jb2Rpbmc9J3V0Zi04JykgYXMgZmg6CiAgICBqc29uLmR1bXAobWV0YSwgZmgsIGVuc3VyZV9hc2NpaT1GYWxzZSkKcHJpbnQoJ1dyb3RlIHBvcHVsYXIubWV0YS5qc29uOiAnICsgbGFzdF91cGRhdGVkICsgJyAgcnVuPScgKyBydW5faWQp' | base64 -d | python3
           
-          # Stage both files
-          git add popular.json popular.meta.json
+          # ── SAFE GIT SEQUENCE ────────────────────────────────────────────
+          # 1. Save computed content to temp files (outside git index)
+          # 2. Fetch + rebase on a CLEAN working tree (no staged changes)
+          # 3. Restore computed content AFTER rebase
+          # 4. Stage and commit
+          # This fixes: "cannot rebase: Your index contains uncommitted changes"
           
-          # Fetch and rebase
+          cp popular.json      /tmp/_computed_popular.json
+          cp popular.meta.json /tmp/_computed_popular_meta.json
+          
+          # Fetch and rebase on clean tree
           echo "🔄 Fetching latest..."
           git fetch origin main --prune --quiet
           
           echo "📌 Rebasing..."
           if ! git rebase origin/main --quiet; then
-            echo "⚠️  Rebase conflict detected — aborting cleanly"
-            git rebase --abort --quiet
+            echo "⚠️  Rebase conflict — aborting cleanly"
+            git rebase --abort --quiet 2>/dev/null || true
             echo "❌ Rebase failed — stopping job to prevent pushing stale data"
-            echo "   Re-run the workflow manually to retry."
             exit 1
           fi
           
-          # Re-write BOTH files after rebase — rebase restores old versions
-          # from origin/main, clobbering our computed content.
-          TOP25_JSON='${{ needs.analyze-compute.outputs.top25 }}'
-          if [ -n "$TOP25_JSON" ] && [ "$TOP25_JSON" != "null" ] && [ "$TOP25_JSON" != "[]" ]; then
-            echo "$TOP25_JSON" | python3 -c "import base64,sys; exec(base64.b64decode('aW1wb3J0IGpzb24sIHN5cwpkYXRhID0ganNvbi5sb2FkKHN5cy5zdGRpbikKanNvbi5kdW1wKGRhdGEsIG9wZW4oJ3BvcHVsYXIuanNvbicsICd3JywgZW5jb2Rpbmc9J3V0Zi04JyksIGVuc3VyZV9hc2NpaT1GYWxzZSwgaW5kZW50PTIpCnByaW50KCdSZS13cm90ZSBwb3B1bGFyLmpzb24gYWZ0ZXIgcmViYXNlICgnICsgc3RyKGxlbihkYXRhKSkgKyAnIGZvbnRzKScp').decode('utf-8'))"
-          fi
-          export PYMETAREWRITE_LAST_UPDATED="$LAST_UPDATED"
-          export PYMETAREWRITE_RUN_ID="$RUN_ID"
-          echo 'aW1wb3J0IGpzb24sIG9zCmxhc3RfdXBkYXRlZCA9IG9zLmVudmlyb25bJ1BZTUVUQVJFV1JJVEVfTEFTVF9VUERBVEVEJ10KcnVuX2lkICAgICAgID0gb3MuZW52aXJvblsnUFlNRVRBUkVXUklURV9SVU5fSUQnXQptZXRhID0geydsYXN0X3VwZGF0ZWQnOiBsYXN0X3VwZGF0ZWQsICdydW5faWQnOiBydW5faWR9CndpdGggb3BlbigncG9wdWxhci5tZXRhLmpzb24nLCAndycsIGVuY29kaW5nPSd1dGYtOCcpIGFzIGZoOgogICAganNvbi5kdW1wKG1ldGEsIGZoLCBlbnN1cmVfYXNjaWk9RmFsc2UpCnByaW50KCdSZS13cm90ZSBwb3B1bGFyLm1ldGEuanNvbiBhZnRlciByZWJhc2UgIHJ1bj0nICsgcnVuX2lkKQ==' | base64 -d | python3
+          # Restore computed files from /tmp — simple and reliable
+          cp /tmp/_computed_popular.json      popular.json
+          cp /tmp/_computed_popular_meta.json popular.meta.json
+          echo "✓ Restored computed popular.json + popular.meta.json after rebase" 
           
+          # Stage AFTER rebase — index is clean at this point
           git add popular.json popular.meta.json
           
           # Commit
@@ -595,9 +597,10 @@ jobs:
             exit 0
           fi
           
-          # Push with retry
-          for attempt in {1..3}; do
-            echo "📤 Push attempt $attempt/3..."
+          # Push with retry — re-fetch+rebase before each retry so
+          # force-with-lease never races against a concurrent commit
+          for attempt in {1..5}; do
+            echo "📤 Push attempt $attempt/5..."
             
             if git push origin main --quiet --force-with-lease; then
               echo "✅ Pushed successfully"
@@ -605,8 +608,20 @@ jobs:
               exit 0
             fi
             
-            if [ $attempt -lt 3 ]; then
-              sleep 10
+            if [ $attempt -lt 5 ]; then
+              echo "⟳ Push rejected — re-fetching and rebasing before retry..."
+              cp popular.json      /tmp/_computed_popular.json
+              cp popular.meta.json /tmp/_computed_popular_meta.json
+              git fetch origin main --prune --quiet
+              if git rebase origin/main --quiet; then
+                cp /tmp/_computed_popular.json      popular.json
+                cp /tmp/_computed_popular_meta.json popular.meta.json
+                git add popular.json popular.meta.json
+                git commit --amend --no-edit --quiet 2>/dev/null || true
+              else
+                git rebase --abort --quiet 2>/dev/null || true
+              fi
+              sleep 5
             fi
           done
           
