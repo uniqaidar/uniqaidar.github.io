@@ -11962,9 +11962,16 @@ window._uqSyncDot = function(dotId, cssColor) {
 // ── Read the counter config JSON from RAW ────────────────────────────
 function _uqReadCounterCfg() {
     if (typeof RAW !== 'string' || !RAW) return null;
-    var m = RAW.match(/<script\b[^>]*\bid="uq-counter-config"[^>]*>([\s\S]*?)<\/script>/);
-    if (!m) return null;
-    try { return JSON.parse(m[1].trim()); } catch(e) { return null; }
+    // Use indexOf-based extraction. CLOSE_TAG is split across two string literals
+    // so the HTML parser never sees a bare closing script tag inside this block.
+    var CLOSE_TAG = '</' + 'script>';
+    var openRe = /<script\b[^>]*\bid="uq-counter-config"[^>]*>/i;
+    var openM  = openRe.exec(RAW);
+    if (!openM) return null;
+    var contentStart = openM.index + openM[0].length;
+    var closeIdx     = RAW.indexOf(CLOSE_TAG, contentStart);
+    if (closeIdx === -1) return null;
+    try { return JSON.parse(RAW.slice(contentStart, closeIdx).trim()); } catch(e) { return null; }
 }
 
 // ── Tiny preview renderer ─────────────────────────────────────────────
@@ -12012,7 +12019,9 @@ window.pvbCounterConfigLoad = function() {
     }
     var cfg = _uqReadCounterCfg();
     if (!cfg) {
-        if (al) alert2(al, '❌ uq-counter-config not found in RAW — connect to GitHub first', 'err');
+        // RAW not ready yet — the poll / tab-switch handler will retry automatically.
+        // Only show an error if the user clicked Load manually (al element is visible).
+        if (al && al.offsetParent !== null) alert2(al, '❌ uq-counter-config not found — connect to GitHub first', 'err');
         return;
     }
 
@@ -12230,10 +12239,24 @@ window.pvbCounterConfigSave = async function() {
     };
 
     var newJson = JSON.stringify(cfg, null, 2);
-    var re = /(<script\b[^>]*\bid="uq-counter-config"[^>]*>)[\s\S]*?(<\/script>)/;
-    var updated = RAW.replace(re, '$1\n' + newJson + '\n$2');
-    if (updated === RAW) {
+    // Replace the uq-counter-config block using indexOf-based extraction.
+    // CLOSE_TAG is split across two literals so the HTML parser never sees a bare closing tag here.
+    var CLOSE_TAG2 = '</' + 'script>';
+    var openRe2  = /<script\b[^>]*\bid="uq-counter-config"[^>]*>/i;
+    var openM2   = openRe2.exec(RAW);
+    if (!openM2) {
         if (al) alert2(al, '⚠️ uq-counter-config block not found in RAW', 'err');
+        return;
+    }
+    var blkStart  = openM2.index + openM2[0].length;
+    var closeIdx2 = RAW.indexOf(CLOSE_TAG2, blkStart);
+    if (closeIdx2 === -1) {
+        if (al) alert2(al, '⚠️ uq-counter-config closing tag not found in RAW', 'err');
+        return;
+    }
+    var updated = RAW.slice(0, blkStart) + '\n' + newJson + '\n' + RAW.slice(closeIdx2);
+    if (updated === RAW) {
+        if (al) alert2(al, '⚠️ No changes detected — already up to date', 'inf');
         return;
     }
 
@@ -12253,11 +12276,18 @@ window.pvbCounterConfigSave = async function() {
 //  into the setReady / loadAllSettings completion path.)
 var _uqCcLoaded = false;
 var _uqCcPollId = null;
+var _uqCcPollStart = Date.now();
 
 function _uqCcPoll() {
-    if (_uqCcLoaded) { clearInterval(_uqCcPollId); return; }
+    // Stop polling after 30 seconds regardless
+    if (_uqCcLoaded || (Date.now() - _uqCcPollStart > 30000)) {
+        clearInterval(_uqCcPollId);
+        return;
+    }
+    // Only attempt load when both: t-counter is active AND RAW is populated
+    if (typeof RAW !== 'string' || !RAW) return; // RAW not ready yet — keep polling silently
     var active = document.querySelector('.tab-content.active');
-    if (active && active.id === 't-counter' && typeof RAW === 'string' && RAW) {
+    if (active && active.id === 't-counter') {
         pvbCounterConfigLoad();
         _uqCcLoaded = true;
         clearInterval(_uqCcPollId);
