@@ -1561,7 +1561,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     <div class="form-group">
                         <label><span data-ku>ڕەنگی ژمارە [N]</span><span data-en style="display:none">Number Color [N]</span></label>
                         <input type="text" id="uq-cfg-visit-num-color" value="#07beff" style="direction:ltr;font-family:var(--mono);font-size:0.8rem;">
-                        <button type="button" id="uq-cfg-visit-num-color-pick" data-hex="#07beff" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;document.getElementById('uq-cfg-visit-num-color').value=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;margin-top:4px;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#07beff;"></span>Pick</button>
+                        <button type="button" id="uq-cfg-visit-num-color-pick" data-hex="#07beff" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;document.getElementById('uq-cfg-visit-num-color').value=hex;var rteEl=document.getElementById('uq-cfg-visit-tpl');var rte=rteEl&&rteEl.nextElementSibling;if(rte&&rte.classList.contains('uq-rte')){var walker=document.createTreeWalker(rte,NodeFilter.SHOW_TEXT,null,false);var nodes=[];var tn;while((tn=walker.nextNode())){if(/\[N\]|\[M\]/.test(tn.nodeValue))nodes.push(tn);}nodes.forEach(function(tn){var parts=tn.nodeValue.split(/(\[N\]|\[M\])/);var frag=document.createDocumentFragment();parts.forEach(function(p){if(p==='[N]'||p==='[M]'){var sp=document.createElement('span');sp.style.color=hex;sp.textContent=p;frag.appendChild(sp);}else if(p){frag.appendChild(document.createTextNode(p));}});tn.parentNode.replaceChild(frag,tn);});if(typeof syncRteBack==='function'){var inp=document.getElementById('uq-cfg-visit-tpl');syncRteBack(rte,inp);}}});})(this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;margin-top:4px;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#07beff;"></span>Pick</button>
                     </div>
                     <div class="form-group">
                         <label><span data-ku>قەبارەی فۆنتی ژمارە (rem)</span><span data-en style="display:none">Number Font Size (rem)</span></label>
@@ -1571,16 +1571,10 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                         <label><span data-ku>بەرزی هێڵ</span><span data-en style="display:none">Line Height</span></label>
                         <input type="number" id="uq-cfg-visit-lh" min="1" max="3" step="0.1" value="1.6" style="direction:ltr;">
                     </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی دەق</span><span data-en style="display:none">Text Color</span></label>
-                        <input type="text" id="uq-cfg-visit-text-color" value="rgba(220,220,220,0.88)" style="direction:ltr;font-family:var(--mono);font-size:0.8rem;">
-                        <button type="button" id="uq-cfg-visit-text-color-pick" data-hex="rgba(220,220,220,0.88)" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;document.getElementById('uq-cfg-visit-text-color').value=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;margin-top:4px;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:rgba(220,220,220,0.88);"></span>Pick</button>
-                    </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی وشەی گرینگ</span><span data-en style="display:none">Keyword Color</span></label>
-                        <input type="text" id="uq-cfg-visit-kw-color" value="#ffa71e" style="direction:ltr;font-family:var(--mono);font-size:0.8rem;">
-                        <button type="button" id="uq-cfg-visit-kw-color-pick" data-hex="#ffa71e" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;document.getElementById('uq-cfg-visit-kw-color').value=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;margin-top:4px;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffa71e;"></span>Pick</button>
-                    </div>
+                    <!-- Text Color and Keyword Color removed — now applied inline via RTE toolbar -->
+                    <!-- Hidden inputs preserved for backward-compat JSON reads -->
+                    <input type="hidden" id="uq-cfg-visit-text-color" value="rgba(220,220,220,0.88)">
+                    <input type="hidden" id="uq-cfg-visit-kw-color" value="#ffa71e">
                 </div>
             </div>
         </div>
@@ -1601,7 +1595,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     <div class="form-group">
                         <label><span data-ku>ڕەنگی ژمارە [M]</span><span data-en style="display:none">Number Color [M]</span></label>
                         <input type="text" id="uq-cfg-dl-num-color" value="#07beff" style="direction:ltr;font-family:var(--mono);font-size:0.8rem;">
-                        <button type="button" id="uq-cfg-dl-num-color-pick" data-hex="#07beff" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;document.getElementById('uq-cfg-dl-num-color').value=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;margin-top:4px;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#07beff;"></span>Pick</button>
+                        <button type="button" id="uq-cfg-dl-num-color-pick" data-hex="#07beff" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;document.getElementById('uq-cfg-dl-num-color').value=hex;var rteEl=document.getElementById('uq-cfg-dl-tpl');var rte=rteEl&&rteEl.nextElementSibling;if(rte&&rte.classList.contains('uq-rte')){var walker=document.createTreeWalker(rte,NodeFilter.SHOW_TEXT,null,false);var nodes=[];var tn;while((tn=walker.nextNode())){if(/\[N\]|\[M\]/.test(tn.nodeValue))nodes.push(tn);}nodes.forEach(function(tn){var parts=tn.nodeValue.split(/(\[N\]|\[M\])/);var frag=document.createDocumentFragment();parts.forEach(function(p){if(p==='[N]'||p==='[M]'){var sp=document.createElement('span');sp.style.color=hex;sp.textContent=p;frag.appendChild(sp);}else if(p){frag.appendChild(document.createTextNode(p));}});tn.parentNode.replaceChild(frag,tn);});if(typeof syncRteBack==='function'){var inp=document.getElementById('uq-cfg-dl-tpl');syncRteBack(rte,inp);}}});})(this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;margin-top:4px;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#07beff;"></span>Pick</button>
                     </div>
                     <div class="form-group">
                         <label><span data-ku>قەبارەی فۆنتی ژمارە (rem)</span><span data-en style="display:none">Number Font Size (rem)</span></label>
@@ -1611,16 +1605,9 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                         <label><span data-ku>بەرزی هێڵ</span><span data-en style="display:none">Line Height</span></label>
                         <input type="number" id="uq-cfg-dl-lh" min="1" max="3" step="0.1" value="1.6" style="direction:ltr;">
                     </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی دەق</span><span data-en style="display:none">Text Color</span></label>
-                        <input type="text" id="uq-cfg-dl-text-color" value="rgba(220,220,220,0.88)" style="direction:ltr;font-family:var(--mono);font-size:0.8rem;">
-                        <button type="button" id="uq-cfg-dl-text-color-pick" data-hex="rgba(220,220,220,0.88)" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;document.getElementById('uq-cfg-dl-text-color').value=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;margin-top:4px;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:rgba(220,220,220,0.88);"></span>Pick</button>
-                    </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی وشەی گرینگ</span><span data-en style="display:none">Keyword Color</span></label>
-                        <input type="text" id="uq-cfg-dl-kw-color" value="#ffa71e" style="direction:ltr;font-family:var(--mono);font-size:0.8rem;">
-                        <button type="button" id="uq-cfg-dl-kw-color-pick" data-hex="#ffa71e" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;document.getElementById('uq-cfg-dl-kw-color').value=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;margin-top:4px;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffa71e;"></span>Pick</button>
-                    </div>
+                    <!-- Text Color and Keyword Color removed — now applied inline via RTE toolbar -->
+                    <input type="hidden" id="uq-cfg-dl-text-color" value="rgba(220,220,220,0.88)">
+                    <input type="hidden" id="uq-cfg-dl-kw-color" value="#ffa71e">
                 </div>
             </div>
         </div>
@@ -1641,17 +1628,14 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     <div class="form-group">
                         <label><span data-ku>ڕەنگی ژمارە [N]</span><span data-en style="display:none">Number Color [N]</span></label>
                         <input type="text" id="uq-cfg-sp-visit-num-color" value="#07beff" style="direction:ltr;font-family:var(--mono);font-size:0.8rem;">
-                        <button type="button" id="uq-cfg-sp-visit-num-color-pick" data-hex="#07beff" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;document.getElementById('uq-cfg-sp-visit-num-color').value=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;margin-top:4px;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#07beff;"></span>Pick</button>
+                        <button type="button" id="uq-cfg-sp-visit-num-color-pick" data-hex="#07beff" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;document.getElementById('uq-cfg-sp-visit-num-color').value=hex;var rteEl=document.getElementById('uq-cfg-sp-visit-tpl');var rte=rteEl&&rteEl.nextElementSibling;if(rte&&rte.classList.contains('uq-rte')){var walker=document.createTreeWalker(rte,NodeFilter.SHOW_TEXT,null,false);var nodes=[];var tn;while((tn=walker.nextNode())){if(/\[N\]|\[M\]/.test(tn.nodeValue))nodes.push(tn);}nodes.forEach(function(tn){var parts=tn.nodeValue.split(/(\[N\]|\[M\])/);var frag=document.createDocumentFragment();parts.forEach(function(p){if(p==='[N]'||p==='[M]'){var sp=document.createElement('span');sp.style.color=hex;sp.textContent=p;frag.appendChild(sp);}else if(p){frag.appendChild(document.createTextNode(p));}});tn.parentNode.replaceChild(frag,tn);});if(typeof syncRteBack==='function'){var inp=document.getElementById('uq-cfg-sp-visit-tpl');syncRteBack(rte,inp);}}});})(this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;margin-top:4px;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#07beff;"></span>Pick</button>
                     </div>
                     <div class="form-group">
                         <label><span data-ku>قەبارەی فۆنتی ژمارە (rem)</span><span data-en style="display:none">Number Font Size (rem)</span></label>
                         <input type="number" id="uq-cfg-sp-visit-num-size" min="0.5" max="4" step="0.05" value="1.05" style="direction:ltr;">
                     </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی دەق</span><span data-en style="display:none">Text Color</span></label>
-                        <input type="text" id="uq-cfg-sp-visit-text-color" value="rgba(220,220,220,0.88)" style="direction:ltr;font-family:var(--mono);font-size:0.8rem;">
-                        <button type="button" id="uq-cfg-sp-visit-text-color-pick" data-hex="rgba(220,220,220,0.88)" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;document.getElementById('uq-cfg-sp-visit-text-color').value=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;margin-top:4px;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:rgba(220,220,220,0.88);"></span>Pick</button>
-                    </div>
+                    <!-- Text Color removed — now applied inline via RTE toolbar -->
+                    <input type="hidden" id="uq-cfg-sp-visit-text-color" value="rgba(220,220,220,0.88)">
                 </div>
             </div>
         </div>
@@ -1672,17 +1656,14 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     <div class="form-group">
                         <label><span data-ku>ڕەنگی ژمارە [M]</span><span data-en style="display:none">Number Color [M]</span></label>
                         <input type="text" id="uq-cfg-sp-dl-num-color" value="#07beff" style="direction:ltr;font-family:var(--mono);font-size:0.8rem;">
-                        <button type="button" id="uq-cfg-sp-dl-num-color-pick" data-hex="#07beff" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;document.getElementById('uq-cfg-sp-dl-num-color').value=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;margin-top:4px;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#07beff;"></span>Pick</button>
+                        <button type="button" id="uq-cfg-sp-dl-num-color-pick" data-hex="#07beff" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;document.getElementById('uq-cfg-sp-dl-num-color').value=hex;var rteEl=document.getElementById('uq-cfg-sp-dl-tpl');var rte=rteEl&&rteEl.nextElementSibling;if(rte&&rte.classList.contains('uq-rte')){var walker=document.createTreeWalker(rte,NodeFilter.SHOW_TEXT,null,false);var nodes=[];var tn;while((tn=walker.nextNode())){if(/\[N\]|\[M\]/.test(tn.nodeValue))nodes.push(tn);}nodes.forEach(function(tn){var parts=tn.nodeValue.split(/(\[N\]|\[M\])/);var frag=document.createDocumentFragment();parts.forEach(function(p){if(p==='[N]'||p==='[M]'){var sp=document.createElement('span');sp.style.color=hex;sp.textContent=p;frag.appendChild(sp);}else if(p){frag.appendChild(document.createTextNode(p));}});tn.parentNode.replaceChild(frag,tn);});if(typeof syncRteBack==='function'){var inp=document.getElementById('uq-cfg-sp-dl-tpl');syncRteBack(rte,inp);}}});})(this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;margin-top:4px;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#07beff;"></span>Pick</button>
                     </div>
                     <div class="form-group">
                         <label><span data-ku>قەبارەی فۆنتی ژمارە (rem)</span><span data-en style="display:none">Number Font Size (rem)</span></label>
                         <input type="number" id="uq-cfg-sp-dl-num-size" min="0.5" max="4" step="0.05" value="1.05" style="direction:ltr;">
                     </div>
-                    <div class="form-group">
-                        <label><span data-ku>ڕەنگی دەق</span><span data-en style="display:none">Text Color</span></label>
-                        <input type="text" id="uq-cfg-sp-dl-text-color" value="rgba(220,220,220,0.88)" style="direction:ltr;font-family:var(--mono);font-size:0.8rem;">
-                        <button type="button" id="uq-cfg-sp-dl-text-color-pick" data-hex="rgba(220,220,220,0.88)" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;document.getElementById('uq-cfg-sp-dl-text-color').value=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;margin-top:4px;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:rgba(220,220,220,0.88);"></span>Pick</button>
-                    </div>
+                    <!-- Text Color removed — now applied inline via RTE toolbar -->
+                    <input type="hidden" id="uq-cfg-sp-dl-text-color" value="rgba(220,220,220,0.88)">
                 </div>
             </div>
         </div>
@@ -12047,13 +12028,6 @@ window.pvbCounterConfigLoad = function() {
         'uq-cfg-sp-visit-tpl': cfg.splashVisitorTemplate   || '',
         'uq-cfg-sp-dl-tpl':    cfg.splashDownloadTemplate  || ''
     };
-    // Number colors for each slot — used to pre-color [N]/[M] in the RTE
-    var _ccNumColors = {
-        'uq-cfg-visit-tpl':    cfg.visitorNumberColor       || '#07beff',
-        'uq-cfg-dl-tpl':       cfg.downloadNumberColor      || '#07beff',
-        'uq-cfg-sp-visit-tpl': cfg.splashVisitorNumberColor || '#07beff',
-        'uq-cfg-sp-dl-tpl':    cfg.splashDownloadNumberColor|| '#07beff'
-    };
     // Text colors per slot — applied as the base color on the RTE div so the
     // admin editor matches the live site (where buildCounterNode sets outer.style.color).
     var _ccTextColors = {
@@ -12062,6 +12036,13 @@ window.pvbCounterConfigLoad = function() {
         'uq-cfg-sp-visit-tpl': cfg.splashVisitorTextColor   || 'rgba(220,220,220,0.88)',
         'uq-cfg-sp-dl-tpl':    cfg.splashDownloadTextColor  || 'rgba(220,220,220,0.88)'
     };
+    // Number colors per slot — used to bootstrap [N]/[M] display in plain-text templates.
+    var _ccNumColors = {
+        'uq-cfg-visit-tpl':    cfg.visitorNumberColor       || '#07beff',
+        'uq-cfg-dl-tpl':       cfg.downloadNumberColor      || '#07beff',
+        'uq-cfg-sp-visit-tpl': cfg.splashVisitorNumberColor || '#07beff',
+        'uq-cfg-sp-dl-tpl':    cfg.splashDownloadNumberColor|| '#07beff'
+    };
     _ccTplIds.forEach(function(rid) {
         var v = _ccVals[rid];
         var el = document.getElementById(rid);
@@ -12069,23 +12050,32 @@ window.pvbCounterConfigLoad = function() {
         var rte = el.nextElementSibling;
         if (rte && rte.classList && rte.classList.contains('uq-rte')) {
             if (document.activeElement !== rte) {
-                var numColor  = _ccNumColors[rid];
                 var textColor = _ccTextColors[rid];
-                // Apply textColor as the base RTE color — mirrors buildCounterNode's
-                // outer.style.color = textColor so the admin preview matches the live site.
-                rte.style.color = textColor;
-                // Wrap bare [N]/[M] tokens in a numColor span — same as live site rendering.
-                var displayHtml = v.replace(/\[N\]|\[M\]/g, function(token) {
-                    return '<span style="color:' + numColor + ';">' + token + '</span>';
-                });
+                var numColor  = _ccNumColors[rid];
+                // Mirrors _setField() from pvbWelcomeLoad exactly — no rte.style.color.
+                // Colors live inside the HTML content, not as a base style on the div.
+                // For plain-text templates (first load): split on [N]/[M], wrap each
+                // text segment in textColor span, each token in numColor span.
+                // For already-HTML templates: load verbatim (user's spans intact).
+                var displayHtml;
+                if (v && !/<[a-z]/i.test(v)) {
+                    var parts = v.split(/(\[N\]|\[M\])/);
+                    displayHtml = parts.map(function(p) {
+                        if (p === '[N]' || p === '[M]') {
+                            return '<span style="color:' + numColor + ';">' + p + '</span>';
+                        } else if (p) {
+                            return '<span style="color:' + textColor + ';">' + p + '</span>';
+                        }
+                        return '';
+                    }).join('');
+                } else {
+                    displayHtml = v;
+                }
                 rte.innerHTML = displayHtml;
-                // Store displayHtml in el.value so any rte.innerHTML = el.value re-sync
-                // preserves the colored display rather than reverting to plain text.
                 el.value = displayHtml;
                 if (typeof window.syncSwatchFromRte === 'function') window.syncSwatchFromRte(rte, rid);
             }
         } else {
-            // RTE not yet created — store plain value; makeRte will pick it up
             el.value = v;
         }
     });
@@ -12103,15 +12093,16 @@ window.pvbCounterConfigLoad = function() {
         }
     }
     sC('uq-cfg-visit-num-color',       cfg.visitorNumberColor              || '#07beff');
-    sC('uq-cfg-visit-text-color',      cfg.visitorTextColor                || 'rgba(220,220,220,0.88)');
-    sC('uq-cfg-visit-kw-color',        cfg.visitorKeywordColor             || '#ffa71e');
+    // text-color and kw-color are now hidden inputs — update value directly (no pick button)
+    (function(id,v){var el=document.getElementById(id);if(el)el.value=v||'rgba(220,220,220,0.88)';}('uq-cfg-visit-text-color', cfg.visitorTextColor));
+    (function(id,v){var el=document.getElementById(id);if(el)el.value=v||'#ffa71e';}('uq-cfg-visit-kw-color', cfg.visitorKeywordColor));
     sC('uq-cfg-dl-num-color',          cfg.downloadNumberColor             || '#07beff');
-    sC('uq-cfg-dl-text-color',         cfg.downloadTextColor               || 'rgba(220,220,220,0.88)');
-    sC('uq-cfg-dl-kw-color',           cfg.downloadKeywordColor            || '#ffa71e');
+    (function(id,v){var el=document.getElementById(id);if(el)el.value=v||'rgba(220,220,220,0.88)';}('uq-cfg-dl-text-color', cfg.downloadTextColor));
+    (function(id,v){var el=document.getElementById(id);if(el)el.value=v||'#ffa71e';}('uq-cfg-dl-kw-color', cfg.downloadKeywordColor));
     sC('uq-cfg-sp-visit-num-color',    cfg.splashVisitorNumberColor        || '#07beff');
-    sC('uq-cfg-sp-visit-text-color',   cfg.splashVisitorTextColor          || 'rgba(220,220,220,0.88)');
+    (function(id,v){var el=document.getElementById(id);if(el)el.value=v||'rgba(220,220,220,0.88)';}('uq-cfg-sp-visit-text-color', cfg.splashVisitorTextColor));
     sC('uq-cfg-sp-dl-num-color',       cfg.splashDownloadNumberColor       || '#07beff');
-    sC('uq-cfg-sp-dl-text-color',      cfg.splashDownloadTextColor         || 'rgba(220,220,220,0.88)');
+    (function(id,v){var el=document.getElementById(id);if(el)el.value=v||'rgba(220,220,220,0.88)';}('uq-cfg-sp-dl-text-color', cfg.splashDownloadTextColor));
 
     // Font sizes (text and number are independent — preserved as-is)
     _setNum('uq-cfg-visit-size',        cfg.visitorFontSize,             '1');
@@ -12124,61 +12115,6 @@ window.pvbCounterConfigLoad = function() {
     _setNum('uq-cfg-sp-visit-num-size', cfg.splashVisitorNumberFontSize, '1.05');
     _setNum('uq-cfg-sp-dl-size',        cfg.splashDownloadFontSize,      '0.85');
     _setNum('uq-cfg-sp-dl-num-size',    cfg.splashDownloadNumberFontSize,'1.05');
-
-    // ── Wire up live-update: when a text-color input changes, apply the new
-    // color immediately as the RTE's base color (mirrors live site behaviour).
-    var _tcMap = {
-        'uq-cfg-visit-text-color':    'uq-cfg-visit-tpl',
-        'uq-cfg-dl-text-color':       'uq-cfg-dl-tpl',
-        'uq-cfg-sp-visit-text-color': 'uq-cfg-sp-visit-tpl',
-        'uq-cfg-sp-dl-text-color':    'uq-cfg-sp-dl-tpl'
-    };
-    function _uqApplyTextColor(colorId) {
-        var colorInp = document.getElementById(colorId);
-        if (!colorInp) return;
-        var tplEl = document.getElementById(_tcMap[colorId]);
-        if (!tplEl) return;
-        var rteDiv = tplEl.nextElementSibling;
-        if (rteDiv && rteDiv.classList && rteDiv.classList.contains('uq-rte')) {
-            rteDiv.style.color = colorInp.value || '';
-        }
-    }
-    Object.keys(_tcMap).forEach(function(colorId) {
-        var colorInp = document.getElementById(colorId);
-        if (!colorInp) return;
-        // Manual-type update
-        if (!colorInp._uqTcHandler) {
-            colorInp._uqTcHandler = function() { _uqApplyTextColor(colorId); };
-        }
-        colorInp.removeEventListener('input', colorInp._uqTcHandler);
-        colorInp.addEventListener('input', colorInp._uqTcHandler);
-        // Patch the Pick button: wrap its existing onclick so it also triggers
-        // a color-to-RTE sync after the async picker callback fires.
-        var pickBtn = document.getElementById(colorId + '-pick');
-        if (pickBtn && !pickBtn._uqTcPatched) {
-            pickBtn._uqTcPatched = true;
-            var _origPickClick = pickBtn.onclick;
-            pickBtn.onclick = function(e) {
-                // Call original inline handler (which opens the color picker)
-                // but replace it briefly so we can intercept the picker callback.
-                // Strategy: temporarily wrap uqOpenPicker so we know when it completes.
-                var _origUqOpen = window.uqOpenPicker;
-                window.uqOpenPicker = function(hex, cb) {
-                    window.uqOpenPicker = _origUqOpen; // restore immediately
-                    _origUqOpen(hex, function(pickedHex) {
-                        if (cb) cb(pickedHex);
-                        // After the picker callback sets el.value, apply to RTE
-                        setTimeout(function() { _uqApplyTextColor(colorId); }, 0);
-                    });
-                };
-                if (_origPickClick) _origPickClick.call(this, e);
-                // Safety restore in case onclick doesn't call uqOpenPicker
-                setTimeout(function() {
-                    if (window.uqOpenPicker !== _origUqOpen) window.uqOpenPicker = _origUqOpen;
-                }, 100);
-            };
-        }
-    });
 
     if (al) alert2(al, '✅ Loaded from site', 'ok');
 };
@@ -12194,46 +12130,41 @@ window.pvbCounterConfigSave = async function() {
         if (al) alert2(al, '❌ RAW not loaded — connect to GitHub first', 'err');
         return;
     }
-    // gT: read innerHTML from RTE (preserves color spans) — same as _rteVal in pvbWelcomeSave.
-    // Strip auto-generated number-color spans (added by pvbCounterConfigLoad's displayHtml)
-    // so the saved template always has bare [N]/[M] tokens (not double-wrapped on reload).
+    // gT: read verbatim innerHTML from RTE — preserves all user-authored inline spans.
+    // No stripping: stored HTML is the source of truth (Approach A).
     function gT(id) {
         var el = document.getElementById(id);
         if (!el) return '';
         var rte = el.nextElementSibling;
-        var raw = (rte && rte.classList && rte.classList.contains('uq-rte'))
+        return (rte && rte.classList && rte.classList.contains('uq-rte'))
             ? rte.innerHTML.trim()
             : el.value.trim();
-        // Remove <span style="color:...;">[N]</span> or <span style="color:...">[M]</span>
-        // These are the auto-generated number-color wrappers; restore bare tokens.
-        raw = raw.replace(/<span\b[^>]*style="[^"]*color\s*:[^"]*"[^>]*>(\[N\]|\[M\])<\/span>/gi, '$1');
-        return raw;
     }
     function gN(id) { var el=document.getElementById(id); return el?el.value:''; }
 
     var cfg = {
         visitorTemplate:              gT('uq-cfg-visit-tpl'),
         visitorNumberColor:           gN('uq-cfg-visit-num-color'),
-        visitorTextColor:             gN('uq-cfg-visit-text-color'),
-        visitorKeywordColor:          gN('uq-cfg-visit-kw-color'),
+        visitorTextColor:             gN('uq-cfg-visit-text-color'),      // hidden input — base color
+        visitorKeywordColor:          gN('uq-cfg-visit-kw-color'),        // hidden input — kept for index.html compat
         visitorFontSize:              gN('uq-cfg-visit-size'),
         visitorNumberFontSize:        gN('uq-cfg-visit-num-size'),
         visitorLineHeight:            gN('uq-cfg-visit-lh'),
         downloadTemplate:             gT('uq-cfg-dl-tpl'),
         downloadNumberColor:          gN('uq-cfg-dl-num-color'),
-        downloadTextColor:            gN('uq-cfg-dl-text-color'),
-        downloadKeywordColor:         gN('uq-cfg-dl-kw-color'),
+        downloadTextColor:            gN('uq-cfg-dl-text-color'),         // hidden input
+        downloadKeywordColor:         gN('uq-cfg-dl-kw-color'),           // hidden input — kept for index.html compat
         downloadFontSize:             gN('uq-cfg-dl-size'),
         downloadNumberFontSize:       gN('uq-cfg-dl-num-size'),
         downloadLineHeight:           gN('uq-cfg-dl-lh'),
         splashVisitorTemplate:        gT('uq-cfg-sp-visit-tpl'),
         splashVisitorNumberColor:     gN('uq-cfg-sp-visit-num-color'),
-        splashVisitorTextColor:       gN('uq-cfg-sp-visit-text-color'),
+        splashVisitorTextColor:       gN('uq-cfg-sp-visit-text-color'),   // hidden input
         splashVisitorFontSize:        gN('uq-cfg-sp-visit-size'),
         splashVisitorNumberFontSize:  gN('uq-cfg-sp-visit-num-size'),
         splashDownloadTemplate:       gT('uq-cfg-sp-dl-tpl'),
         splashDownloadNumberColor:    gN('uq-cfg-sp-dl-num-color'),
-        splashDownloadTextColor:      gN('uq-cfg-sp-dl-text-color'),
+        splashDownloadTextColor:      gN('uq-cfg-sp-dl-text-color'),      // hidden input
         splashDownloadFontSize:       gN('uq-cfg-sp-dl-size'),
         splashDownloadNumberFontSize: gN('uq-cfg-sp-dl-num-size')
     };

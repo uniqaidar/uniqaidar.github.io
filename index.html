@@ -4219,6 +4219,35 @@ function buildCounterNode(tpl, value, numColor, textColor, kwColor, keywords, nu
 }
 
 // ── Counter aggregator IIFE ───────────────────────────────
+// renderHtmlTemplate: renders a stored HTML template with live [N]/[M]
+// substitution via DOM text-node walking — no innerHTML regex substitution.
+// Preserves all user-authored inline spans (color/size/lh) exactly.
+// numColor is passed to makeDigitSpan; makeDigitSpan always uses setProperty('important')
+// so the UniQAIDAR_DIGITAL font-family and digit color are always enforced correctly.
+function renderHtmlTemplate(htmlTpl, value, numColor, numFontSize) {
+    var tmp = document.createElement('span');
+    tmp.innerHTML = htmlTpl;
+    var walker = document.createTreeWalker(tmp, NodeFilter.SHOW_TEXT, null, false);
+    var nodesToProcess = [];
+    var tn;
+    while ((tn = walker.nextNode())) {
+        if (/\[N\]|\[M\]/.test(tn.nodeValue)) nodesToProcess.push(tn);
+    }
+    nodesToProcess.forEach(function(tn) {
+        var parts = tn.nodeValue.split(/(\[N\]|\[M\])/);
+        var frag = document.createDocumentFragment();
+        parts.forEach(function(part) {
+            if (part === '[N]' || part === '[M]') {
+                frag.appendChild(makeDigitSpan(String(Math.round(value)), numColor || '#07beff', numFontSize || null));
+            } else if (part) {
+                frag.appendChild(document.createTextNode(part));
+            }
+        });
+        tn.parentNode.replaceChild(frag, tn);
+    });
+    return tmp;
+}
+
 (function() {
     // Read config from embedded JSON block
     var cfg = {};
@@ -4247,16 +4276,28 @@ function buildCounterNode(tpl, value, numColor, textColor, kwColor, keywords, nu
     var dlKeywords    = ['داونلۆد', 'ئەنجام دراوە'];
 
     function renderTemplate(tpl, value, numColor, textColor, extraKws, numFontSize) {
-        // Use buildCounterNode (DOM-based) so digit spans are created via
-        // makeDigitSpan with setProperty — no CSS can interfere.
+        // If tpl contains HTML tags (user-styled via RTE), use DOM-safe HTML rendering.
+        // Inline spans are preserved; digit placeholders are walked as text nodes.
+        if (/<[a-z]/i.test(tpl)) {
+            var node = renderHtmlTemplate(tpl, value, numColor, numFontSize);
+            node.style.color = textColor; // base text color from config
+            return node;
+        }
+        // Fallback: plain-text template — use original buildCounterNode path.
         var kws = (extraKws || []).concat(visitKeywords).concat(dlKeywords);
         return buildCounterNode(tpl, value, numColor, textColor, kwColor, kws, numFontSize);
     }
 
     function renderSplashLine(el, tpl, value, numColor, textColor, isMobBr, numFontSize) {
         if (!el) return;
-        // Build DOM node instead of using innerHTML
-        var node = buildCounterNode(tpl, value, numColor, textColor, kwColor, [], numFontSize);
+        var node;
+        // Branch: HTML template (RTE-authored) vs plain text (legacy fallback)
+        if (/<[a-z]/i.test(tpl)) {
+            node = renderHtmlTemplate(tpl, value, numColor, numFontSize);
+            node.style.color = textColor;
+        } else {
+            node = buildCounterNode(tpl, value, numColor, textColor, kwColor, [], numFontSize);
+        }
         // Mobile line-break for download line
         if (isMobBr) {
             var walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
