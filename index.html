@@ -2403,6 +2403,7 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
 .trinity-dl:hover,.trinity-dl:active { background: #0773c5; }
 @keyframes dlGreenFadeIn  { from { opacity: 0; } to   { opacity: 1; } }
 @keyframes dlGreenFadeOut { from { opacity: 1; } to   { opacity: 0; } }
+@keyframes dlGlowRing { 0% { filter: drop-shadow(0 0 0px rgba(46,204,113,0)); } 30% { filter: drop-shadow(0 0 7px rgba(46,204,113,0.9)); } 100% { filter: drop-shadow(0 0 0px rgba(46,204,113,0)); } }
 .trinity-dl.dl-green-active,
 .trinity-dl.dl-green-active:hover,
 .trinity-dl.dl-green-active:active,
@@ -2412,6 +2413,9 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     border-radius: 12px !important;
     transform: none !important;
     box-shadow: none !important;
+}
+.trinity-dl.dl-green-active {
+    animation: dlGlowRing 1.2s ease-in-out infinite !important;
 }
 /* Green overlay via ::before — fades in/out over the blue base */
 .trinity-dl.dl-green-active::before,
@@ -2438,6 +2442,18 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
 .trinity-dl.dl-green-fadeout .modern-dl-icon {
     position: relative;
     z-index: 2;
+}
+/* RTL typewriter wipe — reveals right-to-left (clips from right, matches Sorani reading direction) */
+.trinity-dl .dl-label {
+    display: inline-block;
+    white-space: nowrap;
+    direction: rtl;
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 0.38s steps(14, end), opacity 0.2s;
+}
+.trinity-dl.dl-label-wipe .dl-label {
+    clip-path: inset(0 0 0 100%);
+    opacity: 0;
 }
 
 /* MIDDLE — Para toggle */
@@ -5018,7 +5034,12 @@ function renderFonts(data, text, resetPage) {
 
                 var msg = milestones[n] || regular[(n - 1) % regular.length];
 
-                lbl.textContent = msg;
+                // Typewriter wipe IN: wipe label out, swap text, wipe back in
+                dlLink.classList.add('dl-label-wipe');
+                setTimeout(function() {
+                    lbl.textContent = msg;
+                    dlLink.classList.remove('dl-label-wipe');
+                }, 370);
                 // Hide sibling elements — dl button expands to fill the bar
                 var wrap = dlLink.closest('.download-btn-wrap');
                 var siblings = wrap ? wrap.querySelectorAll('.trinity-copy, .trinity-para, .trinity-size') : [];
@@ -5026,17 +5047,25 @@ function renderFonts(data, text, resetPage) {
                 // Fade IN to green
                 dlLink.classList.add('dl-green-active');
                 setTimeout(function() {
-                    // Begin fade OUT
-                    lbl.textContent = 'دابە‌زاندنی فۆنت';
-                    dlLink.classList.remove('dl-green-active');
-                    dlLink.classList.add('dl-green-fadeout');
-                    // After fade-out finishes (500ms), fully restore
+                    // Typewriter wipe OUT: wipe label out, swap text, wipe back in, then fade OUT
+                    dlLink.classList.add('dl-label-wipe');
                     setTimeout(function() {
-                        dlLink.classList.remove('dl-green-fadeout');
-                        for (var si = 0; si < siblings.length; si++) { siblings[si].style.display = ''; }
-                        dlLink._dlAnimating = false;
-                    }, 500);
-                }, 7000);
+                        lbl.textContent = 'دابە‌زاندنی فۆنت';
+                        dlLink.classList.remove('dl-label-wipe');
+                        dlLink.classList.remove('dl-green-active');
+                        dlLink.classList.add('dl-green-fadeout');
+                        // After fade-out finishes (500ms), restore siblings one by one in order
+                        setTimeout(function() {
+                            dlLink.classList.remove('dl-green-fadeout');
+                            for (var si = 0; si < siblings.length; si++) {
+                                (function(el, delay) {
+                                    setTimeout(function() { el.style.display = ''; }, delay);
+                                })(siblings[si], si * 80);
+                            }
+                            setTimeout(function() { dlLink._dlAnimating = false; }, siblings.length * 80);
+                        }, 500);
+                    }, 370);
+                }, 5000);
             });
         })(card.querySelector('.trinity-dl'), font);
         // Staggered entry animation — one card at a time (RTL: right→left, row by row)
