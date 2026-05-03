@@ -1,2 +1,2 @@
-# https://uniqaidar.pages.dev/
+# uniqaidar.github.io
 فۆنتەکانی یونی‌قەیدار
