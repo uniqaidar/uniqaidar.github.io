@@ -2404,6 +2404,8 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
 @keyframes dlGreenFadeIn  { from { opacity: 0; } to   { opacity: 1; } }
 @keyframes dlGreenFadeOut { from { opacity: 1; } to   { opacity: 0; } }
 @keyframes dlGlowRing { 0% { filter: drop-shadow(0 0 0px rgba(46,204,113,0)); } 30% { filter: drop-shadow(0 0 7px rgba(46,204,113,0.9)); } 100% { filter: drop-shadow(0 0 0px rgba(46,204,113,0)); } }
+@keyframes dlFlipIn  { 0% { transform: scaleX(0); } 50% { transform: scaleX(1.04); } 100% { transform: scaleX(1); } }
+@keyframes dlFlipOut { 0% { transform: translateY(0) scaleX(1); } 100% { transform: translateY(4px) scaleX(0.96); } }
 .trinity-dl.dl-green-active,
 .trinity-dl.dl-green-active:hover,
 .trinity-dl.dl-green-active:active,
@@ -2411,11 +2413,13 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
 .trinity-dl.dl-green-fadeout:hover,
 .trinity-dl.dl-green-fadeout:active {
     border-radius: 12px !important;
-    transform: none !important;
     box-shadow: none !important;
 }
 .trinity-dl.dl-green-active {
-    animation: dlGlowRing 1.2s ease-in-out infinite !important;
+    animation: dlGlowRing 1.2s ease-in-out infinite, dlFlipIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards !important;
+}
+.trinity-dl.dl-green-fadeout {
+    animation: dlFlipOut 0.3s ease-in !important;
 }
 /* Green overlay via ::before — fades in/out over the blue base */
 .trinity-dl.dl-green-active::before,
@@ -2443,17 +2447,27 @@ body.dark-mode #pagination-bar { background: #0d0d0d !important; }
     position: relative;
     z-index: 2;
 }
+/* Sibling hide/show — width collapses to zero so trinity-dl fills full row width */
+.trinity-dl-sibling-hide {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transition: opacity 0.18s ease, width 0.25s ease, min-width 0.25s ease !important;
+}
+.trinity-dl-sibling-show {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transition: opacity 0.22s ease, width 0.25s ease, min-width 0.25s ease !important;
+}
 /* RTL typewriter wipe — reveals right-to-left (clips from right, matches Sorani reading direction) */
 .trinity-dl .dl-label {
     display: inline-block;
     white-space: nowrap;
     direction: rtl;
-    clip-path: inset(0 0 0 0);
-    transition: clip-path 0.38s steps(14, end), opacity 0.2s;
-}
-.trinity-dl.dl-label-wipe .dl-label {
-    clip-path: inset(0 0 0 100%);
-    opacity: 0;
 }
 
 /* MIDDLE — Para toggle */
@@ -2899,7 +2913,7 @@ var ua=navigator.userAgent||'';if(/Telegram|TelegramBot|tv\.danke/i.test(ua)){do
     box-shadow:0 4px 18px rgba(0,0,0,0.35);
 ">لینک کۆپی کرا ✅</div>
 <div id="back-to-top-wrap" style="position:fixed;bottom:24px;left:20px;z-index:8000;display:flex;align-items:center;justify-content:center;width:68px;height:68px;pointer-events:none;">
-    <button id="back-to-top" aria-label="بگەڕێوە بۆ سەرەوە" title="بگەڕێوە بۆ سەرەوە" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="display:none;">
+    <button id="back-to-top" aria-label="بگەڕێوە بۆ سەرەوە" title="بگەڕێوە بۆ سەرەوە" onclick="window.scrollTo({top:0,behavior:'instant'})" style="display:none;">
         <svg id="btt-arrow-svg" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="visibility:hidden;"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
         <span id="btt-arrow" style="display:none;"></span>
     </button>
@@ -3112,6 +3126,7 @@ body.dark-mode .card.para-expand-anim {
 }
 .card.animate-in {
     opacity: 0;
+    pointer-events: none;
     animation-name: cardFadeIn !important;
     animation-duration: 0.4s !important;
     animation-timing-function: ease !important;
@@ -4953,8 +4968,7 @@ function renderFonts(data, text, resetPage) {
                 (dateStr ? '<span class="card-date">&#128197; ' + dateStr + '</span>' : '') +
             '</div>' +
             '<div class="card-body">' +
-                '<div class="preview" style="font-family: \'' + font.name + '\'; font-size:' + currentSize + 'px;">' +
-                    (text || font.preview || 'فۆنتەکانی یونی‌قەیدار') +
+                '<div class="preview" style="font-family: \'' + font.name + '\'; font-size:' + currentSize + 'px;" data-tw="' + (text || font.preview || 'فۆنتەکانی یونی‌قەیدار').replace(/"/g, '&quot;') + '">' +
                 '</div>' +
                 '<div class="download-btn-wrap">' +
                     '<a href="' + font.path + '" class="trinity-dl" download data-font="' + font.name + '" aria-label="دابەزاندنی فۆنت" title="کلیک بکە">' +
@@ -5034,38 +5048,37 @@ function renderFonts(data, text, resetPage) {
 
                 var msg = milestones[n] || regular[(n - 1) % regular.length];
 
-                // Typewriter wipe IN: wipe label out, swap text, wipe back in
-                dlLink.classList.add('dl-label-wipe');
-                setTimeout(function() {
-                    lbl.textContent = msg;
-                    dlLink.classList.remove('dl-label-wipe');
-                }, 370);
-                // Hide sibling elements — dl button expands to fill the bar
+                // Real typewriter IN: empty label, type new text character by character
                 var wrap = dlLink.closest('.download-btn-wrap');
                 var siblings = wrap ? wrap.querySelectorAll('.trinity-copy, .trinity-para, .trinity-size') : [];
-                for (var si = 0; si < siblings.length; si++) { siblings[si].style.display = 'none'; }
-                // Fade IN to green
+                for (var si = 0; si < siblings.length; si++) {
+                    siblings[si].classList.remove('trinity-dl-sibling-show');
+                    siblings[si].classList.add('trinity-dl-sibling-hide');
+                }
                 dlLink.classList.add('dl-green-active');
+                uqTypewriter(lbl, msg, 30);
                 setTimeout(function() {
-                    // Typewriter wipe OUT: wipe label out, swap text, wipe back in, then fade OUT
-                    dlLink.classList.add('dl-label-wipe');
+                    // Flip OUT (300ms), then real typewriter back to original text
+                    dlLink.classList.remove('dl-green-active');
+                    dlLink.classList.add('dl-green-fadeout');
                     setTimeout(function() {
-                        lbl.textContent = 'دابە‌زاندنی فۆنت';
-                        dlLink.classList.remove('dl-label-wipe');
-                        dlLink.classList.remove('dl-green-active');
-                        dlLink.classList.add('dl-green-fadeout');
-                        // After fade-out finishes (500ms), restore siblings one by one in order
+                        var origText = 'دابە‌زاندنی فۆنت';
+                        uqTypewriter(lbl, origText, 30);
+                        var origLen = origText.length;
                         setTimeout(function() {
                             dlLink.classList.remove('dl-green-fadeout');
                             for (var si = 0; si < siblings.length; si++) {
                                 (function(el, delay) {
-                                    setTimeout(function() { el.style.display = ''; }, delay);
-                                })(siblings[si], si * 80);
+                                    setTimeout(function() {
+                                        el.classList.remove('trinity-dl-sibling-hide');
+                                        el.classList.add('trinity-dl-sibling-show');
+                                    }, delay);
+                                })(siblings[si], si * 120);
                             }
-                            setTimeout(function() { dlLink._dlAnimating = false; }, siblings.length * 80);
-                        }, 500);
-                    }, 370);
-                }, 5000);
+                            setTimeout(function() { dlLink._dlAnimating = false; }, siblings.length * 120 + 220);
+                        }, origLen * 30 + 100);
+                    }, 300);
+                }, 4000);
             });
         })(card.querySelector('.trinity-dl'), font);
         // Staggered entry animation — one card at a time (RTL: right→left, row by row)
@@ -5075,6 +5088,16 @@ function renderFonts(data, text, resetPage) {
         card.classList.add('animate-in');
         card.style.animationDelay = (cardIndex * stagger) + 'ms';
         card.style.webkitAnimationDelay = (cardIndex * stagger) + 'ms';
+        (function(c, delay) {
+            setTimeout(function() {
+                c.classList.remove('animate-in');
+                var prev = c.querySelector('.preview');
+                if (prev) {
+                    var tw = prev.getAttribute('data-tw') || '';
+                    uqTypewriter(prev, tw, 28);
+                }
+            }, delay + 420);
+        })(card, cardIndex * stagger);
         // ── Laser glow for featured (no badge — pure visual border) ──
         if (font._featured) {
             card.classList.add('featured-laser-glow');
@@ -5121,7 +5144,7 @@ function renderPagination(total, perPage) {
     prev.className = 'pg-btn';
     prev.textContent = '‹ پێشوو';
     prev.disabled = (_currentPage <= 1);
-    prev.onclick = function() { _currentPage--; renderFonts(_filteredFonts, input.value); window.scrollTo({top:0,behavior:'smooth'}); };
+    prev.onclick = function() { _currentPage--; grid.style.opacity='0'; window.scrollTo({top:0,behavior:'smooth'}); setTimeout(function(){ grid.style.opacity=''; renderFonts(_filteredFonts, input.value); }, 400); };
     bar.appendChild(prev);
 
     // Page number buttons (show max 7 around current)
@@ -5129,7 +5152,7 @@ function renderPagination(total, perPage) {
     var hi = Math.min(totalPages, _currentPage + 3);
     if (lo > 1) {
         var b1 = document.createElement('button'); b1.className='pg-btn'; b1.textContent='1';
-        b1.onclick=(function(p){return function(){_currentPage=p;renderFonts(_filteredFonts,input.value);window.scrollTo({top:0,behavior:'smooth'});};})(1);
+        b1.onclick=(function(p){return function(){_currentPage=p;grid.style.opacity='0';window.scrollTo({top:0,behavior:'smooth'});setTimeout(function(){grid.style.opacity='';renderFonts(_filteredFonts,input.value);},400);};})(1);
         bar.appendChild(b1);
         if (lo > 2) { var sp=document.createElement('span'); sp.id='pg-info'; sp.textContent='…'; bar.appendChild(sp); }
     }
@@ -5137,13 +5160,13 @@ function renderPagination(total, perPage) {
         var btn = document.createElement('button');
         btn.className = 'pg-btn' + (p === _currentPage ? ' active' : '');
         btn.textContent = p;
-        (function(pg){ btn.onclick = function(){ _currentPage=pg; renderFonts(_filteredFonts,input.value); window.scrollTo({top:0,behavior:'smooth'}); }; })(p);
+        (function(pg){ btn.onclick = function(){ _currentPage=pg; grid.style.opacity='0'; window.scrollTo({top:0,behavior:'smooth'}); setTimeout(function(){ grid.style.opacity=''; renderFonts(_filteredFonts,input.value); },400); }; })(p);
         bar.appendChild(btn);
     }
     if (hi < totalPages) {
         if (hi < totalPages - 1) { var sp2=document.createElement('span'); sp2.id='pg-info'; sp2.textContent='…'; bar.appendChild(sp2); }
         var bLast=document.createElement('button'); bLast.className='pg-btn'; bLast.textContent=totalPages;
-        bLast.onclick=(function(p){return function(){_currentPage=p;renderFonts(_filteredFonts,input.value);window.scrollTo({top:0,behavior:'smooth'});};})(totalPages);
+        bLast.onclick=(function(p){return function(){_currentPage=p;grid.style.opacity='0';window.scrollTo({top:0,behavior:'smooth'});setTimeout(function(){grid.style.opacity='';renderFonts(_filteredFonts,input.value);},400);};})(totalPages);
         bar.appendChild(bLast);
     }
 
@@ -5152,7 +5175,7 @@ function renderPagination(total, perPage) {
     next.className = 'pg-btn';
     next.textContent = 'دواتر ›';
     next.disabled = (_currentPage >= totalPages);
-    next.onclick = function() { _currentPage++; renderFonts(_filteredFonts, input.value); window.scrollTo({top:0,behavior:'smooth'}); };
+    next.onclick = function() { _currentPage++; grid.style.opacity='0'; window.scrollTo({top:0,behavior:'smooth'}); setTimeout(function(){ grid.style.opacity=''; renderFonts(_filteredFonts, input.value); }, 400); };
     bar.appendChild(next);
 
     // Info
@@ -5164,6 +5187,16 @@ function renderPagination(total, perPage) {
     bar.appendChild(info);
 }
 
+// ── Real character-by-character RTL typewriter ──────────
+function uqTypewriter(el, text, speed) {
+    el.textContent = '';
+    var i = 0;
+    var timer = setInterval(function() {
+        el.textContent += text[i];
+        i++;
+        if (i >= text.length) clearInterval(timer);
+    }, speed || 28);
+}
 // ── Arrow scroll for desktop ────────────────────────────
 // marquee-wrapper has dir="ltr" so scrollLeft is always 0→max (positive)
 // The page is RTL so visually: right side = start (نوێ), left side = end
@@ -6510,6 +6543,12 @@ function toggleParaPreview(btn, fontName) {
             card.classList.remove('para-flip-in');
             card.classList.remove('para-expand-anim');
             if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+            // Typewriter on preview text after flip-in completes
+            var prev2 = card.querySelector('.preview');
+            if (prev2) {
+                var tw2 = prev2.textContent;
+                uqTypewriter(prev2, tw2, 22);
+            }
         }, 900);
 
     }, 220); // wait for flip-out to complete
