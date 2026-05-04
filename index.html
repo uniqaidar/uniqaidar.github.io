@@ -3096,30 +3096,19 @@ body.dark-mode .card.para-expand-anim {
     border-radius: inherit;
 }
 
-/* ── FLIP CARD animation on paragraph toggle ── */
-@keyframes cardFlipIn {
-    0%   { transform: perspective(800px) rotateY(-90deg) scale(0.92); opacity: 0; }
-    50%  { transform: perspective(800px) rotateY(8deg)  scale(1.01); opacity: 0.8; }
-    75%  { transform: perspective(800px) rotateY(-4deg) scale(1.00); opacity: 1; }
-    100% { transform: perspective(800px) rotateY(0deg)  scale(1);    opacity: 1; }
+/* ── Paragraph toggle: sequential cross-fade + smooth font-size + card height ── */
+.preview {
+    transition: opacity 0.2s ease, font-size 0.5s cubic-bezier(0.4,0,0.2,1), line-height 0.5s ease !important;
 }
-@keyframes cardFlipOut {
-    0%   { transform: perspective(800px) rotateY(0deg)   scale(1); opacity: 1; }
-    40%  { transform: perspective(800px) rotateY(90deg)  scale(0.92); opacity: 0; }
-    100% { transform: perspective(800px) rotateY(90deg)  scale(0.92); opacity: 0; }
+.card {
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease, min-height 0.45s cubic-bezier(0.34,1.2,0.64,1) !important;
 }
-.card.para-flip-out {
-    animation: cardFlipOut 0.22s cubic-bezier(0.4,0,1,1) forwards !important;
+.preview.para-fade-out {
+    opacity: 0 !important;
     pointer-events: none;
 }
-.card.para-flip-in {
-    animation: cardFlipIn 0.42s cubic-bezier(0.34,1.3,0.64,1) forwards !important;
-}
-.card.para-flip-out,
-.card.para-flip-in {
-    transform-style: preserve-3d;
-    overflow: visible !important;
-    will-change: transform, opacity;
+.preview.para-fade-in {
+    opacity: 1 !important;
 }
 .card {
     background: #ffffff !important;
@@ -4737,7 +4726,7 @@ function changeFontSize(val) {
     var labelM = document.getElementById('size-label-mobile');
     if (labelM) labelM.textContent = val + 'px';
     document.querySelectorAll('.preview').forEach(function(p) {
-        p.style.fontSize = val + 'px';
+        p.style.fontSize = (p.classList.contains('para-mode') ? (parseFloat(val) - 8) : parseFloat(val)) + 'px';
     });
     try { sessionStorage.setItem('uq_fontsize', val); } catch(e) {}
 }
@@ -5094,7 +5083,11 @@ function renderFonts(data, text, resetPage) {
                 var prev = c.querySelector('.preview');
                 if (prev) {
                     var tw = prev.getAttribute('data-tw') || '';
-                    uqTypewriter(prev, tw, 28);
+                    if (prev.classList.contains('para-mode')) {
+                        prev.textContent = tw;
+                    } else {
+                        uqTypewriter(prev, tw, 28);
+                    }
                 }
             }, delay + 420);
         })(card, cardIndex * stagger);
@@ -6487,28 +6480,29 @@ function toggleParaPreview(btn, fontName) {
     if (!preview) return;
     var isActive = btn.classList.toggle('active');
 
-    // ── Flip-out first, swap content, then flip-in ──
-    card.classList.remove('para-expand-anim', 'para-flip-in', 'para-flip-out');
+    // ── Remove any leftover shimmer overlay from old animation ──
     var oldOverlay = card.querySelector('.para-shimmer-overlay');
     if (oldOverlay) oldOverlay.remove();
-    void card.offsetWidth;
 
-    // Phase 1: flip out
-    card.classList.add('para-flip-out');
+    // ── STEP 1: fade OUT current text — wait for it to finish before swapping (mode="wait") ──
+    preview.classList.add('para-fade-out');
 
     setTimeout(function() {
-        card.classList.remove('para-flip-out');
-
-        // ── Swap content ──
+        // ── STEP 2: swap content while text is invisible ──
         if (isActive) {
             var fontObj = fonts.find(function(f){ return f.name === fontName; });
             var paraText = (fontObj && fontObj.paragraph && fontObj.paragraph.trim()) ? fontObj.paragraph.trim() : DEFAULT_PARA_TEXT;
             var lineH = (fontObj && fontObj.lineHeight != null) ? fontObj.lineHeight : 2;
-            preview.dataset.originalText = preview.textContent;
+            preview.dataset.originalText = preview.getAttribute('data-tw') || preview.textContent;
             preview.dataset.originalStyle = preview.getAttribute('style') || '';
             preview.textContent = paraText;
+            preview.setAttribute('data-tw', paraText);
             preview.classList.add('para-mode');
             preview.style.setProperty('--para-line-height', lineH);
+            // font-size + line-height set here; CSS transition on .preview smoothly interpolates them
+            var sliderEl = document.getElementById('font-size-slider');
+            var paraSize = sliderEl ? (parseFloat(sliderEl.value) - 8) : 24;
+            preview.style.fontSize = paraSize + 'px';
             preview.style.lineHeight = lineH;
             preview.style.textAlign = 'justify';
             preview.style.direction = 'rtl';
@@ -6517,41 +6511,34 @@ function toggleParaPreview(btn, fontName) {
                 var fo = fonts.find(function(f){ return f.name === fontName; });
                 return fo ? (fo.preview || 'فۆنتەکانی یونی‌قەیدار') : 'فۆنتەکانی یونی‌قەیدار';
             })();
-            preview.textContent = orig;
-            preview.classList.remove('para-mode');
             var origStyle = preview.dataset.originalStyle || '';
+            preview.textContent = orig;
+            preview.setAttribute('data-tw', orig);
+            preview.classList.remove('para-mode');
             if (origStyle) {
                 preview.setAttribute('style', origStyle);
             } else {
                 preview.removeAttribute('style');
             }
+            // Always apply the current slider value — origStyle may have a stale font-size
+            var sliderEl2 = document.getElementById('font-size-slider');
+            if (sliderEl2) preview.style.fontSize = parseFloat(sliderEl2.value) + 'px';
             delete preview.dataset.originalText;
             delete preview.dataset.originalStyle;
         }
 
-        // Phase 2: flip in + shimmer wave simultaneously
-        void card.offsetWidth;
-        card.classList.add('para-flip-in');
-        card.classList.add('para-expand-anim');
-
-        // Inject shimmer overlay
-        var overlay = document.createElement('div');
-        overlay.className = 'para-shimmer-overlay';
-        card.appendChild(overlay);
+        // ── STEP 3: fade IN new text (sequential — only starts after fade-out completes) ──
+        preview.classList.remove('para-fade-out');
+        preview.style.opacity = '0';
+        void preview.offsetWidth; // force reflow so transition fires
+        preview.classList.add('para-fade-in');
 
         setTimeout(function() {
-            card.classList.remove('para-flip-in');
-            card.classList.remove('para-expand-anim');
-            if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-            // Typewriter on preview text after flip-in completes
-            var prev2 = card.querySelector('.preview');
-            if (prev2) {
-                var tw2 = prev2.textContent;
-                uqTypewriter(prev2, tw2, 22);
-            }
-        }, 900);
+            preview.classList.remove('para-fade-in');
+            preview.style.opacity = '';
+        }, 220);
 
-    }, 220); // wait for flip-out to complete
+    }, 200); // matches the 0.2s fade-out transition duration
 }
 
 </script>
