@@ -1,7 +1,9 @@
-# UniQaidar — Cloudflare Pages redirects
+# UniQaidar - Cloudflare Pages redirects
 # These 200 rewrites prevent the SPA catch-all from intercepting static files.
-# Without this, Googlebot may receive index.html when fetching /sitemap.xml.
-/sitemap.xml        /sitemap.xml        200
-/sitemap_index.xml  /sitemap_index.xml  200
-/robots.txt         /robots.txt         200
-/fonts.json         /fonts.json         200
+/sitemap.xml          /sitemap.xml          200
+/sitemap_index.xml    /sitemap_index.xml    200
+/robots.txt           /robots.txt           200
+/fonts.json           /fonts.json           200
+
+# SPA FALLBACK RULE: Redirects all subfolder routes back to the main app layout
+/*                    /index.html           200
