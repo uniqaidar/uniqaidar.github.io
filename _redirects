@@ -1,4 +1,4 @@
-# UniQaidar - Cloudflare Pages redirects
+# UniQaidar - CloudFlare Pages redirects
 # These 200 rewrites prevent the SPA catch-all from intercepting static files.
 /sitemap.xml          /sitemap.xml          200
 /sitemap_index.xml    /sitemap_index.xml    200
