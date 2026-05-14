@@ -5924,11 +5924,14 @@ function doSearch() {
     if (wrap) wrap.style.display = 'none';
     var mwrap = document.getElementById('cat-dl-mobile-wrap');
     if (mwrap) mwrap.style.display = 'none';
+    const normQ = ((typeof uqNormalize === 'function') ? uqNormalize(q) : q).replace(/(.)\1+/gu, '$1');
     const results = fonts.filter(function(f) {
-        const nameMatch    = f.name.toLowerCase().includes(q);
-        const displayMatch = f.displayName ? f.displayName.toLowerCase().includes(q) : false;
-        const previewMatch = f.preview ? f.preview.toLowerCase().includes(q) : false;
-        return nameMatch || displayMatch || previewMatch;
+        function nc(s) { var r = (typeof uqNormalize === 'function') ? uqNormalize((s || '').toLowerCase()) : (s || '').toLowerCase(); return r.replace(/(.)\1+/gu, '$1'); }
+        const nameMatch      = nc(f.name).includes(normQ);
+        const displayMatch   = f.displayName ? nc(f.displayName).includes(normQ) : false;
+        const previewMatch   = f.preview ? nc(f.preview).includes(normQ) : false;
+        const paragraphMatch = f.paragraph ? nc(f.paragraph).includes(normQ) : false;
+        return nameMatch || displayMatch || previewMatch || paragraphMatch;
     });
 
     // Update the active-label to show search results heading with count
@@ -7182,15 +7185,20 @@ function toggleParaPreview(btn, fontName) {
         '\u06CC': '\u06CC', // ی  → ی  (keep Farsi Ye)
         '\u064A': '\u06CC', // ي  → ی  (Arabic Ye)
         '\u0649': '\u06CC', // ى  → ی  (Alef Maqsura)
-        '\u06BE': '\u0647', // ھ  → ه  (Dotless He)
-        '\u0629': '\u0647', // ة  → ه  (Ta Marbuta)
+        '\u06BE': '\u0647', // ھ  → ه  (Dotless He → Arabic He)
+        '\u0629': '\u0647', // ة  → ه  (Ta Marbuta → Arabic He)
         '\u0622': '\u0627', // آ  → ا
         '\u0623': '\u0627', // أ  → ا
         '\u0625': '\u0627', // إ  → ا
         '\u0671': '\u0627', // ٱ  → ا
-        '\u0648': '\u0648', // و  (keep)
-        '\u06C6': '\u06C6', // ۆ  (keep)
+        '\u0648': '\u0648', // و  (keep; real letter in Kurdish words — do not collapse to ۆ)
+        '\u06C6': '\u06C6', // ۆ  → ۆ  (keep Kurdish O)
         '\u06C4': '\u06C6', // ۄ  → ۆ
+        '\u0647': '\u06D5', // ه  → ە  (Arabic He / old C4Kurd → Kurdish Ae)
+        '\u06D5': '\u06D5', // ە  → ە  (keep Kurdish Ae)
+        '\u06CE': '\u06CE', // ێ  → ێ  (keep Kurdish EE)
+        '\u06B5': '\u06B5', // ڵ  → ڵ  (keep Kurdish LL)
+        '\u0695': '\u0695', // ڕ  → ڕ  (keep Kurdish RR)
     };
 
     window.uqNormalize = function (str) {
