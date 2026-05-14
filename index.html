@@ -72,7 +72,7 @@
         "@type": "SearchAction",
         "target": {
           "@type": "EntryPoint",
-          "urlTemplate": "https://uniqaidar.pages.dev/?font={search_term_string}"
+          "urlTemplate": "https://uniqaidar.pages.dev/?q={search_term_string}"
         },
         "query-input": "required name=search_term_string"
       }
@@ -6070,6 +6070,7 @@ function applyUrlParams() {
     const fontParam = params.get('font');
     const dmParam   = params.get('dm');
     const pageParam = params.get('page');
+    const qParam    = params.get('q');
 
     // Restore page number before any rendering
     if (pageParam) {
@@ -6140,6 +6141,16 @@ function applyUrlParams() {
                 }
             });
         }
+    }
+
+    // If ?q= is present (e.g. from Google Sitelinks Searchbox), fire the search
+    if (qParam) {
+        var qInput = document.getElementById('test-input');
+        if (qInput) {
+            qInput.value = qParam;
+            if (typeof doSearch === 'function') doSearch();
+        }
+        return;
     }
 
     // Scroll to + highlight specific font card
