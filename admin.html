@@ -6393,16 +6393,10 @@ function buildSitemapXml(fontsArray) {
     const BASE = 'https://uniqaidar.pages.dev/';
     const today = new Date().toISOString().slice(0, 10);
 
-    // NOTE: Query-string URLs (?cat=, ?font=) are intentionally excluded.
-    // Google treats all SPA query-string variants as duplicates of the homepage,
-    // which caused the sitemap to be flagged as low-quality and triggered
-    // "Couldn't fetch" in Google Search Console. Keeping only the canonical
-    // homepage URL fixes this and keeps the sitemap clean for Googlebot.
-
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n\n';
 
-    // Home — the only real canonical URL this SPA exposes
+    // Home — canonical URL
     xml += '  <!-- Home Page -->\n';
     xml += '  <url>\n';
     xml += `    <loc>${BASE}</loc>\n`;
@@ -6411,7 +6405,31 @@ function buildSitemapXml(fontsArray) {
     xml += '    <priority>1.00</priority>\n';
     xml += '  </url>\n\n';
 
-    xml += '</urlset>';
+    // Category pages
+    const cats = [...new Set(fontsArray.flatMap(f => f.category || []))].sort();
+    xml += '  <!-- Category Pages -->\n';
+    for (const cat of cats) {
+        xml += '  <url>\n';
+        xml += `    <loc>${BASE}?cat=${encodeURIComponent(cat)}</loc>\n`;
+        xml += `    <lastmod>${today}</lastmod>\n`;
+        xml += '    <changefreq>weekly</changefreq>\n';
+        xml += '    <priority>0.80</priority>\n';
+        xml += '  </url>\n';
+    }
+    xml += '\n';
+
+    // Individual font pages
+    xml += '  <!-- Individual Font Pages -->\n';
+    for (const font of fontsArray) {
+        const lastmod = font.dateAdded || today;
+        xml += '  <url>\n';
+        xml += `    <loc>${BASE}?font=${encodeURIComponent(font.name)}</loc>\n`;
+        xml += `    <lastmod>${lastmod}</lastmod>\n`;
+        xml += '    <changefreq>monthly</changefreq>\n';
+        xml += '    <priority>0.60</priority>\n';
+        xml += '  </url>\n';
+    }
+    xml += '\n</urlset>';
     return xml;
 }
 
