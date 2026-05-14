@@ -3323,15 +3323,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         ok ? alert2(al,'✅ Links saved!','ok') : alert2(al,'❌ Save failed.','err');
     }
 
-    // ── DOM Engine helper: parse RAW HTML, mutate via DOM, serialize back ──
-    function domMutate(htmlStr, mutatorFn) {
-        const parser = new DOMParser();
-        const doc    = parser.parseFromString(htmlStr, 'text/html');
-        mutatorFn(doc);
-        return new XMLSerializer().serializeToString(doc);
-    }
-
-    // ── Save: SEO (DOM Engine — no regex) ────────────────
+    // ── Save: SEO (regex — safe for script tag contents) ─
     async function pvbSaveSEO() {
         const al    = document.getElementById('pvb-seo-alert');
         const title = document.getElementById('pvb-meta-title').value.trim();
@@ -3339,20 +3331,13 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         const ogImg = document.getElementById('pvb-og-image').value.trim();
         if (!title && !desc && !ogImg) return alert2(al,'⚠️ No change.','inf');
         alert2(al,'Saving...','inf');
-        const next = domMutate(RAW, doc => {
-            if (title) {
-                const t = doc.querySelector('title');
-                if (t) t.textContent = title;
-            }
-            if (desc) {
-                const m = doc.querySelector('meta[name="description"]');
-                if (m) m.setAttribute('content', desc);
-            }
-            if (ogImg) {
-                doc.querySelectorAll('meta[property="og:image"], meta[property="og:image:secure_url"]')
-                   .forEach(m => m.setAttribute('content', ogImg));
-            }
-        });
+        let next = RAW;
+        if (title) next = next.replace(/(<title[^>]*>)[^<]*(<\/title>)/i, '$1' + title.replace(/\$/g,'$$$$') + '$2');
+        if (desc)  next = next.replace(/(<meta\s+name="description"\s+content=")[^"]*(")/i, '$1' + desc.replace(/\$/g,'$$$$') + '$2');
+        if (ogImg) {
+            next = next.replace(/(<meta\s+property="og:image"\s+content=")[^"]*(")/i,             '$1' + ogImg.replace(/\$/g,'$$$$') + '$2');
+            next = next.replace(/(<meta\s+property="og:image:secure_url"\s+content=")[^"]*(")/i,  '$1' + ogImg.replace(/\$/g,'$$$$') + '$2');
+        }
         if (next === RAW) return alert2(al,'⚠️ No change.','inf');
         const ok = await ghPut(next,'Update: SEO meta (DOM engine)');
         ok ? alert2(al,'✅ SEO saved!','ok') : alert2(al,'❌ Save failed.','err');
@@ -8076,37 +8061,28 @@ async function saveAbout() {
 function domUpdateMeta(htmlStr, updates) {
     // updates: [ { selector, attr, value }, ... ]
     // For <title>: selector='title', attr=null, value=text
-    try {
-        const parser = new DOMParser();
-        const doc    = parser.parseFromString(htmlStr, 'text/html');
-        updates.forEach(function(u) {
-            if (!u.value && u.value !== '') return;
-            if (u.selector === 'title') {
-                const el = doc.querySelector('title');
-                if (el) el.textContent = u.value;
-            } else {
-                const el = doc.querySelector(u.selector);
-                if (el) el.setAttribute(u.attr, u.value);
-            }
-        });
-        // XMLSerializer reconstructs the full HTML — preserve DOCTYPE
-        const serial = new XMLSerializer();
-        let out = serial.serializeToString(doc);
-        // XMLSerializer adds xmlns attributes — strip them to keep index.html clean
-        out = out
-            .replace(/ xmlns="http:\/\/www\.w3\.org\/1999\/xhtml"/g, '')
-            .replace(/<html /g, '<html lang="ku" dir="rtl" ')
-            .replace(/lang="ku" dir="rtl" lang="ku" dir="rtl"/g, 'lang="ku" dir="rtl"');
-        // Restore <!DOCTYPE html> if stripped
-        if (!out.startsWith('<!DOCTYPE') && !out.startsWith('<!doctype')) {
-            out = '<!DOCTYPE html>\n' + out;
+    // Uses raw string regex — safe for script tag contents (no XMLSerializer corruption).
+    let out = htmlStr;
+    updates.forEach(function(u) {
+        if (!u.value && u.value !== '') return;
+        const safe = u.value.replace(/\$/g, '$$$$'); // protect replacement string $
+        if (u.selector === 'title') {
+            out = out.replace(/(<title[^>]*>)[^<]*(<\/title>)/i, '$1' + safe + '$2');
+        } else {
+            // Parse selector like: meta[name="description"], meta[property="og:title"]
+            const m = u.selector.match(/^(\w+)\[(\w+)="([^"]+)"\]$/);
+            if (!m) return;
+            const tag = m[1], keyAttr = m[2], keyVal = m[3].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const attr = u.attr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            // Match the tag regardless of attribute order; replace only the target attr value
+            const re = new RegExp(
+                '(<' + tag + '[^>]*\\b' + keyAttr + '="' + keyVal + '"[^>]*\\b' + attr + '=")[^"]*(")',
+                'i'
+            );
+            out = out.replace(re, '$1' + safe + '$2');
         }
-        return out;
-    } catch(e) {
-        // Fallback: return original if DOM parsing fails
-        console.warn('[DOM Engine] Parse failed, returning raw:', e);
-        return htmlStr;
-    }
+    });
+    return out;
 }
 
 async function saveSEO() {
