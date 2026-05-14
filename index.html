@@ -14,7 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UniQaidar Fonts | داگرتنی فۆنتی کوردی - Kurdish Font Download - فۆنتەکانی یونی قەیدار</title>
     <meta name="description" content="گەورەترین کۆکراوەی فۆنتی کوردی و عەرەبی بۆ داگرتن. تاقیکردنەوە و داگرتنی فۆنتەکانی یونی‌قەیدار بە خۆڕایی. Download 430+ free TTF fonts.">
-    <meta name="keywords" content="فۆنتەکانی یونی‌قەیدار, فۆنتەکانی یونی قەیدار, فۆنتی کوردی, فۆنتی عەرەبی, داگرتنی فۆنت, kurdish fonts, arabic fonts, uniqaidar fonts, typography, Unicode, فۆنتی کوردی بۆ کەپکەت, فۆنتی کوردی بۆ ئینستاگرام, Kurdish font download، فۆنتی کوردی بۆ ئین شۆت">
+    <meta name="keywords" content="فۆنتەکانی یونی‌قەیدار, فۆنتەکانی یونی قەیدار, فۆنتی کوردی, فۆنتی عەرەبی, داگرتنی فۆنت, kurdish fonts, arabic fonts, uniqaidar fonts, typography, Unicode, فۆنتی کوردی بۆ کێپکات, فۆنتی کوردی بۆ ئینستاگرام, Kurdish font download">
     <!-- ── Open Graph (Facebook, WhatsApp, Telegram, LinkedIn) ── -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="UniQaidar Fonts">
@@ -5834,6 +5834,7 @@ function filterFonts(category, btn) {
             var params = new URLSearchParams(location.search);
             if (category) { params.set('cat', category); }
             else { params.delete('cat'); }
+            params.delete('q');
             params.delete('page');
             history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params.toString() : ''));
         } catch(e) {}
@@ -5894,6 +5895,15 @@ function clearSearchAndReset() {
 function doSearch() {
     const q = input.value.trim().toLowerCase();
     if (!q) {
+        // Clear ?q= from URL when search is cleared
+        try {
+            var _urlObj = new URL(window.location.href);
+            if (_urlObj.searchParams.has('q')) {
+                _urlObj.searchParams.delete('q');
+                var _newHref = _urlObj.pathname + (_urlObj.search && _urlObj.search !== '?' ? _urlObj.search : '') + _urlObj.hash;
+                history.replaceState(null, '', _newHref);
+            }
+        } catch(e) {}
         const activeBtn = document.querySelector('#desktop-panel .filter-btn.active, #mobile-panel .filter-btn.active');
         const firstBtn  = document.querySelector('#desktop-panel .filter-btn, #mobile-panel .filter-btn');
         const fallbackId = firstBtn ? firstBtn.getAttribute('onclick').split("'")[1] : 'Nwe';
@@ -5901,6 +5911,14 @@ function doSearch() {
         filterFonts(category, null);
         return;
     }
+    // Sync ?q= into the URL so results are shareable and bookmarkable
+    try {
+        var _urlQ = new URL(window.location.href);
+        _urlQ.searchParams.set('q', input.value.trim());
+        _urlQ.searchParams.delete('font');
+        _urlQ.searchParams.delete('cat');
+        history.replaceState(null, '', _urlQ.pathname + _urlQ.search + _urlQ.hash);
+    } catch(e) {}
     // Search across ALL fonts regardless of active category
     var wrap = document.getElementById('cat-dl-inline-wrap');
     if (wrap) wrap.style.display = 'none';
