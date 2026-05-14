@@ -6436,8 +6436,10 @@ function buildSitemapXml(fontsArray) {
     xml += '  <!-- Individual Font Pages -->\n';
     for (const font of fontsArray) {
         const lastmod = font.dateAdded || today;
+        const fontCats = Array.isArray(font.category) ? font.category : (font.category ? [font.category] : []);
+        const primaryCat = fontCats[0] || 'All';
         xml += '  <url>\n';
-        xml += `    <loc>${BASE}?font=${encodeURIComponent(font.name)}</loc>\n`;
+        xml += `    <loc>${BASE}?cat=${encodeURIComponent(primaryCat)}&amp;font=${encodeURIComponent(font.name)}</loc>\n`;
         xml += `    <lastmod>${lastmod}</lastmod>\n`;
         xml += '    <changefreq>monthly</changefreq>\n';
         xml += '    <priority>0.60</priority>\n';
