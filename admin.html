@@ -6372,6 +6372,35 @@ async function ghPutGitattributes(message) {
 }
 
 // ══════════════════════════════════════════
+// SEO Font Index Rebuilder
+// Keeps #uq-seo-font-index in index.html in
+// sync with fonts.json so crawlers always see
+// the full font list without JavaScript.
+// ══════════════════════════════════════════
+function buildSeoFontIndexHtml(fontsArray) {
+    const BASE = 'https://uniqaidar.pages.dev/';
+    let html = '<div id="uq-seo-font-index" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">\n';
+    for (const f of fontsArray) {
+        const name    = f.name || '';
+        const cats    = Array.isArray(f.category) ? f.category.join(', ') : (f.category || '');
+        const preview = f.preview || (f.tags ? f.tags.join(' ') : '');
+        const label   = preview ? (name + ' — ' + preview + (cats ? ' [' + cats + ']' : '')) : (name + (cats ? ' [' + cats + ']' : ''));
+        html += '  <a href="/?font=' + encodeURIComponent(name) + '" tabindex="-1">' + label.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</a>\n';
+    }
+    html += '</div>';
+    return html;
+}
+
+function injectSeoFontIndex(rawHtml, fontsArray) {
+    const newBlock = buildSeoFontIndexHtml(fontsArray);
+    // Replace everything from the opening div to its closing </div> (the one just before <nav id="uq-seo-category-nav")
+    return rawHtml.replace(
+        /<div id="uq-seo-font-index"[\s\S]*?<\/div>(?=\s*\n<nav id="uq-seo-category-nav")/,
+        newBlock
+    );
+}
+
+// ══════════════════════════════════════════
 // Sitemap Generator
 // ══════════════════════════════════════════
 function buildSitemapXml(fontsArray) {
@@ -7266,7 +7295,10 @@ async function addFont() {
     const fontsOk = await ghPutFonts(newFontsArray, `Add font: ${name}`);
     if (!fontsOk) return alert2(al, '❌ پۆشکردنی fonts.json سەرنەکەوت!', 'err');
 
-    // ── ④ Save index.html (only if changed) ──
+    // ── ④ Rebuild #uq-seo-font-index so crawlers see the new font ──
+    next = injectSeoFontIndex(next, newFontsArray);
+
+    // ── ⑤ Save index.html (only if changed) ──
     if (next !== RAW) {
         const idxOk = await ghPut(next, `Add font @font-face: ${name}`);
         if (!idxOk) alert2(al, '⚠️ fonts.json نوێکرایەوە بەڵام @font-face لە index.html نەسەیڤکرا!', 'err');
@@ -7395,6 +7427,9 @@ async function saveEditFont() {
     const ok = await ghPutFonts(newFontsArray, `Edit font: ${name}`);
     if (!ok) return alert2(al, '❌ سەیڤ سەرنەکەوت!', 'err');
 
+    // ── Rebuild #uq-seo-font-index so crawlers see the updated font ──
+    next = injectSeoFontIndex(next, newFontsArray);
+
     // Save index.html if @font-face changed
     if (next !== RAW) {
         const idxOk = await ghPut(next, `Edit font @font-face: ${origName} → ${name}`);
@@ -7434,6 +7469,9 @@ async function deleteFont(i) {
     // Save fonts.json
     const fontsOk = await ghPutFonts(newFontsArray, `Delete font: ${f.name}`);
     if (!fontsOk) { hideOverlay(); return alert('❌ سڕینەوەی fonts.json سەرنەکەوت!'); }
+
+    // ── Rebuild #uq-seo-font-index so deleted font is removed from crawler view ──
+    next = injectSeoFontIndex(next, newFontsArray);
 
     // Save index.html if changed
     if (next !== RAW) {

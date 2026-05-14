@@ -78,6 +78,61 @@
       }
     }
     </script>
+    <!-- Schema.org: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "UniQaidar Fonts",
+      "url": "https://uniqaidar.pages.dev/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://uniqaidar.pages.dev/Logo.png",
+        "width": 699,
+        "height": 232
+      },
+      "founder": {
+        "@type": "Person",
+        "name": "Qaidar Rahim",
+        "sameAs": "https://twitter.com/Qaidar_Rahim"
+      },
+      "sameAs": [
+        "https://twitter.com/Qaidar_Rahim",
+        "https://github.com/uniqaidar"
+      ],
+      "description": "Kurdish and Arabic font library with 430+ free TTF fonts for download. Created by Qaidar Rahim.",
+      "foundingLocation": {
+        "@type": "Place",
+        "name": "Sulaymaniyah, Kurdistan Region, Iraq"
+      }
+    }
+    </script>
+    <!-- Schema.org: SoftwareApplication (font library) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "UniQaidar Fonts — فۆنتەکانی یونی‌قەیدار",
+      "url": "https://uniqaidar.pages.dev/",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "Browse, preview, and download 430+ free Kurdish and Arabic TTF fonts instantly. No registration required.",
+      "inLanguage": ["ckb", "ar", "en"],
+      "author": {
+        "@type": "Person",
+        "name": "Qaidar Rahim"
+      }
+    }
+    </script>
+    <!-- Geo & language meta -->
+    <meta name="geo.region" content="IQ-SU">
+    <meta name="geo.placename" content="Sulaymaniyah, Kurdistan Region, Iraq">
+    <meta http-equiv="content-language" content="ckb, ar, en">
 
     <style>
 
@@ -6354,6 +6409,48 @@ async function loadFontsAndInit() {
             _popularFonts = Array.isArray(_popData) ? _popData.filter(function(n){ return typeof n === 'string' && n.trim(); }).slice(0, 25) : [];
         } else { _popularFonts = []; }
     } catch(e) { _popularFonts = []; }
+
+    // ── Dynamic schema injection: runs after fonts.json + popular.json are loaded ──
+    (function() {
+        try {
+            var _fontCount = fonts.length;
+            var _topFonts  = _popularFonts.slice(0, 10); // top 10 for ItemList
+            // Build ItemList schema from top popular fonts
+            var _itemList = {
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                "name": "Popular Kurdish & Arabic Fonts — UniQaidar",
+                "description": "Top downloaded Kurdish and Arabic fonts from UniQaidar Fonts library (" + _fontCount + "+ fonts total).",
+                "url": "https://uniqaidar.pages.dev/",
+                "numberOfItems": _topFonts.length,
+                "itemListElement": _topFonts.map(function(name, i) {
+                    return {
+                        "@type": "ListItem",
+                        "position": i + 1,
+                        "name": name,
+                        "url": "https://uniqaidar.pages.dev/?font=" + encodeURIComponent(name)
+                    };
+                })
+            };
+            var _el = document.createElement('script');
+            _el.type = 'application/ld+json';
+            _el.id   = 'uq-schema-itemlist';
+            _el.textContent = JSON.stringify(_itemList);
+            document.head.appendChild(_el);
+            // Also patch the font count in the existing static schemas' descriptions
+            document.querySelectorAll('script[type="application/ld+json"]').forEach(function(s) {
+                if (s.id === 'uq-schema-itemlist') return;
+                try {
+                    var obj = JSON.parse(s.textContent);
+                    if (obj.description && typeof obj.description === 'string') {
+                        obj.description = obj.description.replace(/\d+\+(\s*(?:free\s*)?(?:Kurdish|TTF|fonts?))/gi, _fontCount + '+$1');
+                        s.textContent = JSON.stringify(obj);
+                    }
+                } catch(e2) { /* silent */ }
+            });
+        } catch(_schemaErr) { /* silent — never break page load */ }
+    })();
+    // ── END Dynamic schema injection ──
 
     // ── Live stats override removed ──
     // popular.json is the authoritative all-time top-25 source (updated by admin with full history).
