@@ -1145,6 +1145,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     <button class="btn" style="background:#0078d4;color:#fff;" onclick="submitBingSitemap()" id="bing-sitemap-btn" title="Submit sitemap directly to Bing Webmaster Tools via API">🔵 Bing Sitemap</button>
                     <button class="btn" style="background:#00b050;color:#fff;" onclick="emergencyCRLFFix()" id="crlf-fix-btn" title="Remove CRLF from sitemap.xml — fixes the root cause of Couldn't Fetch">🛠 Fix CRLF Now</button>
                     <button class="btn" style="background:#7c3aed;color:#fff;" onclick="deployRedirects()" title="Deploy _redirects file — stops Cloudflare Pages SPA catch-all from serving HTML instead of XML for sitemap.xml">🛡 Deploy _redirects</button>
+                    <button class="btn" style="background:#b91c1c;color:#fff;" onclick="deleteSitemapStaticFiles()" id="delete-static-sitemaps-btn" title="Delete static sitemap.xml and sitemap_index.xml from repo root so Cloudflare Pages routes those URLs to the Functions instead">🗑 Delete Static Sitemaps</button>
                     <button class="btn btn-ghost" onclick="repairRobotsTxt()" id="robots-btn" style="border-color:var(--yellow);color:var(--yellow);"><span data-ku>🤖 چاکسازی robots.txt</span><span data-en style="display:none">🤖 Repair robots.txt</span></button>
                     <button class="btn btn-ghost" onclick="runHealthCheck()" id="health-btn" style="border-color:var(--purple);color:var(--purple);"><span data-ku>🏥 Health Check فۆنتەکان</span><span data-en style="display:none">🏥 Font Health Check</span></button>
                 </div>
@@ -5889,13 +5890,12 @@ async function atomicSave(fontsArray, htmlContent, commitMessage) {
         results.html = await ghPut(htmlContent, commitMessage + ' [index.html]');
     } catch(e) {}
 
-    // 3. sitemap.xml
-    try {
-        const sitemapXml = buildSitemapXml(fontsArray);
-        // Self-heal XML: strip control chars, ensure absolute URLs, trim whitespace
-        const healed = healSitemapXml(sitemapXml);
-        results.sitemap = await ghPutSitemap(healed, commitMessage + ' [sitemap.xml]');
-    } catch(e) {}
+    // 3. sitemap.xml — DISABLED: static file must not exist in repo root.
+    // Cloudflare Pages serves static files over Functions; sitemap.xml and
+    // sitemap_index.xml must be absent so the Functions at functions/sitemap.xml.js
+    // and functions/sitemap_index.xml.js are reached. Use "Delete Static Sitemaps"
+    // button if the static files were accidentally recreated.
+    results.sitemap = true; // mark ok so atomicSave success check still passes
 
     // 4. robots.txt
     try { results.robots = await ensureRobotsHasSitemap(); } catch(e) {}
@@ -5906,8 +5906,8 @@ async function atomicSave(fontsArray, htmlContent, commitMessage) {
     // 6. _redirects — prevents Cloudflare Pages SPA catch-all from soft-404ing the sitemap
     try { results.redirects = await ghPutRedirects(commitMessage + ' [_redirects]'); } catch(e) {}
 
-    // 7. sitemap_index.xml — alternative GSC entry point (helps with Cloudflare Pages fetcher bug)
-    try { await ghPutSitemapIndex(commitMessage + ' [sitemap_index.xml]'); } catch(e) {}
+    // 7. sitemap_index.xml — DISABLED: static file must not exist in repo root.
+    // The Function at functions/sitemap_index.xml.js handles this route.
 
     // 8. .gitattributes — force LF on all XML/JSON/txt files so GitHub never re-introduces CRLF
     try { await ghPutGitattributes(commitMessage + ' [.gitattributes]'); } catch(e) {}
@@ -6166,6 +6166,49 @@ async function ghPutSitemapIndex(message) {
         });
         return updateRes.ok;
     } catch(e) { console.error('ghPutSitemapIndex Git Data API failed:', e.message); return false; }
+}
+
+// ══════════════════════════════════════════
+// GitHub API — Delete a file from repo root (used to remove static sitemaps)
+// ══════════════════════════════════════════
+async function ghDeleteFile(path, message) {
+    // 1. Get current SHA of the file
+    const hdrs = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+    const base = `https://api.github.com/repos/${USER}/${REPO}`;
+    const getRes = await fetch(`${base}/contents/${path}?ref=${BRANCH}`, { headers: hdrs });
+    if (getRes.status === 404) return 'not_found';
+    if (!getRes.ok) throw new Error('GET ' + path + ': ' + getRes.status);
+    const { sha } = await getRes.json();
+    // 2. Delete via Contents API (DELETE requires the file SHA)
+    const delRes = await fetch(`${base}/contents/${path}`, {
+        method: 'DELETE', headers: hdrs,
+        body: JSON.stringify({ message, sha, branch: BRANCH })
+    });
+    if (!delRes.ok) throw new Error('DELETE ' + path + ': ' + delRes.status);
+    return 'deleted';
+}
+
+// Deletes static sitemap.xml and sitemap_index.xml from repo root so
+// Cloudflare Pages routes those URLs to the Pages Functions instead.
+async function deleteSitemapStaticFiles() {
+    const al = document.getElementById('sitemap-alert');
+    const btn = document.getElementById('delete-static-sitemaps-btn');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ Connect to GitHub first.', 'err');
+    if (!confirm('Delete static sitemap.xml and sitemap_index.xml from the repo root?\n\nThis lets Cloudflare Pages route /sitemap.xml and /sitemap_index.xml to the Pages Functions instead of serving the static files.\n\nThe Functions are the correct solution — they are not affected by this deletion.')) return;
+    btn.disabled = true;
+    alert2(al, '⏳ Deleting static sitemap files...', 'inf');
+    const results = [];
+    try {
+        const r1 = await ghDeleteFile('sitemap.xml', 'Fix: delete static sitemap.xml — Pages Function serves this route');
+        results.push(r1 === 'deleted' ? '✅ sitemap.xml deleted' : 'ℹ️ sitemap.xml not found (already absent)');
+    } catch(e) { results.push('❌ sitemap.xml: ' + e.message); }
+    try {
+        const r2 = await ghDeleteFile('sitemap_index.xml', 'Fix: delete static sitemap_index.xml — Pages Function serves this route');
+        results.push(r2 === 'deleted' ? '✅ sitemap_index.xml deleted' : 'ℹ️ sitemap_index.xml not found (already absent)');
+    } catch(e) { results.push('❌ sitemap_index.xml: ' + e.message); }
+    const allOk = results.every(r => r.startsWith('✅') || r.startsWith('ℹ️'));
+    alert2(al, results.join(' | ') + (allOk ? ' — Wait ~1 min for Cloudflare to deploy, then resubmit sitemaps in Google Search Console.' : ''), allOk ? 'ok' : 'err');
+    btn.disabled = false;
 }
 
 // ══════════════════════════════════════════
@@ -6469,18 +6512,13 @@ function buildSitemapXml(fontsArray) {
 }
 
 async function generateAndPushSitemap(fontsArray, triggerMsg) {
-    if (!TOKEN || !USER || !REPO) return false; // not connected
-    const xml  = buildSitemapXml(fontsArray);
-    const healed = healSitemapXml(xml); // ALWAYS heal — strips CRLF, spaces in loc, BOM
-    const msg  = triggerMsg || 'Auto-update sitemap.xml';
-    const ok   = await ghPutSitemap(healed, msg);
-    if (ok) {
-        // Also push sitemap_index.xml (alternative GSC/Bing entry point)
-        try { await ghPutSitemapIndex(msg + ' [index]'); } catch(e) {}
-        // Give Cloudflare Pages 8 seconds to deploy, then ping
-        setTimeout(pingGoogle, 8000);
-    }
-    return ok;
+    // DISABLED: static sitemap.xml and sitemap_index.xml must not exist in repo root.
+    // Cloudflare Pages serves static files over Functions. The Functions at
+    // functions/sitemap.xml.js and functions/sitemap_index.xml.js dynamically
+    // generate the correct XML. Pushing static files here would shadow the Functions.
+    // Ping search engines so they re-crawl via the Functions.
+    setTimeout(pingGoogle, 1000);
+    return true; // report success so callers don't show an error
 }
 
 // ── Ping Google to re-index the sitemap immediately after save ──
@@ -10926,9 +10964,9 @@ async function sitemapSelfHeal() {
         ];
         const headersContent = headersLines.join('\n');
 
-        const [smBlob, idxBlob, gaBlob, hdBlob] = await Promise.all([
-            fetch(`${base}/git/blobs`, { method:'POST', headers:hdrs, body:JSON.stringify({ content:toBase64(healed),         encoding:'base64' }) }).then(r=>r.json()),
-            fetch(`${base}/git/blobs`, { method:'POST', headers:hdrs, body:JSON.stringify({ content:toBase64(xmlIdx),          encoding:'base64' }) }).then(r=>r.json()),
+        // NOTE: smBlob and idxBlob intentionally removed — static sitemap files must
+        // not be pushed to repo root. Functions serve those routes.
+        const [gaBlob, hdBlob] = await Promise.all([
             fetch(`${base}/git/blobs`, { method:'POST', headers:hdrs, body:JSON.stringify({ content:toBase64(gaContent),       encoding:'base64' }) }).then(r=>r.json()),
             liveWrongCT
                 ? fetch(`${base}/git/blobs`, { method:'POST', headers:hdrs, body:JSON.stringify({ content:toBase64(headersContent), encoding:'base64' }) }).then(r=>r.json())
@@ -10943,9 +10981,11 @@ async function sitemapSelfHeal() {
 
         // Build tree entries — always fix sitemap.xml, sitemap_index.xml, .gitattributes
         // Only include _headers if Content-Type was wrong
+        // NOTE: sitemap.xml and sitemap_index.xml are intentionally excluded.
+        // Those routes are now served by Pages Functions (functions/sitemap.xml.js
+        // and functions/sitemap_index.xml.js). Static files at those paths would
+        // shadow the Functions on Cloudflare Pages. Do not push them here.
         const treeEntries = [
-            { path: 'sitemap.xml',      mode:'100644', type:'blob', sha: smBlob.sha  },
-            { path: 'sitemap_index.xml', mode:'100644', type:'blob', sha: idxBlob.sha },
             { path: '.gitattributes',    mode:'100644', type:'blob', sha: gaBlob.sha  },
         ];
         if (liveWrongCT && hdBlob && hdBlob.sha) {
@@ -11085,23 +11125,17 @@ async function emergencyCRLFFix() {
             '',
         ].join('\n'); // join('\n') is guaranteed LF — never \r\n
 
-        // 5b. Blob for sitemap_index.xml via Git Data API (raw bytes, autocrlf bypassed)
-        const idxBlobRes = await fetch(`${base}/git/blobs`, {
-            method: 'POST', headers: hdrs,
-            body: JSON.stringify({ content: toBase64(xmlIdx), encoding: 'base64' })
-        });
-        if (!idxBlobRes.ok) throw new Error('idx blob: ' + idxBlobRes.status);
-        const { sha: idxBlobSha } = await idxBlobRes.json();
+        // 5a-5b. sitemap_index.xml blob DISABLED — static file must not exist in repo root.
+        // The Function at functions/sitemap_index.xml.js serves this route dynamically.
 
-        // 5c. ONE atomic tree with ALL THREE files — sitemap.xml + sitemap_index.xml + .gitattributes
-        //     Single commit, no HEAD race, every XML file goes through Git Data API only.
+        // 5c. ONE atomic tree with ONLY .gitattributes — sitemap static files intentionally excluded.
+        //     Static sitemap.xml / sitemap_index.xml in repo root shadow the Pages Functions.
+        //     Use "Delete Static Sitemaps" button to remove them if accidentally present.
         const treeRes = await fetch(`${base}/git/trees`, {
             method: 'POST', headers: hdrs,
             body: JSON.stringify({
                 base_tree: baseTreeSha,
                 tree: [
-                    { path: 'sitemap.xml',       mode: '100644', type: 'blob', sha: blobSha    },
-                    { path: 'sitemap_index.xml',  mode: '100644', type: 'blob', sha: idxBlobSha },
                     { path: '.gitattributes',      mode: '100644', type: 'blob', sha: gaBlobSha  }
                 ]
             })
@@ -11113,7 +11147,7 @@ async function emergencyCRLFFix() {
         const newCommitRes = await fetch(`${base}/git/commits`, {
             method: 'POST', headers: hdrs,
             body: JSON.stringify({
-                message: `Fix: strip CRLF — sitemap.xml (${crlfCount} occurrences) + sitemap_index.xml + .gitattributes via Git Data API`,
+                message: `Fix: update .gitattributes via Git Data API (static sitemaps removed — Functions serve those routes)`,
                 tree: newTreeSha,
                 parents: [headSha]
             })
@@ -11129,9 +11163,7 @@ async function emergencyCRLFFix() {
         if (!updateRes.ok) throw new Error('ref update: ' + updateRes.status);
         SITEMAP_SHA = blobSha;
 
-        const msg = wasCRLF
-            ? `✅ CRLF fixed! ${crlfCount} occurrences removed. sitemap.xml + sitemap_index.xml + .gitattributes committed atomically via Git Data API — autocrlf can never touch these again. Wait 2 min for Cloudflare → GSC Sitemaps → Remove both entries → Resubmit sitemap.xml only.`
-            : `✅ Force-written with guaranteed LF endings. All 3 files (sitemap.xml + sitemap_index.xml + .gitattributes) committed atomically via Git Data API. Wait 2 min for Cloudflare → GSC Sitemaps → Remove both → Resubmit sitemap.xml only.`;
+        const msg = `✅ .gitattributes committed via Git Data API. Static sitemap.xml / sitemap_index.xml are NOT pushed — Pages Functions serve those routes. Wait 2 min for Cloudflare → then resubmit sitemaps in Google Search Console.`;
         alert2(al, msg, 'ok');
     } catch(e) {
         alert2(al, '❌ Error: ' + e.message, 'err');
