@@ -1,4 +1,22 @@
 # UniQaidar — Cloudflare Pages headers
+# NOTE: /* is intentionally absent — it matched /sitemap.xml and caused
+# Cloudflare to merge headers, overwriting Cache-Control with max-age=0.
+# X-Frame-Options is instead set explicitly on HTML pages below.
+# NOTE: /sitemap.xml and /sitemap_index.xml ARE listed below —
+# these rules run at the CDN layer and force cache BYPASS for these paths,
+# overriding the stale HIT entry that Cloudflare's tiered cache has locked in.
+
+/sitemap.xml
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  CDN-Cache-Control: no-store
+  Cloudflare-CDN-Cache-Control: no-store
+  Surrogate-Control: no-store
+
+/sitemap_index.xml
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  CDN-Cache-Control: no-store
+  Cloudflare-CDN-Cache-Control: no-store
+  Surrogate-Control: no-store
 
 /robots.txt
   Content-Type: text/plain; charset=utf-8
@@ -12,14 +30,6 @@
 /*.txt
   Cache-Control: public, max-age=86400
   Access-Control-Allow-Origin: *
-
-/sitemap.xml
-  Cache-Control: no-store
-  X-Robots-Tag: all
-
-/sitemap_index.xml
-  Cache-Control: no-store
-  X-Robots-Tag: all
 
 /
   X-Frame-Options: SAMEORIGIN
