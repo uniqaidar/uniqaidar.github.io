@@ -10068,7 +10068,13 @@ async function loadPopularJson() {
         const d = await r.json();
         _popularJsonSha = d.sha;
         const decoded = fromBase64(d.content);
-        // ── Read MAX_FONTS_TRACKED from update-popular.yml and sync the input ──
+        // ── Use actual popular.json length as ground truth for the input ──
+        const _parsedList = JSON.parse(decoded).filter(n => typeof n === 'string' && n.trim());
+        const _actualCount = _parsedList.length;
+        const inp = document.getElementById('trending-limit-input');
+        if (inp && _actualCount > 0) inp.value = _actualCount;
+        _trendingList = _parsedList;
+        // ── Also sync update-popular.yml MAX_FONTS_TRACKED if it differs ──
         try {
             const ymlR = await fetch(
                 `https://api.github.com/repos/${USER}/${REPO}/contents/.github/workflows/update-popular.yml?ref=${BRANCH}`,
@@ -10078,14 +10084,17 @@ async function loadPopularJson() {
                 const ymlD = await ymlR.json();
                 const ymlText = fromBase64(ymlD.content);
                 const m = ymlText.match(/MAX_FONTS_TRACKED:\s*'(\d+)'/);
-                if (m) {
-                    const inp = document.getElementById('trending-limit-input');
-                    if (inp) inp.value = m[1];
+                if (m && parseInt(m[1], 10) !== _actualCount) {
+                    const ymlUpdated = ymlText.replace(/MAX_FONTS_TRACKED:\s*'\d+'/, `MAX_FONTS_TRACKED: '${_actualCount}'`);
+                    const ymlEncoded = toBase64(ymlUpdated);
+                    const ymlBody = { message: `Sync MAX_FONTS_TRACKED: ${_actualCount}`, content: ymlEncoded, sha: ymlD.sha, branch: BRANCH };
+                    fetch(
+                        `https://api.github.com/repos/${USER}/${REPO}/contents/.github/workflows/update-popular.yml`,
+                        { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body: JSON.stringify(ymlBody) }
+                    ).catch(() => {});
                 }
             }
-        } catch(e) { /* non-fatal — fall back to input's current value */ }
-        const _loadLimit = Math.max(1, parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25);
-        _trendingList = JSON.parse(decoded).filter(n => typeof n === 'string' && n.trim()).slice(0, _loadLimit);
+        } catch(e) { /* non-fatal */ }
         buildTrendingList();
         alert2(al, document.body.classList.contains('lang-en') ? `✅ Loaded! ${_trendingList.length} fonts.` : `✅ بارکرا! ${_trendingList.length} فۆنت.`, 'ok');
         fetchPopularJsonCommitInfo();
