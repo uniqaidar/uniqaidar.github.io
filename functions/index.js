@@ -462,10 +462,14 @@ export async function onRequestGet(context) {
         return new Response(xml, {
             status: 200,
             headers: {
-                'Content-Type':               'application/xml; charset=utf-8',
-                'Cache-Control':              'no-store, no-cache, must-revalidate, max-age=0',
-                'X-Robots-Tag':               'all',
+                'Content-Type':                'application/xml; charset=utf-8',
+                'Cache-Control':               'no-store, no-cache, must-revalidate, max-age=0',
+                'CDN-Cache-Control':           'no-store',
+                'Cloudflare-CDN-Cache-Control':'no-store',
+                'Surrogate-Control':           'no-store',
+                'X-Robots-Tag':                'all',
                 'Access-Control-Allow-Origin': '*',
+                'Vary':                        'Accept-Encoding, Accept',
             }
         });
     }
@@ -476,10 +480,14 @@ export async function onRequestGet(context) {
         return new Response(xml, {
             status: 200,
             headers: {
-                'Content-Type':               'application/xml; charset=utf-8',
-                'Cache-Control':              'no-store, no-cache, must-revalidate, max-age=0',
-                'X-Robots-Tag':               'all',
+                'Content-Type':                'application/xml; charset=utf-8',
+                'Cache-Control':               'no-store, no-cache, must-revalidate, max-age=0',
+                'CDN-Cache-Control':           'no-store',
+                'Cloudflare-CDN-Cache-Control':'no-store',
+                'Surrogate-Control':           'no-store',
+                'X-Robots-Tag':                'all',
                 'Access-Control-Allow-Origin': '*',
+                'Vary':                        'Accept-Encoding, Accept',
             }
         });
     }
