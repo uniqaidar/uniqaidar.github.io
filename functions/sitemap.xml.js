@@ -160,8 +160,7 @@ export async function onRequestGet(context) {
         status: 200,
         headers: {
             'Content-Type':   'application/xml; charset=utf-8',
-            'Cache-Control':  'public, max-age=0, must-revalidate',
-            'X-Robots-Tag':   'noindex',
+            'Cache-Control':  'public, max-age=3600',
             'Access-Control-Allow-Origin': '*',
         }
     });
