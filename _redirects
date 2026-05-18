@@ -1,7 +1,7 @@
 # UniQaidar — Cloudflare Pages redirects
 # These 200 rewrites prevent the SPA catch-all from intercepting static files.
-# Without this, Googlebot may receive index.html when fetching /sitemap.xml.
-/sitemap.xml        /sitemap.xml        200
-/sitemap_index.xml  /sitemap_index.xml  200
+# NOTE: /sitemap.xml and /sitemap_index.xml are intentionally absent —
+# they are handled by Pages Functions which run before _redirects would apply.
+# A 200 rewrite here would bypass the Function layer — do not add them back.
 /robots.txt         /robots.txt         200
 /fonts.json         /fonts.json         200
