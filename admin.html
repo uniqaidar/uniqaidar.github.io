@@ -8399,7 +8399,7 @@ function go(id, btn) {
     if (id==='t-site')    { if (typeof pvbPopulateLogic === 'function') pvbPopulateLogic(); if (typeof loadAllSettings === 'function') loadAllSettings(); }
     if (id==='t-modals')  { if (typeof loadAllSettings === 'function') loadAllSettings(); }
     if (id==='t-counter') { if (typeof window.attachRtesForTab === 'function') window.attachRtesForTab('t-counter'); setTimeout(function(){ if (typeof pvbCounterConfigLoad === 'function' && typeof RAW === 'string' && RAW) pvbCounterConfigLoad(); }, 120); }
-    if (id==='t-dlstats') { loadDlStats(false); loadVisitStats(false); if(TOKEN && USER && REPO && !_trendingList.length) { loadPopularJson(); } else if (TOKEN && USER && REPO) { fetchPopularJsonCommitInfo(); } }
+    if (id==='t-dlstats') { loadDlStats(false); loadVisitStats(false); if(TOKEN && USER && REPO && !_trendingList.length) { loadPopularJson(); } else if (TOKEN && USER && REPO) { const _tlInp = document.getElementById('trending-limit-input'); if (_tlInp && _trendingList.length > 0) _tlInp.value = _trendingList.length; fetchPopularJsonCommitInfo(); } }
 }
 
 
