@@ -1,16 +1,7 @@
 # UniQaidar — Cloudflare Pages headers
-
-/sitemap.xml
-  Content-Type: application/xml; charset=utf-8
-  X-Content-Type-Options: nosniff
-  Cache-Control: public, max-age=0, must-revalidate
-  Access-Control-Allow-Origin: *
-
-/sitemap_index.xml
-  Content-Type: application/xml; charset=utf-8
-  X-Content-Type-Options: nosniff
-  Cache-Control: public, max-age=0, must-revalidate
-  Access-Control-Allow-Origin: *
+# NOTE: /sitemap.xml and /sitemap_index.xml are intentionally absent —
+# those routes are handled by Pages Functions which set their own headers.
+# Adding rules here would override the Function response headers.
 
 /robots.txt
   Content-Type: text/plain; charset=utf-8
