@@ -1146,6 +1146,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     <button class="btn" style="background:#00b050;color:#fff;" onclick="emergencyCRLFFix()" id="crlf-fix-btn" title="Remove CRLF from sitemap.xml — fixes the root cause of Couldn't Fetch">🛠 Fix CRLF Now</button>
                     <button class="btn" style="background:#7c3aed;color:#fff;" onclick="deployRedirects()" title="Deploy _redirects file — stops Cloudflare Pages SPA catch-all from serving HTML instead of XML for sitemap.xml">🛡 Deploy _redirects</button>
                     <button class="btn" style="background:#b91c1c;color:#fff;" onclick="deleteSitemapStaticFiles()" id="delete-static-sitemaps-btn" title="Delete static sitemap.xml and sitemap_index.xml from repo root so Cloudflare Pages routes those URLs to the Functions instead">🗑 Delete Static Sitemaps</button>
+                    <button class="btn" style="background:#0f766e;color:#fff;" onclick="deployCatchAllFunction()" id="deploy-catchall-btn" title="Push functions/[[path]].js to GitHub — catch-all that serves /sitemap.xml and /sitemap_index.xml before the SPA can intercept them">🚀 Deploy [[path]].js</button>
                     <button class="btn btn-ghost" onclick="repairRobotsTxt()" id="robots-btn" style="border-color:var(--yellow);color:var(--yellow);"><span data-ku>🤖 چاکسازی robots.txt</span><span data-en style="display:none">🤖 Repair robots.txt</span></button>
                     <button class="btn btn-ghost" onclick="runHealthCheck()" id="health-btn" style="border-color:var(--purple);color:var(--purple);"><span data-ku>🏥 Health Check فۆنتەکان</span><span data-en style="display:none">🏥 Font Health Check</span></button>
                 </div>
@@ -1156,6 +1157,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                 <div id="robots-alert" class="alert" style="margin-top:10px;"></div>
                 <div id="health-alert" class="alert" style="margin-top:10px;"></div>
                 <div id="health-results" style="display:none;margin-top:12px;max-height:300px;overflow-y:auto;"></div>
+                <div id="catchall-alert" class="alert" style="margin-top:10px;"></div>
             </div>
         </div>
         <!-- ── Google "Couldn't Fetch" Nuclear Recovery Box ── -->
@@ -6369,6 +6371,184 @@ async function deployRedirects() {
             alert2(al, '✅ _redirects deployed — Cloudflare Pages will no longer soft-404 the sitemap. Wait ~1 min for deployment, then resubmit sitemap in Google Search Console.', 'ok');
         } else {
             alert2(al, '❌ _redirects deploy failed — check your GitHub token and connection.', 'err');
+        }
+    } catch(e) {
+        alert2(al, '❌ Error: ' + e.message, 'err');
+    }
+    if (btn) btn.disabled = false;
+}
+
+// ══════════════════════════════════════════
+// GitHub API — functions/[[path]].js (catch-all — serves /sitemap.xml and /sitemap_index.xml)
+// ══════════════════════════════════════════
+async function ghPutCatchAllFunction(message) {
+    const CONTENT = [
+        '// functions/[[path]].js',
+        '// Catch-all Cloudflare Pages Function.',
+        '// Intercepts /sitemap.xml and /sitemap_index.xml for ALL requests',
+        '// (Googlebot, Bingbot, Google Search Console fetch tool, humans).',
+        '// All other requests pass through via context.next() — zero cost.',
+        '',
+        'const BASE_URL       = \'https://uniqaidar.pages.dev\';',
+        'const FONTS_JSON_URL = `${BASE_URL}/fonts.json`;',
+        '',
+        'async function fetchAsset(context, url) {',
+        '    if (context.env && context.env.ASSETS) {',
+        '        try {',
+        '            const res = await context.env.ASSETS.fetch(new Request(url));',
+        '            if (res.ok) return res.text();',
+        '        } catch (_) {}',
+        '    }',
+        '    const res = await fetch(url, { headers: { \'User-Agent\': \'UniQaidar-Render/1.0\' } });',
+        '    return res.ok ? res.text() : \'\';',
+        '}',
+        '',
+        'function escXml(str) {',
+        '    return (str || \'\')',
+        '        .replace(/&/g,  \'&amp;\').replace(/</g, \'&lt;\').replace(/>/g, \'&gt;\');',
+        '}',
+        '',
+        'async function buildSitemapXml(context) {',
+        '    const dateToday = new Date().toISOString().slice(0, 10);',
+        '    let fonts = [];',
+        '    try {',
+        '        const txt = await fetchAsset(context, FONTS_JSON_URL);',
+        '        if (txt) { const p = JSON.parse(txt); if (Array.isArray(p)) fonts = p; }',
+        '    } catch (_) {}',
+        '    let catIds = [];',
+        '    try {',
+        '        const html = await fetchAsset(context, `${BASE_URL}/`);',
+        '        if (html) {',
+        '            const rx = /<button class="filter-btn" onclick="filterFonts\\(\'([^\']+)\',\\s*this\\)">/g;',
+        '            let m;',
+        '            while ((m = rx.exec(html)) !== null) catIds.push(m[1]);',
+        '        }',
+        '    } catch (_) {}',
+        '    const lines = [',
+        '        \'<?xml version="1.0" encoding="UTF-8"?>\',',
+        '        \'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\',',
+        '        \'\',',
+        '        \'  <!-- Home Page -->\',',
+        '        \'  <url>\',',
+        '        `    <loc>${BASE_URL}/</loc>`,',
+        '        `    <lastmod>${dateToday}</lastmod>`,',
+        '        \'    <changefreq>daily</changefreq>\',',
+        '        \'    <priority>1.00</priority>\',',
+        '        \'  </url>\',',
+        '        \'\',',
+        '    ];',
+        '    if (catIds.length > 0) {',
+        '        lines.push(\'  <!-- Category Pages -->\');',
+        '        for (const cat of catIds) {',
+        '            lines.push(\'  <url>\');',
+        '            lines.push(`    <loc>${escXml(`${BASE_URL}/?cat=${encodeURIComponent(cat)}`)}</loc>`);',
+        '            lines.push(`    <lastmod>${dateToday}</lastmod>`);',
+        '            lines.push(\'    <changefreq>weekly</changefreq>\');',
+        '            lines.push(\'    <priority>0.80</priority>\');',
+        '            lines.push(\'  </url>\');',
+        '        }',
+        '        lines.push(\'\');',
+        '    }',
+        '    if (fonts.length > 0) {',
+        '        lines.push(\'  <!-- Individual Font Pages -->\');',
+        '        for (const font of fonts) {',
+        '            if (!font.name) continue;',
+        '            const firstCat = (font.category && font.category[0]) || \'All\';',
+        '            const loc = `${BASE_URL}/?cat=${encodeURIComponent(firstCat)}&font=${encodeURIComponent(font.name)}`;',
+        '            lines.push(\'  <url>\');',
+        '            lines.push(`    <loc>${escXml(loc)}</loc>`);',
+        '            lines.push(`    <lastmod>${escXml(font.dateAdded || dateToday)}</lastmod>`);',
+        '            lines.push(\'    <changefreq>monthly</changefreq>\');',
+        '            lines.push(\'    <priority>0.70</priority>\');',
+        '            lines.push(\'  </url>\');',
+        '        }',
+        '    }',
+        '    lines.push(\'\', \'</urlset>\');',
+        '    return lines.join(\'\\n\');',
+        '}',
+        '',
+        'const SITEMAP_HEADERS = {',
+        '    \'Content-Type\':                 \'application/xml; charset=utf-8\',',
+        '    \'Cache-Control\':                \'no-store, no-cache, must-revalidate, max-age=0\',',
+        '    \'CDN-Cache-Control\':            \'no-store\',',
+        '    \'Cloudflare-CDN-Cache-Control\': \'no-store\',',
+        '    \'Surrogate-Control\':            \'no-store\',',
+        '    \'X-Robots-Tag\':                 \'all\',',
+        '    \'Access-Control-Allow-Origin\':  \'*\',',
+        '    \'Vary\':                         \'Accept-Encoding\',',
+        '};',
+        '',
+        'export async function onRequest(context) {',
+        '    const pathname = new URL(context.request.url).pathname;',
+        '    if (pathname === \'/sitemap.xml\') {',
+        '        const xml = await buildSitemapXml(context);',
+        '        return new Response(xml, { status: 200, headers: SITEMAP_HEADERS });',
+        '    }',
+        '    if (pathname === \'/sitemap_index.xml\') {',
+        '        const today = new Date().toISOString().slice(0, 10);',
+        '        const xml = [',
+        '            \'<?xml version="1.0" encoding="UTF-8"?>\',',
+        '            \'<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\',',
+        '            \'  <sitemap>\',',
+        '            `    <loc>${BASE_URL}/sitemap.xml</loc>`,',
+        '            `    <lastmod>${today}</lastmod>`,',
+        '            \'  </sitemap>\',',
+        '            \'</sitemapindex>\',',
+        '        ].join(\'\\n\');',
+        '        return new Response(xml, { status: 200, headers: SITEMAP_HEADERS });',
+        '    }',
+        '    return context.next();',
+        '}',
+        '',
+    ].join('\n');
+    const hdrs = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+    const base = `https://api.github.com/repos/${USER}/${REPO}`;
+    try {
+        const blobRes = await fetch(`${base}/git/blobs`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ content: toBase64(CONTENT), encoding: 'base64' })
+        });
+        if (!blobRes.ok) throw new Error('blob: ' + blobRes.status);
+        const { sha: blobSha } = await blobRes.json();
+        const refRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, { headers: hdrs });
+        if (!refRes.ok) throw new Error('ref: ' + refRes.status);
+        const { object: { sha: headSha } } = await refRes.json();
+        const commitRes = await fetch(`${base}/git/commits/${headSha}`, { headers: hdrs });
+        if (!commitRes.ok) throw new Error('commit: ' + commitRes.status);
+        const { tree: { sha: baseTreeSha } } = await commitRes.json();
+        const treeRes = await fetch(`${base}/git/trees`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ base_tree: baseTreeSha, tree: [{ path: 'functions/[[path]].js', mode: '100644', type: 'blob', sha: blobSha }] })
+        });
+        if (!treeRes.ok) throw new Error('tree: ' + treeRes.status);
+        const { sha: newTreeSha } = await treeRes.json();
+        const newCommitRes = await fetch(`${base}/git/commits`, {
+            method: 'POST', headers: hdrs,
+            body: JSON.stringify({ message, tree: newTreeSha, parents: [headSha] })
+        });
+        if (!newCommitRes.ok) throw new Error('new commit: ' + newCommitRes.status);
+        const { sha: newCommitSha } = await newCommitRes.json();
+        const updateRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, {
+            method: 'PATCH', headers: hdrs,
+            body: JSON.stringify({ sha: newCommitSha, force: false })
+        });
+        if (!updateRes.ok) throw new Error('ref update: ' + updateRes.status);
+        return true;
+    } catch(e) { console.error('ghPutCatchAllFunction Git Data API failed:', e.message); return false; }
+}
+
+async function deployCatchAllFunction() {
+    const al  = document.getElementById('catchall-alert');
+    const btn = document.getElementById('deploy-catchall-btn');
+    if (!TOKEN || !USER || !REPO) return alert2(al, '❌ Please connect to GitHub first!', 'err');
+    if (btn) btn.disabled = true;
+    alert2(al, '⏳ Pushing functions/[[path]].js to GitHub...', 'inf');
+    try {
+        const ok = await ghPutCatchAllFunction('Fix: deploy functions/[[path]].js catch-all — serves /sitemap.xml and /sitemap_index.xml');
+        if (ok) {
+            alert2(al, '✅ functions/[[path]].js deployed — wait ~2 min for Cloudflare to redeploy, then resubmit sitemaps in Google Search Console.', 'ok');
+        } else {
+            alert2(al, '❌ Deploy failed — check your GitHub token and connection.', 'err');
         }
     } catch(e) {
         alert2(al, '❌ Error: ' + e.message, 'err');
