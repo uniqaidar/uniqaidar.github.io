@@ -153,7 +153,6 @@ function truncate(str, maxLen) {
 function buildFontPage(font, catNames, paraDefault) {
     // Every field from fonts.json
     const name        = font.name      || '';
-    const shortName   = name.replace('UniQAIDAR_', '').trim();
     const path        = font.path      || `UniQaidarFonts/${name}.ttf`;
     const preview     = font.preview   || 'فۆنتەکانی یونی‌قەیدار';
     const paragraph   = (font.paragraph && font.paragraph.trim())
@@ -182,7 +181,7 @@ function buildFontPage(font, catNames, paraDefault) {
     // Description also includes paragraph truncated to 160 chars total
     const metaDesc = truncate(`${preview} — ${paragraph}`, 155);
 
-    const title = `${escHtml(shortName)} - داگرتنی فۆنتی کوردی | UniQaidar`;
+    const title = `${escHtml(name)} - داگرتنی فۆنتی کوردی | UniQaidar`;
     const desc  = `${escHtml(metaDesc)} — فۆنتەکانی یونی‌قەیدار Kurdish Font.`;
 
     // JSON-LD
@@ -203,7 +202,7 @@ function buildFontPage(font, catNames, paraDefault) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${title}</title>
 <meta name="description" content="${desc}">
-<meta name="keywords" content="${escHtml(shortName)}, ${escHtml(catKeywords)}, فۆنتی کوردی, Kurdish Font, UniQaidar, یونی‌قەیدار">
+<meta name="keywords" content="${escHtml(name)}, ${escHtml(catKeywords)}, فۆنتی کوردی, Kurdish Font, UniQaidar, یونی‌قەیدار">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Qaidar Rahim">
 <link rel="canonical" href="${escHtml(fontUrl)}">
@@ -267,7 +266,7 @@ h1{font-size:1.3em;color:#f0f0f0;font-weight:600}
 <body>
 <div class="wrap">
   <div class="card-header">
-    <h1>${dateAdded ? `<span class="new-badge">نوێ</span>` : ''}${escHtml(shortName)}</h1>
+    <h1>${dateAdded ? `<span class="new-badge">نوێ</span>` : ''}${escHtml(name)}</h1>
     ${dateAdded ? `<span class="card-date">📅 ${escHtml(dateAdded)}</span>` : ''}
   </div>
   <div class="cats">${escHtml(catLabels)}</div>
@@ -298,7 +297,7 @@ function buildCategoryPage(cat, fonts, catNames) {
     const jDesc  = jsonSafe(`${count} فۆنتی کوردی بە خۆڕایی لە بەشی ${catLabel}. فۆنتەکانی یونی‌قەیدار — ${count} free Kurdish fonts.`);
 
     const fontLinks = fonts.map(f => {
-        const short    = (f.name || '').replace('UniQAIDAR_', '').trim();
+        const short    = f.name || '';
         const fCat     = (f.category || [])[0] || cat;
         const fUrl     = `${BASE_URL}/?cat=${encodeURIComponent(fCat)}&font=${encodeURIComponent(f.name)}`;
         const fPreview = f.preview || '';
