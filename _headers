@@ -2,6 +2,9 @@
 # NOTE: /sitemap.xml and /sitemap_index.xml are intentionally absent —
 # those routes are handled by Pages Functions which set their own headers.
 # Adding rules here would override the Function response headers.
+# NOTE: /* is intentionally absent — it matched /sitemap.xml and caused
+# Cloudflare to merge headers, overwriting Cache-Control with max-age=0.
+# X-Frame-Options is instead set explicitly on HTML pages below.
 
 /robots.txt
   Content-Type: text/plain; charset=utf-8
@@ -16,5 +19,11 @@
   Cache-Control: public, max-age=86400
   Access-Control-Allow-Origin: *
 
-/*
+/
+  X-Frame-Options: SAMEORIGIN
+
+/index.html
+  X-Frame-Options: SAMEORIGIN
+
+/admin.html
   X-Frame-Options: SAMEORIGIN
