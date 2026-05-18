@@ -5803,7 +5803,7 @@ function filterFonts(category, btn) {
         // Safe: if popular.json missing or empty, fall back gracefully to newest-first
         var popList = (typeof _popularFonts !== 'undefined' && Array.isArray(_popularFonts)) ? _popularFonts : [];
         if (popList.length) {
-            var top25 = popList.slice(0, 25);
+            var top25 = popList.slice();
             var popMap = {};
             top25.forEach(function(name, idx){ popMap[name] = idx; });
             filtered = fonts.filter(function(f){ return popMap.hasOwnProperty(f.name); })
@@ -5811,12 +5811,12 @@ function filterFonts(category, btn) {
             if (!filtered.length) {
                 filtered = fonts.slice().sort(function(a,b){
                     return ((b.dateAdded||'') > (a.dateAdded||'')) ? 1 : -1;
-                }).slice(0, 25);
+                }).slice(0, _popularFonts.length || 25);
             }
         } else {
             filtered = fonts.slice().sort(function(a,b){
                 return ((b.dateAdded||'') > (a.dateAdded||'')) ? 1 : -1;
-            }).slice(0, 25);
+            }).slice(0, _popularFonts.length || 25);
         }
     } else {
         filtered = (catLower === 'all') ? fonts : fonts.filter(function(f) {
@@ -6427,7 +6427,7 @@ async function loadFontsAndInit() {
         var _popResp = await fetch('popular.json?_=' + Date.now());
         if (_popResp.ok) {
             var _popData = await _popResp.json();
-            _popularFonts = Array.isArray(_popData) ? _popData.filter(function(n){ return typeof n === 'string' && n.trim(); }).slice(0, 25) : [];
+            _popularFonts = Array.isArray(_popData) ? _popData.filter(function(n){ return typeof n === 'string' && n.trim(); }) : [];
         } else { _popularFonts = []; }
     } catch(e) { _popularFonts = []; }
 
@@ -6497,7 +6497,7 @@ async function loadFontsAndInit() {
             catCount = fonts.length;
         } else if (catId.toLowerCase() === 'trending') {
             // Trending count = number of fonts found in _popularFonts that exist in fonts[]
-            var _trendNames = new Set(_popularFonts.slice(0, 25));
+            var _trendNames = new Set(_popularFonts);
             catCount = fonts.filter(function(f){ return _trendNames.has(f.name); }).length;
         } else {
             catCount = fonts.filter(function(f) {
@@ -6652,7 +6652,7 @@ function setTrendingSort(mode, btn) {
     var popList = Array.isArray(_popularFonts) ? _popularFonts : [];
     if (mode === 'rank') {
         var popMap = {};
-        popList.slice(0,25).forEach(function(n,i){ popMap[n]=i; });
+        popList.slice(0, popList.length).forEach(function(n,i){ popMap[n]=i; });
         _filteredFonts.sort(function(a,b){ return (popMap[a.name]||99)-(popMap[b.name]||99); });
     } else if (mode === 'name') {
         _filteredFonts.sort(function(a,b){ return (a.name||'').localeCompare(b.name||''); });

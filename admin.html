@@ -5470,14 +5470,19 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
           <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--green)"></div><span>🔥 زۆرترین داونلۆکراوەکان (popular.json)</span><span id="trending-next-run" style="font-size:0.70rem;color:var(--muted);font-family:var(--mono);margin-left:4px;"></span></div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadPopularJson()">📥 Load from GitHub</button>
-            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="autoFillTrending()" title="داخستنی تاپ ٢٥ لە ئامارەکانی داگرتن">⚡ Auto-fill from Stats</button>
+            <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="autoFillTrending()" id="autofill-btn-trending" title="داخستنی تاپ ٢٥ لە ئامارەکانی داگرتن">⚡ Auto-fill from Stats</button>
             <button class="btn btn-primary" style="font-size:0.78rem;padding:5px 12px;" onclick="savePopularJson()"><span data-ku>💾 سەیڤی popular.json بۆ GitHub</span><span data-en style="display:none">💾 Save popular.json to GitHub</span></button>
           </div>
         </div>
         <div class="box-body">
           <div id="trending-alert" class="alert"></div>
           <div id="trending-last-update" style="font-size:0.74rem;color:var(--yellow);font-family:var(--mono);margin-bottom:6px;min-height:18px;"></div>
-          <p style="font-size:0.8rem;color:var(--text);margin-bottom:14px;"><span data-ku>You can reorder fonts by ▲▼ یان بە لابردن و زیادکردن. تاپ ٢٥ فۆنت دەخرێنە پیشاندان لە بەشی 🔥 سایتەکە.</span><span data-en style="display:none">You can reorder fonts by ▲▼ or by removing and adding. Top 25 fonts are shown in the 🔥 زۆرترین داونلۆکراوەکان section of the site.</span><br>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+            <label style="font-size:0.82rem;color:var(--text);white-space:nowrap;">🔢 <span data-ku>ژمارەی فۆنتی تاپ</span><span data-en style="display:none">Top Fonts Limit</span></label>
+            <input type="number" id="trending-limit-input" min="1" max="200" value="25" style="width:80px;direction:ltr;font-family:var(--mono);font-size:0.88rem;padding:5px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);" oninput="trendingApplyLimit(this.value)">
+            <span style="font-size:0.75rem;color:var(--muted);"><span data-ku>(بۆ ⚡ Auto-fill و 💾 Save و پیشاندانی لیست دەکرێت)</span><span data-en style="display:none">(used by ⚡ Auto-fill, 💾 Save and list display)</span></span>
+          </div>
+          <p style="font-size:0.8rem;color:var(--text);margin-bottom:14px;"><span data-ku>You can reorder fonts by ▲▼ یان بە لابردن و زیادکردن. ژمارەی فۆنتی تاپ لەسەر بەشی 🔥 سایتەکە دەخرێنە پیشاندان.</span><span data-en style="display:none">You can reorder fonts by ▲▼ or by removing and adding. The top fonts limit controls how many are shown in the 🔥 section of the site.</span><br>
           <span style="color:var(--green);font-size:0.78rem;"><span data-ku>⚡ کاتێک تابی 📊 Downloads کردنەوە، لیستەکە بەخۆی لە ئامارەکانی Cloudflare نوێ دەبێتەوە. دواتر 💾 سەیڤ بکە بۆ popular.json.</span><span data-en style="display:none">⚡ When the 📊 Downloads tab is opened, the list auto-updates from Cloudflare stats. Then 💾 Save to popular.json.</span></span></p>
           
           <!-- Add font manually -->
@@ -6847,7 +6852,8 @@ function buildCatList() {
         if (c.id === 'All') {
             count = fnts.length;
         } else if (c.id === 'Trending') {
-            count = Math.min(25, fnts.length);
+            count = (typeof _trendingList !== 'undefined' && Array.isArray(_trendingList) && _trendingList.length)
+                    ? _trendingList.length : Math.min(parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25, fnts.length);
         } else {
             count = fnts.filter(f => (Array.isArray(f.category)?f.category:[f.category]).includes(c.id)).length;
         }
@@ -7005,7 +7011,7 @@ function buildArcSel() {
                 count = fnts.length;
             } else if (c.id === 'Trending') {
                 count = (typeof _trendingList !== 'undefined' && Array.isArray(_trendingList) && _trendingList.length)
-                    ? _trendingList.length : Math.min(25, fnts.length);
+                    ? _trendingList.length : Math.min(parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25, fnts.length);
             } else {
                 count = fnts.filter(f => (Array.isArray(f.category) ? f.category : [f.category]).includes(c.id)).length;
             }
@@ -8644,7 +8650,8 @@ async function loadAllStats(force) {
             });
             const cfCountMap = {};
             singleEvs.forEach(ev => { const k = ev.font||'?'; cfCountMap[k] = (cfCountMap[k]||0)+1; });
-            const cfTop25 = Object.entries(cfCountMap).sort((a,b)=>b[1]-a[1]).slice(0,25).map(([n])=>n);
+            const _trendLimit = Math.max(1, parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25);
+            const cfTop25 = Object.entries(cfCountMap).sort((a,b)=>b[1]-a[1]).slice(0,_trendLimit).map(([n])=>n);
 
             if (cfTop25.length) {
                 const tral = document.getElementById('trending-alert');
@@ -8672,7 +8679,7 @@ async function loadAllStats(force) {
                                 );
                                 if (chk.ok) { const d = await chk.json(); _popularJsonSha = d.sha; }
                             }
-                            const body = { message: 'Auto-update popular.json: top 25 trending fonts', content: encoded, branch: BRANCH };
+                            const body = { message: `Auto-update popular.json: top ${_trendLimit} trending fonts`, content: encoded, branch: BRANCH };
                             if (_popularJsonSha) body.sha = _popularJsonSha;
                             const r = await fetch(
                                 `https://api.github.com/repos/${USER}/${REPO}/contents/popular.json`,
@@ -9988,10 +9995,11 @@ async function updateTrending() {
         countMap[k] = (countMap[k] || 0) + 1;
     });
 
-    // ── Step 6: Sort by total count desc, take top 25 names only ──
+    // ── Step 6: Sort by total count desc, take top N names only ──
+    const _trendLimitVal = Math.max(1, parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25);
     const top25 = Object.entries(countMap)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 25)
+        .slice(0, _trendLimitVal)
         .map(([name]) => name);
 
     if (!top25.length) return alert(isEn ? 'No single font downloads found.' : 'هیچ داگرتنی تاکەیەک نەدۆزرایەوە.');
@@ -10013,7 +10021,7 @@ async function updateTrending() {
         }
     } catch(e) {}
 
-    const body = { message: 'Update popular.json: top 25 trending fonts', content: encoded, branch: BRANCH };
+    const body = { message: `Update popular.json: top ${_trendLimitVal} trending fonts`, content: encoded, branch: BRANCH };
     if (popularSha) body.sha = popularSha;
 
     const r = await fetch(
@@ -10059,7 +10067,8 @@ async function loadPopularJson() {
         const d = await r.json();
         _popularJsonSha = d.sha;
         const decoded = fromBase64(d.content);
-        _trendingList = JSON.parse(decoded).filter(n => typeof n === 'string' && n.trim()).slice(0, 25);
+        const _loadLimit = Math.max(1, parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25);
+        _trendingList = JSON.parse(decoded).filter(n => typeof n === 'string' && n.trim()).slice(0, _loadLimit);
         buildTrendingList();
         alert2(al, document.body.classList.contains('lang-en') ? `✅ Loaded! ${_trendingList.length} fonts.` : `✅ بارکرا! ${_trendingList.length} فۆنت.`, 'ok');
         fetchPopularJsonCommitInfo();
@@ -10140,12 +10149,39 @@ function autoFillTrending() {
     });
     const countMap = {};
     singleEvents.forEach(ev => { const k = ev.font || '?'; countMap[k] = (countMap[k] || 0) + 1; });
+    const _afLimit = Math.max(1, parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25);
     _trendingList = Object.entries(countMap)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 25)
+        .slice(0, _afLimit)
         .map(([name]) => name);
     buildTrendingList();
     alert2(al, document.body.classList.contains('lang-en') ? `✅ Top ${_trendingList.length} fonts loaded from stats.` : `✅ ${_trendingList.length} فۆنتی تاپ لە ئامارەکانەوە هێنرا.`, 'ok');
+}
+
+// Apply limit change from the input — extend or trim _trendingList then rebuild
+function trendingApplyLimit(val) {
+    const newLimit = Math.max(1, parseInt(val, 10) || 25);
+    if (newLimit > _trendingList.length && Array.isArray(DL_DATA) && DL_DATA.length) {
+        // Build ranked list from stats, append fonts not already in list
+        const countMap = {};
+        DL_DATA.forEach(ev => {
+            if (ev.type === 'single' && (!ev.event || ev.event === 'download')) {
+                const k = ev.font || '?';
+                countMap[k] = (countMap[k] || 0) + 1;
+            }
+        });
+        const ranked = Object.entries(countMap).sort((a, b) => b[1] - a[1]).map(([n]) => n);
+        const existing = new Set(_trendingList);
+        for (const n of ranked) {
+            if (_trendingList.length >= newLimit) break;
+            if (!existing.has(n)) { _trendingList.push(n); existing.add(n); }
+        }
+    } else if (newLimit < _trendingList.length) {
+        _trendingList = _trendingList.slice(0, newLimit);
+    }
+    if (_trendingList.length) buildTrendingList();
+    const _btn = document.getElementById('autofill-btn-trending');
+    if (_btn) _btn.title = 'داخستنی تاپ ' + newLimit + ' لە ئامارەکانی داگرتن';
 }
 
 // Build the visual list with move up/down and delete
@@ -10183,7 +10219,8 @@ function buildTrendingList() {
             <button class="btn btn-red" style="padding:4px 10px;font-size:0.72rem;" onclick="trendingRemove(${i})">&#128465;</button>`;
         el.appendChild(row);
     });
-    if (countEl) countEl.textContent = _trendingList.length + (document.body.classList.contains('lang-en') ? ' / 25 fonts' : ' / 25 \u0641\u06c6\u0646\u062a');
+    const _displayLimit = Math.max(1, parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25);
+    if (countEl) countEl.textContent = _trendingList.length + (document.body.classList.contains('lang-en') ? ` / ${_displayLimit} fonts` : ` / ${_displayLimit} \u0641\u06c6\u0646\u062a`);
 }
 
 function trendingMove(idx, dir) {
@@ -10207,8 +10244,9 @@ function trendingAddFont() {
         alert2(al, '⚠️ This font is already in the list.', 'inf');
         return;
     }
-    if (_trendingList.length >= 25) {
-        alert2(al, '⚠️ The list is full (25 fonts). Please remove one before adding more.', 'inf');
+    const _addLimit = Math.max(1, parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25);
+    if (_trendingList.length >= _addLimit) {
+        alert2(al, `⚠️ The list is full (${_addLimit} fonts). Please remove one before adding more.`, 'inf');
         return;
     }
     _trendingList.unshift(name);
@@ -10244,6 +10282,29 @@ async function savePopularJson() {
         _popularJsonSha = rd.content ? rd.content.sha : undefined;
         alert2(al, document.body.classList.contains('lang-en') ? `✅ popular.json saved! ${_trendingList.length} fonts.` : `✅ popular.json سەیڤکرا! ${_trendingList.length} فۆنت.`, 'ok');
         setTimeout(() => { if (typeof fetchPopularJsonCommitInfo === 'function') fetchPopularJsonCommitInfo(); }, 2000);
+
+        // ── Also update MAX_FONTS_TRACKED in update-popular.yml ──
+        try {
+            const _limitVal = Math.max(1, parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25);
+            const ymlPath = '.github/workflows/update-popular.yml';
+            const ymlApiUrl = `https://api.github.com/repos/${USER}/${REPO}/contents/${ymlPath}?ref=${BRANCH}`;
+            const ymlRes = await fetch(ymlApiUrl, { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } });
+            if (ymlRes.ok) {
+                const ymlData = await ymlRes.json();
+                const ymlCurrent = atob(ymlData.content.replace(/\n/g,''));
+                const ymlUpdated = ymlCurrent.replace(/MAX_FONTS_TRACKED:\s*'\d+'/, `MAX_FONTS_TRACKED: '${_limitVal}'`);
+                if (ymlUpdated !== ymlCurrent) {
+                    const ymlEncoded = toBase64(ymlUpdated);
+                    const ymlBody = { message: `Update MAX_FONTS_TRACKED: ${_limitVal}`, content: ymlEncoded, sha: ymlData.sha, branch: BRANCH };
+                    const ymlPut = await fetch(
+                        `https://api.github.com/repos/${USER}/${REPO}/contents/${ymlPath}`,
+                        { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body: JSON.stringify(ymlBody) }
+                    );
+                    if (ymlPut.ok) alert2(al, document.body.classList.contains('lang-en') ? `✅ popular.json + update-popular.yml saved! Limit → ${_limitVal}` : `✅ popular.json + update-popular.yml سەیڤکران! ژمارە → ${_limitVal}`, 'ok');
+                }
+            }
+        } catch(e) { /* non-fatal — popular.json already saved */ }
+
     } else {
         const err = await r.json().catch(() => ({}));
         alert2(al, '❌ \u0633\u06d5\u06cc\u06a4 \u0633\u06d5\u0631\u0646\u06d5\u06a9\u06d5\u0648\u062a: ' + (err.message || r.status), 'err');
