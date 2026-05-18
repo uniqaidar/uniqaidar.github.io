@@ -463,7 +463,7 @@ export async function onRequestGet(context) {
             status: 200,
             headers: {
                 'Content-Type':               'application/xml; charset=utf-8',
-                'Cache-Control':              'public, max-age=3600',
+                'Cache-Control':              'no-store, no-cache, must-revalidate, max-age=0',
                 'X-Robots-Tag':               'all',
                 'Access-Control-Allow-Origin': '*',
             }
@@ -477,7 +477,7 @@ export async function onRequestGet(context) {
             status: 200,
             headers: {
                 'Content-Type':               'application/xml; charset=utf-8',
-                'Cache-Control':              'public, max-age=3600',
+                'Cache-Control':              'no-store, no-cache, must-revalidate, max-age=0',
                 'X-Robots-Tag':               'all',
                 'Access-Control-Allow-Origin': '*',
             }
