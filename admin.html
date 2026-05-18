@@ -10067,6 +10067,22 @@ async function loadPopularJson() {
         const d = await r.json();
         _popularJsonSha = d.sha;
         const decoded = fromBase64(d.content);
+        // ── Read MAX_FONTS_TRACKED from update-popular.yml and sync the input ──
+        try {
+            const ymlR = await fetch(
+                `https://api.github.com/repos/${USER}/${REPO}/contents/.github/workflows/update-popular.yml?ref=${BRANCH}`,
+                { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+            );
+            if (ymlR.ok) {
+                const ymlD = await ymlR.json();
+                const ymlText = fromBase64(ymlD.content);
+                const m = ymlText.match(/MAX_FONTS_TRACKED:\s*'(\d+)'/);
+                if (m) {
+                    const inp = document.getElementById('trending-limit-input');
+                    if (inp) inp.value = m[1];
+                }
+            }
+        } catch(e) { /* non-fatal — fall back to input's current value */ }
         const _loadLimit = Math.max(1, parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25);
         _trendingList = JSON.parse(decoded).filter(n => typeof n === 'string' && n.trim()).slice(0, _loadLimit);
         buildTrendingList();
