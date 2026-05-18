@@ -10449,6 +10449,8 @@ async function runLiveAudit() {
         const ct  = r.headers.get('content-type') || '(نییە)';
         const xco = r.headers.get('x-content-type-options') || '(نییە)';
         const cc  = r.headers.get('cache-control') || '(نییە)';
+        const xrt = (r.headers.get('x-robots-tag') || '').toLowerCase();
+        const xrtRaw = r.headers.get('x-robots-tag') || '(نییە)';
         const text = await r.text();
         const firstChar = text.trimStart()[0] || '(بوش)';
         const firstByte = text.charCodeAt(0);
@@ -10473,6 +10475,7 @@ async function runLiveAudit() {
             row('', 'HTTP Status',          r.status + ' ' + r.statusText,           r.ok) +
             row('', 'Content-Type',         ct,                                        appXml) +
             row('', 'X-Content-Type-Options', xco,                                    xco.includes('nosniff')) +
+            row('', 'X-Robots-Tag',         xrtRaw,                                   xrt === '' || xrt === 'all' ? true : xrt.includes('noindex') ? false : null) +
             row('', 'Cache-Control',        cc,                                        null) +
             row('', 'یەکەم بایت',           `"${firstChar}" (0x${firstByte.toString(16).toUpperCase()})`, startOk) +
             row('', 'BOM / Invalid character', hasBOM ? 'BOM found ❌' : 'None ✅', !hasBOM) +
@@ -10485,12 +10488,15 @@ async function runLiveAudit() {
 
         res.style.display = 'block';
 
-        const hasCRLF = text.includes('\r\n');
+        const hasCRLF   = text.includes('\r\n');
+        const hasNoindex = xrt.includes('noindex');
         res.innerHTML +=
             row('', 'CRLF لە فایلەکەدا (مۆسکەی ئەم کێشەیە)', hasCRLF ? 'Yes ❌ — Cloudflare will not apply headers' : 'None ✅', !hasCRLF);
-        const allOk = r.ok && appXml && startOk && !hasBOM && hasXmlDecl && hasUrlset && !hasSpaceInLoc && !ctrlChars && !hasCRLF;
+        const allOk = r.ok && appXml && startOk && !hasBOM && hasXmlDecl && hasUrlset && !hasSpaceInLoc && !ctrlChars && !hasCRLF && !hasNoindex;
         if (allOk) {
             alert2(al, '✅ Everything looks good — please do Step ② (delete and resubmit in GSC).', 'ok');
+        } else if (hasNoindex) {
+            alert2(al, '❌ X-Robots-Tag: noindex detected — Google is ignoring this sitemap! Deploy updated Functions.', 'err');
         } else if (hasCRLF) {
             alert2(al, '❌ Root cause found: CRLF in _headers — run Atomic Save to fix it!', 'err');
         } else if (!appXml) {
@@ -10520,18 +10526,24 @@ async function simulateGooglebot() {
             headers: { 'Accept': 'application/xml,text/xml,*/*' }
         });
         const ct   = r.headers.get('content-type') || '(نییە)';
+        const xrt  = (r.headers.get('x-robots-tag') || '').toLowerCase();
+        const xrtRaw = r.headers.get('x-robots-tag') || '(نییە)';
+        const hasNoindex = xrt.includes('noindex');
         const body = await r.text();
         const urlCount = (body.match(/<url>/g) || []).length;
 
         res.innerHTML =
             `<div style="color:var(--green);">HTTP ${r.status} — ${r.ok ? 'Successful access' : 'Error'}</div>` +
             `<div>Content-Type: <span style="color:${ct.includes('application/xml')?'var(--green)':'var(--red)'};">${ct}</span></div>` +
+            `<div>X-Robots-Tag: <span style="color:${hasNoindex?'var(--red)':'var(--green)'};">${xrtRaw}${hasNoindex?' ⚠️ Google ignoring this!':' ✅'}</span></div>` +
             `<div>ژمارەی URL: <span style="color:var(--yellow);">${urlCount}</span></div>` +
             `<div style="margin-top:6px;color:var(--muted);font-size:0.7rem;">تێبینی: User-Agent ی ڕاستەقینەی Googlebot ناتوانرێت لە browser دا بنێرێت (سیکیۆریتی). ئەگەر HTTP 200 دەستت کەوت — دروستە. بۆ پشکنینی تەواو لە GSC → URL Inspection → Test Live URL بکە.</div>`;
         res.style.display = 'block';
 
-        if (r.ok && ct.includes('application/xml')) {
-            alert2(al, '✅ Site is accessible and Content-Type is correct. Problem is Google cache — do Step ②.', 'ok');
+        if (r.ok && ct.includes('application/xml') && !hasNoindex) {
+            alert2(al, '✅ Site is accessible, Content-Type is correct, X-Robots-Tag is clean. Problem is Google cache — do Step ②.', 'ok');
+        } else if (r.ok && hasNoindex) {
+            alert2(al, '❌ X-Robots-Tag: noindex detected — Google is ignoring this sitemap! Deploy updated Functions to fix it.', 'err');
         } else if (r.ok && !ct.includes('application/xml')) {
             alert2(al, '❌ Accessible but Content-Type is still text/xml — run Atomic Save to fix _headers.', 'err');
         } else {
@@ -10870,34 +10882,29 @@ async function sitemapSelfHeal() {
         return;
     }
 
-    // ── Phase 3: Issues found — run the full atomic 3-file fix silently ──
-    if (liveCRLF)       healLog.push('CRLF found in live sitemap.xml');
+    // ── Phase 3: Issues found — run the atomic fix silently ──
+    // NOTE: sitemap.xml and sitemap_index.xml are served by Pages Functions.
+    // Static files no longer exist in the repo root.
+    // Self-heal can only fix .gitattributes and _headers — not the Function output.
+    if (liveCRLF)       healLog.push('CRLF found in live sitemap.xml (Function output)');
     if (liveWrongCT)    healLog.push('Wrong Content-Type (' + (liveWrongCT ? 'not application/xml' : '') + ')');
     if (liveBOM)        healLog.push('BOM detected at file start');
     if (liveSpaceInLoc) healLog.push('Unencoded space in <loc> URL');
     if (liveMissingXml) healLog.push('Missing <?xml declaration');
 
+    // Check for x-robots-tag: noindex specifically
+    let liveNoindex = false;
+    try {
+        const hResp = await fetch('https://uniqaidar.pages.dev/sitemap.xml', { cache: 'no-store', method: 'HEAD' });
+        const xrt = (hResp.headers.get('x-robots-tag') || '').toLowerCase();
+        liveNoindex = xrt.includes('noindex');
+        if (liveNoindex) healLog.push('X-Robots-Tag: noindex on sitemap (deploy updated Functions to fix)');
+    } catch(_) {}
+
     _selfHealUpdateUI('🔧 Self-Heal: کێشە دۆزرایەوە — چاکسازی خۆکار دەست پێدەکات... / Issues found — auto-fixing: ' + healLog.join(', '), 'inf');
     console.warn('[SelfHeal] Issues detected:', healLog);
 
     try {
-        // ── Fetch raw bytes from GitHub (source of truth, bypasses Cloudflare cache) ──
-        const ghR = await fetch(
-            `https://api.github.com/repos/${USER}/${REPO}/contents/sitemap.xml?ref=${BRANCH}`,
-            { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
-        );
-        if (!ghR.ok) throw new Error('GitHub read failed: ' + ghR.status);
-        const ghD = await ghR.json();
-
-        // Detect CRLF in raw binary BEFORE TextDecoder normalises it
-        const b64clean = (ghD.content || '').replace(/\s/g, '');
-        const binStr   = atob(b64clean);
-        const rawText  = fromBase64(ghD.content);
-        const crlfCount = (binStr.match(/\r\n/g) || []).length;
-
-        // Heal: strip CRLF, BOM, control chars, spaces in <loc>, ensure <?xml
-        const healed = healSitemapXml(rawText);
-
         // Build .gitattributes content
         const gaContent = [
             '# Treat XML/JSON as binary — zero line-ending conversion by Git or GitHub',
@@ -10912,24 +10919,11 @@ async function sitemapSelfHeal() {
             '',
         ].join('\n');
 
-        // Build fresh sitemap_index.xml
-        const todayIdx = new Date().toISOString().slice(0, 10);
-        const xmlIdx = [
-            '<?xml version="1.0" encoding="UTF-8"?>',
-            '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-            '  <sitemap>',
-            '    <loc>https://uniqaidar.pages.dev/sitemap.xml</loc>',
-            '    <lastmod>' + todayIdx + '</lastmod>',
-            '  </sitemap>',
-            '</sitemapindex>',
-            '',
-        ].join('\n');
-
-        // All writes via Git Data API — atomic 3-file commit
+        // All writes via Git Data API — atomic commit
         const hdrs = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
         const base = `https://api.github.com/repos/${USER}/${REPO}`;
 
-        // Create all 4 blobs in parallel (sitemap.xml, sitemap_index.xml, .gitattributes, _headers)
+        // Create blobs (.gitattributes always; _headers only if Content-Type was wrong)
         const headersLines = [
             '# UniQaidar — Cloudflare Pages headers',
             '# NOTE: /sitemap.xml and /sitemap_index.xml are intentionally absent —',
@@ -10964,8 +10958,6 @@ async function sitemapSelfHeal() {
         ];
         const headersContent = headersLines.join('\n');
 
-        // NOTE: smBlob and idxBlob intentionally removed — static sitemap files must
-        // not be pushed to repo root. Functions serve those routes.
         const [gaBlob, hdBlob] = await Promise.all([
             fetch(`${base}/git/blobs`, { method:'POST', headers:hdrs, body:JSON.stringify({ content:toBase64(gaContent),       encoding:'base64' }) }).then(r=>r.json()),
             liveWrongCT
@@ -10979,14 +10971,10 @@ async function sitemapSelfHeal() {
         const commitRes = await fetch(`${base}/git/commits/${headSha}`, { headers: hdrs });
         const { tree:   { sha: baseTreeSha } } = await commitRes.json();
 
-        // Build tree entries — always fix sitemap.xml, sitemap_index.xml, .gitattributes
-        // Only include _headers if Content-Type was wrong
-        // NOTE: sitemap.xml and sitemap_index.xml are intentionally excluded.
-        // Those routes are now served by Pages Functions (functions/sitemap.xml.js
-        // and functions/sitemap_index.xml.js). Static files at those paths would
-        // shadow the Functions on Cloudflare Pages. Do not push them here.
+        // Build tree entries — always fix .gitattributes; _headers only if Content-Type was wrong
+        // NOTE: sitemap.xml and sitemap_index.xml intentionally excluded — served by Functions.
         const treeEntries = [
-            { path: '.gitattributes',    mode:'100644', type:'blob', sha: gaBlob.sha  },
+            { path: '.gitattributes', mode:'100644', type:'blob', sha: gaBlob.sha },
         ];
         if (liveWrongCT && hdBlob && hdBlob.sha) {
             treeEntries.push({ path: '_headers', mode:'100644', type:'blob', sha: hdBlob.sha });
@@ -11002,7 +10990,7 @@ async function sitemapSelfHeal() {
         const newCommitRes = await fetch(`${base}/git/commits`, {
             method:'POST', headers:hdrs,
             body: JSON.stringify({
-                message: `[SelfHeal] Auto-fix sitemap: ${healLog.join(', ')} (${crlfCount} CRLF occurrences)`,
+                message: `[SelfHeal] Auto-fix sitemap: ${healLog.join(', ')}`,
                 tree: newTreeSha, parents: [headSha]
             })
         });
@@ -11013,10 +11001,10 @@ async function sitemapSelfHeal() {
             body: JSON.stringify({ sha: newCommitSha, force: false })
         });
 
-        SITEMAP_SHA = smBlob.sha;
-
-        const fixedMsg = `✅ Self-Heal: چاکسازی خۆکار سەرکەوت / Auto-fixed: ${healLog.join(' | ')}. Wait 2 min for Cloudflare → GSC Sitemaps → Remove both → Resubmit sitemap.xml only.`;
-        _selfHealUpdateUI(fixedMsg, 'ok');
+        const fixedMsg = liveNoindex
+            ? `⚠️ Self-Heal: X-Robots-Tag: noindex detected — deploy updated functions/sitemap.xml.js and functions/sitemap_index.xml.js to fix. Other issues fixed: ${healLog.filter(l => !l.includes('noindex')).join(' | ')}`
+            : `✅ Self-Heal: چاکسازی خۆکار سەرکەوت / Auto-fixed: ${healLog.join(' | ')}. Wait 2 min for Cloudflare → GSC Sitemaps → Remove both → Resubmit sitemap.xml only.`;
+        _selfHealUpdateUI(fixedMsg, liveNoindex ? 'err' : 'ok');
         console.info('[SelfHeal] Fixed successfully:', healLog);
 
     } catch(e) {

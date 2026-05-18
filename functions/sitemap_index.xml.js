@@ -25,10 +25,10 @@ export async function onRequestGet(context) {
     return new Response(xml, {
         status: 200,
         headers: {
-            'Content-Type':   'application/xml; charset=utf-8',
-            'Cache-Control':  'public, max-age=3600',
+            'Content-Type':              'application/xml; charset=utf-8',
+            'Cache-Control':             'public, max-age=3600',
+            'X-Robots-Tag':              'all',
             'Access-Control-Allow-Origin': '*',
-            'X-Frame-Options': 'SAMEORIGIN',
         }
     });
 }
