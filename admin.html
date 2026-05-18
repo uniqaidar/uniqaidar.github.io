@@ -8674,6 +8674,8 @@ async function loadAllStats(force) {
         DL_DATA = [...HIST_DL, ...liveDl];
         VT_DATA = [...HIST_VT, ...liveVt];
         STATS_LOADED = true;
+        // Rebuild trending badges now that DL_DATA is populated (list may have loaded before stats)
+        if (_popularJsonFromGitHub && _trendingList.length) buildTrendingList();
 
         const sulNow = nowSUL();
         const ts = tsLabel + sulNow.toLocaleDateString('en-GB', {timeZone:'Asia/Baghdad', day:'numeric', month:'long', year:'numeric'}) + ' — ' + sulNow.toLocaleTimeString('en-US', {timeZone:'Asia/Baghdad',hour:'2-digit',minute:'2-digit',hour12:true});
