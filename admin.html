@@ -8380,6 +8380,8 @@ function setReady(val) {
             });
         }, 500);
         // Pre-load stats immediately on login — historical archive + today's live data
+        // Load popular.json first so _popularJsonFromGitHub=true before loadAllStats reaches trending block
+        if (TOKEN && USER && REPO) loadPopularJson();
         loadAllStats(false);
         // ── Self-Healing Watchdog: runs 5s after connect, silently fixes any sitemap issues ──
         setTimeout(sitemapSelfHeal, 5000);
@@ -8399,7 +8401,7 @@ function go(id, btn) {
     if (id==='t-site')    { if (typeof pvbPopulateLogic === 'function') pvbPopulateLogic(); if (typeof loadAllSettings === 'function') loadAllSettings(); }
     if (id==='t-modals')  { if (typeof loadAllSettings === 'function') loadAllSettings(); }
     if (id==='t-counter') { if (typeof window.attachRtesForTab === 'function') window.attachRtesForTab('t-counter'); setTimeout(function(){ if (typeof pvbCounterConfigLoad === 'function' && typeof RAW === 'string' && RAW) pvbCounterConfigLoad(); }, 120); }
-    if (id==='t-dlstats') { loadDlStats(false); loadVisitStats(false); if(TOKEN && USER && REPO && !_trendingList.length) { loadPopularJson(); } else if (TOKEN && USER && REPO) { const _tlInp = document.getElementById('trending-limit-input'); if (_tlInp && _trendingList.length > 0) _tlInp.value = _trendingList.length; fetchPopularJsonCommitInfo(); } }
+    if (id==='t-dlstats') { (async () => { if (TOKEN && USER && REPO && !_trendingList.length) { await loadPopularJson(); } else if (TOKEN && USER && REPO) { const _tlInp = document.getElementById('trending-limit-input'); if (_tlInp && _trendingList.length > 0) _tlInp.value = _trendingList.length; fetchPopularJsonCommitInfo(); } loadDlStats(false); loadVisitStats(false); })(); }
 }
 
 
@@ -8697,7 +8699,7 @@ async function loadAllStats(force) {
             if (cfTop25.length) {
                 const tral = document.getElementById('trending-alert');
                 // First time: just populate list (no auto-save yet — SHA not known)
-                if (!_trendingList.length) {
+                if (!_trendingList.length && !_popularJsonFromGitHub) {
                     _trendingList = cfTop25.slice();
                     buildTrendingList();
                     if (tral) alert2(tral, isEn ? '✅ Top ' + cfTop25.length + ' fonts auto-loaded from merged stats. Click 💾 Save popular.json to keep them.' : '✅ زۆرترین داونلۆکراوەکان بەخۆی نوێکرایەوە لە ئامارە تەواوەکانەوە (' + cfTop25.length + ' فۆنت). بۆ پاشکەوتکردن کلیک لەسەر 💾 سەیڤی popular.json بکە.', 'ok');
@@ -10093,6 +10095,7 @@ async function updateTrending() {
 // ══════════════════════════════════════════
 var _trendingList = []; // current working list (array of font name strings)
 var _popularJsonSha = undefined; // GitHub SHA for PUT update
+var _popularJsonFromGitHub = false; // true once loadPopularJson() has successfully loaded
 
 // Load popular.json from GitHub
 async function loadPopularJson() {
@@ -10114,6 +10117,7 @@ async function loadPopularJson() {
         const inp = document.getElementById('trending-limit-input');
         if (inp && _actualCount > 0) inp.value = _actualCount;
         _trendingList = _parsedList;
+        _popularJsonFromGitHub = true;
         // ── Also sync update-popular.yml MAX_FONTS_TRACKED if it differs ──
         try {
             const ymlR = await fetch(
