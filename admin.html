@@ -10291,7 +10291,7 @@ async function savePopularJson() {
             const ymlRes = await fetch(ymlApiUrl, { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } });
             if (ymlRes.ok) {
                 const ymlData = await ymlRes.json();
-                const ymlCurrent = atob(ymlData.content.replace(/\n/g,''));
+                const ymlCurrent = fromBase64(ymlData.content);
                 const ymlUpdated = ymlCurrent.replace(/MAX_FONTS_TRACKED:\s*'\d+'/, `MAX_FONTS_TRACKED: '${_limitVal}'`);
                 if (ymlUpdated !== ymlCurrent) {
                     const ymlEncoded = toBase64(ymlUpdated);
