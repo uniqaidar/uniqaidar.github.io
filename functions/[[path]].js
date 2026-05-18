@@ -1,53 +1,35 @@
 // functions/[[path]].js
 // Catch-all Cloudflare Pages Function.
-// Intercepts /sitemap.xml and /sitemap_index.xml for ALL request types
+// Intercepts /sitemap.xml and /sitemap_index.xml for ALL requests
 // (Googlebot, Bingbot, Google Search Console fetch tool, humans).
 // All other requests pass through via context.next() — zero cost.
-//
-// WHY THIS FILE EXISTS:
-//   functions/index.js    → maps to GET /  only
-//   functions/sitemap.xml.js → shadowed when no static file exists; Cloudflare
-//                              routes /sitemap.xml to the SPA catch-all instead
-//   functions/[[path]].js → maps to EVERY path — guaranteed to run before the
-//                           SPA's _redirects catch-all swallows the request
-//
-// PLACE THIS FILE AT: functions/[[path]].js  (double square brackets, exactly)
 
 const BASE_URL       = 'https://uniqaidar.pages.dev';
 const FONTS_JSON_URL = `${BASE_URL}/fonts.json`;
 
-// ── Asset fetcher: ASSETS binding first (internal, free), fetch() fallback ─────
 async function fetchAsset(context, url) {
     if (context.env && context.env.ASSETS) {
         try {
             const res = await context.env.ASSETS.fetch(new Request(url));
             if (res.ok) return res.text();
-        } catch (_) { /* fall through */ }
+        } catch (_) {}
     }
     const res = await fetch(url, { headers: { 'User-Agent': 'UniQaidar-Render/1.0' } });
     return res.ok ? res.text() : '';
 }
 
-// ── XML attribute/text escaping ─────────────────────────────────────────────────
 function escXml(str) {
     return (str || '')
-        .replace(/&/g,  '&amp;')
-        .replace(/</g,  '&lt;')
-        .replace(/>/g,  '&gt;')
-        .replace(/"/g,  '&quot;')
-        .replace(/'/g,  '&apos;');
+        .replace(/&/g,  '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-// ── Sitemap XML builder ─────────────────────────────────────────────────────────
 async function buildSitemapXml(context) {
     const dateToday = new Date().toISOString().slice(0, 10);
-
     let fonts = [];
     try {
         const txt = await fetchAsset(context, FONTS_JSON_URL);
         if (txt) { const p = JSON.parse(txt); if (Array.isArray(p)) fonts = p; }
     } catch (_) {}
-
     let catIds = [];
     try {
         const html = await fetchAsset(context, `${BASE_URL}/`);
@@ -57,7 +39,6 @@ async function buildSitemapXml(context) {
             while ((m = rx.exec(html)) !== null) catIds.push(m[1]);
         }
     } catch (_) {}
-
     const lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
@@ -71,7 +52,6 @@ async function buildSitemapXml(context) {
         '  </url>',
         '',
     ];
-
     if (catIds.length > 0) {
         lines.push('  <!-- Category Pages -->');
         for (const cat of catIds) {
@@ -84,7 +64,6 @@ async function buildSitemapXml(context) {
         }
         lines.push('');
     }
-
     if (fonts.length > 0) {
         lines.push('  <!-- Individual Font Pages -->');
         for (const font of fonts) {
@@ -99,12 +78,10 @@ async function buildSitemapXml(context) {
             lines.push('  </url>');
         }
     }
-
     lines.push('', '</urlset>');
     return lines.join('\n');
 }
 
-// ── Sitemap response headers — kills every cache layer ─────────────────────────
 const SITEMAP_HEADERS = {
     'Content-Type':                 'application/xml; charset=utf-8',
     'Cache-Control':                'no-store, no-cache, must-revalidate, max-age=0',
@@ -116,20 +93,15 @@ const SITEMAP_HEADERS = {
     'Vary':                         'Accept-Encoding',
 };
 
-// ── Main handler — fires for every request ──────────────────────────────────────
 export async function onRequest(context) {
     const pathname = new URL(context.request.url).pathname;
-
-    // ── /sitemap.xml ────────────────────────────────────────────────────────────
     if (pathname === '/sitemap.xml') {
         const xml = await buildSitemapXml(context);
         return new Response(xml, { status: 200, headers: SITEMAP_HEADERS });
     }
-
-    // ── /sitemap_index.xml ──────────────────────────────────────────────────────
     if (pathname === '/sitemap_index.xml') {
         const today = new Date().toISOString().slice(0, 10);
-        const xml   = [
+        const xml = [
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
             '  <sitemap>',
@@ -140,7 +112,5 @@ export async function onRequest(context) {
         ].join('\n');
         return new Response(xml, { status: 200, headers: SITEMAP_HEADERS });
     }
-
-    // ── All other requests — pass through unchanged ─────────────────────────────
     return context.next();
 }
