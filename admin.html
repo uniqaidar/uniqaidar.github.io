@@ -592,8 +592,9 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             1. Go to <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a><br>
             2. Give it any name<br>
             3. Check <strong>repo</strong> (full repository access)<br>
-            4. Click <strong>Generate token</strong><br>
-            5. Copy the token and paste it below
+            4. Check <strong>workflow</strong> (required to update GitHub Actions yml files)<br>
+            5. Click <strong>Generate token</strong><br>
+            6. Copy the token and paste it below
         </div>
         <div class="setup-field">
             <label>GitHub Token (ghp_...)</label>
@@ -10305,7 +10306,8 @@ async function savePopularJson() {
             const ymlPath = '.github/workflows/update-popular.yml';
             const ymlApiUrl = `https://api.github.com/repos/${USER}/${REPO}/contents/${ymlPath}?ref=${BRANCH}`;
             const ymlRes = await fetch(ymlApiUrl, { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } });
-            if (ymlRes.ok) {
+            if (!ymlRes.ok) { alert2(al, `⚠️ update-popular.yml: فەچ سەرنەکەوت (${ymlRes.status}). popular.json سەیڤکرا بەڵام yml نەگۆڕا.`, 'err'); }
+            else {
                 const ymlData = await ymlRes.json();
                 const ymlCurrent = fromBase64(ymlData.content);
                 const ymlUpdated = ymlCurrent.replace(/MAX_FONTS_TRACKED:\s*'\d+'/, `MAX_FONTS_TRACKED: '${_limitVal}'`);
@@ -10316,10 +10318,17 @@ async function savePopularJson() {
                         `https://api.github.com/repos/${USER}/${REPO}/contents/${ymlPath}`,
                         { method: 'PUT', headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body: JSON.stringify(ymlBody) }
                     );
-                    if (ymlPut.ok) alert2(al, document.body.classList.contains('lang-en') ? `✅ popular.json + update-popular.yml saved! Limit → ${_limitVal}` : `✅ popular.json + update-popular.yml سەیڤکران! ژمارە → ${_limitVal}`, 'ok');
+                    if (ymlPut.ok) {
+                        alert2(al, document.body.classList.contains('lang-en') ? `✅ popular.json + update-popular.yml saved! Limit → ${_limitVal}` : `✅ popular.json + update-popular.yml سەیڤکران! ژمارە → ${_limitVal}`, 'ok');
+                    } else {
+                        const ymlErr = await ymlPut.json().catch(() => ({}));
+                        alert2(al, `⚠️ popular.json سەیڤکرا بەڵام update-popular.yml نەگۆڕا: ${ymlErr.message || ymlPut.status}`, 'err');
+                    }
+                } else {
+                    alert2(al, document.body.classList.contains('lang-en') ? `✅ popular.json saved! Limit already ${_limitVal} in yml — no change needed.` : `✅ popular.json سەیڤکرا! ژمارە ${_limitVal} پێشتر لە yml تۆماربووە.`, 'ok');
                 }
             }
-        } catch(e) { /* non-fatal — popular.json already saved */ }
+        } catch(e) { alert2(al, `⚠️ popular.json سەیڤکرا بەڵام update-popular.yml نەگۆڕا: ${e.message}`, 'err'); }
 
     } else {
         const err = await r.json().catch(() => ({}));
