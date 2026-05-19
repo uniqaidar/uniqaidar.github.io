@@ -1139,11 +1139,11 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                 </div>
                 <div id="sitemap-alert" class="alert"></div>
                 <div class="btn-row">
-                    <button class="btn btn-green" onclick="runAtomicSave()" id="atomic-save-btn" title="One click — saves fonts.json + index.html + sitemap.xml + robots.txt + _headers">⚡ Atomic Save</button>
+                    <button class="btn btn-green" onclick="runAtomicSave()" id="atomic-save-btn" title="One click — saves fonts.json + index.html + robots.txt + _headers + _redirects + .gitattributes">⚡ Atomic Save</button>
                     <button class="btn btn-primary" onclick="regenerateSitemapManual()" id="sitemap-btn"><span data-ku>🗺 دروستکردنی sitemap.xml</span><span data-en style="display:none">🗺 Generate sitemap.xml</span></button>
                     <button class="btn" style="background:#4285f4;color:#fff;" onclick="pingGoogleManual()" title="Notify Google and Bing that the sitemap was updated">🔔 Ping Google</button>
                     <button class="btn" style="background:#0078d4;color:#fff;" onclick="submitBingSitemap()" id="bing-sitemap-btn" title="Submit sitemap directly to Bing Webmaster Tools via API">🔵 Bing Sitemap</button>
-                    <button class="btn" style="background:#00b050;color:#fff;" onclick="emergencyCRLFFix()" id="crlf-fix-btn" title="Remove CRLF from sitemap.xml — fixes the root cause of Couldn't Fetch">🛠 Fix CRLF Now</button>
+                    <button class="btn" style="background:#00b050;color:#fff;" onclick="emergencyCRLFFix()" id="crlf-fix-btn" title="Re-push .gitattributes via Git Data API — prevents GitHub from re-introducing CRLF into XML/JSON files">🛠 Fix CRLF Now</button>
                     <button class="btn" style="background:#7c3aed;color:#fff;" onclick="deployRedirects()" title="Deploy _redirects file — stops Cloudflare Pages SPA catch-all from serving HTML instead of XML for sitemap.xml">🛡 Deploy _redirects</button>
                     <button class="btn" style="background:#b91c1c;color:#fff;" onclick="deleteSitemapStaticFiles()" id="delete-static-sitemaps-btn" title="Delete static sitemap.xml and sitemap_index.xml from repo root so Cloudflare Pages routes those URLs to the Functions instead">🗑 Delete Static Sitemaps</button>
                     <button class="btn" style="background:#0f766e;color:#fff;" onclick="deployCatchAllFunction()" id="deploy-catchall-btn" title="Push functions/[[path]].js to GitHub — catch-all that serves /sitemap.xml and /sitemap_index.xml before the SPA can intercept them">🚀 Deploy [[path]].js</button>
@@ -5894,9 +5894,8 @@ async function atomicSave(fontsArray, htmlContent, commitMessage) {
 
     // 3. sitemap.xml — DISABLED: static file must not exist in repo root.
     // Cloudflare Pages serves static files over Functions; sitemap.xml and
-    // sitemap_index.xml must be absent so the Functions at functions/sitemap.xml.js
-    // and functions/sitemap_index.xml.js are reached. Use "Delete Static Sitemaps"
-    // button if the static files were accidentally recreated.
+    // sitemap_index.xml must be absent so functions/[[path]].js is reached.
+    // Use "Delete Static Sitemaps" button if the static files were accidentally recreated.
     results.sitemap = true; // mark ok so atomicSave success check still passes
 
     // 4. robots.txt
@@ -5909,7 +5908,7 @@ async function atomicSave(fontsArray, htmlContent, commitMessage) {
     try { results.redirects = await ghPutRedirects(commitMessage + ' [_redirects]'); } catch(e) {}
 
     // 7. sitemap_index.xml — DISABLED: static file must not exist in repo root.
-    // The Function at functions/sitemap_index.xml.js handles this route.
+    // functions/[[path]].js handles this route.
 
     // 8. .gitattributes — force LF on all XML/JSON/txt files so GitHub never re-introduces CRLF
     try { await ghPutGitattributes(commitMessage + ' [.gitattributes]'); } catch(e) {}
@@ -6039,6 +6038,8 @@ async function ghPutFonts(fontsArray, message) {
 // ══════════════════════════════════════════
 // GitHub API — sitemap.xml
 // ══════════════════════════════════════════
+// DISABLED — DO NOT CALL. sitemap.xml is served dynamically by functions/[[path]].js.
+// A static sitemap.xml in the repo root shadows the Function and breaks Google Search Console.
 async function ghGetSitemapSha() {
     try {
         const r = await fetch(
@@ -6052,6 +6053,8 @@ async function ghGetSitemapSha() {
     } catch(e) { return ''; }
 }
 
+// DISABLED — DO NOT CALL. Pushing a static sitemap.xml shadows functions/[[path]].js
+// and instantly re-introduces the "Couldn't fetch" error in Google Search Console.
 async function ghPutSitemap(xmlContent, message) {
     // Use Git Data API (blob→tree→commit) instead of Contents API.
     // Contents API goes through GitHub's autocrlf filter which re-introduces \r\n.
@@ -6113,6 +6116,8 @@ async function ghPutSitemap(xmlContent, message) {
 // ══════════════════════════════════════════
 // GitHub API — sitemap_index.xml
 // ══════════════════════════════════════════
+// DISABLED — DO NOT CALL. sitemap_index.xml is served dynamically by functions/[[path]].js.
+// A static sitemap_index.xml in the repo root shadows the Function.
 async function ghPutSitemapIndex(message) {
     const today = new Date().toISOString().slice(0, 10);
     // LF-only, clean XML — alternative GSC submission target
@@ -6239,11 +6244,13 @@ async function ghPutHeaders(message) {
         '  Content-Type: application/xml; charset=utf-8',
         '  Cache-Control: no-store, no-cache, must-revalidate, max-age=0',
         '  X-Robots-Tag: all',
+        '  X-Content-Type-Options: nosniff',
         '',
         '/sitemap_index.xml',
         '  Content-Type: application/xml; charset=utf-8',
         '  Cache-Control: no-store, no-cache, must-revalidate, max-age=0',
         '  X-Robots-Tag: all',
+        '  X-Content-Type-Options: nosniff',
         '',
         '/',
         '  X-Frame-Options: SAMEORIGIN',
@@ -6697,10 +6704,9 @@ function buildSitemapXml(fontsArray) {
 
 async function generateAndPushSitemap(fontsArray, triggerMsg) {
     // DISABLED: static sitemap.xml and sitemap_index.xml must not exist in repo root.
-    // Cloudflare Pages serves static files over Functions. The Functions at
-    // functions/sitemap.xml.js and functions/sitemap_index.xml.js dynamically
-    // generate the correct XML. Pushing static files here would shadow the Functions.
-    // Ping search engines so they re-crawl via the Functions.
+    // Cloudflare Pages serves static files over Functions. functions/[[path]].js
+    // dynamically generates the correct XML. Pushing static files here would shadow the Function.
+    // Ping search engines so they re-crawl via functions/[[path]].js.
     setTimeout(pingGoogle, 1000);
     return true; // report success so callers don't show an error
 }
@@ -6732,13 +6738,13 @@ async function regenerateSitemapManual() {
     const al = document.getElementById('sitemap-alert');
     if (!TOKEN || !USER || !REPO) return alert2(al, '❌ Please connect to GitHub first!', 'err');
     if (!FONTS_RAW || FONTS_RAW.length === 0) return alert2(al, '❌ fonts.json not loaded — reconnect to GitHub.', 'err');
-    alert2(al, '⏳ Building and pushing sitemap...', 'inf');
+    alert2(al, '⏳ Notifying search engines...', 'inf');
     const ok = await generateAndPushSitemap(FONTS_RAW, 'Manual sitemap regeneration');
     if (ok) {
         const total = 1 + new Set(['All', ...FONTS_RAW.flatMap(f => Array.isArray(f.category) ? f.category : [f.category || ''])].filter(Boolean)).size + FONTS_RAW.length;
-        alert2(al, `✅ sitemap.xml updated! Total URLs: ${total}`, 'ok');
+        alert2(al, `✅ Search engines notified (ping sent). Sitemap is generated live by functions/[[path]].js — no static file needed. Expected URLs: ${total}`, 'ok');
     } else {
-        alert2(al, '❌ Failed to push sitemap.xml — please try again.', 'err');
+        alert2(al, '❌ Failed to notify search engines — please try again.', 'err');
     }
 }
 
@@ -11134,11 +11140,13 @@ async function sitemapSelfHeal() {
             '  Content-Type: application/xml; charset=utf-8',
             '  Cache-Control: no-store, no-cache, must-revalidate, max-age=0',
             '  X-Robots-Tag: all',
+            '  X-Content-Type-Options: nosniff',
             '',
             '/sitemap_index.xml',
             '  Content-Type: application/xml; charset=utf-8',
             '  Cache-Control: no-store, no-cache, must-revalidate, max-age=0',
             '  X-Robots-Tag: all',
+            '  X-Content-Type-Options: nosniff',
             '',
             '/',
             '  X-Frame-Options: SAMEORIGIN',
@@ -11196,7 +11204,7 @@ async function sitemapSelfHeal() {
         });
 
         const fixedMsg = liveNoindex
-            ? `⚠️ Self-Heal: X-Robots-Tag: noindex detected — deploy updated functions/sitemap.xml.js and functions/sitemap_index.xml.js to fix. Other issues fixed: ${healLog.filter(l => !l.includes('noindex')).join(' | ')}`
+            ? `⚠️ Self-Heal: X-Robots-Tag: noindex detected — deploy updated functions/[[path]].js to fix. Other issues fixed: ${healLog.filter(l => !l.includes('noindex')).join(' | ')}`
             : `✅ Self-Heal: چاکسازی خۆکار سەرکەوت / Auto-fixed: ${healLog.join(' | ')}. Wait 2 min for Cloudflare → GSC Sitemaps → Remove both → Resubmit sitemap.xml only.`;
         _selfHealUpdateUI(fixedMsg, liveNoindex ? 'err' : 'ok');
         console.info('[SelfHeal] Fixed successfully:', healLog);
@@ -11248,21 +11256,13 @@ async function emergencyCRLFFix() {
         // Always force-write to guarantee clean LF file on GitHub
         // (GitHub autocrlf can silently re-introduce \r\n even on a "clean" file)
 
-        // Push cleaned version — ONE atomic commit with both .gitattributes + sitemap.xml
-        // This avoids the HEAD race condition where two sequential commits cause a 422 on ref update
+        // Push cleaned version — ONE atomic commit for .gitattributes only.
+        // sitemap.xml and sitemap_index.xml are served by functions/[[path]].js — static files must not exist.
         const crlfCount = (binStr.match(/\r\n/g) || []).length;
         const hdrs = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
         const base = `https://api.github.com/repos/${USER}/${REPO}`;
 
-        // 1. Create blob for sitemap.xml (raw bytes, no autocrlf)
-        const blobRes = await fetch(`${base}/git/blobs`, {
-            method: 'POST', headers: hdrs,
-            body: JSON.stringify({ content: toBase64(healed), encoding: 'base64' })
-        });
-        if (!blobRes.ok) throw new Error('blob: ' + blobRes.status);
-        const { sha: blobSha } = await blobRes.json();
-
-        // 2. Create blob for .gitattributes (*.xml -text = binary, no conversion ever)
+        // 1. Create blob for .gitattributes (*.xml -text = binary, no conversion ever)
         const gaContent = [
             '# Treat XML/JSON as binary — zero line-ending conversion by Git or GitHub',
             '*.xml -text',
@@ -11282,37 +11282,19 @@ async function emergencyCRLFFix() {
         if (!gaBlobRes.ok) throw new Error('ga blob: ' + gaBlobRes.status);
         const { sha: gaBlobSha } = await gaBlobRes.json();
 
-        // 3. Get HEAD
+        // 2. Get HEAD
         const refRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, { headers: hdrs });
         if (!refRes.ok) throw new Error('ref: ' + refRes.status);
         const { object: { sha: headSha } } = await refRes.json();
 
-        // 4. Get base tree
+        // 3. Get base tree
         const commitRes = await fetch(`${base}/git/commits/${headSha}`, { headers: hdrs });
         if (!commitRes.ok) throw new Error('commit: ' + commitRes.status);
         const { tree: { sha: baseTreeSha } } = await commitRes.json();
 
-        // 5a. Build fresh sitemap_index.xml content (LF-only, no Contents API read)
-        //     Regenerate rather than fetch+heal — avoids another Contents API call that
-        //     could itself return CRLF-corrupted base64 from GitHub's smudge filter.
-        const todayIdx = new Date().toISOString().slice(0, 10);
-        const xmlIdx = [
-            '<?xml version="1.0" encoding="UTF-8"?>',
-            '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-            '  <sitemap>',
-            '    <loc>https://uniqaidar.pages.dev/sitemap.xml</loc>',
-            '    <lastmod>' + todayIdx + '</lastmod>',
-            '  </sitemap>',
-            '</sitemapindex>',
-            '',
-        ].join('\n'); // join('\n') is guaranteed LF — never \r\n
-
-        // 5a-5b. sitemap_index.xml blob DISABLED — static file must not exist in repo root.
-        // The Function at functions/sitemap_index.xml.js serves this route dynamically.
-
-        // 5c. ONE atomic tree with ONLY .gitattributes — sitemap static files intentionally excluded.
-        //     Static sitemap.xml / sitemap_index.xml in repo root shadow the Pages Functions.
-        //     Use "Delete Static Sitemaps" button to remove them if accidentally present.
+        // 4. ONE atomic tree with ONLY .gitattributes — sitemap static files intentionally excluded.
+        //    Static sitemap.xml / sitemap_index.xml in repo root shadow functions/[[path]].js.
+        //    Use "Delete Static Sitemaps" button to remove them if accidentally present.
         const treeRes = await fetch(`${base}/git/trees`, {
             method: 'POST', headers: hdrs,
             body: JSON.stringify({
@@ -11325,7 +11307,7 @@ async function emergencyCRLFFix() {
         if (!treeRes.ok) throw new Error('tree: ' + treeRes.status);
         const { sha: newTreeSha } = await treeRes.json();
 
-        // 6. One commit for all three files
+        // 5. One commit for .gitattributes
         const newCommitRes = await fetch(`${base}/git/commits`, {
             method: 'POST', headers: hdrs,
             body: JSON.stringify({
@@ -11337,15 +11319,14 @@ async function emergencyCRLFFix() {
         if (!newCommitRes.ok) throw new Error('new commit: ' + newCommitRes.status);
         const { sha: newCommitSha } = await newCommitRes.json();
 
-        // 7. Update branch ref
+        // 6. Update branch ref
         const updateRes = await fetch(`${base}/git/refs/heads/${BRANCH}`, {
             method: 'PATCH', headers: hdrs,
             body: JSON.stringify({ sha: newCommitSha, force: false })
         });
         if (!updateRes.ok) throw new Error('ref update: ' + updateRes.status);
-        SITEMAP_SHA = blobSha;
 
-        const msg = `✅ .gitattributes committed via Git Data API. Static sitemap.xml / sitemap_index.xml are NOT pushed — Pages Functions serve those routes. Wait 2 min for Cloudflare → then resubmit sitemaps in Google Search Console.`;
+        const msg = `✅ .gitattributes committed via Git Data API. Static sitemap.xml / sitemap_index.xml are NOT pushed — functions/[[path]].js serves those routes. Wait 2 min for Cloudflare → then resubmit sitemaps in Google Search Console.`;
         alert2(al, msg, 'ok');
     } catch(e) {
         alert2(al, '❌ Error: ' + e.message, 'err');
