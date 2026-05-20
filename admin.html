@@ -6383,26 +6383,38 @@ async function ghPutRedirects(message) {
 // GitHub API — manifest.json (auto-update font count)
 // ══════════════════════════════════════════
 async function ghPutManifest(label, message) {
-    // Fetch current manifest.json from GitHub to get its SHA and content
     const hdrs = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
     const base = `https://api.github.com/repos/${USER}/${REPO}`;
     try {
-        // 1. Get current file (need SHA for update, and content to preserve all other fields)
+        // 1. Get current file — need SHA for update and content to preserve all fields
         const getRes = await fetch(`${base}/contents/${MANIFEST_FILE}?ref=${BRANCH}`, { headers: hdrs });
-        if (!getRes.ok) throw new Error('get manifest: ' + getRes.status);
-        const getJson = await getRes.json();
-        MANIFEST_SHA = getJson.sha;
-        const currentContent = fromBase64(getJson.content);
-        // 2. Replace only the font count number in the description field
+        let currentContent, sha;
+        if (getRes.status === 404) {
+            // File does not exist yet — build it from the known template
+            currentContent = `{\n  "name": "UniQaidar Fonts | فۆنتەکانی یونی قەیدار",\n  "short_name": "UniQaidar",\n  "description": "داگرتنی فۆنتی کوردی و عەرەبی بە خۆڕایی — ${label} TTF fonts",\n  "start_url": "/",\n  "display": "standalone",\n  "background_color": "#1a1a1a",\n  "theme_color": "#ff5700",\n  "lang": "ku",\n  "dir": "rtl",\n  "icons": [\n    { "src": "favicon.png", "sizes": "192x192", "type": "image/png" },\n    { "src": "Logo.png",    "sizes": "512x512", "type": "image/png" }\n  ]\n}\n`;
+            sha = undefined;
+        } else if (!getRes.ok) {
+            throw new Error('get manifest: ' + getRes.status);
+        } else {
+            const getJson = await getRes.json();
+            sha = getJson.sha;
+            MANIFEST_SHA = sha;
+            currentContent = fromBase64(getJson.content);
+        }
+        // 2. Replace the font count number in the description field
         const updatedContent = currentContent.replace(
-            /("description"\s*:\s*"[^"]*?)\d{3}\+( TTF fonts")/,
+            /("description"\s*:\s*"[^"]*?)\d{3}\+( TTF fonts)/,
             `$1${label}$2`
         );
-        // 3. Save via Contents API (manifest.json is JSON — no CRLF risk)
-        const body = JSON.stringify({ message, content: toBase64(updatedContent), sha: MANIFEST_SHA, branch: BRANCH });
+        // 3. Save via Contents API
+        const bodyObj = { message, content: toBase64(updatedContent), branch: BRANCH };
+        if (sha) bodyObj.sha = sha;
         const putRes = await fetch(`${base}/contents/${MANIFEST_FILE}`,
-            { method: 'PUT', headers: hdrs, body });
-        if (!putRes.ok) throw new Error('put manifest: ' + putRes.status);
+            { method: 'PUT', headers: hdrs, body: JSON.stringify(bodyObj) });
+        if (!putRes.ok) {
+            const errText = await putRes.text();
+            throw new Error('put manifest ' + putRes.status + ': ' + errText);
+        }
         const putJson = await putRes.json();
         MANIFEST_SHA = putJson.content.sha;
         return true;
