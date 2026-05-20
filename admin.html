@@ -6392,7 +6392,7 @@ async function ghPutManifest(label, message) {
         if (!getRes.ok) throw new Error('get manifest: ' + getRes.status);
         const getJson = await getRes.json();
         MANIFEST_SHA = getJson.sha;
-        const currentContent = atob(getJson.content.replace(/\n/g, ''));
+        const currentContent = fromBase64(getJson.content);
         // 2. Replace only the font count number in the description field
         const updatedContent = currentContent.replace(
             /("description"\s*:\s*"[^"]*?)\d{3}\+( TTF fonts")/,
