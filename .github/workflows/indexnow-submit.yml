@@ -1,0 +1,199 @@
+name: "[🔍] UniQaidar IndexNow — Full URL Submission"
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: indexnow-submit
+  cancel-in-progress: false
+
+env:
+  TZ: Asia/Baghdad
+  SITE_URL: https://uniqaidar.pages.dev
+  BING_INDEXNOW_ENDPOINT: https://api.indexnow.org/indexnow
+
+jobs:
+  submit-urls:
+    name: "Submit All URLs to Bing via IndexNow"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # ── 1. Checkout ────────────────────────────────────────────────────────
+      - name: "📥 Checkout repository"
+        uses: actions/checkout@v4
+
+      # ── 2. Build full URL list ─────────────────────────────────────────────
+      - name: "🗂️ Build complete URL list"
+        id: build_urls
+        run: |
+          python3 << 'PYEOF'
+          import json, re, os
+
+          SITE = "https://uniqaidar.pages.dev"
+          urls = []
+
+          # ── Static / root URLs ──────────────────────────────────────────
+          urls.append(SITE + "/")
+          urls.append(SITE + "/sitemap.xml")
+          urls.append(SITE + "/sitemap_index.xml")
+
+          # ── Category URLs — parsed from index.html ──────────────────────
+          try:
+              with open("index.html", "r", encoding="utf-8") as f:
+                  html = f.read()
+              cat_pattern = re.compile(
+                  r"""<button\s+class="filter-btn"\s+onclick="filterFonts\('([^']+)',\s*this\)">([^<]+)<\/button>"""
+              )
+              for cat_id, _ in cat_pattern.findall(html):
+                  if cat_id.lower() != "all":
+                      urls.append(f"{SITE}/?cat={cat_id}")
+              print(f"✅ Categories found: {len(cat_pattern.findall(html))}")
+          except FileNotFoundError:
+              print("⚠️  index.html not found — skipping category URLs")
+
+          # ── Font URLs — parsed from fonts.json ──────────────────────────
+          try:
+              with open("fonts.json", "r", encoding="utf-8") as f:
+                  fonts = json.load(f)
+              for font in fonts:
+                  name = font.get("name") or font.get("fontName") or font.get("id") or ""
+                  if name:
+                      from urllib.parse import quote
+                      urls.append(f"{SITE}/?font={quote(name)}")
+              print(f"✅ Fonts found: {len(fonts)}")
+          except FileNotFoundError:
+              print("⚠️  fonts.json not found — skipping font URLs")
+          except json.JSONDecodeError as e:
+              print(f"⚠️  fonts.json parse error: {e} — skipping font URLs")
+
+          # ── Deduplicate, preserve order ──────────────────────────────────
+          seen = set()
+          deduped = []
+          for u in urls:
+              if u not in seen:
+                  seen.add(u)
+                  deduped.append(u)
+
+          print(f"📊 Total unique URLs to submit: {len(deduped)}")
+
+          # ── Write to file for next step ──────────────────────────────────
+          with open("/tmp/urls.json", "w", encoding="utf-8") as f:
+              json.dump(deduped, f, ensure_ascii=False, indent=2)
+
+          # ── Write count as output ────────────────────────────────────────
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              fh.write(f"url_count={len(deduped)}\n")
+
+          PYEOF
+
+      # ── 3. Submit with KEY 1 ───────────────────────────────────────────────
+      - name: "📡 Submit to IndexNow — Key 1"
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY_1 }}
+        run: |
+          python3 << 'PYEOF'
+          import json, urllib.request, urllib.error, os, time
+
+          key = os.environ["INDEXNOW_KEY"]
+          site = "https://uniqaidar.pages.dev"
+          endpoint = "https://api.indexnow.org/indexnow"
+
+          with open("/tmp/urls.json", "r", encoding="utf-8") as f:
+              urls = json.load(f)
+
+          # IndexNow accepts up to 10,000 URLs per request — submit in chunks
+          CHUNK = 10000
+          chunks = [urls[i:i+CHUNK] for i in range(0, len(urls), CHUNK)]
+
+          for idx, chunk in enumerate(chunks, 1):
+              payload = {
+                  "host": "uniqaidar.pages.dev",
+                  "key": key,
+                  "keyLocation": f"{site}/{key}.txt",
+                  "urlList": chunk
+              }
+              body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+              req = urllib.request.Request(
+                  endpoint,
+                  data=body,
+                  headers={"Content-Type": "application/json; charset=utf-8"},
+                  method="POST"
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as resp:
+                      print(f"✅ Key 1 — Chunk {idx}/{len(chunks)}: {resp.status} {resp.reason} ({len(chunk)} URLs)")
+              except urllib.error.HTTPError as e:
+                  body_text = e.read().decode("utf-8", errors="replace")
+                  print(f"❌ Key 1 — Chunk {idx} HTTP {e.code}: {body_text}")
+                  raise
+              except urllib.error.URLError as e:
+                  print(f"❌ Key 1 — Chunk {idx} URLError: {e.reason}")
+                  raise
+              if idx < len(chunks):
+                  time.sleep(2)
+
+          print(f"✅ Key 1 submission complete — {len(urls)} URLs across {len(chunks)} chunk(s)")
+          PYEOF
+
+      # ── 4. Submit with KEY 2 ───────────────────────────────────────────────
+      - name: "📡 Submit to IndexNow — Key 2"
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY_2 }}
+        run: |
+          python3 << 'PYEOF'
+          import json, urllib.request, urllib.error, os, time
+
+          key = os.environ["INDEXNOW_KEY"]
+          site = "https://uniqaidar.pages.dev"
+          endpoint = "https://api.indexnow.org/indexnow"
+
+          with open("/tmp/urls.json", "r", encoding="utf-8") as f:
+              urls = json.load(f)
+
+          CHUNK = 10000
+          chunks = [urls[i:i+CHUNK] for i in range(0, len(urls), CHUNK)]
+
+          for idx, chunk in enumerate(chunks, 1):
+              payload = {
+                  "host": "uniqaidar.pages.dev",
+                  "key": key,
+                  "keyLocation": f"{site}/{key}.txt",
+                  "urlList": chunk
+              }
+              body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+              req = urllib.request.Request(
+                  endpoint,
+                  data=body,
+                  headers={"Content-Type": "application/json; charset=utf-8"},
+                  method="POST"
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as resp:
+                      print(f"✅ Key 2 — Chunk {idx}/{len(chunks)}: {resp.status} {resp.reason} ({len(chunk)} URLs)")
+              except urllib.error.HTTPError as e:
+                  body_text = e.read().decode("utf-8", errors="replace")
+                  print(f"❌ Key 2 — Chunk {idx} HTTP {e.code}: {body_text}")
+                  raise
+              except urllib.error.URLError as e:
+                  print(f"❌ Key 2 — Chunk {idx} URLError: {e.reason}")
+                  raise
+              if idx < len(chunks):
+                  time.sleep(2)
+
+          print(f"✅ Key 2 submission complete — {len(urls)} URLs across {len(chunks)} chunk(s)")
+          PYEOF
+
+      # ── 5. Summary ────────────────────────────────────────────────────────
+      - name: "📋 Submission summary"
+        if: always()
+        run: |
+          echo "════════════════════════════════════════════════"
+          echo "  UniQaidar IndexNow Submission — Complete"
+          echo "  Time (Sulaymaniyah): $(TZ=Asia/Baghdad date '+%Y-%m-%d %H:%M:%S')"
+          echo "  Total URLs submitted: ${{ steps.build_urls.outputs.url_count }}"
+          echo "  Keys used: INDEXNOW_KEY_1 + INDEXNOW_KEY_2"
+          echo "  Endpoint: https://api.indexnow.org/indexnow"
+          echo "════════════════════════════════════════════════"
