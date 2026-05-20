@@ -5589,6 +5589,9 @@ let SITEMAP_SHA = '';
 const HEADERS_FILE = '_headers';
 let HEADERS_SHA = '';
 
+const MANIFEST_FILE = 'manifest.json';
+let MANIFEST_SHA = '';
+
 const LS_KEY = 'uqadmin_cfg';
 
 // ══════════════════════════════════════════
@@ -5917,6 +5920,16 @@ async function atomicSave(fontsArray, htmlContent, commitMessage) {
     if (INDEXNOW_KEY) {
         try { await saveIndexNowKeyFile(); } catch(e) {}
     }
+
+    // 10. manifest.json — auto-update font count in description field
+    try {
+        const total = Array.isArray(fontsArray) ? fontsArray.length : 0;
+        if (total > 0) {
+            const rounded = Math.floor(total / 10) * 10;
+            const label = rounded + '+';
+            await ghPutManifest(label, commitMessage + ' [manifest.json]');
+        }
+    } catch(e) {}
 
     return results;
 }
@@ -6364,6 +6377,36 @@ async function ghPutRedirects(message) {
         if (!updateRes.ok) throw new Error('ref update: ' + updateRes.status);
         return true;
     } catch(e) { console.error('ghPutRedirects Git Data API failed:', e.message); return false; }
+}
+
+// ══════════════════════════════════════════
+// GitHub API — manifest.json (auto-update font count)
+// ══════════════════════════════════════════
+async function ghPutManifest(label, message) {
+    // Fetch current manifest.json from GitHub to get its SHA and content
+    const hdrs = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+    const base = `https://api.github.com/repos/${USER}/${REPO}`;
+    try {
+        // 1. Get current file (need SHA for update, and content to preserve all other fields)
+        const getRes = await fetch(`${base}/contents/${MANIFEST_FILE}?ref=${BRANCH}`, { headers: hdrs });
+        if (!getRes.ok) throw new Error('get manifest: ' + getRes.status);
+        const getJson = await getRes.json();
+        MANIFEST_SHA = getJson.sha;
+        const currentContent = atob(getJson.content.replace(/\n/g, ''));
+        // 2. Replace only the font count number in the description field
+        const updatedContent = currentContent.replace(
+            /("description"\s*:\s*"[^"]*?)\d{3}\+( TTF fonts")/,
+            `$1${label}$2`
+        );
+        // 3. Save via Contents API (manifest.json is JSON — no CRLF risk)
+        const body = JSON.stringify({ message, content: toBase64(updatedContent), sha: MANIFEST_SHA, branch: BRANCH });
+        const putRes = await fetch(`${base}/contents/${MANIFEST_FILE}`,
+            { method: 'PUT', headers: hdrs, body });
+        if (!putRes.ok) throw new Error('put manifest: ' + putRes.status);
+        const putJson = await putRes.json();
+        MANIFEST_SHA = putJson.content.sha;
+        return true;
+    } catch(e) { console.error('ghPutManifest failed:', e.message); return false; }
 }
 
 async function deployRedirects() {
