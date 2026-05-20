@@ -23,9 +23,75 @@ jobs:
     steps:
       # ── 1. Checkout ────────────────────────────────────────────────────────
       - name: "📥 Checkout repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
-      # ── 2. Build full URL list ─────────────────────────────────────────────
+      # ── 2. Wait for Cloudflare Pages deployment ────────────────────────────
+      - name: "⏳ Wait for Cloudflare Pages to go live"
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          python3 << 'PYEOF'
+          import urllib.request, urllib.error, json, os, time
+
+          token      = os.environ["CF_API_TOKEN"]
+          account_id = os.environ["CF_ACCOUNT_ID"]
+          project    = "uniqaidar"
+          endpoint   = f"https://api.cloudflare.com/client/v4/accounts/{account_id}/pages/projects/{project}/deployments"
+
+          headers = {
+              "Authorization": f"Bearer {token}",
+              "Content-Type":  "application/json",
+          }
+
+          MAX_WAIT  = 600   # 10 minutes hard ceiling
+          INTERVAL  = 10    # poll every 10 seconds
+          elapsed   = 0
+
+          print(f"⏳ Polling Cloudflare Pages for project '{project}' ...")
+
+          while elapsed < MAX_WAIT:
+              req = urllib.request.Request(endpoint + "?per_page=1", headers=headers)
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as resp:
+                      data = json.loads(resp.read())
+              except urllib.error.HTTPError as e:
+                  print(f"⚠️  CF API error {e.code}: {e.read().decode()}")
+                  time.sleep(INTERVAL)
+                  elapsed += INTERVAL
+                  continue
+
+              deployments = data.get("result", [])
+              if not deployments:
+                  print("⚠️  No deployments found yet — waiting ...")
+                  time.sleep(INTERVAL)
+                  elapsed += INTERVAL
+                  continue
+
+              latest     = deployments[0]
+              stage      = latest.get("latest_stage", {})
+              status     = stage.get("status", "unknown")
+              stage_name = stage.get("name", "unknown")
+              deploy_id  = latest.get("id", "?")
+
+              print(f"  [{elapsed}s] Deployment {deploy_id[:8]}… — stage: {stage_name} — status: {status}")
+
+              if status == "success":
+                  print(f"✅ Cloudflare Pages deployment is live after {elapsed}s")
+                  break
+              elif status in ("failure", "canceled"):
+                  print(f"❌ Deployment {status} — aborting IndexNow submission")
+                  raise SystemExit(1)
+
+              time.sleep(INTERVAL)
+              elapsed += INTERVAL
+          else:
+              print(f"❌ Timed out after {MAX_WAIT}s waiting for Cloudflare Pages")
+              raise SystemExit(1)
+
+          PYEOF
+
+      # ── 3. Build full URL list ─────────────────────────────────────────────
       - name: "🗂️ Build complete URL list"
         id: build_urls
         run: |
@@ -89,7 +155,7 @@ jobs:
 
           PYEOF
 
-      # ── 3. Submit with KEY 1 ───────────────────────────────────────────────
+      # ── 4. Submit with KEY 1 ───────────────────────────────────────────────
       - name: "📡 Submit to IndexNow — Key 1"
         env:
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY_1 }}
@@ -138,7 +204,7 @@ jobs:
           print(f"✅ Key 1 submission complete — {len(urls)} URLs across {len(chunks)} chunk(s)")
           PYEOF
 
-      # ── 4. Submit with KEY 2 ───────────────────────────────────────────────
+      # ── 5. Submit with KEY 2 ───────────────────────────────────────────────
       - name: "📡 Submit to IndexNow — Key 2"
         env:
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY_2 }}
@@ -186,7 +252,7 @@ jobs:
           print(f"✅ Key 2 submission complete — {len(urls)} URLs across {len(chunks)} chunk(s)")
           PYEOF
 
-      # ── 5. Summary ────────────────────────────────────────────────────────
+      # ── 6. Summary ────────────────────────────────────────────────────────
       - name: "📋 Submission summary"
         if: always()
         run: |
