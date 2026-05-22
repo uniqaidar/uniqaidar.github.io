@@ -2,6 +2,7 @@
 // Catch-all Cloudflare Pages Function.
 // Intercepts /sitemap.xml and /sitemap_index.xml for ALL requests
 // (Googlebot, Bingbot, Google Search Console fetch tool, humans).
+// Injects dynamic canonical tags into HTML responses for proper SEO.
 // All other requests pass through via context.next() — zero cost.
 
 const BASE_URL       = 'https://uniqaidar.pages.dev';
@@ -93,8 +94,49 @@ const SITEMAP_HEADERS = {
     'Vary':                         'Accept-Encoding',
 };
 
+// ── Inject dynamic canonical into HTML responses ───────────────────────────────
+async function injectCanonical(response, requestUrl) {
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('text/html')) {
+        return response;
+    }
+
+    try {
+        let html = await response.text();
+        const parsedUrl = new URL(requestUrl);
+        
+        // Build the canonical URL with all query parameters preserved
+        const canonicalUrl = parsedUrl.origin + parsedUrl.pathname + parsedUrl.search;
+        
+        // Escape for HTML attributes
+        const escapedCanonical = canonicalUrl
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+        
+        // Replace the existing canonical tag (handles both dynamic and static versions)
+        // Matches: <link rel="canonical" href="..."> or <link rel="canonical" id="dynamic-canonical" href="...">
+        html = html.replace(
+            /<link\s+rel="canonical"[^>]*>/gi,
+            `<link rel="canonical" href="${escapedCanonical}">`
+        );
+        
+        return new Response(html, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: response.headers,
+        });
+    } catch (_) {
+        // If injection fails, return original response
+        return response;
+    }
+}
+
 export async function onRequest(context) {
-    const pathname = new URL(context.request.url).pathname;
+    const url = new URL(context.request.url);
+    const pathname = url.pathname;
+    
     if (pathname === '/sitemap.xml') {
         const xml = await buildSitemapXml(context);
         return new Response(xml, { status: 200, headers: SITEMAP_HEADERS });
@@ -112,5 +154,8 @@ export async function onRequest(context) {
         ].join('\n');
         return new Response(xml, { status: 200, headers: SITEMAP_HEADERS });
     }
-    return context.next();
+    
+    // For all other requests, get the response and inject dynamic canonical
+    const response = await context.next();
+    return injectCanonical(response, context.request.url);
 }
