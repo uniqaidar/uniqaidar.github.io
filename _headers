@@ -9,6 +9,11 @@
   Cache-Control: public, max-age=3600
   Access-Control-Allow-Origin: *
 
+/popular.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  Access-Control-Allow-Origin: *
+
 /*.txt
   Cache-Control: public, max-age=86400
   Access-Control-Allow-Origin: *
