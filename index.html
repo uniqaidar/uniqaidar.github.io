@@ -6429,15 +6429,63 @@ async function loadFontsAndInit() {
     })();
     // ── END Dynamic SEO ──────────────────────────────────────────────────────────────────────────
 
-    // ── Fetch top-25 trending fonts from popular.json BEFORE building panels ──
-    // Must happen here so the Trending count badge is correct on first render
-    try {
-        var _popResp = await fetch('popular.json?_=' + Date.now(), { cache: 'no-store' });
-        if (_popResp.ok) {
-            var _popData = await _popResp.json();
-            _popularFonts = Array.isArray(_popData) ? _popData.filter(function(n){ return typeof n === 'string' && n.trim(); }) : [];
-        } else { _popularFonts = []; }
-    } catch(e) { _popularFonts = []; }
+    // ── Fetch trending fonts from popular.json BEFORE building panels ──
+    // Must happen here so the Trending count badge is correct on first render.
+    // Retries up to 3 times (800 ms apart) to survive edge-cache misses after outages.
+    (function() {
+        var _popAttempts = 0;
+        var _popMaxRetries = 3;
+        var _popRetryDelay = 800;
+        function _updateTrendingBadgeAndList(list) {
+            // Patch the count badges in both panels
+            var _tSet = new Set(list);
+            var _tCount = fonts.filter(function(f){ return _tSet.has(f.name); }).length;
+            var _tCountTxt = '(' + _tCount + ')';
+            document.querySelectorAll('#desktop-panel .filter-btn, #mobile-panel .filter-btn').forEach(function(b) {
+                var oc = b.getAttribute('onclick') || '';
+                if ((oc.split("'")[1] || '').toLowerCase() === 'trending') {
+                    var badge = b.querySelector('.cat-count');
+                    if (badge) badge.textContent = _tCountTxt;
+                }
+            });
+            // If Trending is the active category, re-render the list with correct order
+            if ((_currentCatId || '').toLowerCase() === 'trending') {
+                filterFonts('Trending', null);
+                // Re-sync the active label in both panels
+                document.querySelectorAll('#desktop-panel .filter-btn.active, #mobile-panel .filter-btn.active').forEach(function(b) {
+                    var oc = b.getAttribute('onclick') || '';
+                    if ((oc.split("'")[1] || '').toLowerCase() === 'trending') {
+                        var badge = b.querySelector('.cat-count');
+                        var labelTxt = b.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim();
+                        var countTxt = badge ? badge.textContent.trim() : '';
+                        var panelEl = b.closest('#desktop-panel') ? 'desktop-active-label' : 'mobile-active-label';
+                        var labelEl = document.getElementById(panelEl);
+                        if (labelEl) labelEl.innerHTML = labelTxt + (countTxt ? ' <span style="font-size:0.72em;opacity:0.75;font-family:inherit;vertical-align:middle;line-height:1;position:relative;top:0.18em;">' + countTxt + '</span>' : '');
+                    }
+                });
+            }
+        }
+        function _fetchPopular() {
+            _popAttempts++;
+            fetch('popular.json?_=' + Date.now(), { cache: 'no-store' })
+                .then(function(r) { return r.ok ? r.json() : Promise.reject('not-ok'); })
+                .then(function(data) {
+                    var list = Array.isArray(data) ? data.filter(function(n){ return typeof n === 'string' && n.trim(); }) : [];
+                    if (list.length) {
+                        _popularFonts = list;
+                        _updateTrendingBadgeAndList(list);
+                    } else if (_popAttempts < _popMaxRetries) {
+                        setTimeout(_fetchPopular, _popRetryDelay);
+                    }
+                })
+                .catch(function() {
+                    if (_popAttempts < _popMaxRetries) {
+                        setTimeout(_fetchPopular, _popRetryDelay);
+                    }
+                });
+        }
+        _fetchPopular();
+    })();
 
     // ── Dynamic schema injection: runs after fonts.json + popular.json are loaded ──
     (function() {
