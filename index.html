@@ -6432,7 +6432,7 @@ async function loadFontsAndInit() {
     // ── Fetch top-25 trending fonts from popular.json BEFORE building panels ──
     // Must happen here so the Trending count badge is correct on first render
     try {
-        var _popResp = await fetch('popular.json?_=' + Date.now());
+        var _popResp = await fetch('popular.json?_=' + Date.now(), { cache: 'no-store' });
         if (_popResp.ok) {
             var _popData = await _popResp.json();
             _popularFonts = Array.isArray(_popData) ? _popData.filter(function(n){ return typeof n === 'string' && n.trim(); }) : [];
