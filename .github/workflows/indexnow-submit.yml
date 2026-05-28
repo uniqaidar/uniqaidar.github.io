@@ -106,12 +106,17 @@ jobs:
           urls = []
 
           # ── Detect which files changed in this push ────────────────────
-          import subprocess
-          changed = subprocess.run(
-              ["git", "diff", "--name-only", "HEAD~1", "HEAD"],
-              capture_output=True, text=True
-          ).stdout.strip().split("\n")
-          changed = [c.strip() for c in changed if c.strip()]
+          # Use GitHub event payload — accurate even after rebase
+          event_path = os.environ.get("GITHUB_EVENT_PATH", "")
+          changed = []
+          if event_path:
+              with open(event_path, "r", encoding="utf-8") as ef:
+                  event = json.load(ef)
+              for commit in event.get("commits", []):
+                  changed += commit.get("added", [])
+                  changed += commit.get("modified", [])
+                  changed += commit.get("removed", [])
+          changed = list(set(changed))
           print(f"📝 Changed files: {changed}")
 
           fonts_changed   = "fonts.json" in changed
