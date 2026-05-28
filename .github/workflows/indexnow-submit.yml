@@ -123,21 +123,21 @@ jobs:
           index_changed   = "index.html" in changed
           popular_changed = "popular.json" in changed
 
-          # ── If only popular.json changed — submit just 2 URLs ───────────
+          from urllib.parse import quote
+          import subprocess
+
+          # ── Case 1: only popular.json changed — submit 2 URLs ───────────
           if popular_changed and not fonts_changed and not index_changed:
-              from urllib.parse import quote
               urls.append(SITE + "/")
               urls.append(f"{SITE}/?cat=Trending")
               print(f"📊 popular.json only — submitting 2 trending URLs")
-          else:
-              # ── Full submission — fonts.json or index.html changed ───────
+
+          # ── Case 2: index.html changed — full submission ─────────────────
+          elif index_changed:
               urls.append(SITE + "/")
               urls.append(SITE + "/sitemap.xml")
               urls.append(SITE + "/sitemap_index.xml")
-
-              # ── Category URLs — parsed from index.html ──────────────────
               try:
-                  from urllib.parse import quote
                   with open("index.html", "r", encoding="utf-8") as f:
                       html = f.read()
                   cat_pattern = re.compile(
@@ -149,10 +149,7 @@ jobs:
                   print(f"✅ Categories found: {len(cat_ids)}")
               except FileNotFoundError:
                   print("⚠️  index.html not found — skipping category URLs")
-
-              # ── Font URLs — parsed from fonts.json ──────────────────────
               try:
-                  from urllib.parse import quote
                   with open("fonts.json", "r", encoding="utf-8") as f:
                       fonts = json.load(f)
                   for font in fonts:
@@ -163,10 +160,52 @@ jobs:
                       first_cat = cats[0] if cats else "All"
                       urls.append(f"{SITE}/?cat={quote(first_cat)}&font={quote(name)}")
                   print(f"✅ Fonts found: {len(fonts)}")
-              except FileNotFoundError:
-                  print("⚠️  fonts.json not found — skipping font URLs")
-              except json.JSONDecodeError as e:
-                  print(f"⚠️  fonts.json parse error: {e} — skipping font URLs")
+              except (FileNotFoundError, json.JSONDecodeError) as e:
+                  print(f"⚠️  fonts.json error: {e} — skipping font URLs")
+              print(f"📊 index.html changed — full submission")
+
+          # ── Case 3: only fonts.json changed — submit only changed fonts ──
+          elif fonts_changed:
+              urls.append(SITE + "/")
+              urls.append(SITE + "/sitemap.xml")
+              urls.append(SITE + "/sitemap_index.xml")
+              old_json = subprocess.run(
+                  ["git", "show", "HEAD~1:fonts.json"],
+                  capture_output=True, text=True
+              )
+              try:
+                  old_fonts = {
+                      (f.get("name") or f.get("fontName") or f.get("id") or ""): f
+                      for f in (json.loads(old_json.stdout) if old_json.returncode == 0 else [])
+                  }
+              except json.JSONDecodeError:
+                  old_fonts = {}
+              try:
+                  with open("fonts.json", "r", encoding="utf-8") as f:
+                      new_fonts = json.load(f)
+              except (FileNotFoundError, json.JSONDecodeError) as e:
+                  print(f"⚠️  fonts.json error: {e}")
+                  new_fonts = []
+              affected_cats = set()
+              for font in new_fonts:
+                  name = font.get("name") or font.get("fontName") or font.get("id") or ""
+                  if not name:
+                      continue
+                  old = old_fonts.get(name)
+                  if old is None or old != font:
+                      cats = font.get("category") or []
+                      first_cat = cats[0] if cats else "All"
+                      urls.append(f"{SITE}/?cat={quote(first_cat)}&font={quote(name)}")
+                      affected_cats.add(first_cat)
+              new_names = {f.get("name") or f.get("fontName") or f.get("id") or "" for f in new_fonts}
+              for name, font in old_fonts.items():
+                  if name and name not in new_names:
+                      cats = font.get("category") or []
+                      first_cat = cats[0] if cats else "All"
+                      affected_cats.add(first_cat)
+              for cat in affected_cats:
+                  urls.append(f"{SITE}/?cat={quote(cat)}")
+              print(f"📊 fonts.json only — submitting {len(urls)} URLs ({len(affected_cats)} categories affected)")
 
           # ── Deduplicate, preserve order ──────────────────────────────────
           seen = set()
