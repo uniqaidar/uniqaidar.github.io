@@ -177,6 +177,21 @@ jobs:
           echo "🔐 VALIDATION CHECKS"
           echo "════════════════════════════════════════════════════════════════"
           
+          # ── Blackout window: 23:30–03:00 Sulaymaniyah ──────────────────
+          SULY_HOUR=$(TZ='Asia/Baghdad' date '+%-H')
+          SULY_MIN=$(TZ='Asia/Baghdad' date '+%-M')
+          if [ "$SULY_HOUR" -lt 3 ] || { [ "$SULY_HOUR" -eq 23 ] && [ "$SULY_MIN" -ge 30 ]; }; then
+            echo "⏭️  BLACKOUT WINDOW — RUN SKIPPED"
+            echo "   Current Sulaymaniyah time: $(TZ='Asia/Baghdad' date '+%I:%M:%S %p %Z')"
+            echo "   Blocked window: 23:30–03:00 Sulaymaniyah"
+            echo "   Reason: archive-stats.yml must finish archiving the previous"
+            echo "           day's data before popular.json can be updated."
+            echo "   This run is skipped. Next eligible run: 03:00+ Sulaymaniyah."
+            echo "proceed=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          # ───────────────────────────────────────────────────────────────
+
           PROCEED=true
           
           # Check secrets
