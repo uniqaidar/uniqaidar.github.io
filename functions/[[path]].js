@@ -155,7 +155,10 @@ export async function onRequest(context) {
         return new Response(xml, { status: 200, headers: SITEMAP_HEADERS });
     }
     
-    // For all other requests, get the response and inject dynamic canonical
+    // Only inject canonical for crawlers — humans get static asset directly at zero cost
+    const ua = context.request.headers.get('User-Agent') || '';
+    const crawlerUA = /googlebot|bingbot|yandex|baiduspider|duckduckbot|slurp|google-inspectiontool/i.test(ua);
+    if (!crawlerUA) return context.next();
     const response = await context.next();
     return injectCanonical(response, context.request.url);
 }
