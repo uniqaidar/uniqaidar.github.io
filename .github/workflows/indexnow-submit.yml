@@ -3,6 +3,10 @@ name: "[🔍] UniQaidar IndexNow — Full URL Submission"
 on:
   push:
     branches: [main]
+    paths:
+      - 'fonts.json'     # new font added — submit all URLs
+      - 'index.html'     # category added or page changed — submit all URLs
+      - 'popular.json'   # trending changed — submit only / and /?cat=Trending
   workflow_dispatch:
 
 concurrency:
@@ -101,43 +105,63 @@ jobs:
           SITE = "https://uniqaidar.pages.dev"
           urls = []
 
-          # ── Static / root URLs ──────────────────────────────────────────
-          urls.append(SITE + "/")
-          urls.append(SITE + "/sitemap.xml")
-          urls.append(SITE + "/sitemap_index.xml")
+          # ── Detect which files changed in this push ────────────────────
+          import subprocess
+          changed = subprocess.run(
+              ["git", "diff", "--name-only", "HEAD~1", "HEAD"],
+              capture_output=True, text=True
+          ).stdout.strip().split("\n")
+          changed = [c.strip() for c in changed if c.strip()]
+          print(f"📝 Changed files: {changed}")
 
-          # ── Category URLs — parsed from index.html ──────────────────────
-          try:
-              from urllib.parse import quote
-              with open("index.html", "r", encoding="utf-8") as f:
-                  html = f.read()
-              cat_pattern = re.compile(
-                  r"""<button\s+class="filter-btn"\s+onclick="filterFonts\('([^']+)',\s*this\)">([^<]+)<\/button>"""
-              )
-              cat_ids = [cat_id for cat_id, _ in cat_pattern.findall(html)]
-              for cat_id in cat_ids:
-                  urls.append(f"{SITE}/?cat={quote(cat_id)}")
-              print(f"✅ Categories found: {len(cat_ids)}")
-          except FileNotFoundError:
-              print("⚠️  index.html not found — skipping category URLs")
+          fonts_changed   = "fonts.json" in changed
+          index_changed   = "index.html" in changed
+          popular_changed = "popular.json" in changed
 
-          # ── Font URLs — parsed from fonts.json ──────────────────────────
-          try:
+          # ── If only popular.json changed — submit just 2 URLs ───────────
+          if popular_changed and not fonts_changed and not index_changed:
               from urllib.parse import quote
-              with open("fonts.json", "r", encoding="utf-8") as f:
-                  fonts = json.load(f)
-              for font in fonts:
-                  name = font.get("name") or font.get("fontName") or font.get("id") or ""
-                  if not name:
-                      continue
-                  cats = font.get("category") or []
-                  first_cat = cats[0] if cats else "All"
-                  urls.append(f"{SITE}/?cat={quote(first_cat)}&font={quote(name)}")
-              print(f"✅ Fonts found: {len(fonts)}")
-          except FileNotFoundError:
-              print("⚠️  fonts.json not found — skipping font URLs")
-          except json.JSONDecodeError as e:
-              print(f"⚠️  fonts.json parse error: {e} — skipping font URLs")
+              urls.append(SITE + "/")
+              urls.append(f"{SITE}/?cat=Trending")
+              print(f"📊 popular.json only — submitting 2 trending URLs")
+          else:
+              # ── Full submission — fonts.json or index.html changed ───────
+              urls.append(SITE + "/")
+              urls.append(SITE + "/sitemap.xml")
+              urls.append(SITE + "/sitemap_index.xml")
+
+              # ── Category URLs — parsed from index.html ──────────────────
+              try:
+                  from urllib.parse import quote
+                  with open("index.html", "r", encoding="utf-8") as f:
+                      html = f.read()
+                  cat_pattern = re.compile(
+                      r"""<button\s+class="filter-btn"\s+onclick="filterFonts\('([^']+)',\s*this\)">([^<]+)<\/button>"""
+                  )
+                  cat_ids = [cat_id for cat_id, _ in cat_pattern.findall(html)]
+                  for cat_id in cat_ids:
+                      urls.append(f"{SITE}/?cat={quote(cat_id)}")
+                  print(f"✅ Categories found: {len(cat_ids)}")
+              except FileNotFoundError:
+                  print("⚠️  index.html not found — skipping category URLs")
+
+              # ── Font URLs — parsed from fonts.json ──────────────────────
+              try:
+                  from urllib.parse import quote
+                  with open("fonts.json", "r", encoding="utf-8") as f:
+                      fonts = json.load(f)
+                  for font in fonts:
+                      name = font.get("name") or font.get("fontName") or font.get("id") or ""
+                      if not name:
+                          continue
+                      cats = font.get("category") or []
+                      first_cat = cats[0] if cats else "All"
+                      urls.append(f"{SITE}/?cat={quote(first_cat)}&font={quote(name)}")
+                  print(f"✅ Fonts found: {len(fonts)}")
+              except FileNotFoundError:
+                  print("⚠️  fonts.json not found — skipping font URLs")
+              except json.JSONDecodeError as e:
+                  print(f"⚠️  fonts.json parse error: {e} — skipping font URLs")
 
           # ── Deduplicate, preserve order ──────────────────────────────────
           seen = set()
