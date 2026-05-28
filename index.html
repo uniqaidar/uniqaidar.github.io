@@ -4522,18 +4522,16 @@ function renderHtmlTemplate(htmlTpl, value, numColor, numFontSize) {
 
     // Fetch all data in parallel
     var BASE = 'https://uniqaidar.pages.dev/';
-    // todayIQ: YYYY-MM-DD in Asia/Baghdad timezone — matches admin's todaySUL()
     var todayIQ = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });
     Promise.all([
         fetch(BASE + 'historicaldata/index.json').then(function(r) { return r.ok ? r.json() : {files:[]}; }).catch(function() { return {files:[]}; }),
-        // Fetch full arrays (type=both&date=today) exactly as admin does, so we can
-        // apply the same !e.event || e.event==='download' filter on live data too.
+        // Fetch today's real data — both visits and downloads in one request
         fetch(BASE + 'api/stats?type=both&date=' + todayIQ).then(function(r) { return r.ok ? r.json() : {ok:false}; }).catch(function() { return {ok:false}; })
     ]).then(function(results) {
         var idxData  = results[0];
         var liveData = results[1];
         var files = (idxData && Array.isArray(idxData.files)) ? idxData.files : [];
-        // Live arrays (same shape admin uses — full entry objects, not integers)
+        // Live today arrays — full entry objects for correct filtering
         var liveDl = (liveData && liveData.ok && Array.isArray(liveData.downloads)) ? liveData.downloads : [];
         var liveVt = (liveData && liveData.ok && Array.isArray(liveData.visits))    ? liveData.visits    : [];
 
@@ -4561,7 +4559,7 @@ function renderHtmlTemplate(htmlTpl, value, numColor, numFontSize) {
                     }
                 });
             });
-            // Add live data — apply identical filter to live entries (not a raw integer)
+            // Add live today data — apply identical filter to live entries
             v += liveVt.length;
             liveDl.forEach(function(entry) {
                 var e = entry.event;
