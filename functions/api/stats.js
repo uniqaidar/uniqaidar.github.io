@@ -28,6 +28,12 @@ export async function onRequestGet(context) {
         // Optional date filter — if set, only return keys for that specific date
         const dateFilter = url.searchParams.get('date') || null;
 
+        // ── Fast path: public counter only — 1 KV read, no list ops ──
+        if (type === 'counts') {
+            const counts = await UQDATA.get('cache:counts', { type: 'json' }) || { date: '', visits_today: 0, downloads_today: 0 };
+            return new Response(JSON.stringify({ ok:true, visits_today: counts.visits_today || 0, downloads_today: counts.downloads_today || 0 }), { headers:cors });
+        }
+
         async function listAllKeys(prefix) {
             const keys = [];
             let cursor = undefined;

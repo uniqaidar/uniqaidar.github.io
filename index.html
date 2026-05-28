@@ -4522,20 +4522,17 @@ function renderHtmlTemplate(htmlTpl, value, numColor, numFontSize) {
 
     // Fetch all data in parallel
     var BASE = 'https://uniqaidar.pages.dev/';
-    // todayIQ: YYYY-MM-DD in Asia/Baghdad timezone — matches admin's todaySUL()
-    var todayIQ = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });
     Promise.all([
         fetch(BASE + 'historicaldata/index.json').then(function(r) { return r.ok ? r.json() : {files:[]}; }).catch(function() { return {files:[]}; }),
-        // Fetch full arrays (type=both&date=today) exactly as admin does, so we can
-        // apply the same !e.event || e.event==='download' filter on live data too.
-        fetch(BASE + 'api/stats?type=both&date=' + todayIQ).then(function(r) { return r.ok ? r.json() : {ok:false}; }).catch(function() { return {ok:false}; })
+        // Fetch today's delta only — 1 KV read, no list ops
+        fetch(BASE + 'api/stats?type=counts').then(function(r) { return r.ok ? r.json() : {ok:false}; }).catch(function() { return {ok:false}; })
     ]).then(function(results) {
         var idxData  = results[0];
         var liveData = results[1];
         var files = (idxData && Array.isArray(idxData.files)) ? idxData.files : [];
-        // Live arrays (same shape admin uses — full entry objects, not integers)
-        var liveDl = (liveData && liveData.ok && Array.isArray(liveData.downloads)) ? liveData.downloads : [];
-        var liveVt = (liveData && liveData.ok && Array.isArray(liveData.visits))    ? liveData.visits    : [];
+        // Live today delta — plain numbers from cache:counts
+        var liveDl = (liveData && liveData.ok) ? (liveData.downloads_today || 0) : 0;
+        var liveVt = (liveData && liveData.ok) ? (liveData.visits_today    || 0) : 0;
 
         // Fetch all archive files in parallel
         return Promise.all(
@@ -4561,12 +4558,9 @@ function renderHtmlTemplate(htmlTpl, value, numColor, numFontSize) {
                     }
                 });
             });
-            // Add live data — apply identical filter to live entries (not a raw integer)
-            v += liveVt.length;
-            liveDl.forEach(function(entry) {
-                var e = entry.event;
-                if (!e || e === 'download') { d++; }
-            });
+            // Add live today delta — plain numbers from cache:counts
+            v += liveVt;
+            d += liveDl;
             totalVisits    = v;
             totalDownloads = d;
             // Nuclear gate: animation MUST NOT start until BOTH the digital font

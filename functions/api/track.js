@@ -46,6 +46,14 @@ export async function onRequestPost(context) {
         if (existing.length > 2000) existing.splice(0, existing.length - 2000);
         await UQDATA.put(key, JSON.stringify(existing));
 
+        // ── Update cache:counts for real downloads only ──
+        if (!eventType || eventType === 'download') {
+            const counts = await UQDATA.get('cache:counts', { type: 'json' }) || { date: '', visits_today: 0, downloads_today: 0 };
+            if (counts.date !== sulDate) { counts.date = sulDate; counts.visits_today = 0; counts.downloads_today = 0; }
+            counts.downloads_today += 1;
+            await UQDATA.put('cache:counts', JSON.stringify(counts));
+        }
+
         return new Response(JSON.stringify({ ok:true }), { headers:cors });
     } catch(e) {
         return new Response(JSON.stringify({ ok:false, error:e.message }), { status:500, headers:cors });
