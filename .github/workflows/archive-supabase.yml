@@ -57,13 +57,13 @@ max_bytes     = int(os.environ.get('MAX_FILE_BYTES', '5000000'))
 work_dir      = os.environ.get('WORK_DIR', os.getcwd())
 arch_dir      = os.path.join(work_dir, 'historicaldata')
 
-# ── Helper: HTTP GET ──────────────────────────────────────────────────────────
+# -- Helper: HTTP GET ----------------------------------------------------------
 def http_get(url, headers=None):
     req = urllib.request.Request(url, headers=headers or {})
     with urllib.request.urlopen(req, timeout=60) as resp:
         return json.loads(resp.read().decode('utf-8'))
 
-# ── Helper: HTTP POST ─────────────────────────────────────────────────────────
+# -- Helper: HTTP POST ---------------------------------------------------------
 def http_post(url, payload, headers=None):
     data = json.dumps(payload).encode('utf-8')
     h = {'Content-Type': 'application/json'}
@@ -73,7 +73,7 @@ def http_post(url, payload, headers=None):
     with urllib.request.urlopen(req, timeout=30) as resp:
         return resp.status
 
-# ── Phase 1: Try Supabase (service_role key bypasses RLS) ────────────────────
+# -- Phase 1: Try Supabase (service_role key bypasses RLS) --------------------
 source   = None
 visits   = []
 downloads = []
@@ -99,7 +99,7 @@ if supabase_url and supabase_key:
 else:
     print("⚠️  SUPABASE_URL or SUPABASE_SERVICE_KEY not set — falling back to Cloudflare KV")
 
-# ── Phase 2: KV fallback ──────────────────────────────────────────────────────
+# -- Phase 2: KV fallback ------------------------------------------------------
 if source is None:
     if not archive_token:
         print("❌ ERROR: ARCHIVE_TOKEN not set and Supabase unavailable", file=sys.stderr)
@@ -119,7 +119,7 @@ if source is None:
 
 print(f"📊 Data source: {source} — {len(visits)} visits, {len(downloads)} downloads")
 
-# ── Phase 3: Skip archive if no data ─────────────────────────────────────────
+# -- Phase 3: Skip archive if no data -----------------------------------------
 total = len(visits) + len(downloads)
 if total == 0:
     print(f"⚠️  No data for {today} — skipping archive")
@@ -128,7 +128,7 @@ if total == 0:
         f.write('no_data')
     sys.exit(0)
 
-# ── Phase 4: Archive to historicaldata/ ──────────────────────────────────────
+# -- Phase 4: Archive to historicaldata/ --------------------------------------
 os.makedirs(arch_dir, exist_ok=True)
 
 new_entry = {'date': today, 'downloads': downloads, 'visits': visits}
@@ -160,7 +160,7 @@ current.append(new_entry)
 with open(path, 'w', encoding='utf-8') as f:
     json.dump(current, f, separators=(',', ':'), ensure_ascii=False)
 
-# ── Phase 5: Update index.json ────────────────────────────────────────────────
+# -- Phase 5: Update index.json ------------------------------------------------
 all_files  = sorted([fn for fn in os.listdir(arch_dir)
                      if fn.startswith('archive_') and fn.endswith('.json')])
 index      = {'files': all_files, 'updated': today, 'total_entries': len(current)}
@@ -171,7 +171,7 @@ with open(index_path, 'w', encoding='utf-8') as f:
 print(f"✅ Written to {os.path.basename(path)} ({len(current)} entries)")
 print(f"✅ Updated index with {len(all_files)} archive files")
 
-# ── Phase 6: Clear source data ────────────────────────────────────────────────
+# -- Phase 6: Clear source data ------------------------------------------------
 # Write source to file so shell can read it for the purge/delete step
 with open(os.path.join(work_dir, '_archive_source.txt'), 'w') as f:
     f.write(source)
