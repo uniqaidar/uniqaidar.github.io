@@ -5284,7 +5284,12 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
       <div class="box" style="margin-bottom:18px;">
         <div class="box-header" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
           <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--green)"></div><span><span data-ku>🌍 سەردانەکانی وێبسایت</span><span data-en style="display:none">🌍 Website Visits</span></span></div>
-          <div style="display:flex;align-items:center;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <select id="uq-visit-source-sel" style="font-size:0.78rem;padding:4px 8px;background:var(--card);color:var(--text);border:1px solid var(--border,#444);border-radius:6px;cursor:pointer;" onchange="uqSetDataSource(this.value);document.getElementById('uq-data-source-sel').value=this.value;">
+                <option value="supabase">🟢 Supabase + Archive</option>
+                <option value="kv">🟡 Cloudflare KV + Archive</option>
+                <option value="both">🔵 Both + Archive</option>
+            </select>
             <span id="visit-last-refresh" style="font-size:0.72rem;color:#29b6f6;font-family:var(--mono);">Not refreshed</span>
             <span id="visit-refresh-countdown" style="font-size:0.70rem;color:var(--muted);font-family:var(--mono);margin-left:6px;"></span>
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadVisitStats(true)"><span data-ku>🔄 نوێکردنەوە</span><span data-en style="display:none">🔄 Refresh</span></button>
@@ -5453,10 +5458,10 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">
             <input type="text" id="dl-search" placeholder="Search by font name..." oninput="renderDlTable()" style="max-width:280px;direction:rtl;">
             <select id="dl-type-filter" onchange="renderDlTable()" style="max-width:160px;">
-              <option value="all"><span data-ku>هەموو جۆرەکان</span><span data-en style="display:none">All Types</span></option>
-              <option value="single"><span data-ku>تاکە فۆنت</span><span data-en style="display:none">Single Font</span></option>
-              <option value="bulk"><span data-ku>تەواوی فۆنتەکان</span><span data-en style="display:none">All Fonts (Bulk)</span></option>
-              <option value="cat-bulk"><span data-ku>داگرتنی کاتێگۆری</span><span data-en style="display:none">Category Download</span></option>
+              <option value="all">هەموو جۆرەکان</option>
+              <option value="single">تاکە فۆنت</option>
+              <option value="bulk">تەواوی فۆنتەکان</option>
+              <option value="cat-bulk">داگرتنی کاتێگۆری</option>
             </select>
             <input type="date" id="dl-date-from" onchange="renderDlTable()" style="direction:ltr;color-scheme:dark;max-width:150px;">
             <input type="date" id="dl-date-to" onchange="renderDlTable()" style="direction:ltr;color-scheme:dark;max-width:150px;">
@@ -5624,7 +5629,14 @@ const LS_KEY = 'uqadmin_cfg';
 // admin panel can SELECT from visits and downloads.
 // ── Data source selector — set by admin dropdown, persists for session only ──
 let UQ_DATA_SOURCE = 'supabase'; // 'supabase' | 'kv' | 'both'
-function uqSetDataSource(val) { UQ_DATA_SOURCE = val; loadAllStats(true); }
+function uqSetDataSource(val) {
+    UQ_DATA_SOURCE = val;
+    const _dlSel = document.getElementById('uq-data-source-sel');
+    const _vtSel = document.getElementById('uq-visit-source-sel');
+    if (_dlSel && _dlSel.value !== val) _dlSel.value = val;
+    if (_vtSel && _vtSel.value !== val) _vtSel.value = val;
+    loadAllStats(true);
+}
 const SUPABASE_URL = 'https://jmzydiwerjqccjuwegcb.supabase.co';
 const LS_SB_KEY    = 'uq_supabase_svc';
 
@@ -8928,21 +8940,17 @@ async function loadAllStats(force) {
         // ── Supabase fetch ──
         let sbDl = [], sbVt = [], sbOk = false;
         if (_src === 'supabase' || _src === 'both') {
-            const _sbAdmin = getSupabaseAdmin();
-            if (_sbAdmin) {
-                try {
-                    const [dlRes, vtRes] = await Promise.all([
-                        _sbAdmin.from('downloads').select('*').eq('date', today),
-                        _sbAdmin.from('visits').select('*').eq('date', today)
-                    ]);
-                    if (dlRes.error || vtRes.error) throw new Error(dlRes.error?.message || vtRes.error?.message);
-                    sbDl = dlRes.data || [];
-                    sbVt = vtRes.data || [];
-                    sbOk = true;
-                    liveSource = 'supabase';
-                } catch(sbErr) {
-                    sbOk = false;
-                }
+            try {
+                const sbRes = await fetch(`${STATS_API_BASE}/api/sbstats?date=${today}`);
+                if (!sbRes.ok) throw new Error(`sbstats ${sbRes.status}`);
+                const sbJson = await sbRes.json();
+                if (!sbJson.ok) throw new Error(sbJson.error || 'sbstats error');
+                sbDl = sbJson.downloads || [];
+                sbVt = sbJson.visits || [];
+                sbOk = true;
+                liveSource = 'supabase';
+            } catch(sbErr) {
+                sbOk = false;
             }
         }
 
