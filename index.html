@@ -5375,6 +5375,7 @@ var _uqInitDone    = false; // true after applyUrlParams — suppresses replaceS
     var _uqUrl     = window.location.href;
     var _uqCountry = '';
     var _uqCity    = '';
+    var _supabase  = supabase.createClient('https://jmzydiwerjqccjuwegcb.supabase.co', 'sb_publishable_RBfa-lMWdyouPmyawiLIfQ_O_f8fCyo');
 
     // Fetch geo once — Cloudflare knows country/city, browser does not
     // Fire-and-forget: if it hasn't returned yet when first event fires,
