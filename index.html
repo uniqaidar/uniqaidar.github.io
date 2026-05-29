@@ -4527,6 +4527,9 @@ function renderHtmlTemplate(htmlTpl, value, numColor, numFontSize) {
     // Fetch all data in parallel
     var BASE = 'https://uniqaidar.pages.dev/';
     var todayIQ = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });
+    var _yDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Baghdad' }));
+    _yDate.setDate(_yDate.getDate() - 1);
+    var yesterdayIQ = _yDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });
 
     // Fetch today's counts from Supabase (primary); fall back to KV cache:counts silently
     function fetchTodayCounts() {
@@ -4583,15 +4586,56 @@ function renderHtmlTemplate(htmlTpl, value, numColor, numFontSize) {
             // Add live today counts directly — no array filtering needed
             v += liveVtCount;
             d += liveDlCount;
-            totalVisits    = v;
-            totalDownloads = d;
+
+            // ── Gap-fill: if yesterday is not yet in the archive, fetch it live ──
+            // This prevents a counter drop during the window between midnight and
+            // when the archive GitHub Action finishes committing yesterday's data.
+            var yesterdayArchived = false;
+            archives.forEach(function(archive) {
+                if (!Array.isArray(archive)) return;
+                archive.forEach(function(day) { if (day.date === yesterdayIQ) yesterdayArchived = true; });
+            });
+
+            function applyFinalCounts(extraVt, extraDl) {
+                totalVisits    = v + extraVt;
+                totalDownloads = d + extraDl;
+                Promise.all([_UQ_DIGITAL_FONT_PROMISE, document.fonts.ready]).then(function() {
+                    startAnimation(totalVisits, totalDownloads);
+                });
+            }
+
+            if (yesterdayArchived) {
+                // Yesterday is safely in the archive — no gap
+                applyFinalCounts(0, 0);
+            } else {
+                // Yesterday not yet archived — fetch it live from Supabase, KV fallback
+                Promise.all([
+                    _supabase.from('visits').select('*', { count: 'exact', head: true }).eq('date', yesterdayIQ),
+                    _supabase.from('downloads').select('*', { count: 'exact', head: true }).eq('date', yesterdayIQ).or('event.is.null,event.eq.download')
+                ]).then(function(res) {
+                    var vtRes = res[0]; var dlRes = res[1];
+                    if (vtRes.error || dlRes.error) throw new Error('gap-fill supabase error');
+                    applyFinalCounts(vtRes.count || 0, dlRes.count || 0);
+                }).catch(function() {
+                    // Supabase failed — fall back to KV for yesterday
+                    fetch(BASE + 'api/stats?type=both&date=' + yesterdayIQ)
+                        .then(function(r) { return r.ok ? r.json() : {ok:false}; })
+                        .then(function(data) {
+                            if (!data.ok) { applyFinalCounts(0, 0); return; }
+                            var yVt = Array.isArray(data.visits) ? data.visits.length : 0;
+                            var yDl = Array.isArray(data.downloads) ? data.downloads.filter(function(e) {
+                                var ev = e.event; return !ev || ev === 'download';
+                            }).length : 0;
+                            applyFinalCounts(yVt, yDl);
+                        })
+                        .catch(function() { applyFinalCounts(0, 0); });
+                });
+            }
             // Nuclear gate: animation MUST NOT start until BOTH the digital font
             // file is fully loaded (via FontFace API, display:block — no fallback)
             // AND document.fonts.ready resolves. This dual-promise gate guarantees
             // zero fallback-font flicker for the odometer animation.
-            Promise.all([_UQ_DIGITAL_FONT_PROMISE, document.fonts.ready]).then(function() {
-                startAnimation(totalVisits, totalDownloads);
-            });
+            // (gate is now inside applyFinalCounts above)
         });
     }).catch(function() {
         // Silent fail — show zeros

@@ -9006,7 +9006,35 @@ async function loadAllStats(force) {
             liveDl = kvDl; liveVt = kvVt;
         }
 
-        // ── Step 3: Merge historical + live ──
+        // ── Step 3: Gap-fill — if yesterday is not yet in the archive, fetch it live ──
+        // This covers the window between midnight (Sulaymaniyah) and when the archive
+        // GitHub Action finishes committing yesterday's data (up to ~1 hour delay).
+        const yesterday = yesterdaySUL();
+        const yesterdayArchived = HIST_DL.some(e => e.date === yesterday) || HIST_VT.some(e => e.date === yesterday);
+
+        if (!yesterdayArchived) {
+            let gapDl = [], gapVt = [], gapOk = false;
+            try {
+                if (_src === 'supabase' || _src === 'both') {
+                    const gapRes = await fetch(`${STATS_API_BASE}/api/sbstats?date=${yesterday}`);
+                    if (gapRes.ok) {
+                        const gapJson = await gapRes.json();
+                        if (gapJson.ok) { gapDl = gapJson.downloads || []; gapVt = gapJson.visits || []; gapOk = true; }
+                    }
+                }
+                if (!gapOk) {
+                    // KV fallback for yesterday
+                    const gapKvRes = await fetch(`${STATS_API_BASE}/api/stats?type=both&date=${yesterday}`);
+                    if (gapKvRes.ok) {
+                        const gapKvJson = await gapKvRes.json();
+                        if (gapKvJson.ok) { gapDl = gapKvJson.downloads || []; gapVt = gapKvJson.visits || []; gapOk = true; }
+                    }
+                }
+            } catch(gapErr) { /* non-fatal — gap data simply not added */ }
+            if (gapOk) { liveDl = [...gapDl, ...liveDl]; liveVt = [...gapVt, ...liveVt]; }
+        }
+
+        // ── Step 4: Merge historical + live (today + any unarchived yesterday) ──
         // Historical has everything up to yesterday. Live has today only.
         DL_DATA = [...HIST_DL, ...liveDl];
         VT_DATA = [...HIST_VT, ...liveVt];
@@ -10271,6 +10299,11 @@ function fmtSUL(tsStr) {
 }
 function todaySUL() {
     return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });
+}
+function yesterdaySUL() {
+    const d = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Baghdad' }));
+    d.setDate(d.getDate() - 1);
+    return d.toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });
 }
 function thisMonthSUL() {
     return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' }).slice(0,7);
