@@ -1,11 +1,9 @@
 name: Archive KV Stats
 
 on:
-  schedule:
-    # Runs at 21:00 UTC daily (00:00 midnight Sulaymaniyah, Iraq time, UTC+3)
-    - cron: '0 21 * * *'
   workflow_dispatch:
-    # Allow manual trigger
+    # Manual fallback only — daily archiving is now handled by archive-supabase.yml
+    # Run this manually if archive-supabase.yml fails
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

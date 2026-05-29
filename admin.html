@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ku" dir="rtl">
 <head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>پانێلی بەڕێوەبردن — UniQaidar</title>
@@ -1253,9 +1254,27 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     <div id="xml-results" style="display:none;margin-top:10px;font-family:var(--mono);font-size:0.74rem;line-height:1.8;background:var(--surface2);border-radius:6px;padding:12px;max-height:220px;overflow-y:auto;"></div>
                 </div>
 
-                <!-- STEP 7: IndexNow -->
+                <!-- STEP 7: Supabase Service Key -->
+                <div style="background:var(--bg);border:1px solid #3ecf8e;border-radius:8px;padding:14px;margin-bottom:12px;">
+                    <div style="font-size:0.8rem;font-weight:bold;color:#3ecf8e;margin-bottom:6px;">⑦ Supabase — Analytics Primary Layer</div>
+                    <p style="font-size:0.78rem;color:var(--text);margin:0 0 10px;line-height:1.6;">
+                        Enter your Supabase <strong>service_role</strong> key. Stored locally in your browser only — never sent to GitHub.
+                        The admin panel uses it to read today's visits and downloads directly from Supabase.
+                    </p>
+                    <div style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px;align-items:end;">
+                        <div class="form-group" style="margin:0;">
+                            <label style="color:#3ecf8e;">🔑 Supabase service_role key</label>
+                            <input type="password" id="supabase-svc-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="font-family:var(--mono);font-size:0.78rem;"
+                                oninput="try{localStorage.setItem('uq_supabase_svc',this.value)}catch(e){}">
+                        </div>
+                        <button class="btn" style="background:#3ecf8e;color:#1a1a1a;white-space:nowrap;" onclick="(function(){var k=document.getElementById('supabase-svc-key').value.trim();if(!k)return;try{localStorage.setItem('uq_supabase_svc',k);}catch(e){}alert2(document.getElementById('supabase-key-alert'),'✅ Supabase key saved','ok');})()">💾 Save Key</button>
+                    </div>
+                    <div id="supabase-key-alert" class="alert"></div>
+                </div>
+
+                <!-- STEP 8: IndexNow -->
                 <div style="background:var(--bg);border:1px solid #0078d4;border-radius:8px;padding:14px;margin-bottom:12px;">
-                    <div style="font-size:0.8rem;font-weight:bold;color:#0078d4;margin-bottom:6px;">⑦ IndexNow — Instant Indexing for Bing / Yandex / Naver</div>
+                    <div style="font-size:0.8rem;font-weight:bold;color:#0078d4;margin-bottom:6px;">⑧ IndexNow — Instant Indexing for Bing / Yandex / Naver</div>
                     <p style="font-size:0.78rem;color:var(--text);margin:0 0 10px;line-height:1.6;">
                         IndexNow is the instant indexing protocol for Bing, Yandex, Naver, and Amazon Bot. One ping — all engines are notified. Google has not yet adopted it, but may in the future.
                     </p>
@@ -1290,7 +1309,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
 
                 <!-- STEP 8: Bing Webmaster Tools Sitemap -->
                 <div style="background:var(--bg);border:1px solid #0078d4;border-radius:8px;padding:14px;margin-bottom:12px;">
-                    <div style="font-size:0.8rem;font-weight:bold;color:#0078d4;margin-bottom:6px;">⑧ Bing Webmaster Tools — Submit sitemap to Bing</div>
+                    <div style="font-size:0.8rem;font-weight:bold;color:#0078d4;margin-bottom:6px;">⑨ Bing Webmaster Tools — Submit sitemap to Bing</div>
                     <p style="font-size:0.78rem;color:var(--text);margin:0 0 10px;line-height:1.6;">
                         Bing manages sitemaps differently from Google. Enter your Bing Webmaster Tools API Key to submit directly.<br>
                         <strong style="color:var(--yellow);">Get your key:</strong>
@@ -5594,9 +5613,19 @@ let MANIFEST_SHA = '';
 
 const LS_KEY = 'uqadmin_cfg';
 
-// ══════════════════════════════════════════
-// Bilingual EN/KU interface toggle
-// ══════════════════════════════════════════
+// ── Supabase admin client ─────────────────────────────────────────────────────
+// The service_role key is entered once by the admin in the settings panel below
+// and stored in localStorage under 'uq_supabase_svc'. It bypasses RLS so the
+// admin panel can SELECT from visits and downloads.
+const SUPABASE_URL = 'https://jmzydiwerjqccjuwegcb.supabase.co';
+const LS_SB_KEY    = 'uq_supabase_svc';
+
+function getSupabaseAdmin() {
+    const svcKey = localStorage.getItem(LS_SB_KEY) || '';
+    if (!svcKey) return null;
+    return supabase.createClient(SUPABASE_URL, svcKey);
+}
+
 (function() {
     var LANG_KEY = 'uq_admin_lang';
     window.uqToggleLang = function() {
@@ -8881,39 +8910,61 @@ async function loadAllStats(force) {
             await loadHistoricalData();
         }
 
-        // ── Step 2: Fetch today's live data from Cloudflare KV ──
+        // ── Step 2: Fetch today's live data — Supabase primary, KV fallback ──
         const today = todaySUL();
-        const r = await fetch(`${STATS_API_BASE}/api/stats?type=both&date=${today}`);
-        if (!r.ok) {
-            let errMsg = r.status;
-            try { const e = await r.json(); errMsg = e.error || errMsg; } catch(_) {}
-            // Still show historical data even if live fetch fails
-            if (HIST_DL.length || HIST_VT.length) {
-                DL_DATA = [...HIST_DL];
-                VT_DATA = [...HIST_VT];
-                STATS_LOADED = true;
-                const sulNow = nowSUL();
-                const ts = tsLabel + sulNow.toLocaleDateString('en-GB', {timeZone:'Asia/Baghdad', day:'numeric', month:'long', year:'numeric'}) + ' — ' + sulNow.toLocaleTimeString('en-US', {timeZone:'Asia/Baghdad',hour:'2-digit',minute:'2-digit',hour12:true}) + (isEn ? ' (archive only)' : ' (ئەرشیڤ تەنها)');
-                const dlRef = document.getElementById('dl-last-refresh'); if (dlRef) dlRef.textContent = ts;
-                const vtRef = document.getElementById('visit-last-refresh'); if (vtRef) vtRef.textContent = ts;
-                updateDlSummary(); renderDlTable(); renderVisitStats(); renderSearchTable();
+        let liveDl = [], liveVt = [];
+        let liveSource = 'supabase';
+
+        const _sbAdmin = getSupabaseAdmin();
+        if (_sbAdmin) {
+            try {
+                const [dlRes, vtRes] = await Promise.all([
+                    _sbAdmin.from('downloads').select('*').eq('date', today),
+                    _sbAdmin.from('visits').select('*').eq('date', today)
+                ]);
+                if (dlRes.error || vtRes.error) throw new Error(dlRes.error?.message || vtRes.error?.message);
+                liveDl = dlRes.data || [];
+                liveVt = vtRes.data || [];
+            } catch(sbErr) {
+                // Supabase failed — fall back to KV silently
+                liveSource = 'kv';
             }
-            alert2(alDl, '⚠️ Live KV: ' + errMsg + (HIST_DL.length ? ' — ئەرشیڤی مێژووی بارکرا' : ''), 'err');
-            alert2(alVt, '⚠️ Live KV: ' + errMsg + (HIST_VT.length ? ' — ئەرشیڤی مێژووی بارکرا' : ''), 'err');
-            return;
+        } else {
+            liveSource = 'kv';
         }
-        const data = await r.json();
-        if (!data.ok) {
-            alert2(alDl, '❌ ' + data.error, 'err');
-            alert2(alVt, '❌ ' + data.error, 'err');
-            return;
+
+        if (liveSource === 'kv') {
+            const r = await fetch(`${STATS_API_BASE}/api/stats?type=both&date=${today}`);
+            if (!r.ok) {
+                let errMsg = r.status;
+                try { const e = await r.json(); errMsg = e.error || errMsg; } catch(_) {}
+                // Still show historical data even if live fetch fails
+                if (HIST_DL.length || HIST_VT.length) {
+                    DL_DATA = [...HIST_DL];
+                    VT_DATA = [...HIST_VT];
+                    STATS_LOADED = true;
+                    const sulNow = nowSUL();
+                    const ts = tsLabel + sulNow.toLocaleDateString('en-GB', {timeZone:'Asia/Baghdad', day:'numeric', month:'long', year:'numeric'}) + ' — ' + sulNow.toLocaleTimeString('en-US', {timeZone:'Asia/Baghdad',hour:'2-digit',minute:'2-digit',hour12:true}) + (isEn ? ' (archive only)' : ' (ئەرشیڤ تەنها)');
+                    const dlRef = document.getElementById('dl-last-refresh'); if (dlRef) dlRef.textContent = ts;
+                    const vtRef = document.getElementById('visit-last-refresh'); if (vtRef) vtRef.textContent = ts;
+                    updateDlSummary(); renderDlTable(); renderVisitStats(); renderSearchTable();
+                }
+                alert2(alDl, '⚠️ Live KV: ' + errMsg + (HIST_DL.length ? ' — ئەرشیڤی مێژووی بارکرا' : ''), 'err');
+                alert2(alVt, '⚠️ Live KV: ' + errMsg + (HIST_VT.length ? ' — ئەرشیڤی مێژووی بارکرا' : ''), 'err');
+                return;
+            }
+            const data = await r.json();
+            if (!data.ok) {
+                alert2(alDl, '❌ ' + data.error, 'err');
+                alert2(alVt, '❌ ' + data.error, 'err');
+                return;
+            }
+            liveDl = Array.isArray(data.downloads) ? data.downloads : [];
+            liveVt = Array.isArray(data.visits)    ? data.visits    : [];
         }
 
         // ── Step 3: Merge historical + live ──
         // Historical has everything up to yesterday. Live has today only.
-        const liveDl = Array.isArray(data.downloads) ? data.downloads : [];
-        const liveVt = Array.isArray(data.visits)    ? data.visits    : [];
-
         DL_DATA = [...HIST_DL, ...liveDl];
         VT_DATA = [...HIST_VT, ...liveVt];
         STATS_LOADED = true;
@@ -10918,6 +10969,19 @@ let INDEXNOW_KEY_SHA = '';
             setTimeout(() => {
                 const el = document.getElementById('indexnow-key');
                 if (el) { el.value = saved; indexNowKeyChanged(); }
+            }, 800);
+        }
+    } catch(e) {}
+})();
+
+// Load Supabase service key from localStorage on init
+(function loadSupabaseSvcKey() {
+    try {
+        const saved = localStorage.getItem('uq_supabase_svc');
+        if (saved) {
+            setTimeout(() => {
+                const el = document.getElementById('supabase-svc-key');
+                if (el) el.value = saved;
             }, 800);
         }
     } catch(e) {}

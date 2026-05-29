@@ -1,0 +1,279 @@
+name: Archive Supabase Stats
+
+on:
+  schedule:
+    # Runs at 20:55 UTC daily (23:55 Sulaymaniyah, Asia/Baghdad UTC+3)
+    # 5 minutes before midnight — captures all of today's data
+    - cron: '55 20 * * *'
+  workflow_dispatch:
+    # Allow manual trigger (e.g. if scheduled run missed)
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Archive today's Supabase stats (with KV fallback)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          STATS_URL: https://uniqaidar.pages.dev/api/stats
+          ARCHIVE_TOKEN: ${{ secrets.ARCHIVE_TOKEN }}
+          PURGE_URL: https://uniqaidar.pages.dev/api/purge
+          MAX_FILE_BYTES: 5000000
+        run: |
+          set -eo pipefail
+
+          WORK_DIR="${GITHUB_WORKSPACE}"
+          TODAY=$(TZ='Asia/Baghdad' date '+%Y-%m-%d')
+          echo "📅 Archiving data for: $TODAY (Sulaymaniyah time)"
+          echo "📍 Working directory: $WORK_DIR"
+
+          # Write Python archiver script
+          cat > /tmp/archive_supabase.py << 'PYEOF'
+import json
+import os
+import sys
+import urllib.request
+import urllib.error
+
+today         = os.environ['TODAY']
+supabase_url  = os.environ.get('SUPABASE_URL', '').rstrip('/')
+supabase_key  = os.environ.get('SUPABASE_SERVICE_KEY', '')
+stats_url     = os.environ.get('STATS_URL', '')
+archive_token = os.environ.get('ARCHIVE_TOKEN', '')
+purge_url     = os.environ.get('PURGE_URL', '')
+max_bytes     = int(os.environ.get('MAX_FILE_BYTES', '5000000'))
+work_dir      = os.environ.get('WORK_DIR', os.getcwd())
+arch_dir      = os.path.join(work_dir, 'historicaldata')
+
+# ── Helper: HTTP GET ──────────────────────────────────────────────────────────
+def http_get(url, headers=None):
+    req = urllib.request.Request(url, headers=headers or {})
+    with urllib.request.urlopen(req, timeout=60) as resp:
+        return json.loads(resp.read().decode('utf-8'))
+
+# ── Helper: HTTP POST ─────────────────────────────────────────────────────────
+def http_post(url, payload, headers=None):
+    data = json.dumps(payload).encode('utf-8')
+    h = {'Content-Type': 'application/json'}
+    if headers:
+        h.update(headers)
+    req = urllib.request.Request(url, data=data, headers=h, method='POST')
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        return resp.status
+
+# ── Phase 1: Try Supabase (service_role key bypasses RLS) ────────────────────
+source   = None
+visits   = []
+downloads = []
+
+if supabase_url and supabase_key:
+    try:
+        sb_headers = {
+            'apikey': supabase_key,
+            'Authorization': f'Bearer {supabase_key}',
+            'Accept': 'application/json'
+        }
+        vt_url = f"{supabase_url}/rest/v1/visits?date=eq.{today}&select=*&limit=100000"
+        dl_url = f"{supabase_url}/rest/v1/downloads?date=eq.{today}&select=*&limit=100000"
+        visits    = http_get(vt_url, sb_headers)
+        downloads = http_get(dl_url, sb_headers)
+        if not isinstance(visits, list) or not isinstance(downloads, list):
+            raise ValueError(f"Unexpected Supabase response types: visits={type(visits)}, downloads={type(downloads)}")
+        source = 'Supabase'
+        print(f"✅ Supabase: {len(visits)} visits, {len(downloads)} downloads")
+    except Exception as e:
+        print(f"⚠️  Supabase failed: {e} — falling back to Cloudflare KV")
+        source = None
+else:
+    print("⚠️  SUPABASE_URL or SUPABASE_SERVICE_KEY not set — falling back to Cloudflare KV")
+
+# ── Phase 2: KV fallback ──────────────────────────────────────────────────────
+if source is None:
+    if not archive_token:
+        print("❌ ERROR: ARCHIVE_TOKEN not set and Supabase unavailable", file=sys.stderr)
+        sys.exit(1)
+    try:
+        kv_headers = {'Authorization': f'Bearer {archive_token}'}
+        data = http_get(f"{stats_url}?type=both&date={today}", kv_headers)
+        if not data.get('ok'):
+            raise ValueError(f"KV returned not-ok: {data}")
+        visits    = data.get('visits', [])
+        downloads = data.get('downloads', [])
+        source = 'Cloudflare KV'
+        print(f"✅ KV fallback: {len(visits)} visits, {len(downloads)} downloads")
+    except Exception as e:
+        print(f"❌ ERROR: KV fallback also failed: {e}", file=sys.stderr)
+        sys.exit(1)
+
+print(f"📊 Data source: {source} — {len(visits)} visits, {len(downloads)} downloads")
+
+# ── Phase 3: Skip archive if no data ─────────────────────────────────────────
+total = len(visits) + len(downloads)
+if total == 0:
+    print(f"⚠️  No data for {today} — skipping archive")
+    # Write sentinel so commit step knows nothing changed
+    with open(os.path.join(work_dir, '_no_data.flag'), 'w') as f:
+        f.write('no_data')
+    sys.exit(0)
+
+# ── Phase 4: Archive to historicaldata/ ──────────────────────────────────────
+os.makedirs(arch_dir, exist_ok=True)
+
+new_entry = {'date': today, 'downloads': downloads, 'visits': visits}
+
+idx      = 1
+max_files = 1000
+path     = None
+
+while idx <= max_files:
+    path = os.path.join(arch_dir, f'archive_{idx}.json')
+    if not os.path.exists(path):
+        current = []
+        print(f"✓ Creating new archive file: archive_{idx}.json")
+        break
+    size       = os.path.getsize(path)
+    entry_size = len(json.dumps(new_entry, separators=(',', ':')).encode('utf-8'))
+    if (size + entry_size + 2) < max_bytes:
+        with open(path, 'r', encoding='utf-8') as f:
+            current = json.load(f)
+        print(f"✓ Appending to archive_{idx}.json (current size: {size} bytes)")
+        break
+    idx += 1
+
+if idx > max_files or path is None:
+    print("❌ ERROR: Too many archive files", file=sys.stderr)
+    sys.exit(1)
+
+current.append(new_entry)
+with open(path, 'w', encoding='utf-8') as f:
+    json.dump(current, f, separators=(',', ':'), ensure_ascii=False)
+
+# ── Phase 5: Update index.json ────────────────────────────────────────────────
+all_files  = sorted([fn for fn in os.listdir(arch_dir)
+                     if fn.startswith('archive_') and fn.endswith('.json')])
+index      = {'files': all_files, 'updated': today, 'total_entries': len(current)}
+index_path = os.path.join(arch_dir, 'index.json')
+with open(index_path, 'w', encoding='utf-8') as f:
+    json.dump(index, f, separators=(',', ':'))
+
+print(f"✅ Written to {os.path.basename(path)} ({len(current)} entries)")
+print(f"✅ Updated index with {len(all_files)} archive files")
+
+# ── Phase 6: Clear source data ────────────────────────────────────────────────
+# Write source to file so shell can read it for the purge/delete step
+with open(os.path.join(work_dir, '_archive_source.txt'), 'w') as f:
+    f.write(source)
+
+print(f"✅ Archive complete. Source: {source}")
+PYEOF
+
+          # Run archiver
+          TODAY="$TODAY" \
+          SUPABASE_URL="$SUPABASE_URL" \
+          SUPABASE_SERVICE_KEY="$SUPABASE_SERVICE_KEY" \
+          STATS_URL="$STATS_URL" \
+          ARCHIVE_TOKEN="$ARCHIVE_TOKEN" \
+          PURGE_URL="$PURGE_URL" \
+          MAX_FILE_BYTES="$MAX_FILE_BYTES" \
+          WORK_DIR="$WORK_DIR" \
+          python3 /tmp/archive_supabase.py
+
+          echo "✅ Archive step completed"
+
+      - name: Commit archived data
+        if: success()
+        run: |
+          # Skip commit if no data was archived
+          if [ -f "${GITHUB_WORKSPACE}/_no_data.flag" ]; then
+            echo "ℹ️  No data to commit — skipping."
+            rm -f "${GITHUB_WORKSPACE}/_no_data.flag"
+            exit 0
+          fi
+
+          git config user.name "UniQaidar Admin"
+          git config user.email "uniqaidar@gmail.com"
+          git add historicaldata/
+          if git diff --staged --quiet; then
+            echo "ℹ️  No changes to commit."
+          else
+            echo "📤 Pushing changes..."
+            git pull --rebase --autostash --strategy=recursive --strategy-option=theirs
+            git commit -m "Auto-archive stats (Supabase): $(TZ='Asia/Baghdad' date '+%Y-%m-%d') — $(TZ='Asia/Baghdad' date '+%H:%M') SUL"
+            git push
+            echo "✅ Commit pushed successfully"
+          fi
+
+      - name: Clear source data after successful archive
+        if: success()
+        continue-on-error: true
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ARCHIVE_TOKEN: ${{ secrets.ARCHIVE_TOKEN }}
+          PURGE_URL: https://uniqaidar.pages.dev/api/purge
+        run: |
+          # Skip if no data was archived
+          if [ -f "${GITHUB_WORKSPACE}/_no_data.flag" ]; then
+            exit 0
+          fi
+
+          TODAY=$(TZ='Asia/Baghdad' date '+%Y-%m-%d')
+          SOURCE_FILE="${GITHUB_WORKSPACE}/_archive_source.txt"
+          SOURCE=$(cat "$SOURCE_FILE" 2>/dev/null || echo "")
+          rm -f "$SOURCE_FILE"
+
+          echo "🗑️  Clearing $SOURCE data for: $TODAY"
+
+          if [ "$SOURCE" = "Supabase" ]; then
+            # Delete today's rows from Supabase
+            python3 << PYEOF
+import urllib.request, os, sys
+url = os.environ['SUPABASE_URL'].rstrip('/')
+key = os.environ['SUPABASE_SERVICE_KEY']
+today = '${TODAY}'
+headers = {
+    'apikey': key,
+    'Authorization': f'Bearer {key}',
+    'Content-Type': 'application/json',
+    'Prefer': 'return=minimal'
+}
+for table in ('visits', 'downloads'):
+    req = urllib.request.Request(
+        f"{url}/rest/v1/{table}?date=eq.{today}",
+        headers=headers,
+        method='DELETE'
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            print(f"✅ Deleted {table} rows for {today} (status {r.status})")
+    except Exception as e:
+        print(f"⚠️  Could not delete {table}: {e}")
+        sys.exit(1)
+PYEOF
+          else
+            # KV fallback was used — purge KV keys
+            curl -sf -X POST \
+              --max-time 30 \
+              -H "Authorization: Bearer ${ARCHIVE_TOKEN}" \
+              -H "Content-Type: application/json" \
+              -d "{\"date\":\"${TODAY}\"}" \
+              "${PURGE_URL}" && echo "✅ KV purge successful" || echo "⚠️  KV purge encountered an issue (non-blocking)"
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Workflow failed. Check logs above for details."
+          exit 1

@@ -21,7 +21,7 @@ export async function onRequestPost(context) {
         const now     = new Date();
         const sulDate = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });
         const sulHour = now.toLocaleString('en-GB', { timeZone: 'Asia/Baghdad', hour: '2-digit', hour12: false }).replace(/,.*/, '').padStart(2,'0');
-        const sulTime = now.toLocaleTimeString('en-GB', { timeZone: 'Asia/Baghdad', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+        const sulTime = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Baghdad', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: true });
         const country = context.request.cf?.country || '';
         const city    = context.request.cf?.city    || '';
 
