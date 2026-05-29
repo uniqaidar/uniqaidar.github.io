@@ -8944,7 +8944,7 @@ async function loadAllStats(force) {
                     VT_DATA = [...HIST_VT];
                     STATS_LOADED = true;
                     const sulNow = nowSUL();
-                    const ts = tsLabel + sulNow.toLocaleDateString('en-GB', {timeZone:'Asia/Baghdad', day:'numeric', month:'long', year:'numeric'}) + ' — ' + sulNow.toLocaleTimeString('en-US', {timeZone:'Asia/Baghdad',hour:'2-digit',minute:'2-digit',hour12:true}) + (isEn ? ' (archive only)' : ' (ئەرشیڤ تەنها)');
+                    const ts = tsLabel + sulNow.toLocaleDateString('en-GB', {timeZone:'Asia/Baghdad', day:'numeric', month:'long', year:'numeric'}) + ' — ' + sulNow.toLocaleTimeString('en-US', {timeZone:'Asia/Baghdad',hour:'2-digit',minute:'2-digit',hour12:true}) + ' 🔴 Live failed · 📦 GitHub Archive only';
                     const dlRef = document.getElementById('dl-last-refresh'); if (dlRef) dlRef.textContent = ts;
                     const vtRef = document.getElementById('visit-last-refresh'); if (vtRef) vtRef.textContent = ts;
                     updateDlSummary(); renderDlTable(); renderVisitStats(); renderSearchTable();
@@ -8972,7 +8972,9 @@ async function loadAllStats(force) {
         if (_popularJsonFromGitHub && _trendingList.length) buildTrendingList();
 
         const sulNow = nowSUL();
-        const ts = tsLabel + sulNow.toLocaleDateString('en-GB', {timeZone:'Asia/Baghdad', day:'numeric', month:'long', year:'numeric'}) + ' — ' + sulNow.toLocaleTimeString('en-US', {timeZone:'Asia/Baghdad',hour:'2-digit',minute:'2-digit',hour12:true});
+        const srcBadge = liveSource === 'supabase' ? ' 🟢 Supabase' : ' 🟡 Cloudflare KV';
+        const archiveBadge = HIST_DL.length || HIST_VT.length ? ' · 📦 GitHub Archive' : '';
+        const ts = tsLabel + sulNow.toLocaleDateString('en-GB', {timeZone:'Asia/Baghdad', day:'numeric', month:'long', year:'numeric'}) + ' — ' + sulNow.toLocaleTimeString('en-US', {timeZone:'Asia/Baghdad',hour:'2-digit',minute:'2-digit',hour12:true}) + srcBadge + archiveBadge;
         const dlRef2 = document.getElementById('dl-last-refresh'); if (dlRef2) dlRef2.textContent = ts;
         const vtRef2 = document.getElementById('visit-last-refresh'); if (vtRef2) vtRef2.textContent = ts;
 
