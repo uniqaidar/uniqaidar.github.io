@@ -5396,7 +5396,7 @@ var _uqInitDone    = false; // true after applyUrlParams — suppresses replaceS
         _uqCity    = g.city    || '';
         try {
             var _t0 = _uqNow();
-            var _vtEvent = { date: _t0.date, time: _t0.time, ts: _t0.ts, device: _uqDevice, source: _uqSource, url: _uqUrl, country: _uqCountry, city: _uqCity };
+            var _vtEvent = { date: _t0.date, time: _t0.time, device: _uqDevice, source: _uqSource, url: _uqUrl, country: _uqCountry, city: _uqCity };
             _supabase.from('visits').insert(_vtEvent, { returning: 'minimal' }).then(function(res) {
                 if (res.error) {
                     // Supabase failed — fall back to KV silently
@@ -5422,7 +5422,7 @@ var _uqInitDone    = false; // true after applyUrlParams — suppresses replaceS
             var _t1 = _uqNow();
             var _dlEvent = {
                 font: fontName, type: type || 'single',
-                date: _t1.date, time: _t1.time, ts: _t1.ts,
+                date: _t1.date, time: _t1.time,
                 device: _uqDevice, source: _uqSource, url: _uqUrl,
                 event: 'download', country: _uqCountry, city: _uqCity
             };
@@ -5451,7 +5451,7 @@ var _uqInitDone    = false; // true after applyUrlParams — suppresses replaceS
             var _t2 = _uqNow();
             var _veEvent = {
                 font: label || '', type: 'single',
-                date: _t2.date, time: _t2.time, ts: _t2.ts,
+                date: _t2.date, time: _t2.time,
                 device: _uqDevice, source: _uqSource, url: _uqUrl,
                 event: eventType, country: _uqCountry, city: _uqCity
             };
@@ -5483,7 +5483,7 @@ var _uqInitDone    = false; // true after applyUrlParams — suppresses replaceS
                 var _t3 = _uqNow();
                 var _srEvent = {
                     font: query.trim(), type: 'single',
-                    date: _t3.date, time: _t3.time, ts: _t3.ts,
+                    date: _t3.date, time: _t3.time,
                     device: _uqDevice, source: _uqSource, url: _uqUrl,
                     event: 'search', search: query.trim(),
                     country: _uqCountry, city: _uqCity
