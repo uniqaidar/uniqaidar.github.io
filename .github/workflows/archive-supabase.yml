@@ -229,33 +229,11 @@ jobs:
           echo "🗑️  Clearing $SOURCE data for: $YESTERDAY"
 
           if [ "$SOURCE" = "Supabase" ]; then
+            echo "aW1wb3J0IHVybGxpYi5yZXF1ZXN0LCBvcywgc3lzCnVybCAgICAgPSBvcy5lbnZpcm9uWydTVVBBQkFTRV9VUkwnXS5yc3RyaXAoJy8nKQprZXkgICAgID0gb3MuZW52aXJvblsnU1VQQUJBU0VfU0VSVklDRV9LRVknXQp5ZXN0ZXJkYXkgPSBvcy5lbnZpcm9uWydZRVNURVJEQVknXQpoZWFkZXJzID0gewogICAgJ2FwaWtleSc6IGtleSwKICAgICdBdXRob3JpemF0aW9uJzogZidCZWFyZXIge2tleX0nLAogICAgJ0NvbnRlbnQtVHlwZSc6ICdhcHBsaWNhdGlvbi9qc29uJywKICAgICdQcmVmZXInOiAncmV0dXJuPW1pbmltYWwnCn0KZm9yIHRhYmxlIGluICgndmlzaXRzJywgJ2Rvd25sb2FkcycpOgogICAgcmVxID0gdXJsbGliLnJlcXVlc3QuUmVxdWVzdCgKICAgICAgICBmInt1cmx9L3Jlc3QvdjEve3RhYmxlfT9kYXRlPWVxLnt5ZXN0ZXJkYXl9IiwKICAgICAgICBoZWFkZXJzPWhlYWRlcnMsCiAgICAgICAgbWV0aG9kPSdERUxFVEUnCiAgICApCiAgICB0cnk6CiAgICAgICAgd2l0aCB1cmxsaWIucmVxdWVzdC51cmxvcGVuKHJlcSwgdGltZW91dD0zMCkgYXMgcjoKICAgICAgICAgICAgcHJpbnQoZiJEZWxldGVkIHt0YWJsZX0gcm93cyBmb3Ige3llc3RlcmRheX0gKHN0YXR1cyB7ci5zdGF0dXN9KSIpCiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgcHJpbnQoZiJDb3VsZCBub3QgZGVsZXRlIHt0YWJsZX06IHtlfSIpCiAgICAgICAgc3lzLmV4aXQoMSkK" | base64 -d > /tmp/delete_rows.py
             YESTERDAY="$YESTERDAY" \
             SUPABASE_URL="$SUPABASE_URL" \
             SUPABASE_SERVICE_KEY="$SUPABASE_SERVICE_KEY" \
-            python3 << 'PYEOF'
-            import urllib.request, os, sys
-            url     = os.environ['SUPABASE_URL'].rstrip('/')
-            key     = os.environ['SUPABASE_SERVICE_KEY']
-            yesterday = os.environ['YESTERDAY']
-            headers = {
-                'apikey': key,
-                'Authorization': f'Bearer {key}',
-                'Content-Type': 'application/json',
-                'Prefer': 'return=minimal'
-            }
-            for table in ('visits', 'downloads'):
-                req = urllib.request.Request(
-                    f"{url}/rest/v1/{table}?date=eq.{yesterday}",
-                    headers=headers,
-                    method='DELETE'
-                )
-                try:
-                    with urllib.request.urlopen(req, timeout=30) as r:
-                        print(f"✅ Deleted {table} rows for {yesterday} (status {r.status})")
-                except Exception as e:
-                    print(f"❌ Could not delete {table}: {e}")
-                    sys.exit(1)
-            PYEOF
+            python3 /tmp/delete_rows.py
           else
             curl -sf -X POST \
               --max-time 30 \
