@@ -5380,11 +5380,6 @@ var _uqInitDone    = false; // true after applyUrlParams — suppresses replaceS
     // Fetch geo once — Cloudflare knows country/city, browser does not
     // Fire-and-forget: if it hasn't returned yet when first event fires,
     // country/city will be '' (same as missing cf header — no problem)
-    fetch('/api/geo').then(function(r) { return r.ok ? r.json() : {}; }).then(function(g) {
-        _uqCountry = g.country || '';
-        _uqCity    = g.city    || '';
-    }).catch(function(){});
-
     // ── Sulaymaniyah timestamp helper (12-hour, Asia/Baghdad) ──
     function _uqNow() {
         var n = new Date();
@@ -5395,27 +5390,31 @@ var _uqInitDone    = false; // true after applyUrlParams — suppresses replaceS
         };
     }
 
-    // ── Page visit ──
-    try {
-        var _t0 = _uqNow();
-        var _vtEvent = { date: _t0.date, time: _t0.time, ts: _t0.ts, device: _uqDevice, source: _uqSource, url: _uqUrl, country: _uqCountry, city: _uqCity };
-        _supabase.from('visits').insert(_vtEvent).then(function(res) {
-            if (res.error) {
-                // Supabase failed — fall back to KV silently
+    // ── Page visit — fires after geo resolves so country/city are populated ──
+    fetch('/api/geo').then(function(r) { return r.ok ? r.json() : {}; }).then(function(g) {
+        _uqCountry = g.country || '';
+        _uqCity    = g.city    || '';
+        try {
+            var _t0 = _uqNow();
+            var _vtEvent = { date: _t0.date, time: _t0.time, ts: _t0.ts, device: _uqDevice, source: _uqSource, url: _uqUrl, country: _uqCountry, city: _uqCity };
+            _supabase.from('visits').insert(_vtEvent).then(function(res) {
+                if (res.error) {
+                    // Supabase failed — fall back to KV silently
+                    fetch('/api/visit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(_vtEvent)
+                    }).catch(function(){});
+                }
+            }).catch(function() {
                 fetch('/api/visit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(_vtEvent)
                 }).catch(function(){});
-            }
-        }).catch(function() {
-            fetch('/api/visit', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(_vtEvent)
-            }).catch(function(){});
-        });
-    } catch(e) {}
+            });
+        } catch(e) {}
+    }).catch(function(){});
 
     // ── Download tracker ──
     window.trackFontDownload = function(fontName, type) {
