@@ -8950,6 +8950,7 @@ async function loadAllStats(force) {
                 sbOk = true;
                 liveSource = 'supabase';
             } catch(sbErr) {
+                console.error('[sbstats]', sbErr);
                 sbOk = false;
             }
         }

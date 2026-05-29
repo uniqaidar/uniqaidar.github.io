@@ -35,7 +35,9 @@ export async function onRequestGet(context) {
         const headers = {
             'apikey': SUPABASE_SERVICE_KEY,
             'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation',
+            'Range': '0-49999'
         };
 
         async function sbSelect(table) {
