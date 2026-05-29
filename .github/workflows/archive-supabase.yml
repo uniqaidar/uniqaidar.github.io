@@ -40,7 +40,7 @@ jobs:
           echo "📍 Working directory: $WORK_DIR"
 
           # Write Python archiver script
-          cat > /tmp/archive_supabase.py << 'PYEOF'
+          cat > /tmp/archive_supabase.py << PYEOF
 import json
 import os
 import sys
