@@ -5397,7 +5397,7 @@ var _uqInitDone    = false; // true after applyUrlParams — suppresses replaceS
         try {
             var _t0 = _uqNow();
             var _vtEvent = { date: _t0.date, time: _t0.time, ts: _t0.ts, device: _uqDevice, source: _uqSource, url: _uqUrl, country: _uqCountry, city: _uqCity };
-            _supabase.from('visits').insert(_vtEvent).then(function(res) {
+            _supabase.from('visits').insert(_vtEvent, { returning: 'minimal' }).then(function(res) {
                 if (res.error) {
                     // Supabase failed — fall back to KV silently
                     fetch('/api/visit', {
@@ -5426,7 +5426,7 @@ var _uqInitDone    = false; // true after applyUrlParams — suppresses replaceS
                 device: _uqDevice, source: _uqSource, url: _uqUrl,
                 event: 'download', country: _uqCountry, city: _uqCity
             };
-            _supabase.from('downloads').insert(_dlEvent).then(function(res) {
+            _supabase.from('downloads').insert(_dlEvent, { returning: 'minimal' }).then(function(res) {
                 if (res.error) {
                     fetch('/api/track', {
                         method: 'POST',
@@ -5455,7 +5455,7 @@ var _uqInitDone    = false; // true after applyUrlParams — suppresses replaceS
                 device: _uqDevice, source: _uqSource, url: _uqUrl,
                 event: eventType, country: _uqCountry, city: _uqCity
             };
-            _supabase.from('downloads').insert(_veEvent).then(function(res) {
+            _supabase.from('downloads').insert(_veEvent, { returning: 'minimal' }).then(function(res) {
                 if (res.error) {
                     fetch('/api/track', {
                         method: 'POST',
@@ -5488,7 +5488,7 @@ var _uqInitDone    = false; // true after applyUrlParams — suppresses replaceS
                     event: 'search', search: query.trim(),
                     country: _uqCountry, city: _uqCity
                 };
-                _supabase.from('downloads').insert(_srEvent).then(function(res) {
+                _supabase.from('downloads').insert(_srEvent, { returning: 'minimal' }).then(function(res) {
                     if (res.error) {
                         fetch('/api/track', {
                             method: 'POST',

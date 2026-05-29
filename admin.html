@@ -5429,6 +5429,11 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
         <div class="box-header" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
           <div style="display:flex;align-items:center;gap:10px;"><div class="dot" style="background:var(--yellow)"></div><span><span data-ku>📊 ئامارەکانی داگرتنی فۆنت</span><span data-en style="display:none">📊 Font Download Stats</span></span></div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <select id="uq-data-source-sel" style="font-size:0.78rem;padding:4px 8px;background:var(--card);color:var(--text);border:1px solid var(--border,#444);border-radius:6px;cursor:pointer;margin-left:0;" onchange="uqSetDataSource(this.value)">
+                <option value="supabase">🟢 Supabase + Archive</option>
+                <option value="kv">🟡 Cloudflare KV + Archive</option>
+                <option value="both">🔵 Both + Archive</option>
+            </select>
             <span id="dl-last-refresh" style="font-size:0.72rem;color:#29b6f6;font-family:var(--mono);">Not refreshed</span>
             <span id="dl-refresh-countdown" style="font-size:0.70rem;color:var(--muted);font-family:var(--mono);margin-left:6px;"></span>
             <button class="btn btn-ghost" style="font-size:0.78rem;padding:5px 12px;" onclick="loadDlStats(true)"><span data-ku>🔄 نوێکردنەوە</span><span data-en style="display:none">🔄 Refresh</span></button>
@@ -5617,6 +5622,9 @@ const LS_KEY = 'uqadmin_cfg';
 // The service_role key is entered once by the admin in the settings panel below
 // and stored in localStorage under 'uq_supabase_svc'. It bypasses RLS so the
 // admin panel can SELECT from visits and downloads.
+// ── Data source selector — set by admin dropdown, persists for session only ──
+let UQ_DATA_SOURCE = 'supabase'; // 'supabase' | 'kv' | 'both'
+function uqSetDataSource(val) { UQ_DATA_SOURCE = val; loadAllStats(true); }
 const SUPABASE_URL = 'https://jmzydiwerjqccjuwegcb.supabase.co';
 const LS_SB_KEY    = 'uq_supabase_svc';
 
@@ -8910,35 +8918,43 @@ async function loadAllStats(force) {
             await loadHistoricalData();
         }
 
-        // ── Step 2: Fetch today's live data — Supabase primary, KV fallback ──
+        // ── Step 2: Fetch today's live data — controlled by UQ_DATA_SOURCE dropdown ──
         const today = todaySUL();
         let liveDl = [], liveVt = [];
-        let liveSource = 'supabase';
+        let liveSource = 'none';
 
-        const _sbAdmin = getSupabaseAdmin();
-        if (_sbAdmin) {
-            try {
-                const [dlRes, vtRes] = await Promise.all([
-                    _sbAdmin.from('downloads').select('*').eq('date', today),
-                    _sbAdmin.from('visits').select('*').eq('date', today)
-                ]);
-                if (dlRes.error || vtRes.error) throw new Error(dlRes.error?.message || vtRes.error?.message);
-                liveDl = dlRes.data || [];
-                liveVt = vtRes.data || [];
-            } catch(sbErr) {
-                // Supabase failed — fall back to KV silently
-                liveSource = 'kv';
+        const _src = UQ_DATA_SOURCE; // 'supabase' | 'kv' | 'both'
+
+        // ── Supabase fetch ──
+        let sbDl = [], sbVt = [], sbOk = false;
+        if (_src === 'supabase' || _src === 'both') {
+            const _sbAdmin = getSupabaseAdmin();
+            if (_sbAdmin) {
+                try {
+                    const [dlRes, vtRes] = await Promise.all([
+                        _sbAdmin.from('downloads').select('*').eq('date', today),
+                        _sbAdmin.from('visits').select('*').eq('date', today)
+                    ]);
+                    if (dlRes.error || vtRes.error) throw new Error(dlRes.error?.message || vtRes.error?.message);
+                    sbDl = dlRes.data || [];
+                    sbVt = vtRes.data || [];
+                    sbOk = true;
+                    liveSource = 'supabase';
+                } catch(sbErr) {
+                    sbOk = false;
+                }
             }
-        } else {
-            liveSource = 'kv';
         }
 
-        if (liveSource === 'kv') {
+        // ── KV fetch (explicit KV/Both, or auto-fallback when Supabase failed) ──
+        let kvDl = [], kvVt = [], kvOk = false;
+        const needKv = (_src === 'kv') || (_src === 'both') || (_src === 'supabase' && !sbOk);
+        if (needKv) {
             const r = await fetch(`${STATS_API_BASE}/api/stats?type=both&date=${today}`);
             if (!r.ok) {
                 let errMsg = r.status;
                 try { const e = await r.json(); errMsg = e.error || errMsg; } catch(_) {}
-                // Still show historical data even if live fetch fails
+                // Both sources failed — still show historical data
                 if (HIST_DL.length || HIST_VT.length) {
                     DL_DATA = [...HIST_DL];
                     VT_DATA = [...HIST_VT];
@@ -8959,8 +8975,26 @@ async function loadAllStats(force) {
                 alert2(alVt, '❌ ' + data.error, 'err');
                 return;
             }
-            liveDl = Array.isArray(data.downloads) ? data.downloads : [];
-            liveVt = Array.isArray(data.visits)    ? data.visits    : [];
+            kvDl = Array.isArray(data.downloads) ? data.downloads : [];
+            kvVt = Array.isArray(data.visits)    ? data.visits    : [];
+            kvOk = true;
+            if (liveSource === 'none') liveSource = 'kv';
+            else liveSource = 'both';
+        }
+
+        // ── Merge Supabase + KV (deduplicated by ts+font+event for 'both' mode) ──
+        if (_src === 'both' && sbOk && kvOk) {
+            // Deduplicate: build a Set of composite keys from sbDl, then add kvDl entries not already present
+            const seen = new Set(sbDl.map(function(e) { return (e.ts||'') + '|' + (e.font||'') + '|' + (e.event||'') + '|' + (e.device||''); }));
+            const extraDl = kvDl.filter(function(e) { return !seen.has((e.ts||'') + '|' + (e.font||'') + '|' + (e.event||'') + '|' + (e.device||'')); });
+            liveDl = sbDl.concat(extraDl);
+            const seenV = new Set(sbVt.map(function(e) { return (e.ts||'') + '|' + (e.url||'') + '|' + (e.device||''); }));
+            const extraVt = kvVt.filter(function(e) { return !seenV.has((e.ts||'') + '|' + (e.url||'') + '|' + (e.device||'')); });
+            liveVt = sbVt.concat(extraVt);
+        } else if (sbOk) {
+            liveDl = sbDl; liveVt = sbVt;
+        } else if (kvOk) {
+            liveDl = kvDl; liveVt = kvVt;
         }
 
         // ── Step 3: Merge historical + live ──
@@ -8972,7 +9006,7 @@ async function loadAllStats(force) {
         if (_popularJsonFromGitHub && _trendingList.length) buildTrendingList();
 
         const sulNow = nowSUL();
-        const srcBadge = liveSource === 'supabase' ? ' 🟢 Supabase' : ' 🟡 Cloudflare KV';
+        const srcBadge = liveSource === 'supabase' ? ' 🟢 Supabase' : liveSource === 'kv' ? ' 🟡 Cloudflare KV' : liveSource === 'both' ? ' 🔵 Both' : ' 🔴 No live data';
         const archiveBadge = HIST_DL.length || HIST_VT.length ? ' · 📦 GitHub Archive' : '';
         const ts = tsLabel + sulNow.toLocaleDateString('en-GB', {timeZone:'Asia/Baghdad', day:'numeric', month:'long', year:'numeric'}) + ' — ' + sulNow.toLocaleTimeString('en-US', {timeZone:'Asia/Baghdad',hour:'2-digit',minute:'2-digit',hour12:true}) + srcBadge + archiveBadge;
         const dlRef2 = document.getElementById('dl-last-refresh'); if (dlRef2) dlRef2.textContent = ts;
