@@ -4525,15 +4525,15 @@ function renderHtmlTemplate(htmlTpl, value, numColor, numFontSize) {
     var todayIQ = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });
     Promise.all([
         fetch(BASE + 'historicaldata/index.json').then(function(r) { return r.ok ? r.json() : {files:[]}; }).catch(function() { return {files:[]}; }),
-        // Fetch today's real data — both visits and downloads in one request
-        fetch(BASE + 'api/stats?type=both&date=' + todayIQ).then(function(r) { return r.ok ? r.json() : {ok:false}; }).catch(function() { return {ok:false}; })
+        // Fetch today's counts only — 1 KV read, no list ops, handles pre-deployment correctly
+        fetch(BASE + 'api/stats?type=counts').then(function(r) { return r.ok ? r.json() : {ok:false}; }).catch(function() { return {ok:false}; })
     ]).then(function(results) {
         var idxData  = results[0];
         var liveData = results[1];
         var files = (idxData && Array.isArray(idxData.files)) ? idxData.files : [];
-        // Live today arrays — full entry objects for correct filtering
-        var liveDl = (liveData && liveData.ok && Array.isArray(liveData.downloads)) ? liveData.downloads : [];
-        var liveVt = (liveData && liveData.ok && Array.isArray(liveData.visits))    ? liveData.visits    : [];
+        // Live today counts — single KV read, pre-deployment safe, race-condition minimal
+        var liveDlCount = (liveData && liveData.ok) ? (liveData.downloads_today || 0) : 0;
+        var liveVtCount = (liveData && liveData.ok) ? (liveData.visits_today    || 0) : 0;
 
         // Fetch all archive files in parallel
         return Promise.all(
@@ -4559,12 +4559,9 @@ function renderHtmlTemplate(htmlTpl, value, numColor, numFontSize) {
                     }
                 });
             });
-            // Add live today data — apply identical filter to live entries
-            v += liveVt.length;
-            liveDl.forEach(function(entry) {
-                var e = entry.event;
-                if (!e || e === 'download') { d++; }
-            });
+            // Add live today counts directly — no array filtering needed
+            v += liveVtCount;
+            d += liveDlCount;
             totalVisits    = v;
             totalDownloads = d;
             // Nuclear gate: animation MUST NOT start until BOTH the digital font
