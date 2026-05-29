@@ -162,7 +162,38 @@ jobs:
               print("❌ ERROR: Too many archive files", file=sys.stderr)
               sys.exit(1)
 
-          current.append(new_entry)
+          existing_idx = next((i for i, e in enumerate(current) if e.get('date') == yesterday), None)
+
+          if existing_idx is None:
+              current.append(new_entry)
+              print(f"✓ New entry created for {yesterday}")
+          else:
+              existing = current[existing_idx]
+
+              def visit_key(v):
+                  return '|'.join([
+                      v.get('date',''), v.get('time',''), v.get('device',''),
+                      v.get('country',''), v.get('city',''), v.get('source',''), v.get('url','')
+                  ])
+
+              def download_key(d):
+                  return '|'.join([
+                      d.get('date',''), d.get('time',''), d.get('font',''),
+                      d.get('event',''), d.get('device',''), d.get('country',''), d.get('city','')
+                  ])
+
+              seen_visits    = {visit_key(v) for v in existing.get('visits', [])}
+              seen_downloads = {download_key(d) for d in existing.get('downloads', [])}
+
+              new_visits    = [v for v in new_entry['visits']    if visit_key(v)    not in seen_visits]
+              new_downloads = [d for d in new_entry['downloads'] if download_key(d) not in seen_downloads]
+
+              existing['visits']    += new_visits
+              existing['downloads'] += new_downloads
+              current[existing_idx]  = existing
+
+              print(f"✓ Merged into existing entry for {yesterday}: +{len(new_visits)} visits, +{len(new_downloads)} downloads (deduped)")
+
           with open(path, 'w', encoding='utf-8') as f:
               json.dump(current, f, separators=(',', ':'), ensure_ascii=False)
 
