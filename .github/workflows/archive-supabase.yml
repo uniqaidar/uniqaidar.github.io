@@ -2,9 +2,9 @@ name: Archive Supabase Stats
 
 on:
   schedule:
-    # Runs at 20:55 UTC daily (23:55 Sulaymaniyah, Asia/Baghdad UTC+3)
-    # 5 minutes before midnight -- captures all of today's data
-    - cron: '55 20 * * *'
+    # Runs at 21:15 UTC daily (00:15 Sulaymaniyah, Asia/Baghdad UTC+3)
+    # 15 minutes after midnight -- archives all of yesterday's data
+    - cron: '15 21 * * *'
   workflow_dispatch:
     # Allow manual trigger (e.g. if scheduled run missed)
 
@@ -23,35 +23,166 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Archive today's Supabase stats (with KV fallback)
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Archive yesterday's Supabase stats (with KV fallback)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           STATS_URL: https://uniqaidar.pages.dev/api/stats
           ARCHIVE_TOKEN: ${{ secrets.ARCHIVE_TOKEN }}
-          PURGE_URL: https://uniqaidar.pages.dev/api/purge
           MAX_FILE_BYTES: 5000000
         run: |
           set -eo pipefail
+          trap 'echo "❌ Error on line $LINENO"; exit 1' ERR
+
+          # Validate environment variables
+          if [ -z "$ARCHIVE_TOKEN" ] && [ -z "$SUPABASE_SERVICE_KEY" ]; then
+            echo "❌ ERROR: Neither ARCHIVE_TOKEN nor SUPABASE_SERVICE_KEY is set"
+            exit 1
+          fi
 
           WORK_DIR="${GITHUB_WORKSPACE}"
-          TODAY=$(TZ='Asia/Baghdad' date '+%Y-%m-%d')
-          echo "Archiving data for: $TODAY (Sulaymaniyah time)"
-          echo "Working directory: $WORK_DIR"
+          YESTERDAY=$(TZ='Asia/Baghdad' date -d 'yesterday' '+%Y-%m-%d')
+          echo "📅 Archiving data for: $YESTERDAY (Sulaymaniyah time)"
+          echo "📍 Working directory: $WORK_DIR"
 
-          # Write Python archiver script via base64 decode
-          echo "aW1wb3J0IGpzb24KaW1wb3J0IG9zCmltcG9ydCBzeXMKaW1wb3J0IHVybGxpYi5yZXF1ZXN0CmltcG9ydCB1cmxsaWIuZXJyb3IKCnRvZGF5ICAgICAgICAgPSBvcy5lbnZpcm9uWydUT0RBWSddCnN1cGFiYXNlX3VybCAgPSBvcy5lbnZpcm9uLmdldCgnU1VQQUJBU0VfVVJMJywgJycpLnJzdHJpcCgnLycpCnN1cGFiYXNlX2tleSAgPSBvcy5lbnZpcm9uLmdldCgnU1VQQUJBU0VfU0VSVklDRV9LRVknLCAnJykKc3RhdHNfdXJsICAgICA9IG9zLmVudmlyb24uZ2V0KCdTVEFUU19VUkwnLCAnJykKYXJjaGl2ZV90b2tlbiA9IG9zLmVudmlyb24uZ2V0KCdBUkNISVZFX1RPS0VOJywgJycpCnB1cmdlX3VybCAgICAgPSBvcy5lbnZpcm9uLmdldCgnUFVSR0VfVVJMJywgJycpCm1heF9ieXRlcyAgICAgPSBpbnQob3MuZW52aXJvbi5nZXQoJ01BWF9GSUxFX0JZVEVTJywgJzUwMDAwMDAnKSkKd29ya19kaXIgICAgICA9IG9zLmVudmlyb24uZ2V0KCdXT1JLX0RJUicsIG9zLmdldGN3ZCgpKQphcmNoX2RpciAgICAgID0gb3MucGF0aC5qb2luKHdvcmtfZGlyLCAnaGlzdG9yaWNhbGRhdGEnKQoKIyAtLSBIZWxwZXI6IEhUVFAgR0VUIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KZGVmIGh0dHBfZ2V0KHVybCwgaGVhZGVycz1Ob25lKToKICAgIHJlcSA9IHVybGxpYi5yZXF1ZXN0LlJlcXVlc3QodXJsLCBoZWFkZXJzPWhlYWRlcnMgb3Ige30pCiAgICB3aXRoIHVybGxpYi5yZXF1ZXN0LnVybG9wZW4ocmVxLCB0aW1lb3V0PTYwKSBhcyByZXNwOgogICAgICAgIHJldHVybiBqc29uLmxvYWRzKHJlc3AucmVhZCgpLmRlY29kZSgndXRmLTgnKSkKCiMgLS0gSGVscGVyOiBIVFRQIFBPU1QgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCmRlZiBodHRwX3Bvc3QodXJsLCBwYXlsb2FkLCBoZWFkZXJzPU5vbmUpOgogICAgZGF0YSA9IGpzb24uZHVtcHMocGF5bG9hZCkuZW5jb2RlKCd1dGYtOCcpCiAgICBoID0geydDb250ZW50LVR5cGUnOiAnYXBwbGljYXRpb24vanNvbid9CiAgICBpZiBoZWFkZXJzOgogICAgICAgIGgudXBkYXRlKGhlYWRlcnMpCiAgICByZXEgPSB1cmxsaWIucmVxdWVzdC5SZXF1ZXN0KHVybCwgZGF0YT1kYXRhLCBoZWFkZXJzPWgsIG1ldGhvZD0nUE9TVCcpCiAgICB3aXRoIHVybGxpYi5yZXF1ZXN0LnVybG9wZW4ocmVxLCB0aW1lb3V0PTMwKSBhcyByZXNwOgogICAgICAgIHJldHVybiByZXNwLnN0YXR1cwoKIyAtLSBQaGFzZSAxOiBUcnkgU3VwYWJhc2UgKHNlcnZpY2Vfcm9sZSBrZXkgYnlwYXNzZXMgUkxTKSAtLS0tLS0tLS0tLS0tLS0tLS0tLQpzb3VyY2UgICA9IE5vbmUKdmlzaXRzICAgPSBbXQpkb3dubG9hZHMgPSBbXQoKaWYgc3VwYWJhc2VfdXJsIGFuZCBzdXBhYmFzZV9rZXk6CiAgICB0cnk6CiAgICAgICAgc2JfaGVhZGVycyA9IHsKICAgICAgICAgICAgJ2FwaWtleSc6IHN1cGFiYXNlX2tleSwKICAgICAgICAgICAgJ0F1dGhvcml6YXRpb24nOiBmJ0JlYXJlciB7c3VwYWJhc2Vfa2V5fScsCiAgICAgICAgICAgICdBY2NlcHQnOiAnYXBwbGljYXRpb24vanNvbicKICAgICAgICB9CiAgICAgICAgdnRfdXJsID0gZiJ7c3VwYWJhc2VfdXJsfS9yZXN0L3YxL3Zpc2l0cz9kYXRlPWVxLnt0b2RheX0mc2VsZWN0PSombGltaXQ9MTAwMDAwIgogICAgICAgIGRsX3VybCA9IGYie3N1cGFiYXNlX3VybH0vcmVzdC92MS9kb3dubG9hZHM/ZGF0ZT1lcS57dG9kYXl9JnNlbGVjdD0qJmxpbWl0PTEwMDAwMCIKICAgICAgICB2aXNpdHMgICAgPSBodHRwX2dldCh2dF91cmwsIHNiX2hlYWRlcnMpCiAgICAgICAgZG93bmxvYWRzID0gaHR0cF9nZXQoZGxfdXJsLCBzYl9oZWFkZXJzKQogICAgICAgIGlmIG5vdCBpc2luc3RhbmNlKHZpc2l0cywgbGlzdCkgb3Igbm90IGlzaW5zdGFuY2UoZG93bmxvYWRzLCBsaXN0KToKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcihmIlVuZXhwZWN0ZWQgU3VwYWJhc2UgcmVzcG9uc2UgdHlwZXM6IHZpc2l0cz17dHlwZSh2aXNpdHMpfSwgZG93bmxvYWRzPXt0eXBlKGRvd25sb2Fkcyl9IikKICAgICAgICBzb3VyY2UgPSAnU3VwYWJhc2UnCiAgICAgICAgcHJpbnQoZiLinIUgU3VwYWJhc2U6IHtsZW4odmlzaXRzKX0gdmlzaXRzLCB7bGVuKGRvd25sb2Fkcyl9IGRvd25sb2FkcyIpCiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgcHJpbnQoZiLimqDvuI8gIFN1cGFiYXNlIGZhaWxlZDoge2V9IOKAlCBmYWxsaW5nIGJhY2sgdG8gQ2xvdWRmbGFyZSBLViIpCiAgICAgICAgc291cmNlID0gTm9uZQplbHNlOgogICAgcHJpbnQoIuKaoO+4jyAgU1VQQUJBU0VfVVJMIG9yIFNVUEFCQVNFX1NFUlZJQ0VfS0VZIG5vdCBzZXQg4oCUIGZhbGxpbmcgYmFjayB0byBDbG91ZGZsYXJlIEtWIikKCiMgLS0gUGhhc2UgMjogS1YgZmFsbGJhY2sgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCmlmIHNvdXJjZSBpcyBOb25lOgogICAgaWYgbm90IGFyY2hpdmVfdG9rZW46CiAgICAgICAgcHJpbnQoIuKdjCBFUlJPUjogQVJDSElWRV9UT0tFTiBub3Qgc2V0IGFuZCBTdXBhYmFzZSB1bmF2YWlsYWJsZSIsIGZpbGU9c3lzLnN0ZGVycikKICAgICAgICBzeXMuZXhpdCgxKQogICAgdHJ5OgogICAgICAgIGt2X2hlYWRlcnMgPSB7J0F1dGhvcml6YXRpb24nOiBmJ0JlYXJlciB7YXJjaGl2ZV90b2tlbn0nfQogICAgICAgIGRhdGEgPSBodHRwX2dldChmIntzdGF0c191cmx9P3R5cGU9Ym90aCZkYXRlPXt0b2RheX0iLCBrdl9oZWFkZXJzKQogICAgICAgIGlmIG5vdCBkYXRhLmdldCgnb2snKToKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcihmIktWIHJldHVybmVkIG5vdC1vazoge2RhdGF9IikKICAgICAgICB2aXNpdHMgICAgPSBkYXRhLmdldCgndmlzaXRzJywgW10pCiAgICAgICAgZG93bmxvYWRzID0gZGF0YS5nZXQoJ2Rvd25sb2FkcycsIFtdKQogICAgICAgIHNvdXJjZSA9ICdDbG91ZGZsYXJlIEtWJwogICAgICAgIHByaW50KGYi4pyFIEtWIGZhbGxiYWNrOiB7bGVuKHZpc2l0cyl9IHZpc2l0cywge2xlbihkb3dubG9hZHMpfSBkb3dubG9hZHMiKQogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgIHByaW50KGYi4p2MIEVSUk9SOiBLViBmYWxsYmFjayBhbHNvIGZhaWxlZDoge2V9IiwgZmlsZT1zeXMuc3RkZXJyKQogICAgICAgIHN5cy5leGl0KDEpCgpwcmludChmIvCfk4ogRGF0YSBzb3VyY2U6IHtzb3VyY2V9IOKAlCB7bGVuKHZpc2l0cyl9IHZpc2l0cywge2xlbihkb3dubG9hZHMpfSBkb3dubG9hZHMiKQoKIyAtLSBQaGFzZSAzOiBTa2lwIGFyY2hpdmUgaWYgbm8gZGF0YSAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQp0b3RhbCA9IGxlbih2aXNpdHMpICsgbGVuKGRvd25sb2FkcykKaWYgdG90YWwgPT0gMDoKICAgIHByaW50KGYi4pqg77iPICBObyBkYXRhIGZvciB7dG9kYXl9IOKAlCBza2lwcGluZyBhcmNoaXZlIikKICAgICMgV3JpdGUgc2VudGluZWwgc28gY29tbWl0IHN0ZXAga25vd3Mgbm90aGluZyBjaGFuZ2VkCiAgICB3aXRoIG9wZW4ob3MucGF0aC5qb2luKHdvcmtfZGlyLCAnX25vX2RhdGEuZmxhZycpLCAndycpIGFzIGY6CiAgICAgICAgZi53cml0ZSgnbm9fZGF0YScpCiAgICBzeXMuZXhpdCgwKQoKIyAtLSBQaGFzZSA0OiBBcmNoaXZlIHRvIGhpc3RvcmljYWxkYXRhLyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpvcy5tYWtlZGlycyhhcmNoX2RpciwgZXhpc3Rfb2s9VHJ1ZSkKCm5ld19lbnRyeSA9IHsnZGF0ZSc6IHRvZGF5LCAnZG93bmxvYWRzJzogZG93bmxvYWRzLCAndmlzaXRzJzogdmlzaXRzfQoKaWR4ICAgICAgPSAxCm1heF9maWxlcyA9IDEwMDAKcGF0aCAgICAgPSBOb25lCgp3aGlsZSBpZHggPD0gbWF4X2ZpbGVzOgogICAgcGF0aCA9IG9zLnBhdGguam9pbihhcmNoX2RpciwgZidhcmNoaXZlX3tpZHh9Lmpzb24nKQogICAgaWYgbm90IG9zLnBhdGguZXhpc3RzKHBhdGgpOgogICAgICAgIGN1cnJlbnQgPSBbXQogICAgICAgIHByaW50KGYi4pyTIENyZWF0aW5nIG5ldyBhcmNoaXZlIGZpbGU6IGFyY2hpdmVfe2lkeH0uanNvbiIpCiAgICAgICAgYnJlYWsKICAgIHNpemUgICAgICAgPSBvcy5wYXRoLmdldHNpemUocGF0aCkKICAgIGVudHJ5X3NpemUgPSBsZW4oanNvbi5kdW1wcyhuZXdfZW50cnksIHNlcGFyYXRvcnM9KCcsJywgJzonKSkuZW5jb2RlKCd1dGYtOCcpKQogICAgaWYgKHNpemUgKyBlbnRyeV9zaXplICsgMikgPCBtYXhfYnl0ZXM6CiAgICAgICAgd2l0aCBvcGVuKHBhdGgsICdyJywgZW5jb2Rpbmc9J3V0Zi04JykgYXMgZjoKICAgICAgICAgICAgY3VycmVudCA9IGpzb24ubG9hZChmKQogICAgICAgIHByaW50KGYi4pyTIEFwcGVuZGluZyB0byBhcmNoaXZlX3tpZHh9Lmpzb24gKGN1cnJlbnQgc2l6ZToge3NpemV9IGJ5dGVzKSIpCiAgICAgICAgYnJlYWsKICAgIGlkeCArPSAxCgppZiBpZHggPiBtYXhfZmlsZXMgb3IgcGF0aCBpcyBOb25lOgogICAgcHJpbnQoIuKdjCBFUlJPUjogVG9vIG1hbnkgYXJjaGl2ZSBmaWxlcyIsIGZpbGU9c3lzLnN0ZGVycikKICAgIHN5cy5leGl0KDEpCgpjdXJyZW50LmFwcGVuZChuZXdfZW50cnkpCndpdGggb3BlbihwYXRoLCAndycsIGVuY29kaW5nPSd1dGYtOCcpIGFzIGY6CiAgICBqc29uLmR1bXAoY3VycmVudCwgZiwgc2VwYXJhdG9ycz0oJywnLCAnOicpLCBlbnN1cmVfYXNjaWk9RmFsc2UpCgojIC0tIFBoYXNlIDU6IFVwZGF0ZSBpbmRleC5qc29uIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQphbGxfZmlsZXMgID0gc29ydGVkKFtmbiBmb3IgZm4gaW4gb3MubGlzdGRpcihhcmNoX2RpcikKICAgICAgICAgICAgICAgICAgICAgaWYgZm4uc3RhcnRzd2l0aCgnYXJjaGl2ZV8nKSBhbmQgZm4uZW5kc3dpdGgoJy5qc29uJyldKQppbmRleCAgICAgID0geydmaWxlcyc6IGFsbF9maWxlcywgJ3VwZGF0ZWQnOiB0b2RheSwgJ3RvdGFsX2VudHJpZXMnOiBsZW4oY3VycmVudCl9CmluZGV4X3BhdGggPSBvcy5wYXRoLmpvaW4oYXJjaF9kaXIsICdpbmRleC5qc29uJykKd2l0aCBvcGVuKGluZGV4X3BhdGgsICd3JywgZW5jb2Rpbmc9J3V0Zi04JykgYXMgZjoKICAgIGpzb24uZHVtcChpbmRleCwgZiwgc2VwYXJhdG9ycz0oJywnLCAnOicpKQoKcHJpbnQoZiLinIUgV3JpdHRlbiB0byB7b3MucGF0aC5iYXNlbmFtZShwYXRoKX0gKHtsZW4oY3VycmVudCl9IGVudHJpZXMpIikKcHJpbnQoZiLinIUgVXBkYXRlZCBpbmRleCB3aXRoIHtsZW4oYWxsX2ZpbGVzKX0gYXJjaGl2ZSBmaWxlcyIpCgojIC0tIFBoYXNlIDY6IENsZWFyIHNvdXJjZSBkYXRhIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIFdyaXRlIHNvdXJjZSB0byBmaWxlIHNvIHNoZWxsIGNhbiByZWFkIGl0IGZvciB0aGUgcHVyZ2UvZGVsZXRlIHN0ZXAKd2l0aCBvcGVuKG9zLnBhdGguam9pbih3b3JrX2RpciwgJ19hcmNoaXZlX3NvdXJjZS50eHQnKSwgJ3cnKSBhcyBmOgogICAgZi53cml0ZShzb3VyY2UpCgpwcmludChmIuKchSBBcmNoaXZlIGNvbXBsZXRlLiBTb3VyY2U6IHtzb3VyY2V9IikK" | base64 -d > /tmp/archive_supabase.py
-
-          # Run archiver
-          TODAY="$TODAY" \
+          # Run Python archiver
+          YESTERDAY="$YESTERDAY" \
           SUPABASE_URL="$SUPABASE_URL" \
           SUPABASE_SERVICE_KEY="$SUPABASE_SERVICE_KEY" \
           STATS_URL="$STATS_URL" \
           ARCHIVE_TOKEN="$ARCHIVE_TOKEN" \
-          PURGE_URL="$PURGE_URL" \
           MAX_FILE_BYTES="$MAX_FILE_BYTES" \
           WORK_DIR="$WORK_DIR" \
-          python3 /tmp/archive_supabase.py
+          python3 << 'PYEOF'
+          import json
+          import os
+          import sys
+          import urllib.request
+          import urllib.error
+
+          yesterday        = os.environ['YESTERDAY']
+          supabase_url     = os.environ.get('SUPABASE_URL', '').rstrip('/')
+          supabase_key     = os.environ.get('SUPABASE_SERVICE_KEY', '')
+          stats_url        = os.environ.get('STATS_URL', '')
+          archive_token    = os.environ.get('ARCHIVE_TOKEN', '')
+          max_bytes        = int(os.environ.get('MAX_FILE_BYTES', '5000000'))
+          work_dir         = os.environ.get('WORK_DIR', os.getcwd())
+          arch_dir         = os.path.join(work_dir, 'historicaldata')
+
+          # -- Helper: HTTP GET -------------------------------------------------------
+          def http_get(url, headers=None):
+              req = urllib.request.Request(url, headers=headers or {})
+              with urllib.request.urlopen(req, timeout=60) as resp:
+                  return json.loads(resp.read().decode('utf-8'))
+
+          # -- Phase 1: Try Supabase (service_role key bypasses RLS) -----------------
+          source    = None
+          visits    = []
+          downloads = []
+
+          if supabase_url and supabase_key:
+              try:
+                  sb_headers = {
+                      'apikey': supabase_key,
+                      'Authorization': f'Bearer {supabase_key}',
+                      'Accept': 'application/json'
+                  }
+                  vt_url = f"{supabase_url}/rest/v1/visits?date=eq.{yesterday}&select=*&limit=100000"
+                  dl_url = f"{supabase_url}/rest/v1/downloads?date=eq.{yesterday}&select=*&limit=100000"
+                  visits    = http_get(vt_url, sb_headers)
+                  downloads = http_get(dl_url, sb_headers)
+                  if not isinstance(visits, list) or not isinstance(downloads, list):
+                      raise ValueError(f"Unexpected Supabase response types: visits={type(visits)}, downloads={type(downloads)}")
+                  source = 'Supabase'
+                  print(f"✅ Supabase: {len(visits)} visits, {len(downloads)} downloads for {yesterday}")
+              except Exception as e:
+                  print(f"⚠️  Supabase failed: {e} — falling back to Cloudflare KV")
+                  source = None
+          else:
+              print("⚠️  SUPABASE_URL or SUPABASE_SERVICE_KEY not set — falling back to Cloudflare KV")
+
+          # -- Phase 2: KV fallback --------------------------------------------------
+          if source is None:
+              if not archive_token:
+                  print("❌ ERROR: ARCHIVE_TOKEN not set and Supabase unavailable", file=sys.stderr)
+                  sys.exit(1)
+              try:
+                  kv_headers = {'Authorization': f'Bearer {archive_token}'}
+                  data = http_get(f"{stats_url}?type=both&date={yesterday}", kv_headers)
+                  if not data.get('ok'):
+                      raise ValueError(f"KV returned not-ok: {data}")
+                  visits    = data.get('visits', [])
+                  downloads = data.get('downloads', [])
+                  source = 'Cloudflare KV'
+                  print(f"✅ KV fallback: {len(visits)} visits, {len(downloads)} downloads for {yesterday}")
+              except Exception as e:
+                  print(f"❌ ERROR: KV fallback also failed: {e}", file=sys.stderr)
+                  sys.exit(1)
+
+          print(f"📊 Data source: {source} — {len(visits)} visits, {len(downloads)} downloads")
+
+          # -- Phase 3: Skip archive if no data -------------------------------------
+          total = len(visits) + len(downloads)
+          if total == 0:
+              print(f"⚠️  No data for {yesterday} — skipping archive")
+              with open(os.path.join(work_dir, '_no_data.flag'), 'w') as f:
+                  f.write('no_data')
+              sys.exit(0)
+
+          # -- Phase 4: Archive to historicaldata/ ----------------------------------
+          os.makedirs(arch_dir, exist_ok=True)
+
+          new_entry = {'date': yesterday, 'downloads': downloads, 'visits': visits}
+
+          idx       = 1
+          max_files = 1000
+          path      = None
+
+          while idx <= max_files:
+              path = os.path.join(arch_dir, f'archive_{idx}.json')
+              if not os.path.exists(path):
+                  current = []
+                  print(f"✓ Creating new archive file: archive_{idx}.json")
+                  break
+              size       = os.path.getsize(path)
+              entry_size = len(json.dumps(new_entry, separators=(',', ':')).encode('utf-8'))
+              if (size + entry_size + 2) < max_bytes:
+                  with open(path, 'r', encoding='utf-8') as f:
+                      current = json.load(f)
+                  print(f"✓ Appending to archive_{idx}.json (current size: {size} bytes)")
+                  break
+              idx += 1
+
+          if idx > max_files or path is None:
+              print("❌ ERROR: Too many archive files", file=sys.stderr)
+              sys.exit(1)
+
+          current.append(new_entry)
+          with open(path, 'w', encoding='utf-8') as f:
+              json.dump(current, f, separators=(',', ':'), ensure_ascii=False)
+
+          # -- Phase 5: Update index.json -------------------------------------------
+          all_files  = sorted([fn for fn in os.listdir(arch_dir)
+                               if fn.startswith('archive_') and fn.endswith('.json')])
+          index      = {'files': all_files, 'updated': yesterday, 'total_entries': len(current)}
+          index_path = os.path.join(arch_dir, 'index.json')
+          with open(index_path, 'w', encoding='utf-8') as f:
+              json.dump(index, f, separators=(',', ':'))
+
+          print(f"✅ Written to {os.path.basename(path)} ({len(current)} entries)")
+          print(f"✅ Updated index with {len(all_files)} archive files")
+
+          # -- Phase 6: Write source flag for delete step ---------------------------
+          with open(os.path.join(work_dir, '_archive_source.txt'), 'w') as f:
+              f.write(source)
+
+          print(f"✅ Archive complete. Source: {source}")
+          PYEOF
 
           echo "Archive step completed"
 
@@ -59,7 +190,7 @@ jobs:
         if: success()
         run: |
           if [ -f "${GITHUB_WORKSPACE}/_no_data.flag" ]; then
-            echo "No data to commit -- skipping."
+            echo "ℹ️  No data to commit — skipping."
             rm -f "${GITHUB_WORKSPACE}/_no_data.flag"
             exit 0
           fi
@@ -68,16 +199,16 @@ jobs:
           git config user.email "uniqaidar@gmail.com"
           git add historicaldata/
           if git diff --staged --quiet; then
-            echo "No changes to commit."
+            echo "ℹ️  No changes to commit."
           else
-            echo "Pushing changes..."
+            echo "📤 Pushing changes..."
             git pull --rebase --autostash --strategy=recursive --strategy-option=theirs
-            git commit -m "Auto-archive stats (Supabase): $(TZ='Asia/Baghdad' date '+%Y-%m-%d') -- $(TZ='Asia/Baghdad' date '+%H:%M') SUL"
+            git commit -m "Auto-archive stats (Supabase): $(TZ='Asia/Baghdad' date -d 'yesterday' '+%Y-%m-%d') -- $(TZ='Asia/Baghdad' date '+%H:%M') SUL"
             git push
-            echo "Commit pushed successfully"
+            echo "✅ Commit pushed successfully"
           fi
 
-      - name: Clear source data after successful archive
+      - name: Delete yesterday's data after successful archive
         if: success()
         continue-on-error: true
         env:
@@ -90,30 +221,52 @@ jobs:
             exit 0
           fi
 
-          TODAY=$(TZ='Asia/Baghdad' date '+%Y-%m-%d')
+          YESTERDAY=$(TZ='Asia/Baghdad' date -d 'yesterday' '+%Y-%m-%d')
           SOURCE_FILE="${GITHUB_WORKSPACE}/_archive_source.txt"
           SOURCE=$(cat "$SOURCE_FILE" 2>/dev/null || echo "")
           rm -f "$SOURCE_FILE"
 
-          echo "Clearing $SOURCE data for: $TODAY"
+          echo "🗑️  Clearing $SOURCE data for: $YESTERDAY"
 
           if [ "$SOURCE" = "Supabase" ]; then
-            echo "aW1wb3J0IHVybGxpYi5yZXF1ZXN0LCBvcywgc3lzCnVybCA9IG9zLmVudmlyb25bJ1NVUEFCQVNFX1VSTCddLnJzdHJpcCgnLycpCmtleSA9IG9zLmVudmlyb25bJ1NVUEFCQVNFX1NFUlZJQ0VfS0VZJ10KdG9kYXkgPSBvcy5lbnZpcm9uWydUT0RBWSddCmhlYWRlcnMgPSB7CiAgICAnYXBpa2V5Jzoga2V5LAogICAgJ0F1dGhvcml6YXRpb24nOiBmJ0JlYXJlciB7a2V5fScsCiAgICAnQ29udGVudC1UeXBlJzogJ2FwcGxpY2F0aW9uL2pzb24nLAogICAgJ1ByZWZlcic6ICdyZXR1cm49bWluaW1hbCcKfQpmb3IgdGFibGUgaW4gKCd2aXNpdHMnLCAnZG93bmxvYWRzJyk6CiAgICByZXEgPSB1cmxsaWIucmVxdWVzdC5SZXF1ZXN0KAogICAgICAgIGYie3VybH0vcmVzdC92MS97dGFibGV9P2RhdGU9ZXEue3RvZGF5fSIsCiAgICAgICAgaGVhZGVycz1oZWFkZXJzLAogICAgICAgIG1ldGhvZD0nREVMRVRFJwogICAgKQogICAgdHJ5OgogICAgICAgIHdpdGggdXJsbGliLnJlcXVlc3QudXJsb3BlbihyZXEsIHRpbWVvdXQ9MzApIGFzIHI6CiAgICAgICAgICAgIHByaW50KGYiRGVsZXRlZCB7dGFibGV9IHJvd3MgZm9yIHt0b2RheX0gKHN0YXR1cyB7ci5zdGF0dXN9KSIpCiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgcHJpbnQoZiJDb3VsZCBub3QgZGVsZXRlIHt0YWJsZX06IHtlfSIpCiAgICAgICAgc3lzLmV4aXQoMSkK" | base64 -d > /tmp/delete_rows.py
-            TODAY="$TODAY" \
+            YESTERDAY="$YESTERDAY" \
             SUPABASE_URL="$SUPABASE_URL" \
             SUPABASE_SERVICE_KEY="$SUPABASE_SERVICE_KEY" \
-            python3 /tmp/delete_rows.py
+            python3 << 'PYEOF'
+            import urllib.request, os, sys
+            url     = os.environ['SUPABASE_URL'].rstrip('/')
+            key     = os.environ['SUPABASE_SERVICE_KEY']
+            yesterday = os.environ['YESTERDAY']
+            headers = {
+                'apikey': key,
+                'Authorization': f'Bearer {key}',
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+            }
+            for table in ('visits', 'downloads'):
+                req = urllib.request.Request(
+                    f"{url}/rest/v1/{table}?date=eq.{yesterday}",
+                    headers=headers,
+                    method='DELETE'
+                )
+                try:
+                    with urllib.request.urlopen(req, timeout=30) as r:
+                        print(f"✅ Deleted {table} rows for {yesterday} (status {r.status})")
+                except Exception as e:
+                    print(f"❌ Could not delete {table}: {e}")
+                    sys.exit(1)
+            PYEOF
           else
             curl -sf -X POST \
               --max-time 30 \
               -H "Authorization: Bearer ${ARCHIVE_TOKEN}" \
               -H "Content-Type: application/json" \
-              -d "{\"date\":\"${TODAY}\"}" \
-              "${PURGE_URL}" && echo "KV purge successful" || echo "KV purge encountered an issue (non-blocking)"
+              -d "{\"date\":\"${YESTERDAY}\"}" \
+              "${PURGE_URL}" && echo "✅ KV purge successful" || echo "⚠️  KV purge encountered an issue (non-blocking)"
           fi
 
       - name: Notify on failure
         if: failure()
         run: |
-          echo "Workflow failed. Check logs above for details."
+          echo "❌ Workflow failed. Check logs above for details."
           exit 1
