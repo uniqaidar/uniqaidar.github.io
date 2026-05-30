@@ -149,64 +149,42 @@ function truncate(str, maxLen) {
     return [...str].slice(0, maxLen).join('');
 }
 
-// ── Build individual font page ────────────────────────────────────────────────
-function buildFontPage(font, catNames, paraDefault) {
-    // Every field from fonts.json
-    const name        = font.name      || '';
-    const path        = font.path      || `UniQaidarFonts/${name}.ttf`;
-    const preview     = font.preview   || 'فۆنتەکانی یونی‌قەیدار';
-    const paragraph   = (font.paragraph && font.paragraph.trim())
-                            ? font.paragraph.trim()
-                            : paraDefault; // exact same fallback as real site
-    const lineHeight  = font.lineHeight || 1.8;
-    const dateAdded   = font.dateAdded || '';
-    const size        = font.size      || '';
-    const allCats     = font.category  || [];
-    const firstCat    = allCats[0]     || 'All';
+// ── Build SEO meta block to inject into real index.html ──────────────────────
+function buildFontMeta(font, catNames, paraDefault) {
+    const name       = font.name     || '';
+    const path       = font.path     || `UniQaidarFonts/${name}.ttf`;
+    const preview    = font.preview  || 'فۆنتەکانی یونی‌قەیدار';
+    const paragraph  = (font.paragraph && font.paragraph.trim())
+                           ? font.paragraph.trim()
+                           : paraDefault;
+    const dateAdded  = font.dateAdded || '';
+    const size       = font.size     || '';
+    const allCats    = font.category || [];
+    const firstCat   = allCats[0]    || 'All';
 
-    // All category labels for this font (every category, not just first)
-    const catLabels   = allCats
-        .map(c => catNames[c] || c)
-        .join(' — ');
-
-    const catLabel    = catNames[firstCat] || firstCat;
-
-    // Canonical URL: matches sitemap format exactly (?cat=category[0]&font=name)
     const fontUrl  = `${BASE_URL}/?cat=${encodeURIComponent(firstCat)}&font=${encodeURIComponent(name)}`;
-    // TTF direct download: use path from fonts.json (same as real site)
     const ttfUrl   = `${BASE_URL}/${path}`;
     const logoUrl  = `${BASE_URL}/Logo.png`;
-
-    // Meta content — use preview as description (short, unique per font)
-    // Description also includes paragraph truncated to 160 chars total
     const metaDesc = truncate(`${preview} — ${paragraph}`, 155);
+    const catKeywords = allCats.map(c => catNames[c] || c).join(', ');
 
     const title = `${escHtml(name)} - داگرتنی فۆنتی کوردی | UniQaidar`;
     const desc  = `${escHtml(metaDesc)} — فۆنتەکانی یونی‌قەیدار Kurdish Font.`;
 
-    // JSON-LD
-    const jName  = jsonSafe(name);
-    const jUrl   = jsonSafe(fontUrl);
-    const jDesc  = jsonSafe(`${preview} — ${paragraph}`);
-    const jDate  = jsonSafe(dateAdded);
-    const jSize  = jsonSafe(size);
-    const jPath  = jsonSafe(ttfUrl);
+    const jName = jsonSafe(name);
+    const jUrl  = jsonSafe(fontUrl);
+    const jDesc = jsonSafe(`${preview} — ${paragraph}`);
+    const jDate = jsonSafe(dateAdded);
+    const jSize = jsonSafe(size);
+    const jPath = jsonSafe(ttfUrl);
 
-    // Category tags for keywords
-    const catKeywords = allCats.map(c => catNames[c] || c).join(', ');
-
-    return `<!DOCTYPE html>
-<html lang="ku" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${title}</title>
-<meta name="description" content="${desc}">
+    return {
+        title,
+        canonical: escHtml(fontUrl),
+        meta: `<meta name="description" content="${desc}">
 <meta name="keywords" content="${escHtml(name)}, ${escHtml(catKeywords)}, فۆنتی کوردی, Kurdish Font, UniQaidar, یونی‌قەیدار">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Qaidar Rahim">
-<link rel="canonical" href="${escHtml(fontUrl)}">
-<!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="UniQaidar Fonts — فۆنتەکانی یونی‌قەیدار">
 <meta property="og:title" content="${title}">
@@ -218,17 +196,14 @@ function buildFontPage(font, catNames, paraDefault) {
 <meta property="og:image:alt" content="UniQaidar Fonts - Kurdish &amp; Arabic Font Library">
 <meta property="og:locale" content="ckb_IQ">
 <meta property="og:locale:alternate" content="en_US">
-<!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@Qaidar_Rahim">
 <meta name="twitter:creator" content="@Qaidar_Rahim">
 <meta name="twitter:title" content="${title}">
 <meta name="twitter:description" content="${desc}">
 <meta name="twitter:image" content="${logoUrl}">
-<!-- Geo -->
 <meta name="geo.region" content="IQ-SU">
 <meta name="geo.placename" content="Sulaymaniyah, Kurdistan Region, Iraq">
-<!-- Schema.org JSON-LD -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -245,47 +220,12 @@ function buildFontPage(font, catNames, paraDefault) {
   "fileSize": "${jSize}",
   "inLanguage": ["ckb", "ar"]
 }
-</script>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#1a1a1a;color:#f0f0f0;font-family:Tahoma,Arial,sans-serif;direction:rtl;text-align:right;padding:24px 16px}
-.wrap{background:#242424;border-radius:12px;padding:28px;max-width:760px;margin:0 auto}
-.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-h1{font-size:1.3em;color:#f0f0f0;font-weight:600}
-.new-badge{background:#ff5700;color:#fff;font-size:0.65em;padding:2px 7px;border-radius:4px;margin-left:8px;vertical-align:middle}
-.card-date{font-size:0.8em;color:#888}
-.cats{font-size:0.8em;color:#aaa;margin-bottom:16px}
-.preview-box{font-size:2em;line-height:${lineHeight};margin:16px 0;padding:16px;background:#1a1a1a;border-radius:8px;border:1px solid #333;word-break:break-word;overflow-wrap:break-word}
-.para-box{font-size:1.1em;line-height:${lineHeight};margin:12px 0;padding:14px;background:#1a1a1a;border-radius:8px;border:1px solid #2a2a2a;color:#ccc;word-break:break-word;overflow-wrap:break-word}
-.dl-row{display:flex;align-items:center;gap:12px;margin-top:20px;flex-wrap:wrap}
-.btn{display:inline-block;padding:11px 26px;background:#ff5700;color:#fff;text-decoration:none;border-radius:8px;font-size:1em;font-family:inherit}
-.size-tag{font-size:0.82em;color:#999;background:#1a1a1a;padding:5px 10px;border-radius:6px;border:1px solid #333}
-.back{display:block;margin-top:18px;color:#aaa;text-decoration:none;font-size:0.88em}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <div class="card-header">
-    <h1>${dateAdded ? `<span class="new-badge">نوێ</span>` : ''}${escHtml(name)}</h1>
-    ${dateAdded ? `<span class="card-date">📅 ${escHtml(dateAdded)}</span>` : ''}
-  </div>
-  <div class="cats">${escHtml(catLabels)}</div>
-  <div class="preview-box">${escHtml(preview)}</div>
-  <div class="para-box">${escHtml(paragraph)}</div>
-  <div class="dl-row">
-    <a class="btn" href="${escHtml(ttfUrl)}" download>دابەزاندنی فۆنت</a>
-    ${size ? `<span class="size-tag">${escHtml(size)}</span>` : ''}
-  </div>
-  <a class="back" href="${BASE_URL}/">&#8594; بگەڕێوە بۆ هەموو فۆنتەکان</a>
-</div>
-</body>
-</html>`;
+<\/script>`,
+    };
 }
 
-// ── Build category page ───────────────────────────────────────────────────────
-function buildCategoryPage(cat, fonts, catNames) {
+function buildCatMeta(cat, count, catNames) {
     const catLabel = catNames[cat] || cat;
-    const count    = fonts.length;
     const catUrl   = `${BASE_URL}/?cat=${encodeURIComponent(cat)}`;
     const logoUrl  = `${BASE_URL}/Logo.png`;
 
@@ -296,41 +236,26 @@ function buildCategoryPage(cat, fonts, catNames) {
     const jUrl   = jsonSafe(catUrl);
     const jDesc  = jsonSafe(`${count} فۆنتی کوردی بە خۆڕایی لە بەشی ${catLabel}. فۆنتەکانی یونی‌قەیدار — ${count} free Kurdish fonts.`);
 
-    const fontLinks = fonts.map(f => {
-        const short    = f.name || '';
-        const fCat     = (f.category || [])[0] || cat;
-        const fUrl     = `${BASE_URL}/?cat=${encodeURIComponent(fCat)}&font=${encodeURIComponent(f.name)}`;
-        const fPreview = f.preview || '';
-        const fSize    = f.size    || '';
-        const fDate    = f.dateAdded || '';
-        return `    <li>
-      <a href="${escHtml(fUrl)}">${escHtml(short)}</a>
-      ${fPreview ? `<span class="fp">${escHtml(fPreview)}</span>` : ''}
-      ${fSize    ? `<span class="fs">${escHtml(fSize)}</span>`    : ''}
-      ${fDate    ? `<span class="fd">📅 ${escHtml(fDate)}</span>` : ''}
-    </li>`;
-    }).join('\n');
-
-    return `<!DOCTYPE html>
-<html lang="ku" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${title}</title>
-<meta name="description" content="${desc}">
+    return {
+        title,
+        canonical: escHtml(catUrl),
+        meta: `<meta name="description" content="${desc}">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Qaidar Rahim">
-<link rel="canonical" href="${escHtml(catUrl)}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="UniQaidar Fonts — فۆنتەکانی یونی‌قەیدار">
 <meta property="og:title" content="${title}">
 <meta property="og:description" content="${desc}">
 <meta property="og:url" content="${escHtml(catUrl)}">
 <meta property="og:image" content="${logoUrl}">
+<meta property="og:image:width" content="699">
+<meta property="og:image:height" content="232">
+<meta property="og:image:alt" content="UniQaidar Fonts - Kurdish &amp; Arabic Font Library">
 <meta property="og:locale" content="ckb_IQ">
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@Qaidar_Rahim">
+<meta name="twitter:creator" content="@Qaidar_Rahim">
 <meta name="twitter:title" content="${title}">
 <meta name="twitter:description" content="${desc}">
 <meta name="twitter:image" content="${logoUrl}">
@@ -346,34 +271,49 @@ function buildCategoryPage(cat, fonts, catNames) {
   "author": { "@type": "Person", "name": "Qaidar Rahim", "sameAs": "https://twitter.com/Qaidar_Rahim" },
   "numberOfItems": ${count}
 }
-</script>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#1a1a1a;color:#f0f0f0;font-family:Tahoma,Arial,sans-serif;direction:rtl;text-align:right;padding:24px 16px}
-.wrap{background:#242424;border-radius:12px;padding:28px;max-width:760px;margin:0 auto}
-h1{font-size:1.4em;color:#ff5700;margin-bottom:6px}
-.meta{font-size:0.85em;color:#999;margin-bottom:20px}
-ul{list-style:none;padding:0}
-li{padding:10px 0;border-bottom:1px solid #2e2e2e}
-li:last-child{border-bottom:none}
-a{color:#ff5700;text-decoration:none;font-size:1em}
-a:hover{text-decoration:underline}
-.fp{display:block;font-size:0.82em;color:#aaa;margin-top:3px}
-.fs,.fd{font-size:0.75em;color:#666;margin-right:10px}
-.back{display:block;margin-top:20px;color:#aaa;font-size:0.88em}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <h1>${escHtml(catLabel)}</h1>
-  <div class="meta">${count} فۆنت — ${count} free Kurdish fonts</div>
-  <ul>
-${fontLinks}
-  </ul>
-  <a class="back" href="${BASE_URL}/">&#8594; بگەڕێوە بۆ هەموو فۆنتەکان</a>
-</div>
-</body>
-</html>`;
+<\/script>`,
+    };
+}
+
+// ── Inject SEO meta into real index.html ──────────────────────────────────────
+// Fetches the real index.html (same page humans see), replaces the generic
+// <title>, <meta name="description">, <link rel="canonical"> and all og/twitter
+// tags with font- or category-specific values, and returns the full page.
+// Googlebot sees the exact same design as human visitors.
+async function injectSeoMeta(context, seo) {
+    let html;
+    try {
+        html = await fetchAsset(context, `${BASE_URL}/`);
+    } catch (_) {
+        return null;
+    }
+    if (!html) return null;
+
+    // 1. Replace <title>
+    html = html.replace(/<title>[^<]*<\/title>/i, `<title>${seo.title}</title>`);
+
+    // 2. Replace canonical
+    html = html.replace(
+        /<link\s+rel="canonical"[^>]*>/gi,
+        `<link rel="canonical" href="${seo.canonical}">`
+    );
+
+    // 3. Remove all existing meta tags we will replace:
+    //    description, keywords, robots, author, og:*, twitter:*, geo.*
+    //    and any existing JSON-LD script blocks
+    html = html.replace(/<meta\s+name="description"[^>]*>/gi, '');
+    html = html.replace(/<meta\s+name="keywords"[^>]*>/gi, '');
+    html = html.replace(/<meta\s+name="robots"[^>]*>/gi, '');
+    html = html.replace(/<meta\s+name="author"[^>]*>/gi, '');
+    html = html.replace(/<meta\s+property="og:[^"]*"[^>]*>/gi, '');
+    html = html.replace(/<meta\s+name="twitter:[^"]*"[^>]*>/gi, '');
+    html = html.replace(/<meta\s+name="geo\.[^"]*"[^>]*>/gi, '');
+    html = html.replace(/<script\s+type="application\/ld\+json">[\s\S]*?<\/script>/gi, '');
+
+    // 4. Inject all new meta + JSON-LD right before </head>
+    html = html.replace('</head>', `${seo.meta}\n</head>`);
+
+    return html;
 }
 
 // ── Sitemap builder ───────────────────────────────────────────────────────────
@@ -547,7 +487,11 @@ export async function onRequest(context) {
             const font = fonts.find(f => f.name === fontParam);
             if (!font) return context.next();
 
-            return new Response(buildFontPage(font, catNames, paraDefault), {
+            const seo  = buildFontMeta(font, catNames, paraDefault);
+            const html = await injectSeoMeta(context, seo);
+            if (!html) return context.next();
+
+            return new Response(html, {
                 status: 200,
                 headers: {
                     'Content-Type':  'text/html; charset=utf-8',
@@ -580,7 +524,11 @@ export async function onRequest(context) {
 
             if (!catFonts.length) return context.next();
 
-            return new Response(buildCategoryPage(catParam, catFonts, catNames), {
+            const seo  = buildCatMeta(catParam, catFonts.length, catNames);
+            const html = await injectSeoMeta(context, seo);
+            if (!html) return context.next();
+
+            return new Response(html, {
                 status: 200,
                 headers: {
                     'Content-Type':  'text/html; charset=utf-8',
