@@ -7525,7 +7525,7 @@ async function loadFontsAndInit() {
     var defaultLabelHTML = defaultLabelText + (defaultCount ? ' <span style="font-size:0.72em;opacity:0.75;font-family:inherit;vertical-align:middle;line-height:1;position:relative;top:0.18em;">' + defaultCount + '</span>' : '');
     document.getElementById('desktop-active-label').innerHTML = defaultLabelHTML;
     document.getElementById('mobile-active-label').innerHTML  = defaultLabelHTML;
-    fitMobileLabel();
+    setTimeout(fitMobileLabel, 0);
 
     // Filter and render the default category
     _currentCatId = defaultCatId;
