@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "include": ["/*"],
+  "exclude": [
+    "/UniQaidarFonts/*",
+    "/fonts.json",
+    "/popular.json",
+    "/Logo.png",
+    "/favicon.png",
+    "/manifest.json",
+    "/robots.txt",
+    "/BingSiteAuth.xml",
+    "/a2c3dedd19f75410c3e0505420241f5f.txt",
+    "/5b5178fa4554153a4721b97bff098608.txt"
+  ]
+}
