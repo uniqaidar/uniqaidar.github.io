@@ -1127,7 +1127,7 @@ body.is-scrolled .filter-container {
 body.is-scrolled .filter-bar-logo-desktop {
     width: 148px;
     opacity: 1;
-    padding: 0 8px 0 10px;
+    padding: 0 16px 0 10px;
 }
 body.is-scrolled #desktop-toggle > button:first-of-type {
     padding-right: 10px !important;
@@ -1863,7 +1863,7 @@ a:active, button:active {
         display: inline-block !important;
         transform-origin: center !important;
         white-space: nowrap !important;
-        font-size: clamp(0.88rem, 4vw, 1.2rem) !important;
+        font-size: clamp(0.7rem, 3.8vw, 1.2rem) !important;
     }
 
     /* فۆنتی پیشاندان لە کارت */
@@ -2272,6 +2272,9 @@ body.dark-mode {
 body.dark-mode .font-grid {
     background: #111;
 }
+#uq-font-detail-view .font-grid {
+    background: transparent;
+}
 body.dark-mode .card {
     background: linear-gradient(135deg, #0d1117, #161b22, #0d2137, #111827, #0d1117) !important;
     border-color: #1e3a5f !important;
@@ -2375,6 +2378,304 @@ body.dark-mode #about-footer-bar {
     border: 1px solid rgba(9, 132, 227, 0.45) !important;
 }
 body.dark-mode #pagination-bar { background: #0d0d0d !important; }
+
+/* ── Font Detail View ─────────────────────────────────────────────────── */
+#uq-font-detail-view {
+    display: none;
+    background: transparent;
+    padding: 24px 60px 36px;
+    box-sizing: border-box;
+    direction: rtl;
+}
+#uq-font-detail-view.active { display: block; }
+body.dark-mode #uq-font-detail-view { background: transparent; }
+body:not(.dark-mode) #uq-font-detail-view { background: #f4f7f6; }
+@media (max-width: 767px) {
+    #uq-font-detail-view { padding: 16px 15px 24px; }
+    /* Align separator and title with mobile font-grid padding (15px) */
+    .uq-detail-separator { padding: 0 0px; margin: 24px 0 16px; }
+    .uq-similar-title { padding: 0 15px !important; white-space: nowrap !important; overflow: hidden !important; word-break: normal !important; max-width: calc(100vw - 30px) !important; box-sizing: border-box !important; flex-wrap: nowrap !important; gap: 5px !important; font-size: clamp(0.72rem, 3.5vw, 1.05rem) !important; }
+    .uq-sim-bar { height: 16px !important; }
+    .uq-sim-brackets { display: none !important; }
+    .uq-sim-bracket-open { display: inline !important; opacity: 1 !important; }
+    .uq-sim-bracket-close { display: inline !important; opacity: 1 !important; }
+    .uq-sim-text { font-size: 0 !important; white-space: nowrap; overflow: visible; min-width: 0; flex: 0 1 auto; max-width: calc(100vw - 60px); }
+    .uq-sim-text::before { content: attr(data-mobile); font-size: clamp(0.72rem, 3.5vw, 1.05rem); white-space: nowrap; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
+    /* Issue 2: show file-size badge only in the main detail card on mobile, not similar cards */
+    #uq-font-detail-view .uq-detail-card-wrap .trinity-size { display: flex !important; }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+    #uq-font-detail-view { padding: 20px 16px 28px; }
+    /* Align separator and title with tablet font-grid padding */
+    .uq-detail-separator { padding: 0 0px; }
+    .uq-similar-title { padding: 0 0px; }
+}
+
+/* Back button — desktop: lives inside desktop filter bar replacing hamburger label area */
+#uq-detail-back-desktop {
+    display: none;
+    align-items: center;
+    flex: 0 0 auto;
+    flex-shrink: 0;
+    height: 100%;
+    padding: 0 12px 0 8px;
+    cursor: pointer;
+    direction: rtl;
+    font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif;
+    font-size: 1.1rem;
+    background: transparent;
+    border: none;
+    color: #fff;
+    gap: 8px;
+    white-space: nowrap;
+    overflow: visible;
+}
+#uq-detail-back-desktop:hover, #uq-detail-back-desktop:active {
+    background: rgba(255, 87, 0, 0.10);
+}
+/* Mobile back button row — hidden by default, shown only during detail view */
+#uq-detail-back-mobile-row {
+    display: none;
+    align-items: center;
+    justify-content: stretch;
+    background: #0d0d0d;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255, 87, 0, 0.30);
+    direction: rtl;
+    padding: 0;
+}
+#uq-detail-back-mobile-row.active { display: flex; }
+#uq-detail-back-mobile-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #fff;
+    padding: 5px 15px;
+    font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif;
+    font-size: clamp(0.7rem, 3vw, 1rem);
+    text-align: center;
+    direction: rtl;
+    cursor: pointer;
+    white-space: nowrap;
+    word-break: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: auto;
+    min-height: 0;
+    overflow: hidden;
+}
+#uq-detail-back-mobile-btn:hover, #uq-detail-back-mobile-btn:active {
+    background: rgba(255, 87, 0, 0.12);
+}
+/* Back button shared split label+icon style */
+.uq-back-btn-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif;
+    font-size: clamp(0.7rem, 2.8vw, 0.95rem);
+    white-space: nowrap;
+    direction: rtl;
+    max-width: 100%;
+}
+.uq-back-label {
+    background: linear-gradient(to right, #ff5700 50%, #d94500 50%);
+    background-size: 200%;
+    background-position: right;
+    color: #fff;
+    padding: 7px 13px;
+    transition: background-position 0.25s, color 0.2s;
+}
+.uq-back-icon {
+    background: #3a1800;
+    color: #ff5700;
+    padding: 7px 10px;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s;
+}
+.uq-back-btn-inner:hover .uq-back-label,
+.uq-back-btn-inner:active .uq-back-label {
+    background-position: left;
+}
+.uq-back-btn-inner:hover .uq-back-icon,
+.uq-back-btn-inner:active .uq-back-icon {
+    transform: translateX(-4px);
+}
+body.dark-mode .uq-back-icon {
+    background: #3a1800;
+    color: #ff5700;
+}
+body:not(.dark-mode) .uq-back-icon {
+    background: #ffe0cc;
+    color: #c43c00;
+}
+body:not(.dark-mode) .uq-back-label {
+    background: linear-gradient(to right, #c43c00 50%, #9a2e00 50%);
+    background-size: 200%;
+    background-position: right;
+    color: #fff;
+}
+body:not(.dark-mode) .uq-back-btn-inner:hover .uq-back-label,
+body:not(.dark-mode) .uq-back-btn-inner:active .uq-back-label {
+    background-position: left;
+}
+/* Detail card — identical card + card-header + card-body structure */
+.uq-detail-card-wrap {
+    width: 100%;
+    margin: 0;
+}
+/* Separator between detail card and similar fonts */
+.uq-detail-separator {
+    border: none;
+    border-top: 2px solid #d0d7e0;
+    margin: 32px 0 24px;
+    padding: 0 40px;
+    box-sizing: border-box;
+}
+body.dark-mode .uq-detail-separator { border-top-color: #1e293b; }
+/* Similar fonts section title */
+.uq-similar-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    direction: rtl;
+    cursor: default;
+    transition: color 0.18s;
+    font-size: 1.2rem;
+    margin-bottom: 18px;
+    font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif;
+    text-align: right;
+    padding: 0 40px;
+    white-space: normal;
+    word-break: break-word;
+    flex-wrap: nowrap;
+}
+.uq-sim-bar {
+    width: 2px;
+    height: 22px;
+    background: #ff5700;
+    border-radius: 2px;
+    flex-shrink: 0;
+    align-self: center;
+    transition: height 0.2s;
+    margin-bottom: 4px;
+}
+.uq-similar-title:hover .uq-sim-bar {
+    height: 30px;
+}
+.uq-sim-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    line-height: 0;
+    transition: transform 0.28s;
+    color: #ff5700;
+    flex-shrink: 0;
+    margin-bottom: 4px;
+}
+.uq-sim-icon svg {
+    display: block;
+}
+.uq-similar-title:hover .uq-sim-icon {
+    transform: scaleX(-1);
+}
+.uq-sim-brackets {
+    color: #ff5700;
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 1rem;
+}
+.uq-similar-title:hover .uq-sim-brackets {
+    opacity: 1;
+}
+.uq-sim-text {
+    color: inherit;
+}
+body.dark-mode .uq-similar-title { color: #aaa; }
+body:not(.dark-mode) .uq-similar-title { color: #444; }
+/* Paragraph ribbon wrapper — positions the folded-corner label inside the box */
+.uq-para-ribbon-wrap {
+    position: relative;
+    margin-top: 14px;
+    margin-bottom: 14px;
+}
+/* Folded-corner ribbon label — sits absolute at top-right of the box */
+.uq-para-label-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #ff5700;
+    color: #fff;
+    border: none;
+    border-radius: 0 8px 0 10px;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 12% 100%);
+    padding: 5px 14px 5px 22px;
+    font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    direction: rtl;
+    z-index: 1;
+    white-space: nowrap;
+    transition: background 0.2s, transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
+}
+.uq-para-label-btn:hover {
+    background: #cc4500;
+    transform: scale(1.06);
+    box-shadow: 0 4px 16px rgba(255,87,0,0.45);
+}
+.uq-para-label-btn .para-svg-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3.5px;
+    width: 28px;
+    direction: rtl;
+    align-self: center;
+    margin-top: 4px;
+}
+.uq-para-label-btn .para-line {
+    height: 2.2px;
+    background: rgba(255,255,255,0.85);
+    border-radius: 2px;
+    clip-path: inset(0 0 0 100%);
+    animation-duration: 10s;
+    animation-timing-function: cubic-bezier(0.4,0,0.2,1);
+    animation-iteration-count: infinite;
+}
+.uq-para-label-btn .pl1 { width: 100%; animation-name: paraLine1; }
+.uq-para-label-btn .pl2 { width: 68%;  animation-name: paraLine2; }
+.uq-para-label-btn .pl3 { width: 100%; animation-name: paraLine3; }
+.uq-para-label-btn .pl4 { width: 52%;  animation-name: paraLine4; }
+.uq-para-box {
+    background: #fff;
+    border: 2px dashed #ff5700;
+    border-radius: 8px;
+    padding: 50px 18px 16px;
+    color: #2c3e50;
+    line-height: 2;
+    font-size: 1.05rem;
+    direction: rtl;
+    text-align: justify;
+    text-justify: inter-word;
+    text-align-last: start;
+    margin-bottom: 0;
+}
+body.dark-mode .uq-para-box {
+    background: #1a1a2e;
+    border: 2px dashed #ff5700;
+    color: #d0d0d0;
+}
+/* ── END Font Detail View ─────────────────────────────────────────────── */
 
 #theme-toggle-btn {
     display: inline-flex;
@@ -4702,7 +5003,7 @@ function uqWelcomeToggle() {}
             </div>
             <!-- Top orange fade line -->
             <!-- Hamburger + label: clickable zone -->
-            <button onclick="toggleDesktopCats()" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;height:100%;background:transparent;border:none;color:#fff;padding:0 40px 0 10px;cursor:pointer;direction:rtl;font-family:'UniQAIDAR_Peregraf 01',Tahoma,sans-serif;font-size:1.2rem;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
+            <button onclick="toggleDesktopCats()" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;height:100%;background:transparent;border:none;color:#fff;padding:0 40px 0 10px;cursor:pointer;direction:rtl;font-family:'UniQAIDAR_Peregraf 01',Tahoma,sans-serif;font-size:1.2rem;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'" id="uq-desktop-hamburger-btn">
                 <span style="font-size:1.1rem;opacity:0.65;flex-shrink:0;">&#9776;</span>
                 <span id="desktop-active-label" style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;font-size:1.2rem;"></span>
                 <span class="toggle-arrow" style="transition:transform 0.25s;font-size:0.75rem;flex-shrink:0;opacity:0.5;margin-right:auto;">&#9660;</span>
@@ -4724,6 +5025,10 @@ function uqWelcomeToggle() {}
             </span>
             <!-- Vertical divider 2 — separates scaler -->
             <span id="uq-scaler-vd" style="width:1px;height:22px;background:rgba(255,255,255,0.12);flex-shrink:0;align-self:center;"></span>
+            <!-- Back button — shown beside scaler when detail view is active -->
+            <button id="uq-detail-back-desktop" onclick="closeFontDetailView()">
+                <span class="uq-back-btn-inner" id="uq-back-desktop-inner"><span class="uq-back-label">گەڕانەوە بۆ بەشی</span><span class="uq-back-icon">◀</span></span>
+            </button>
             <!-- Font size scaler -->
             <span id="uq-scaler-wrap" style="display:flex;align-items:center;gap:7px;padding:0 12px 0 40px;flex-shrink:0;height:100%;" onclick="event.stopPropagation()">
                 <span style="font-size:1.2rem;color:#ffffff;white-space:nowrap;flex-shrink:0;">قەبارەی فۆنت:</span>
@@ -4752,7 +5057,7 @@ function uqWelcomeToggle() {}
             <button class="filter-mobile-toggle" id="mobile-toggle" onclick="toggleMobileCats()"
                 style="flex:1;min-width:0;height:100%;padding:0 15px;display:flex;align-items:center;gap:7px;border:none;background:transparent;color:#fff;cursor:pointer;direction:rtl;font-family:'UniQAIDAR_Peregraf 01',Tahoma,sans-serif;overflow:hidden;">
                 <span style="font-size:1rem;opacity:0.65;flex-shrink:0;">&#9776;</span>
-                <span id="mobile-active-label" style="flex:1;min-width:0;white-space:nowrap;overflow:visible;font-size:1.2rem;text-align:right;display:block;"></span>
+                <span id="mobile-active-label" style="flex:1;min-width:0;white-space:nowrap;overflow:visible;text-align:right;display:block;"></span>
                 <span class="toggle-arrow" style="font-size:0.72rem;opacity:0.5;flex-shrink:0;margin-right:4px;">&#9660;</span>
             </button>
             <!-- Divider -->
@@ -4781,6 +5086,11 @@ function uqWelcomeToggle() {}
             <span id="size-label-mobile" style="color:#ff5700;font-family:monospace;font-size:0.72rem;min-width:28px;direction:ltr;flex-shrink:0;">32px</span>
             <button onclick="changeFontSize(32);['font-size-slider','font-size-slider-mobile'].forEach(function(id){var s=document.getElementById(id);if(s){s.value=32;uqUpdateSliderFill(s);}});"
                 style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);color:#ffffff;border-radius:5px;padding:2px 7px;cursor:pointer;font-size:0.68rem;white-space:nowrap;font-family:inherit;flex-shrink:0;">ڕیسێت</button>
+        </div>
+        <div id="uq-detail-back-mobile-row">
+            <button id="uq-detail-back-mobile-btn" onclick="closeFontDetailView()">
+                <span class="uq-back-btn-inner" id="uq-back-mobile-inner"><span class="uq-back-label">گەڕانەوە بۆ</span><span class="uq-back-icon">◀</span></span>
+            </button>
         </div>
         <div class="filter-mobile-panel" id="mobile-panel"></div>
     </div>
@@ -4841,6 +5151,7 @@ function uqWelcomeToggle() {}
         </span>
 
 <div class="font-grid" id="font-grid" style="flex:1"></div>
+<div id="uq-font-detail-view"></div>
 <div id="uq-seo-font-index" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">
   <a href="/?font=UniQAIDAR_NewsHeadLine%20054" tabindex="-1">UniQAIDAR_NewsHeadLine 054 — فۆنتی ئاژانسی هەواڵی یونیوز - فۆنتی نوێی کوردی [Nwe, All, Kanal, Hawal]</a>
   <a href="/?font=UniQAIDAR_NewsHeadLine%20055" tabindex="-1">UniQAIDAR_NewsHeadLine 055 — فۆنتی ئاژانسی هەواڵی یونیوز - فۆنتی نوێی کوردی [Nwe, All, Kanal, Hawal]</a>
@@ -5623,7 +5934,7 @@ function renderFonts(data, text, resetPage) {
             var fontCats = Array.isArray(font.category) ? font.category : (font.category ? [font.category] : []);
             var activeCat = _currentCatId || '';
             var activeLower = activeCat.toLowerCase();
-            var fontInActiveCat = activeLower === 'all' || fontCats.some(function(c){ return c.toLowerCase() === activeLower; });
+            var fontInActiveCat = activeLower === 'all' || activeLower === 'trending' || fontCats.some(function(c){ return c.toLowerCase() === activeLower; });
             var resolvedCat = fontInActiveCat ? activeCat : (fontCats[0] || 'All');
             copyFontLink(font.name, resolvedCat, copyBtn);
         });
@@ -5660,7 +5971,7 @@ function renderFonts(data, text, resetPage) {
             copyBtn.addEventListener('click', function() {
                 var fontCats = Array.isArray(f.category) ? f.category : (f.category ? [f.category] : []);
                 var activeLower = (_currentCatId || '').toLowerCase();
-                var inCat = activeLower === 'all' || fontCats.some(function(c){ return c.toLowerCase() === activeLower; });
+                var inCat = activeLower === 'all' || activeLower === 'trending' || fontCats.some(function(c){ return c.toLowerCase() === activeLower; });
                 copyFontLink(f.name, inCat ? _currentCatId : (fontCats[0] || 'All'), copyBtn);
             });
         })(card.querySelector('.trinity-copy'), font);
@@ -5912,6 +6223,21 @@ function toggleMobileCats() {
 // ── فلتەر کردن بەپێی کاتێگۆری ──────────────────────────
 // تەنها ئەم فونکشنە دەخوێندرێتەوە کاتێک دوگمەی فلتەر کلیک دەکرێت
 function filterFonts(category, btn) {
+    // Fix mobile 3/4: if detail view is active and this call comes from a category button click, close it first
+    var _detailEl = document.getElementById('uq-font-detail-view');
+    if (_detailEl && _detailEl.classList.contains('active') && btn) {
+        // Close detail view silently (no pushState — filterFonts will handle URL)
+        _detailEl.classList.remove('active');
+        _detailEl.innerHTML = '';
+        var _dBack = document.getElementById('uq-detail-back-desktop');
+        var _mBackRow = document.getElementById('uq-detail-back-mobile-row');
+        if (_dBack) _dBack.style.display = 'none';
+        if (_mBackRow) _mBackRow.classList.remove('active');
+        var _g = document.getElementById('font-grid');
+        var _pb = document.getElementById('pagination-bar');
+        if (_g) _g.style.display = '';
+        if (_pb) _pb.style.display = '';
+    }
     // دوگمەی چالاک دیاری بکە
     document.querySelectorAll('.filter-btn').forEach(function(b) {
         b.classList.remove('active');
@@ -5940,7 +6266,10 @@ function filterFonts(category, btn) {
         var mobileCount     = mobileCountSpan ? mobileCountSpan.textContent.trim() : '';
         var mobileLabelEl   = document.getElementById('mobile-active-label');
         mobileLabelEl.innerHTML = mobileLabelText + (mobileCount ? ' <span style="font-size:0.72em;opacity:0.75;font-family:inherit;vertical-align:middle;line-height:1;position:relative;top:0.18em;">' + mobileCount + '</span>' : '');
-        fitMobileLabel();
+        // Defer fitMobileLabel until after updateCatDownloadBar has shown/hidden
+        // the cat-dl-mobile-wrap — measuring toggle width before that gives a wrong
+        // available width (toggle appears full-width while download btn is still hidden).
+        setTimeout(fitMobileLabel, 0);
         document.getElementById('mobile-panel').classList.remove('open');
         document.getElementById('mobile-toggle').classList.remove('open');
     }
@@ -6027,6 +6356,30 @@ input.addEventListener('input', function() {
         p.style.fontFamily = fontFamily;
         p.style.fontSize   = fontSize;
     });
+    // Fix 5: also update the detail view preview and similar grid previews if active
+    var detailPreview = document.getElementById('uq-detail-preview');
+    if (detailPreview) {
+        var detailFontFamily = detailPreview.style.fontFamily;
+        var detailFontSize   = detailPreview.style.fontSize;
+        var defTw = detailPreview.getAttribute('data-tw') || 'فۆنتەکانی یونی‌قەیدار';
+        if (detailPreview.classList.contains('para-mode')) {
+            detailPreview.textContent = q || defTw;
+        } else {
+            detailPreview.textContent = q || defTw;
+        }
+        detailPreview.style.fontFamily = detailFontFamily;
+        detailPreview.style.fontSize   = detailFontSize;
+    }
+    // Also update similar grid previews
+    var simPreviews = document.querySelectorAll('#uq-similar-grid .preview');
+    simPreviews.forEach(function(p) {
+        var ff = p.style.fontFamily;
+        var fs = p.style.fontSize;
+        var tw = p.getAttribute('data-tw') || 'فۆنتەکانی یونی‌قەیدار';
+        p.textContent = q || tw;
+        p.style.fontFamily = ff;
+        p.style.fontSize   = fs;
+    });
 });
 
 // ── Clear search and reset to first category ──
@@ -6043,6 +6396,20 @@ function clearSearchAndReset() {
 
 // ── 🔍 Search button: filters font list by name/displayName/preview ──
 function doSearch() {
+    // If font detail view is active, dismiss it before showing search results
+    var _dsDetail = document.getElementById('uq-font-detail-view');
+    if (_dsDetail && _dsDetail.classList.contains('active')) {
+        _dsDetail.classList.remove('active');
+        _dsDetail.innerHTML = '';
+        var _dsGrid = document.getElementById('font-grid');
+        var _dsPag  = document.getElementById('pagination-bar');
+        if (_dsGrid) _dsGrid.style.display = '';
+        if (_dsPag)  _dsPag.style.display  = '';
+        var _dsDBack = document.getElementById('uq-detail-back-desktop');
+        if (_dsDBack) _dsDBack.style.display = 'none';
+        var _dsMBack = document.getElementById('uq-detail-back-mobile-row');
+        if (_dsMBack) _dsMBack.classList.remove('active');
+    }
     const q = input.value.trim().toLowerCase();
     if (!q) {
         // Clear ?q= from URL when search is cleared
@@ -6379,63 +6746,492 @@ function applyUrlParams() {
         return;
     }
 
-    // Scroll to + highlight specific font card
+    // Font detail view — replaces the grid when ?font= is in URL
     if (fontParam) {
-        setTimeout(function() {
-            // First check if font is in the current page DOM
-            var found = false;
-            var tryHighlight = function() {
-                var cards = document.querySelectorAll('.card');
-                cards.forEach(function(card) {
-                    var nameEl = card.querySelector('.card-eng-name');
-                    var cardText = nameEl ? nameEl.textContent.replace('نوێ','').trim() : '';
-                    if (nameEl && (cardText === fontParam || nameEl.textContent.trim() === fontParam)) {
-                        found = true;
-                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        card.style.outline = '3px solid #0070e4';
-                        card.style.outlineOffset = '3px';
-                        setTimeout(function() {
-                            card.style.outline = '';
-                            card.style.outlineOffset = '';
-                        }, 300000);
-                    }
-                });
-            };
-
-            tryHighlight();
-
-            if (!found) {
-                // Font not in current page — search _filteredFonts to find the right page
-                var fontIndex = -1;
-                for (var fi = 0; fi < _filteredFonts.length; fi++) {
-                    var fname = _filteredFonts[fi].displayName || _filteredFonts[fi].name;
-                    if (fname === fontParam || _filteredFonts[fi].name === fontParam) {
-                        fontIndex = fi;
-                        break;
-                    }
-                }
-                if (fontIndex >= 0) {
-                    var perPage = FONTS_PER_PAGE > 0 ? FONTS_PER_PAGE : 100;
-                    var targetPage = Math.floor(fontIndex / perPage) + 1;
-                    if (targetPage !== _currentPage) {
-                        _currentPage = targetPage;
-                        renderFonts(_filteredFonts, '', false);
-                        setTimeout(function() {
-                            tryHighlight();
-                        }, 300);
-                    }
-                } else {
-                    // Truly not found
-                    var noMsg = document.getElementById('no-results-msg');
-                    if (noMsg) {
-                        noMsg.querySelector('div:nth-child(2)').textContent = 'فۆنتی "' + fontParam + '" نەدۆزرایەوە — ئەگەر سڕاوەتەوە یان ناوەکەی گۆڕاوە.';
-                        noMsg.style.display = 'block';
-                    }
-                }
-            }
-        }, 600);
+        showFontDetailView(fontParam, catParam || 'All');
     }
 }
+
+// ── Font Detail View ──────────────────────────────────────────────────────
+// Category ID → Sorani Kurdish label map (fallback only — live buttons are source of truth)
+var _uqCatLabels = {
+    'Nwe':      'نوێترین فۆنت',
+    'Trending': '🔥 زۆرترین داونلۆکراوەکان',
+    'All':      'هەموو فۆنتەکان',
+    'Taybat':   'فۆنتی تایبەت',
+    'Kanal':    'فۆنتی کەناڵ و دەزگاکان',
+    'Hawal':    'فۆنتی هەواڵ',
+    'Dastnus':  'فۆنتی دەستنووس',
+    'Nastaliq': 'فۆنتی نەستەعلیق',
+    'Ali':      'فۆنتەکانی عه‌لی بە شێوازی یونیكۆد',
+    'Kteb':     'فۆنتی کتێب و بڵاوکراوە',
+    'Islami':   'فۆنتی ئیسلامی',
+    'Khal':     'فۆنتی خاڵدار بۆ فێربوون',
+    'Samic':    'فۆنتی سەمیک',
+    'Zhernus':  'فۆنتی ژێرنووس',
+    'Mndalan':  'فۆنتی منداڵان',
+    'Media':    'فۆنتی سۆشیال میدیا',
+    'Hunari':   'فۆنتی هونەری',
+    'Freestyle':'فۆنتی فری ستایڵ',
+    'Others':   'فۆنتەکانی تر'
+};
+
+// Resolves label for any cat ID — always reads live marquee buttons first (single source of truth)
+// Falls back to hardcoded map, then catId as-is. Future categories added to the filter bar
+// are automatically picked up without any code change.
+function _uqGetCatLabel(catId) {
+    if (!catId) return 'هەموو فۆنتەکان';
+    // Primary: read from the hidden marquee-content (single source of truth for all categories)
+    var marqueeBtn = document.querySelectorAll('.marquee-content .filter-btn');
+    for (var mi = 0; mi < marqueeBtn.length; mi++) {
+        var moc = marqueeBtn[mi].getAttribute('onclick') || '';
+        var mid = moc.split("'")[1] || '';
+        if (mid.toLowerCase() === catId.toLowerCase()) {
+            return marqueeBtn[mi].textContent.trim();
+        }
+    }
+    // Secondary: try live desktop panel buttons (already built from marquee)
+    var btns = document.querySelectorAll('#desktop-panel .filter-btn');
+    for (var bi = 0; bi < btns.length; bi++) {
+        var oc = btns[bi].getAttribute('onclick') || '';
+        var bid = oc.split("'")[1] || '';
+        if (bid.toLowerCase() === catId.toLowerCase()) {
+            return btns[bi].textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim();
+        }
+    }
+    // Fallback: hardcoded map
+    if (_uqCatLabels[catId]) return _uqCatLabels[catId];
+    return catId;
+}
+
+// Cached archive download counts: { fontName: count }
+var _uqArchiveDlCounts = null;
+var _uqArchiveDlLoading = false;
+var _uqArchiveDlCallbacks = [];
+
+function loadArchiveDownloadCounts(cb) {
+    if (_uqArchiveDlCounts) { cb(_uqArchiveDlCounts); return; }
+    _uqArchiveDlCallbacks.push(cb);
+    if (_uqArchiveDlLoading) return;
+    _uqArchiveDlLoading = true;
+    var base = (typeof BASE !== 'undefined' ? BASE : '/');
+    fetch(base + 'historicaldata/index.json')
+        .then(function(r) { return r.ok ? r.json() : {files:[]}; })
+        .catch(function() { return {files:[]}; })
+        .then(function(idx) {
+            var files = (idx && Array.isArray(idx.files)) ? idx.files : [];
+            return Promise.all(files.map(function(f) {
+                return fetch(base + 'historicaldata/' + f)
+                    .then(function(r) { return r.ok ? r.json() : []; })
+                    .catch(function() { return []; });
+            }));
+        })
+        .then(function(archives) {
+            var counts = {};
+            archives.forEach(function(archive) {
+                if (!Array.isArray(archive)) return;
+                archive.forEach(function(day) {
+                    if (!Array.isArray(day.downloads)) return;
+                    day.downloads.forEach(function(dl) {
+                        if (dl.type !== 'single') return;
+                        var ev = dl.event || '';
+                        if (ev && ev !== 'download') return;
+                        var fn = dl.font || '';
+                        if (!fn) return;
+                        counts[fn] = (counts[fn] || 0) + 1;
+                    });
+                });
+            });
+            _uqArchiveDlCounts = counts;
+            _uqArchiveDlLoading = false;
+            var cbs = _uqArchiveDlCallbacks.slice();
+            _uqArchiveDlCallbacks = [];
+            cbs.forEach(function(fn) { fn(counts); });
+        });
+}
+
+// Helper: run the full green typewriter download animation on a trinity-dl element
+function _uqRunDlAnimation(dlLink, fontName) {
+    trackFontDownload(fontName, 'single');
+    var lbl = dlLink.querySelector('.dl-label');
+    if (!lbl || dlLink._dlAnimating) return;
+    dlLink._dlAnimating = true;
+    if (typeof window._uqDlCount === 'undefined') window._uqDlCount = 0;
+    window._uqDlCount++;
+    var n = window._uqDlCount;
+    var milestones = {5:'٥ فۆنتت دابەزاندووە — هەر بژی! 🏆',10:'١٠ فۆنتت دابەزاندووە — هەر بژی! 🏆',15:'١٥ فۆنتت دابەزاندووە — هەر بژی! 🏆',20:'٢٠ فۆنتت دابەزاندووە — هەر بژی! 🏆',25:'٢٥ فۆنتت دابەزاندووە — هەر بژی! 🏆',30:'٣٠ فۆنتت دابەزاندووە — هەر بژی! 🏆',50:'٥٠ فۆنتت دابەزاندووە — هەر بژی! 🏆',100:'١٠٠ فۆنتت دابەزاندووە — هەر بژی! 🏆'};
+    var regular = ['هەربژی، فۆنتەکەت دابەزاند ✓','پیرۆزە، فۆنتەکەت داونلۆد کرد 🎉','فۆنتەکە گەیشتە دەستت، بژی 🙌','فۆنتی جوانت هەڵبژاردووە 💪','دەستڕەنگین بیت، فۆنتەکە دابەزی ✨','پیرۆزە، فۆنتەکەت لایە ئێستا 🎨','دەستخۆش، فۆنتەکە دابەزی 👏','پیرۆزە، فۆنتەکەت ئامادەی بەکارهێنانە 🖋'];
+    var msg = milestones[n] || regular[(n - 1) % regular.length];
+    var wrap = dlLink.closest('.download-btn-wrap');
+    var siblings = wrap ? wrap.querySelectorAll('.trinity-copy, .trinity-para, .trinity-size') : [];
+    for (var si = 0; si < siblings.length; si++) {
+        siblings[si].classList.remove('trinity-dl-sibling-show');
+        siblings[si].classList.add('trinity-dl-sibling-hide');
+    }
+    dlLink.classList.add('dl-green-active');
+    uqTypewriter(lbl, msg, 30);
+    setTimeout(function() {
+        dlLink.classList.remove('dl-green-active');
+        dlLink.classList.add('dl-green-fadeout');
+        setTimeout(function() {
+            var origText = 'دابە‌زاندنی فۆنت';
+            uqTypewriter(lbl, origText, 30);
+            var origLen = origText.length;
+            setTimeout(function() {
+                dlLink.classList.remove('dl-green-fadeout');
+                for (var si2 = 0; si2 < siblings.length; si2++) {
+                    (function(el, delay) {
+                        setTimeout(function() {
+                            el.classList.remove('trinity-dl-sibling-hide');
+                            el.classList.add('trinity-dl-sibling-show');
+                        }, delay);
+                    })(siblings[si2], si2 * 120);
+                }
+                setTimeout(function() { dlLink._dlAnimating = false; }, siblings.length * 120 + 220);
+            }, origLen * 30 + 100);
+        }, 300);
+    }, 4000);
+}
+
+function showFontDetailView(fontName, catId) {
+    var fontObj = fonts.find(function(f) {
+        return f.name === fontName || (f.displayName && f.displayName === fontName);
+    });
+    if (!fontObj) return; // font not found — silently do nothing
+
+    var catLabel = _uqGetCatLabel(catId);
+    var backText = 'گەڕانەوە بۆ بەشی ' + catLabel;
+
+    // Desktop: show back button beside scaler; keep hamburger visible but update its label to Sorani preview
+    var desktopBack = document.getElementById('uq-detail-back-desktop');
+    var desktopBackInner = document.getElementById('uq-back-desktop-inner');
+    if (desktopBack) desktopBack.style.display = 'flex';
+    if (desktopBackInner) { var _dbl = desktopBackInner.querySelector('.uq-back-label'); if (_dbl) _dbl.textContent = backText; }
+    // Set desktop active label to Sorani Kurdish preview text (not font English name)
+    var dLabel = document.getElementById('desktop-active-label');
+    if (dLabel) dLabel.textContent = fontObj.preview || 'فۆنتەکانی یونی‌قەیدار';
+
+    // Mobile: show back row, set mobile label to short Sorani preview (4-5 words)
+    var mobileBackRow = document.getElementById('uq-detail-back-mobile-row');
+    var mobileBackInner = document.getElementById('uq-back-mobile-inner');
+    if (mobileBackRow) mobileBackRow.classList.add('active');
+    if (mobileBackInner) { var _mbl = mobileBackInner.querySelector('.uq-back-label'); if (_mbl) _mbl.textContent = 'گەڕانەوە بۆ ' + catLabel; }
+    // Mobile label: use font name (Latin, shorter) so fitMobileLabel scales it correctly
+    var mobileLabel = document.getElementById('mobile-active-label');
+    if (mobileLabel) {
+        mobileLabel.textContent = fontObj.preview || fontObj.name;
+    }
+
+    // Hide grid, pagination, no-results; show detail view
+    var grid = document.getElementById('font-grid');
+    var pag  = document.getElementById('pagination-bar');
+    var nom  = document.getElementById('no-results-msg');
+    var cdIn = document.getElementById('cat-dl-inline-wrap');
+    var cdMo = document.getElementById('cat-dl-mobile-wrap');
+    if (grid) grid.style.display = 'none';
+    if (pag)  pag.style.display  = 'none';
+    if (nom)  nom.style.display  = 'none';
+    if (cdIn) cdIn.style.display = 'none';
+    if (cdMo) cdMo.style.display = 'none';
+    if (mobileLabel) fitMobileLabel();
+
+    var detailEl = document.getElementById('uq-font-detail-view');
+    detailEl.classList.add('active');
+
+    // Build the detail card HTML
+    var paraText = (fontObj.paragraph && fontObj.paragraph.trim()) ? fontObj.paragraph.trim() : DEFAULT_PARA_TEXT;
+    var lineH    = (fontObj.lineHeight != null) ? fontObj.lineHeight : 2;
+    var fileSize = fontObj.size || '…';
+    var dateStr  = fontObj.dateAdded || '';
+    var isNew    = false;
+    if (dateStr) {
+        try {
+            var thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            isNew = new Date(dateStr + 'T00:00:00') >= thirtyDaysAgo;
+        } catch(e) {}
+    }
+    var sliderVal = document.getElementById('font-size-slider') ? document.getElementById('font-size-slider').value : '32';
+
+    // Copy link for the detail card
+    var copyUrl = location.origin + location.pathname + '?cat=' + encodeURIComponent(catId) + '&font=' + encodeURIComponent(fontObj.name);
+
+    detailEl.innerHTML =
+        '<div class="uq-detail-card-wrap">' +
+            '<div class="card" style="border-radius:16px;overflow:hidden;">' +
+                '<div class="card-header">' +
+                    '<span class="card-eng-name">' + (isNew ? '<span class="new-badge">نوێ</span>' : '') + fontObj.name + '</span>' +
+                    (dateStr ? '<span class="card-date">&#128197; ' + dateStr + '</span>' : '') +
+                '</div>' +
+                '<div class="card-body">' +
+                    '<div class="preview" id="uq-detail-preview" style="font-family:\'' + fontObj.name + '\';font-size:' + sliderVal + 'px;" data-tw="' + (fontObj.preview || 'فۆنتەکانی یونی‌قەیدار').replace(/"/g, '&quot;') + '">' +
+                        (fontObj.preview || 'فۆنتەکانی یونی‌قەیدار') +
+                    '</div>' +
+                    '<div class="uq-para-ribbon-wrap">' +
+                        '<div class="uq-para-label-btn" id="uq-detail-para-btn">' +
+                            '<div class="para-svg-wrap" style="width:28px;height:28px;display:flex;flex-direction:column;gap:2px;align-items:flex-start;align-self:center;margin-top:4px;"><div class="para-line pl1" style="height:2px;background:rgba(255,255,255,0.85);width:100%;border-radius:1px;"></div><div class="para-line pl2" style="height:2px;background:rgba(255,255,255,0.85);width:68%;border-radius:1px;"></div><div class="para-line pl3" style="height:2px;background:rgba(255,255,255,0.85);width:100%;border-radius:1px;"></div><div class="para-line pl4" style="height:2px;background:rgba(255,255,255,0.85);width:52%;border-radius:1px;"></div></div>' +
+                            'تێکستی پەرەگراف' +
+                        '</div>' +
+                        '<div class="uq-para-box" id="uq-detail-para-box" style="font-family:\'' + fontObj.name + '\';font-size:' + Math.max(14, parseFloat(sliderVal) - 8) + 'px;line-height:' + lineH + ';">' +
+                            paraText +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="download-btn-wrap">' +
+                        '<a href="' + fontObj.path + '" class="trinity-dl" download data-font="' + fontObj.name + '" id="uq-detail-dl-btn" aria-label="دابەزاندنی فۆنت" title="کلیک بکە">' +
+                            '<span class="modern-dl-icon" style="width:26px;height:26px;">' +
+                                '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
+                                    '<path class="base-part" d="M19 18H5V19H19V18Z" />' +
+                                    '<path class="arrow-part" d="M12 15L17 10H14V4H10V10H7L12 15Z" />' +
+                                '</svg>' +
+                            '</span>' +
+                            '<span class="dl-label">دابە‌زاندنی فۆنت</span>' +
+                        '</a>' +
+                        '<div class="trinity-size" title="قەبارەی فۆنت">' +
+                            '<span class="size-val">' + fileSize + '</span>' +
+                            '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>' +
+                        '</div>' +
+                        '<button class="trinity-copy" id="uq-detail-copy-btn" title="کۆپیکردنی لینکی فۆنت - کلیک بکە" aria-label="کۆپیکردنی لینکی فۆنت"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+
+    // Wire download button — full green animation (Fix 7/10)
+    var dlBtn = document.getElementById('uq-detail-dl-btn');
+    if (dlBtn) {
+        dlBtn.addEventListener('click', function() { _uqRunDlAnimation(dlBtn, fontObj.name); });
+    }
+    // Wire copy button
+    var copyBtn = document.getElementById('uq-detail-copy-btn');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', function() {
+            copyLink(copyUrl, copyBtn, '🔗');
+            if (typeof trackViralEvent === 'function') trackViralEvent('copy_font', fontObj.name);
+        });
+    }
+
+    // Separator + similar fonts section
+    var sep = document.createElement('hr');
+    sep.className = 'uq-detail-separator';
+    detailEl.appendChild(sep);
+
+    var similarTitle = document.createElement('div');
+    similarTitle.className = 'uq-similar-title';
+    similarTitle.id = 'uq-similar-title';
+    var similarCatLabel = _uqGetCatLabel(catId);
+    // Fix 8/9: updated title text
+    similarTitle.innerHTML = '<span class="uq-sim-bar"></span><span class="uq-sim-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span><span class="uq-sim-brackets uq-sim-bracket-open">[</span><span class="uq-sim-text">ژمارەیەک فۆنتی دیکە لە بەشی ' + similarCatLabel + '</span><span class="uq-sim-brackets uq-sim-bracket-close">]</span>';
+    similarTitle.querySelector('.uq-sim-text').setAttribute('data-mobile', 'فۆنتی دیکە لە ' + similarCatLabel);
+    detailEl.appendChild(similarTitle);
+
+    var simGrid = document.createElement('div');
+    simGrid.className = 'font-grid';
+    simGrid.id = 'uq-similar-grid';
+    detailEl.appendChild(simGrid);
+
+    // Build similar list (same category as URL param, exclude current font)
+    var primaryCat = catId;
+    var catFonts;
+    if (primaryCat.toLowerCase() === 'trending') {
+        var fontMap = {};
+        fonts.forEach(function(f) { fontMap[f.name] = f; });
+        var popList = (typeof _popularFonts !== 'undefined' && Array.isArray(_popularFonts)) ? _popularFonts : [];
+        catFonts = popList.map(function(n) { return fontMap[n]; }).filter(function(f) { return f && f.name !== fontObj.name; });
+    } else {
+        catFonts = fonts.filter(function(f) {
+            if (f.name === fontObj.name) return false;
+            if (!Array.isArray(f.category)) return (f.category || '').toLowerCase() === primaryCat.toLowerCase();
+            return f.category.some(function(c) { return c.toLowerCase() === primaryCat.toLowerCase(); });
+        });
+    }
+
+    // Render similar grid — with full green animation on each card (Fix 8/10)
+    function renderSimilarGrid(orderedFonts) {
+        var shown = orderedFonts.slice(0, 20);
+        simGrid.innerHTML = '';
+        var sz = document.getElementById('font-size-slider');
+        var szVal = sz ? sz.value : '32';
+        shown.forEach(function(sf) {
+            var sfSize = sf.size || '…';
+            var sfDate = sf.dateAdded || '';
+            var sfNew  = false;
+            if (sfDate) {
+                try {
+                    var tda2 = new Date(); tda2.setDate(tda2.getDate() - 30);
+                    sfNew = new Date(sfDate + 'T00:00:00') >= tda2;
+                } catch(e2) {}
+            }
+            var sfCopyUrl = location.origin + location.pathname + '?cat=' + encodeURIComponent(catId) + '&font=' + encodeURIComponent(sf.name);
+            var sfCard = document.createElement('div');
+            sfCard.className = 'card';
+            sfCard.style.cursor = 'pointer';
+            sfCard.innerHTML =
+                '<div class="card-header">' +
+                    '<span class="card-eng-name">' + (sfNew ? '<span class="new-badge">نوێ</span>' : '') + sf.name + '</span>' +
+                    (sfDate ? '<span class="card-date">&#128197; ' + sfDate + '</span>' : '') +
+                '</div>' +
+                '<div class="card-body">' +
+                    '<div class="preview" style="font-family:\'' + sf.name + '\';font-size:' + szVal + 'px;" data-tw="' + (sf.preview || 'فۆنتەکانی یونی‌قەیدار').replace(/"/g, '&quot;') + '">' +
+                        (sf.preview || 'فۆنتەکانی یونی‌قەیدار') +
+                    '</div>' +
+                    '<div class="download-btn-wrap">' +
+                        '<a href="' + sf.path + '" class="trinity-dl" download data-font="' + sf.name + '" aria-label="دابەزاندنی فۆنت" title="کلیک بکە">' +
+                            '<span class="modern-dl-icon" style="width:26px;height:26px;">' +
+                                '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
+                                    '<path class="base-part" d="M19 18H5V19H19V18Z" />' +
+                                    '<path class="arrow-part" d="M12 15L17 10H14V4H10V10H7L12 15Z" />' +
+                                '</svg>' +
+                            '</span>' +
+                            '<span class="dl-label">دابە‌زاندنی فۆنت</span>' +
+                        '</a>' +
+                        '<div class="trinity-size" title="قەبارەی فۆنت">' +
+                            '<span class="size-val">' + sfSize + '</span>' +
+                            '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>' +
+                        '</div>' +
+                        '<button class="trinity-para" title="پیشاندانی پەرەگراف - کلیک بکە" aria-label="دەقی پەرەگراف" onclick="toggleParaPreview(this,\'' + sf.name.replace(/'/g, "\\'") + '\')"><div class="para-svg-wrap"><div class="para-line pl1"></div><div class="para-line pl2"></div><div class="para-line pl3"></div><div class="para-line pl4"></div></div></button>' +
+                        '<button class="trinity-copy" title="کۆپیکردنی لینکی فۆنت - کلیک بکە" aria-label="کۆپیکردنی لینکی فۆنت"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>' +
+                    '</div>' +
+                '</div>';
+            // Wire events
+            (function(sff, sfc) {
+                sfc.addEventListener('click', function(e) {
+                    if (e.target.closest('.trinity-copy') || e.target.closest('.trinity-dl') || e.target.closest('.trinity-para')) return;
+                    try {
+                        var p = new URLSearchParams(location.search);
+                        p.set('cat', catId);
+                        p.set('font', sff.name);
+                        history.pushState(null, '', location.pathname + '?' + p.toString());
+                    } catch(ex) {}
+                    showFontDetailView(sff.name, catId);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                var tcc = sfc.querySelector('.trinity-copy');
+                if (tcc) {
+                    tcc.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        copyLink(sfCopyUrl, tcc, '🔗');
+                        if (typeof trackViralEvent === 'function') trackViralEvent('copy_font', sff.name);
+                    });
+                }
+                // Wire trinity-dl — full green animation (Fix 10)
+                var tdl = sfc.querySelector('.trinity-dl');
+                if (tdl) {
+                    tdl.addEventListener('click', function() { _uqRunDlAnimation(tdl, sff.name); });
+                }
+            })(sf, sfCard);
+            simGrid.appendChild(sfCard);
+        });
+    }
+
+    renderSimilarGrid(catFonts);
+
+    loadArchiveDownloadCounts(function(counts) {
+        var sorted = catFonts.slice().sort(function(a, b) {
+            return (counts[b.name] || 0) - (counts[a.name] || 0);
+        });
+        renderSimilarGrid(sorted);
+    });
+
+    detailEl.dataset.backCat = catId;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function closeFontDetailView() {
+    var detailEl = document.getElementById('uq-font-detail-view');
+    var catId = detailEl.dataset.backCat || 'Nwe';
+
+    // Hide back button beside scaler
+    var desktopBack = document.getElementById('uq-detail-back-desktop');
+    if (desktopBack) desktopBack.style.display = 'none';
+
+    // Hide mobile back row
+    var mobileBackRow = document.getElementById('uq-detail-back-mobile-row');
+    if (mobileBackRow) mobileBackRow.classList.remove('active');
+
+    // Hide detail view, restore grid
+    detailEl.classList.remove('active');
+    detailEl.innerHTML = '';
+    var grid = document.getElementById('font-grid');
+    var pag  = document.getElementById('pagination-bar');
+    if (grid) grid.style.display = '';
+    if (pag)  pag.style.display  = '';
+
+    // Update URL — remove ?font=, keep ?cat=
+    try {
+        var p = new URLSearchParams(location.search);
+        p.delete('font');
+        if (catId) { p.set('cat', catId); } else { p.delete('cat'); }
+        history.pushState(null, '', location.pathname + (p.toString() ? '?' + p.toString() : ''));
+    } catch(e) {}
+
+    // Find target button in both desktop and mobile panels
+    var targetBtnDesktop = null;
+    var targetBtnMobile  = null;
+    document.querySelectorAll('#desktop-panel .filter-btn').forEach(function(b) {
+        var bid = (b.getAttribute('onclick') || '').split("'")[1] || '';
+        if (bid.toLowerCase() === catId.toLowerCase()) targetBtnDesktop = b;
+    });
+    document.querySelectorAll('#mobile-panel .filter-btn').forEach(function(b) {
+        var bid = (b.getAttribute('onclick') || '').split("'")[1] || '';
+        if (bid.toLowerCase() === catId.toLowerCase()) targetBtnMobile = b;
+    });
+
+    filterFonts(catId, targetBtnDesktop);
+
+    // Fix desktop label (filterFonts sets it when btn is from #desktop-panel)
+    if (targetBtnDesktop) {
+        var dLabel = document.getElementById('desktop-active-label');
+        if (dLabel) {
+            var dLabelText = targetBtnDesktop.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim();
+            var dCount = targetBtnDesktop.querySelector('.cat-count');
+            var dCountTxt = dCount ? dCount.textContent.trim() : '';
+            dLabel.innerHTML = dLabelText + (dCountTxt ? ' <span style="font-size:0.72em;opacity:0.75;font-family:inherit;vertical-align:middle;line-height:1;position:relative;top:0.18em;">' + dCountTxt + '</span>' : '');
+        }
+    }
+
+    // Fix mobile label — filterFonts only sets it when btn is from #mobile-panel (Fix mobile 3)
+    var mLabel = document.getElementById('mobile-active-label');
+    if (mLabel) {
+        var mLabelText = '';
+        var mCountTxt = '';
+        if (targetBtnMobile) {
+            mLabelText = targetBtnMobile.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim();
+            var mCount = targetBtnMobile.querySelector('.cat-count');
+            mCountTxt = mCount ? mCount.textContent.trim() : '';
+        } else {
+            mLabelText = _uqGetCatLabel(catId);
+        }
+        mLabel.innerHTML = mLabelText + (mCountTxt ? ' <span style="font-size:0.72em;opacity:0.75;font-family:inherit;vertical-align:middle;line-height:1;position:relative;top:0.18em;">' + mCountTxt + '</span>' : '');
+        fitMobileLabel();
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Paragraph toggle for the detail card preview
+function uqDetailTogglePara() {
+    var btn = document.getElementById('uq-detail-para-btn');
+    var preview = document.getElementById('uq-detail-preview');
+    var paraBox = document.getElementById('uq-detail-para-box');
+    if (!btn || !preview || !paraBox) return;
+    var isActive = btn.classList.toggle('active');
+    var sliderEl = document.getElementById('font-size-slider');
+    if (isActive) {
+        paraBox.style.display = '';
+        preview.classList.add('para-mode');
+        var paraSize = sliderEl ? (parseFloat(sliderEl.value) - 8) : 24;
+        preview.style.fontSize = paraSize + 'px';
+        preview.style.textAlign = 'justify';
+        preview.style.direction = 'rtl';
+    } else {
+        paraBox.style.display = 'none';
+        preview.classList.remove('para-mode');
+        if (sliderEl) preview.style.fontSize = parseFloat(sliderEl.value) + 'px';
+        preview.style.textAlign = '';
+        preview.style.direction = '';
+    }
+}
+
+// ── END Font Detail View ──────────────────────────────────────────────────
 
 // ── Auto-fit mobile category label font size ────────────
 // Strategy: use a real hidden DOM probe element so the actual loaded font
@@ -6469,9 +7265,9 @@ function fitMobileLabel() {
 
     // available = toggle inner width minus hamburger and arrow actual widths minus the gap spacing
     // toggle.getBoundingClientRect().width is the CONTENT+PADDING total
-    // button has padding:0 11px — the elements are positioned inside that padded space
-    // so: available = toggleWidth - leftPad(11) - rightPad(11) - hambW - gap(7) - arrowW - gap(7)
-    var available = toggleRect.width - 11 - 11 - hambRect.width - 7 - arrowRect.width - 7;
+    // button has padding:0 15px — the elements are positioned inside that padded space
+    // so: available = toggleWidth - leftPad(15) - rightPad(15) - hambW - gap(7) - arrowW - gap(7)
+    var available = toggleRect.width - 15 - 15 - hambRect.width - 7 - arrowRect.width - 16;
     if (available <= 20) { label.style.fontSize = '9px'; return; }
 
     // ── Step 2: probe element measures real rendered font width ──
@@ -6497,7 +7293,7 @@ function fitMobileLabel() {
     probe.textContent = text;
 
     // ── Step 3: binary search using real DOM rendered width ──
-    var maxPx = 20;
+    var maxPx = 32;
     var minPx = 9;
     var lo = minPx, hi = maxPx;
 
@@ -6815,6 +7611,50 @@ function setTrendingSort(mode, btn) {
 
 document.addEventListener('DOMContentLoaded', function() {
     loadFontsAndInit();
+});
+
+// Handle browser back/forward button for font detail view
+window.addEventListener('popstate', function() {
+    var params = new URLSearchParams(location.search);
+    var fontParam = params.get('font');
+    var catParam  = params.get('cat');
+    var detailEl  = document.getElementById('uq-font-detail-view');
+    if (fontParam) {
+        // navigated forward into a font detail — show it
+        showFontDetailView(fontParam, catParam || 'All');
+    } else if (detailEl && detailEl.classList.contains('active')) {
+        // navigated back out of a font detail — close it
+        var storedCat = detailEl.dataset.backCat || catParam || 'Nwe';
+        detailEl.classList.remove('active');
+        detailEl.innerHTML = '';
+        var desktopBack = document.getElementById('uq-detail-back-desktop');
+        var mobileBackRow = document.getElementById('uq-detail-back-mobile-row');
+        if (desktopBack) desktopBack.style.display = 'none';
+        if (mobileBackRow) mobileBackRow.classList.remove('active');
+        var g = document.getElementById('font-grid');
+        var pb = document.getElementById('pagination-bar');
+        if (g) g.style.display = '';
+        if (pb) pb.style.display = '';
+        var tBtn = null;
+        document.querySelectorAll('#desktop-panel .filter-btn').forEach(function(b) {
+            var bid = (b.getAttribute('onclick') || '').split("'")[1] || '';
+            if (bid.toLowerCase() === storedCat.toLowerCase()) tBtn = b;
+        });
+        filterFonts(storedCat, tBtn);
+        // Restore mobile label (popstate doesn't go through closeFontDetailView)
+        var tBtnM = null;
+        document.querySelectorAll('#mobile-panel .filter-btn').forEach(function(b) {
+            var bid = (b.getAttribute('onclick') || '').split("'")[1] || '';
+            if (bid.toLowerCase() === storedCat.toLowerCase()) tBtnM = b;
+        });
+        var mLabel = document.getElementById('mobile-active-label');
+        if (mLabel) {
+            var mLabelText = tBtnM ? tBtnM.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim() : _uqGetCatLabel(storedCat);
+            var mCountTxt = tBtnM ? (tBtnM.querySelector('.cat-count') ? tBtnM.querySelector('.cat-count').textContent.trim() : '') : '';
+            mLabel.innerHTML = mLabelText + (mCountTxt ? ' <span style="font-size:0.72em;opacity:0.75;font-family:inherit;vertical-align:middle;line-height:1;position:relative;top:0.18em;">' + mCountTxt + '</span>' : '');
+            fitMobileLabel();
+        }
+    }
 });
 
 
