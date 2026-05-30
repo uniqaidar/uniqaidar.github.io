@@ -103,25 +103,37 @@ async function injectCanonical(response, requestUrl) {
 
     try {
         let html = await response.text();
+
+        // If index.js SSR already wrote a canonical (all ?font= and ?cat= pages),
+        // preserve it exactly — do not overwrite with the raw request URL which
+        // may be missing ?cat= and would create a canonical mismatch for Google.
+        if (/<link\s+rel="canonical"[^>]*href="[^"]*\?[^"]*"/i.test(html)) {
+            return new Response(html, {
+                status: response.status,
+                statusText: response.statusText,
+                headers: response.headers,
+            });
+        }
+
+        // No query-bearing canonical in the HTML (homepage / passthrough pages).
+        // Build one from the request URL and inject it.
         const parsedUrl = new URL(requestUrl);
-        
-        // Build the canonical URL with all query parameters preserved
         const canonicalUrl = parsedUrl.origin + parsedUrl.pathname + parsedUrl.search;
-        
+
         // Escape for HTML attributes
         const escapedCanonical = canonicalUrl
             .replace(/&/g, '&amp;')
             .replace(/"/g, '&quot;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
-        
+
         // Replace the existing canonical tag (handles both dynamic and static versions)
         // Matches: <link rel="canonical" href="..."> or <link rel="canonical" id="dynamic-canonical" href="...">
         html = html.replace(
             /<link\s+rel="canonical"[^>]*>/gi,
             `<link rel="canonical" href="${escapedCanonical}">`
         );
-        
+
         return new Response(html, {
             status: response.status,
             statusText: response.statusText,
