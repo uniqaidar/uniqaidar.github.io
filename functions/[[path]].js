@@ -167,7 +167,8 @@ function buildFontMeta(font, catNames, paraDefault) {
     const allCats    = font.category || [];
     const firstCat   = allCats[0]    || 'All';
 
-    const fontUrl  = `${BASE_URL}/?cat=${encodeURIComponent(firstCat)}&font=${encodeURIComponent(name)}`;
+    const fontUrl     = `${BASE_URL}/?cat=${encodeURIComponent(firstCat)}&font=${encodeURIComponent(name)}`;
+    const fontShareUrl = `${BASE_URL}/?font=${encodeURIComponent(name)}`;
     const ttfUrl   = `${BASE_URL}/${path}`;
     const logoUrl  = `${BASE_URL}/api/og?type=font&name=${encodeURIComponent(name)}`;
     const metaDesc = truncate(`${preview} — ${paragraph}`, 155);
@@ -194,7 +195,7 @@ function buildFontMeta(font, catNames, paraDefault) {
 <meta property="og:site_name" content="UniQaidar Fonts — فۆنتەکانی یونی‌قەیدار">
 <meta property="og:title" content="${title}">
 <meta property="og:description" content="${desc}">
-<meta property="og:url" content="${escHtml(fontUrl)}">
+<meta property="og:url" content="${escHtml(fontShareUrl)}">
 <meta property="og:image" content="${logoUrl}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -489,6 +490,9 @@ export async function onRequest(context) {
         ].join('\n');
         return new Response(xml, { status: 200, headers: SITEMAP_HEADERS });
     }
+
+    // ── /api/* — always pass through so api functions handle their own routes ──
+    if (pathname.startsWith('/api/')) return context.next();
 
     // ── Humans pass through instantly — zero cost ─────────────────────────────
     if (!isCrawler(ua)) return context.next();
