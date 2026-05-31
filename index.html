@@ -6096,11 +6096,7 @@ function renderFonts(data, text, resetPage) {
                 var prev = c.querySelector('.preview');
                 if (prev) {
                     var tw = prev.getAttribute('data-tw') || '';
-                    if (prev.classList.contains('para-mode')) {
-                        prev.textContent = tw;
-                    } else {
-                        uqTypewriter(prev, tw, 28);
-                    }
+                    prev.textContent = tw;
                 }
             }, delay + 420);
         })(card, cardIndex * stagger);
