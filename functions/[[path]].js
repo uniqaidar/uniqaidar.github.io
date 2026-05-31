@@ -114,7 +114,12 @@ function isCrawler(ua) {
         s.includes('yandex')                ||
         s.includes('baiduspider')           ||
         s.includes('duckduckbot')           ||
-        s.includes('slurp')
+        s.includes('slurp')                 ||
+        s.includes('facebookexternalhit')   ||
+        s.includes('whatsapp')              ||
+        s.includes('telegrambot')           ||
+        s.includes('twitterbot')            ||
+        s.includes('linkedinbot')
     );
 }
 
