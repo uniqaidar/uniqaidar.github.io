@@ -2,26 +2,29 @@
 // Dynamic SVG og image generator for UniQaidar Fonts.
 //
 // Routes:
-//   /api/og?type=font&name=UniQAIDAR_Hawal+001   → font detail card
-//   /api/og?type=cat&cat=Hawal                   → category card
-//   /api/og?type=home                            → homepage card (نوێترین فۆنت)
+//   /api/og?type=font&name=UniQAIDAR_Nastaliq+004+Typo  → font detail card
+//   /api/og?type=cat&cat=Hawal                          → category card
+//   /api/og?type=home                                   → homepage card (نوێترین فۆنت)
 //
 // Design: matches the website exactly — #1a1a1a bg, #242424 card, #ff5700 orange,
-//         #07beff cyan, #f0f0f0 text, 12px border-radius, RTL layout.
+//         #1976d2 blue button, #f0f0f0 text, 12px border-radius, RTL layout.
 // Size: 1200×630px (standard og image size).
-// Font: TTF embedded as base64 for preview text — renders in the actual font.
-// Logo: Logo.png embedded via base64 for pixel-perfect branding.
-// No storage, no KV, no GitHub — generated in memory on every request.
+// UI font: UniQAIDAR_Peregraf 01 — embedded as base64, used for all labels/text.
+// Preview font (type=font only): the actual font TTF — embedded as base64.
+// Logo: Logo.png embedded as base64 <image> element.
+// No KV, no GitHub, no storage — generated in memory on every request.
 
-const BASE_URL       = 'https://uniqaidar.pages.dev';
-const FONTS_JSON_URL = `${BASE_URL}/fonts.json`;
-const POPULAR_URL    = `${BASE_URL}/popular.json`;
-const LOGO_URL       = `${BASE_URL}/Logo.png`;
+const BASE_URL        = 'https://uniqaidar.pages.dev';
+const FONTS_JSON_URL  = `${BASE_URL}/fonts.json`;
+const POPULAR_URL     = `${BASE_URL}/popular.json`;
+const LOGO_URL        = `${BASE_URL}/Logo.png`;
+const UI_FONT_URL     = `${BASE_URL}/UniQaidarFonts/UniQAIDAR_Peregraf 01.ttf`;
 
 // ── Module-level caches ────────────────────────────────────────────────────────
 let _fontsCache   = null;
 let _popularCache = null;
 let _logoB64      = null;
+let _uiFontB64    = null; // UniQAIDAR_Peregraf 01 base64 — used for all UI text
 let _catCache     = null; // { catId → Kurdish label }
 
 // ── Asset fetcher ──────────────────────────────────────────────────────────────
@@ -35,16 +38,42 @@ async function fetchAsset(context, url) {
     return fetch(url, { headers: { 'User-Agent': 'UniQaidar-OG/1.0' } });
 }
 
-// ── Load fonts.json, popular.json, Logo.png, category labels ──────────────────
+// ── Binary asset → base64 string ──────────────────────────────────────────────
+async function toBase64(context, url) {
+    try {
+        const res = await fetchAsset(context, url);
+        if (!res || !res.ok) return null;
+        const buf = await res.arrayBuffer();
+        const arr = new Uint8Array(buf);
+        // Use chunked approach to avoid call stack overflow on large TTF files
+        const CHUNK = 8192;
+        let bin = '';
+        for (let i = 0; i < arr.length; i += CHUNK) {
+            bin += String.fromCharCode(...arr.subarray(i, i + CHUNK));
+        }
+        return btoa(bin);
+    } catch (_) {
+        return null;
+    }
+}
+
+// ── Load all shared assets, once per worker instance ──────────────────────────
 async function loadAll(context) {
-    if (_fontsCache && _popularCache && _logoB64 && _catCache) {
-        return { fonts: _fontsCache, popular: _popularCache, logoB64: _logoB64, catNames: _catCache };
+    if (_fontsCache && _popularCache && _logoB64 && _uiFontB64 && _catCache) {
+        return {
+            fonts:     _fontsCache,
+            popular:   _popularCache,
+            logoB64:   _logoB64,
+            uiFontB64: _uiFontB64,
+            catNames:  _catCache,
+        };
     }
 
-    const [fontsRes, popularRes, logoRes, htmlRes] = await Promise.all([
+    const [fontsRes, popularRes, logoRes, uiFontRes, htmlRes] = await Promise.all([
         fetchAsset(context, FONTS_JSON_URL),
         fetchAsset(context, POPULAR_URL),
         fetchAsset(context, LOGO_URL),
+        fetchAsset(context, UI_FONT_URL),
         fetchAsset(context, `${BASE_URL}/`),
     ]);
 
@@ -66,17 +95,33 @@ async function loadAll(context) {
         try {
             const buf  = await logoRes.arrayBuffer();
             const arr  = new Uint8Array(buf);
+            const CHUNK = 8192;
             let bin = '';
-            for (let i = 0; i < arr.length; i++) bin += String.fromCharCode(arr[i]);
+            for (let i = 0; i < arr.length; i += CHUNK) {
+                bin += String.fromCharCode(...arr.subarray(i, i + CHUNK));
+            }
             _logoB64 = 'data:image/png;base64,' + btoa(bin);
+        } catch (_) {}
+    }
+
+    if (!_uiFontB64 && uiFontRes && uiFontRes.ok) {
+        try {
+            const buf  = await uiFontRes.arrayBuffer();
+            const arr  = new Uint8Array(buf);
+            const CHUNK = 8192;
+            let bin = '';
+            for (let i = 0; i < arr.length; i += CHUNK) {
+                bin += String.fromCharCode(...arr.subarray(i, i + CHUNK));
+            }
+            _uiFontB64 = btoa(bin);
         } catch (_) {}
     }
 
     if (!_catCache && htmlRes && htmlRes.ok) {
         try {
             const html = await htmlRes.text();
-            _catCache = {};
-            const rx = /<button class="filter-btn" onclick="filterFonts\('([^']+)',\s*this\)">([^<]+)<\/button>/g;
+            _catCache  = {};
+            const rx   = /<button class="filter-btn" onclick="filterFonts\('([^']+)',\s*this\)">([^<]+)<\/button>/g;
             let m;
             while ((m = rx.exec(html)) !== null) {
                 _catCache[m[1]] = m[2].trim();
@@ -85,30 +130,20 @@ async function loadAll(context) {
     }
 
     return {
-        fonts:    _fontsCache   || [],
-        popular:  _popularCache || [],
-        logoB64:  _logoB64      || '',
-        catNames: _catCache     || {},
+        fonts:     _fontsCache   || [],
+        popular:   _popularCache || [],
+        logoB64:   _logoB64      || '',
+        uiFontB64: _uiFontB64    || '',
+        catNames:  _catCache     || {},
     };
 }
 
-// ── Load a TTF file as base64 for SVG font embedding ──────────────────────────
+// ── Load a single TTF as base64 (preview font for type=font only) ─────────────
 async function loadFontB64(context, fontPath) {
-    try {
-        const url = `${BASE_URL}/${fontPath}`;
-        const res = await fetchAsset(context, url);
-        if (!res || !res.ok) return null;
-        const buf = await res.arrayBuffer();
-        const arr = new Uint8Array(buf);
-        let bin = '';
-        for (let i = 0; i < arr.length; i++) bin += String.fromCharCode(arr[i]);
-        return btoa(bin);
-    } catch (_) {
-        return null;
-    }
+    return toBase64(context, `${BASE_URL}/${fontPath}`);
 }
 
-// ── Escape SVG text content ────────────────────────────────────────────────────
+// ── SVG escape ────────────────────────────────────────────────────────────────
 function esc(str) {
     return (str || '')
         .replace(/&/g, '&amp;')
@@ -117,7 +152,7 @@ function esc(str) {
         .replace(/"/g, '&quot;');
 }
 
-// ── Truncate string safely ─────────────────────────────────────────────────────
+// ── Unicode-aware truncation ───────────────────────────────────────────────────
 function trunc(str, max) {
     if (!str) return '';
     const chars = [...str];
@@ -125,26 +160,54 @@ function trunc(str, max) {
     return chars.slice(0, max).join('') + '…';
 }
 
+// ── Shared @font-face defs block ──────────────────────────────────────────────
+// uiFontB64: base64 of UniQAIDAR_Peregraf 01 — used for all UI text
+// previewB64: base64 of the actual font — used only for preview text in type=font
+function buildDefs(uiFontB64, previewB64) {
+    let css = '';
+    if (uiFontB64) {
+        css += `@font-face{font-family:'UQPeregraf';src:url('data:font/ttf;base64,${uiFontB64}') format('truetype');}`;
+    }
+    if (previewB64) {
+        css += `@font-face{font-family:'PreviewFont';src:url('data:font/ttf;base64,${previewB64}') format('truetype');}`;
+    }
+    if (!css) return '';
+    return `<defs><style>${css}</style></defs>`;
+}
+
+// ── UI font family string ──────────────────────────────────────────────────────
+const UI_FONT  = "'UQPeregraf', Tahoma, Arial, sans-serif";
+const FALLBACK = "Tahoma, Arial, sans-serif";
+
 // ── Build SVG: Font detail card ────────────────────────────────────────────────
-function buildFontSvg(font, fontB64, logoB64) {
-    const name     = font.name    || '';
-    const preview  = font.preview || 'فۆنتەکانی یونی‌قەیدار';
-    const size     = font.size    || '';
-    const date     = font.dateAdded || '';
-    const cats     = (font.category || []);
-    const firstCat = cats[0] || '';
+// Layout (y positions):
+//   0–6:     top orange bar
+//   6–32:    outer gap
+//   32–104:  header bar (#2a2a2a) — orange dot + font name + date
+//   104–460: preview area (#242424) — large RTL preview text centered
+//   460–461: divider line
+//   461–529: bottom action bar — orange icon box + blue download button + size badge
+//   529–598: branding bar (#2a2a2a) — logo right + URL left + category center
+//   598–630: outer gap + bottom orange bar at 624
+function buildFontSvg(font, uiFontB64, previewB64, logoB64, catNames) {
+    const name      = font.name      || '';
+    const preview   = font.preview   || 'فۆنتەکانی یونی‌قەیدار';
+    const size      = font.size      || '';
+    const date      = font.dateAdded || '';
+    const firstCat  = (font.category || [])[0] || '';
+    const catLabel  = firstCat ? (catNames[firstCat] || firstCat) : '';
 
-    const fontFaceBlock = fontB64
-        ? `<defs><style>@font-face{font-family:'PreviewFont';src:url('data:font/ttf;base64,${fontB64}') format('truetype');}</style></defs>`
-        : '';
+    const uiFont      = uiFontB64 ? UI_FONT : FALLBACK;
+    const previewFont = previewB64 ? "'PreviewFont', Tahoma, Arial, sans-serif" : FALLBACK;
+    const previewText = trunc(preview, 42);
+    const defs        = buildDefs(uiFontB64, previewB64);
 
-    const previewFamily = fontB64 ? 'PreviewFont' : 'Tahoma, Arial, sans-serif';
-
-    // Truncate preview text for display
-    const previewText = trunc(preview, 40);
+    // Size badge geometry
+    const sizeBadgeX = 750;
+    const sizeBadgeW = 202;
 
     return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630">
-${fontFaceBlock}
+${defs}
   <!-- Background -->
   <rect width="1200" height="630" fill="#1a1a1a"/>
 
@@ -152,80 +215,133 @@ ${fontFaceBlock}
   <rect x="0" y="0" width="1200" height="6" fill="#ff5700"/>
 
   <!-- Main card -->
-  <rect x="32" y="32" width="1136" height="566" rx="12" fill="#242424"/>
+  <rect x="24" y="18" width="1152" height="594" rx="12" fill="#242424"/>
 
-  <!-- Card header bar -->
-  <rect x="32" y="32" width="1136" height="72" rx="12" fill="#2a2a2a"/>
-  <rect x="32" y="80" width="1136" height="24" fill="#2a2a2a"/>
+  <!-- Header bar -->
+  <rect x="24" y="18" width="1152" height="86" rx="12" fill="#2a2a2a"/>
+  <rect x="24" y="76" width="1152" height="28" fill="#2a2a2a"/>
 
   <!-- Orange dot -->
-  <circle cx="68" cy="68" r="8" fill="#ff5700"/>
+  <circle cx="62" cy="61" r="9" fill="#ff5700"/>
 
-  <!-- Font name -->
-  <text x="92" y="76" font-family="Tahoma, Arial, sans-serif" font-size="24" fill="#f0f0f0" text-anchor="start" dominant-baseline="middle">${esc(name)}</text>
+  <!-- Font name (UI font, LTR for latin font names) -->
+  <text x="86" y="61"
+    font-family="${uiFont}"
+    font-size="22"
+    fill="#f0f0f0"
+    text-anchor="start"
+    dominant-baseline="central">${esc(trunc(name, 52))}</text>
 
   <!-- Date -->
-  ${date ? `<text x="1148" y="68" font-family="Tahoma, Arial, sans-serif" font-size="16" fill="#666" text-anchor="end" dominant-baseline="middle">${esc(date)}</text>` : ''}
+  ${date ? `<text x="1156" y="61"
+    font-family="${uiFont}"
+    font-size="15"
+    fill="#666"
+    text-anchor="end"
+    dominant-baseline="central">${esc(date)}</text>` : ''}
 
   <!-- Preview text area -->
-  <rect x="32" y="104" width="1136" height="348" fill="#242424"/>
+  <rect x="24" y="104" width="1152" height="350" fill="#242424"/>
 
-  <!-- Preview text in actual font — RTL, centered -->
-  <text x="600" y="295"
-    font-family="${previewFamily}"
-    font-size="72"
+  <!-- Large preview text — RTL, centered, actual font -->
+  <text x="600" y="286"
+    font-family="${previewFont}"
+    font-size="76"
     fill="#f0f0f0"
     text-anchor="middle"
-    dominant-baseline="middle"
+    dominant-baseline="central"
     direction="rtl"
     unicode-bidi="embed">${esc(previewText)}</text>
 
   <!-- Divider -->
-  <rect x="32" y="452" width="1136" height="1" fill="#333"/>
+  <rect x="24" y="454" width="1152" height="1" fill="#333"/>
 
-  <!-- Bottom bar -->
-  <rect x="32" y="453" width="1136" height="113" rx="0" fill="#242424"/>
-  <rect x="32" y="513" width="1136" height="53" rx="12" fill="#242424"/>
-  <rect x="32" y="453" width="1136" height="12" fill="#242424"/>
+  <!-- Action bar background -->
+  <rect x="24" y="455" width="1152" height="70" fill="#242424"/>
 
-  <!-- Download button -->
-  <rect x="52" y="465" width="680" height="56" rx="8" fill="#1976d2"/>
-  <text x="392" y="499" font-family="Tahoma, Arial, sans-serif" font-size="24" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">داونلۆدی فۆنت  ↓</text>
+  <!-- Orange icon box (link/copy icon) -->
+  <rect x="40" y="462" width="56" height="56" rx="8" fill="#ff5700"/>
+  <text x="68" y="490"
+    font-family="${uiFont}"
+    font-size="22"
+    fill="#fff"
+    text-anchor="middle"
+    dominant-baseline="central">🔗</text>
 
-  <!-- Orange copy icon box -->
-  <rect x="52" y="465" width="56" height="56" rx="8" fill="#ff5700"/>
-  <text x="80" y="499" font-family="Tahoma, Arial, sans-serif" font-size="20" fill="#fff" text-anchor="middle" dominant-baseline="middle">🔗</text>
+  <!-- Blue download button -->
+  <rect x="106" y="462" width="${size ? sizeBadgeX - 116 : 1070}" height="56" rx="8" fill="#1976d2"/>
+  <text x="${size ? (106 + (sizeBadgeX - 116) / 2) : 606}" y="490"
+    font-family="${uiFont}"
+    font-size="24"
+    fill="#ffffff"
+    text-anchor="middle"
+    dominant-baseline="central">داونلۆدی فۆنت  ↓</text>
 
   <!-- Size badge -->
-  ${size ? `<rect x="752" y="465" width="180" height="56" rx="8" fill="#2e2e2e"/>
-  <text x="842" y="491" font-family="Tahoma, Arial, sans-serif" font-size="20" fill="#aaa" text-anchor="middle" dominant-baseline="middle">${esc(size)}</text>
-  <text x="842" y="511" font-family="Tahoma, Arial, sans-serif" font-size="13" fill="#555" text-anchor="middle" dominant-baseline="middle">حجمی فایل</text>` : ''}
+  ${size ? `<rect x="${sizeBadgeX}" y="462" width="${sizeBadgeW}" height="56" rx="8" fill="#2e2e2e"/>
+  <text x="${sizeBadgeX + sizeBadgeW / 2}" y="484"
+    font-family="${uiFont}"
+    font-size="19"
+    fill="#aaa"
+    text-anchor="middle"
+    dominant-baseline="central">${esc(size)}</text>
+  <text x="${sizeBadgeX + sizeBadgeW / 2}" y="507"
+    font-family="${uiFont}"
+    font-size="13"
+    fill="#555"
+    text-anchor="middle"
+    dominant-baseline="central">قەبارەی فۆنت</text>` : ''}
 
-  <!-- Bottom branding -->
-  <rect x="32" y="521" width="1136" height="45" rx="12" fill="#2a2a2a"/>
-  <rect x="32" y="521" width="1136" height="22" fill="#2a2a2a"/>
+  <!-- Branding bar background -->
+  <rect x="24" y="525" width="1152" height="67" rx="12" fill="#2a2a2a"/>
+  <rect x="24" y="525" width="1152" height="28" fill="#2a2a2a"/>
 
-  <!-- Logo image -->
-  ${logoB64 ? `<image href="${logoB64}" x="940" y="526" width="210" height="30" preserveAspectRatio="xMidYMid meet"/>` : `<text x="1148" y="549" font-family="Tahoma, Arial, sans-serif" font-size="18" fill="#ff5700" text-anchor="end" font-weight="bold">UniQaidar Fonts</text>`}
+  <!-- Logo -->
+  ${logoB64
+    ? `<image href="${logoB64}" x="940" y="534" width="220" height="32" preserveAspectRatio="xMidYMid meet"/>`
+    : `<text x="1156" y="558" font-family="${uiFont}" font-size="18" fill="#ff5700" text-anchor="end" dominant-baseline="central">UniQaidar Fonts</text>`}
 
   <!-- URL -->
-  <text x="52" y="549" font-family="Tahoma, Arial, sans-serif" font-size="16" fill="#555" text-anchor="start" dominant-baseline="middle">uniqaidar.pages.dev</text>
+  <text x="40" y="558"
+    font-family="${uiFont}"
+    font-size="16"
+    fill="#555"
+    text-anchor="start"
+    dominant-baseline="central">uniqaidar.pages.dev</text>
 
-  <!-- Category label -->
-  ${firstCat ? `<text x="600" y="549" font-family="Tahoma, Arial, sans-serif" font-size="16" fill="#666" text-anchor="middle" dominant-baseline="middle">${esc(firstCat)}</text>` : ''}
+  <!-- Category label (Kurdish) -->
+  ${catLabel ? `<text x="600" y="558"
+    font-family="${uiFont}"
+    font-size="16"
+    fill="#666"
+    text-anchor="middle"
+    dominant-baseline="central"
+    direction="rtl">${esc(catLabel)}</text>` : ''}
 
-  <!-- Bottom orange line -->
+  <!-- Bottom orange bar -->
   <rect x="0" y="624" width="1200" height="6" fill="#ff5700"/>
 </svg>`;
 }
 
 // ── Build SVG: Category card ───────────────────────────────────────────────────
-function buildCatSvg(catId, catLabel, catFonts, logoB64) {
-    const count = catFonts.length;
-    // Take up to 3 fonts for preview rows — use their preview text
+// Layout:
+//   0–6:     top orange bar
+//   18–104:  header bar — orange dot + category label + font count badge
+//   110–530: three sample font rows, each 120px tall
+//   530–598: branding bar
+//   624–630: bottom orange bar
+function buildCatSvg(catId, catLabel, catFonts, uiFontB64, logoB64) {
+    const count   = catFonts.length;
     const samples = catFonts.slice(0, 3);
+    const uiFont  = uiFontB64 ? UI_FONT : FALLBACK;
+
+    // Badge width: roughly 10px per character + padding
+    const badgeLabel  = `${count} فۆنت`;
+    const badgeW      = Math.max(130, [...badgeLabel].length * 16 + 40);
+    const badgeX      = 1156 - badgeW;
 
     return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630">
+${buildDefs(uiFontB64, null)}
   <!-- Background -->
   <rect width="1200" height="630" fill="#1a1a1a"/>
 
@@ -233,50 +349,86 @@ function buildCatSvg(catId, catLabel, catFonts, logoB64) {
   <rect x="0" y="0" width="1200" height="6" fill="#ff5700"/>
 
   <!-- Main card -->
-  <rect x="32" y="32" width="1136" height="566" rx="12" fill="#242424"/>
+  <rect x="24" y="18" width="1152" height="594" rx="12" fill="#242424"/>
 
-  <!-- Card header -->
-  <rect x="32" y="32" width="1136" height="72" rx="12" fill="#2a2a2a"/>
-  <rect x="32" y="80" width="1136" height="24" fill="#2a2a2a"/>
+  <!-- Header bar -->
+  <rect x="24" y="18" width="1152" height="86" rx="12" fill="#2a2a2a"/>
+  <rect x="24" y="76" width="1152" height="28" fill="#2a2a2a"/>
 
   <!-- Orange dot -->
-  <circle cx="68" cy="68" r="8" fill="#ff5700"/>
+  <circle cx="62" cy="61" r="9" fill="#ff5700"/>
 
-  <!-- Category label -->
-  <text x="92" y="68" font-family="Tahoma, Arial, sans-serif" font-size="26" fill="#f0f0f0" text-anchor="start" dominant-baseline="middle">${esc(catLabel)}</text>
+  <!-- Category label (RTL Kurdish) -->
+  <text x="86" y="61"
+    font-family="${uiFont}"
+    font-size="26"
+    fill="#f0f0f0"
+    text-anchor="start"
+    dominant-baseline="central"
+    direction="rtl">${esc(catLabel)}</text>
 
-  <!-- Font count badge -->
-  <rect x="980" y="44" width="168" height="48" rx="8" fill="#ff5700"/>
-  <text x="1064" y="68" font-family="Tahoma, Arial, sans-serif" font-size="22" fill="#fff" text-anchor="middle" dominant-baseline="middle">${count} فۆنت</text>
+  <!-- Font count badge (orange pill, right side) -->
+  <rect x="${badgeX}" y="37" width="${badgeW}" height="48" rx="10" fill="#ff5700"/>
+  <text x="${badgeX + badgeW / 2}" y="61"
+    font-family="${uiFont}"
+    font-size="20"
+    fill="#fff"
+    text-anchor="middle"
+    dominant-baseline="central"
+    direction="rtl">${esc(badgeLabel)}</text>
 
   <!-- Sample font rows -->
   ${samples.map((f, i) => {
-    const y = 148 + i * 130;
-    const previewText = trunc(f.preview || 'فۆنتەکانی یونی‌قەیدار', 38);
+    const rowY     = 118 + i * 124;
+    const nameText = trunc(f.name || '', 50);
+    const prevText = trunc(f.preview || 'فۆنتەکانی یونی‌قەیدار', 40);
     return `
-  <!-- Sample ${i + 1} -->
-  <rect x="52" y="${y - 20}" width="1096" height="110" rx="8" fill="#2a2a2a"/>
-  <text x="1108" y="${y + 10}" font-family="Tahoma, Arial, sans-serif" font-size="13" fill="#666" text-anchor="end" dominant-baseline="middle">${esc(f.name)}</text>
-  <text x="1108" y="${y + 50}" font-family="Tahoma, Arial, sans-serif" font-size="32" fill="#f0f0f0" text-anchor="end" dominant-baseline="middle" direction="rtl">${esc(previewText)}</text>`;
+  <rect x="40" y="${rowY}" width="1120" height="112" rx="8" fill="#2a2a2a"/>
+  <text x="1140" y="${rowY + 28}"
+    font-family="${uiFont}"
+    font-size="13"
+    fill="#666"
+    text-anchor="end"
+    dominant-baseline="central">${esc(nameText)}</text>
+  <text x="1140" y="${rowY + 72}"
+    font-family="${uiFont}"
+    font-size="30"
+    fill="#f0f0f0"
+    text-anchor="end"
+    dominant-baseline="central"
+    direction="rtl"
+    unicode-bidi="embed">${esc(prevText)}</text>`;
   }).join('')}
 
-  <!-- Bottom branding -->
-  <rect x="32" y="553" width="1136" height="45" rx="12" fill="#2a2a2a"/>
-  <rect x="32" y="553" width="1136" height="22" fill="#2a2a2a"/>
+  <!-- Branding bar -->
+  <rect x="24" y="532" width="1152" height="62" rx="12" fill="#2a2a2a"/>
+  <rect x="24" y="532" width="1152" height="24" fill="#2a2a2a"/>
 
-  ${logoB64 ? `<image href="${logoB64}" x="940" y="558" width="210" height="30" preserveAspectRatio="xMidYMid meet"/>` : `<text x="1148" y="580" font-family="Tahoma, Arial, sans-serif" font-size="18" fill="#ff5700" text-anchor="end">UniQaidar Fonts</text>`}
-  <text x="52" y="580" font-family="Tahoma, Arial, sans-serif" font-size="16" fill="#555" text-anchor="start" dominant-baseline="middle">uniqaidar.pages.dev</text>
+  ${logoB64
+    ? `<image href="${logoB64}" x="934" y="540" width="220" height="32" preserveAspectRatio="xMidYMid meet"/>`
+    : `<text x="1156" y="563" font-family="${uiFont}" font-size="18" fill="#ff5700" text-anchor="end" dominant-baseline="central">UniQaidar Fonts</text>`}
+  <text x="40" y="563"
+    font-family="${uiFont}"
+    font-size="16"
+    fill="#555"
+    text-anchor="start"
+    dominant-baseline="central">uniqaidar.pages.dev</text>
 
-  <!-- Bottom orange line -->
+  <!-- Bottom orange bar -->
   <rect x="0" y="624" width="1200" height="6" fill="#ff5700"/>
 </svg>`;
 }
 
 // ── Build SVG: Homepage card (نوێترین فۆنت) ───────────────────────────────────
-function buildHomeSvg(nweFonts, fontCount, logoB64) {
-    const samples = nweFonts.slice(0, 3);
+function buildHomeSvg(nweFonts, totalCount, uiFontB64, logoB64) {
+    const samples  = nweFonts.slice(0, 3);
+    const uiFont   = uiFontB64 ? UI_FONT : FALLBACK;
+    const badgeLabel = `${totalCount}+ فۆنتی کوردی`;
+    const badgeW   = Math.max(200, [...badgeLabel].length * 15 + 40);
+    const badgeX   = 1156 - badgeW;
 
     return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630">
+${buildDefs(uiFontB64, null)}
   <!-- Background -->
   <rect width="1200" height="630" fill="#1a1a1a"/>
 
@@ -284,40 +436,72 @@ function buildHomeSvg(nweFonts, fontCount, logoB64) {
   <rect x="0" y="0" width="1200" height="6" fill="#ff5700"/>
 
   <!-- Main card -->
-  <rect x="32" y="32" width="1136" height="566" rx="12" fill="#242424"/>
+  <rect x="24" y="18" width="1152" height="594" rx="12" fill="#242424"/>
 
-  <!-- Header -->
-  <rect x="32" y="32" width="1136" height="72" rx="12" fill="#2a2a2a"/>
-  <rect x="32" y="80" width="1136" height="24" fill="#2a2a2a"/>
+  <!-- Header bar -->
+  <rect x="24" y="18" width="1152" height="86" rx="12" fill="#2a2a2a"/>
+  <rect x="24" y="76" width="1152" height="28" fill="#2a2a2a"/>
 
   <!-- Orange dot -->
-  <circle cx="68" cy="68" r="8" fill="#ff5700"/>
+  <circle cx="62" cy="61" r="9" fill="#ff5700"/>
 
-  <!-- Title: نوێترین فۆنت -->
-  <text x="92" y="68" font-family="Tahoma, Arial, sans-serif" font-size="26" fill="#f0f0f0" text-anchor="start" dominant-baseline="middle">نوێترین فۆنت</text>
+  <!-- Title: نوێترین فۆنت (RTL Kurdish) -->
+  <text x="86" y="61"
+    font-family="${uiFont}"
+    font-size="26"
+    fill="#f0f0f0"
+    text-anchor="start"
+    dominant-baseline="central"
+    direction="rtl">نوێترین فۆنت</text>
 
   <!-- Font count badge -->
-  <rect x="900" y="44" width="248" height="48" rx="8" fill="#ff5700"/>
-  <text x="1024" y="68" font-family="Tahoma, Arial, sans-serif" font-size="20" fill="#fff" text-anchor="middle" dominant-baseline="middle">${fontCount}+ فۆنتی کوردی</text>
+  <rect x="${badgeX}" y="37" width="${badgeW}" height="48" rx="10" fill="#ff5700"/>
+  <text x="${badgeX + badgeW / 2}" y="61"
+    font-family="${uiFont}"
+    font-size="19"
+    fill="#fff"
+    text-anchor="middle"
+    dominant-baseline="central"
+    direction="rtl">${esc(badgeLabel)}</text>
 
   <!-- Sample font rows from Nwe category -->
   ${samples.map((f, i) => {
-    const y = 148 + i * 130;
-    const previewText = trunc(f.preview || 'فۆنتەکانی یونی‌قەیدار', 38);
+    const rowY     = 118 + i * 124;
+    const nameText = trunc(f.name || '', 50);
+    const prevText = trunc(f.preview || 'فۆنتەکانی یونی‌قەیدار', 40);
     return `
-  <rect x="52" y="${y - 20}" width="1096" height="110" rx="8" fill="#2a2a2a"/>
-  <text x="1108" y="${y + 10}" font-family="Tahoma, Arial, sans-serif" font-size="13" fill="#666" text-anchor="end" dominant-baseline="middle">${esc(f.name)}</text>
-  <text x="1108" y="${y + 50}" font-family="Tahoma, Arial, sans-serif" font-size="32" fill="#f0f0f0" text-anchor="end" dominant-baseline="middle" direction="rtl">${esc(previewText)}</text>`;
+  <rect x="40" y="${rowY}" width="1120" height="112" rx="8" fill="#2a2a2a"/>
+  <text x="1140" y="${rowY + 28}"
+    font-family="${uiFont}"
+    font-size="13"
+    fill="#666"
+    text-anchor="end"
+    dominant-baseline="central">${esc(nameText)}</text>
+  <text x="1140" y="${rowY + 72}"
+    font-family="${uiFont}"
+    font-size="30"
+    fill="#f0f0f0"
+    text-anchor="end"
+    dominant-baseline="central"
+    direction="rtl"
+    unicode-bidi="embed">${esc(prevText)}</text>`;
   }).join('')}
 
-  <!-- Branding -->
-  <rect x="32" y="553" width="1136" height="45" rx="12" fill="#2a2a2a"/>
-  <rect x="32" y="553" width="1136" height="22" fill="#2a2a2a"/>
+  <!-- Branding bar -->
+  <rect x="24" y="532" width="1152" height="62" rx="12" fill="#2a2a2a"/>
+  <rect x="24" y="532" width="1152" height="24" fill="#2a2a2a"/>
 
-  ${logoB64 ? `<image href="${logoB64}" x="940" y="558" width="210" height="30" preserveAspectRatio="xMidYMid meet"/>` : `<text x="1148" y="580" font-family="Tahoma, Arial, sans-serif" font-size="18" fill="#ff5700" text-anchor="end">UniQaidar Fonts</text>`}
-  <text x="52" y="580" font-family="Tahoma, Arial, sans-serif" font-size="16" fill="#555" text-anchor="start" dominant-baseline="middle">uniqaidar.pages.dev</text>
+  ${logoB64
+    ? `<image href="${logoB64}" x="934" y="540" width="220" height="32" preserveAspectRatio="xMidYMid meet"/>`
+    : `<text x="1156" y="563" font-family="${uiFont}" font-size="18" fill="#ff5700" text-anchor="end" dominant-baseline="central">UniQaidar Fonts</text>`}
+  <text x="40" y="563"
+    font-family="${uiFont}"
+    font-size="16"
+    fill="#555"
+    text-anchor="start"
+    dominant-baseline="central">uniqaidar.pages.dev</text>
 
-  <!-- Bottom orange line -->
+  <!-- Bottom orange bar -->
   <rect x="0" y="624" width="1200" height="6" fill="#ff5700"/>
 </svg>`;
 }
@@ -330,23 +514,21 @@ export async function onRequestGet(context) {
     const cat  = url.searchParams.get('cat')  || '';
 
     const headers = {
-        'Content-Type':                 'image/svg+xml',
-        'Cache-Control':                'public, max-age=86400, s-maxage=86400',
-        'CDN-Cache-Control':            'public, max-age=86400',
-        'Access-Control-Allow-Origin':  '*',
+        'Content-Type':                'image/svg+xml',
+        'Cache-Control':               'public, max-age=86400, s-maxage=86400',
+        'CDN-Cache-Control':           'public, max-age=86400',
+        'Access-Control-Allow-Origin': '*',
     };
 
     try {
-        const { fonts, popular, logoB64, catNames } = await loadAll(context);
+        const { fonts, popular, logoB64, uiFontB64, catNames } = await loadAll(context);
 
         // ── Font card ──────────────────────────────────────────────────────────
         if (type === 'font' && name) {
             const font = fonts.find(f => f.name === name);
-            if (!font) {
-                return new Response('Not found', { status: 404 });
-            }
-            const fontB64 = await loadFontB64(context, font.path);
-            const svg = buildFontSvg(font, fontB64, logoB64);
+            if (!font) return new Response('Not found', { status: 404 });
+            const previewB64 = await loadFontB64(context, font.path);
+            const svg = buildFontSvg(font, uiFontB64, previewB64, logoB64, catNames);
             return new Response(svg, { status: 200, headers });
         }
 
@@ -367,12 +549,10 @@ export async function onRequestGet(context) {
                 );
             }
 
-            if (!catFonts.length) {
-                return new Response('Not found', { status: 404 });
-            }
+            if (!catFonts.length) return new Response('Not found', { status: 404 });
 
             const catLabel = catNames[cat] || cat;
-            const svg = buildCatSvg(cat, catLabel, catFonts, logoB64);
+            const svg = buildCatSvg(cat, catLabel, catFonts, uiFontB64, logoB64);
             return new Response(svg, { status: 200, headers });
         }
 
@@ -380,7 +560,7 @@ export async function onRequestGet(context) {
         const nweFonts = fonts.filter(f =>
             Array.isArray(f.category) && f.category.includes('Nwe')
         );
-        const svg = buildHomeSvg(nweFonts, fonts.length, logoB64);
+        const svg = buildHomeSvg(nweFonts, fonts.length, uiFontB64, logoB64);
         return new Response(svg, { status: 200, headers });
 
     } catch (err) {
@@ -389,9 +569,11 @@ export async function onRequestGet(context) {
 }
 
 export async function onRequestOptions() {
-    return new Response(null, { headers: {
-        'Access-Control-Allow-Origin':  '*',
-        'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-    }});
+    return new Response(null, {
+        headers: {
+            'Access-Control-Allow-Origin':  '*',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+        },
+    });
 }
