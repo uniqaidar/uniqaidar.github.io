@@ -26,6 +26,8 @@ let _popularCache = null;
 let _logoB64      = null;
 let _uiFontB64    = null; // UniQAIDAR_Peregraf 01 base64 — used for all UI text
 let _catCache     = null; // { catId → Kurdish label }
+let _wasmModule   = null; // resvg-wasm WebAssembly instance — cached after first init
+let _wasmIniting  = null; // in-flight init promise — prevents duplicate fetches
 
 // ── Asset fetcher ──────────────────────────────────────────────────────────────
 async function fetchAsset(context, url) {
@@ -57,7 +59,107 @@ async function toBase64(context, url) {
     }
 }
 
-// ── Load all shared assets, once per worker instance ──────────────────────────
+// ── resvg-wasm: init once, render SVG → PNG ────────────────────────────────────
+// WASM binary fetched from jsDelivr CDN at cold start, cached at module level.
+// Falls back silently — callers always get SVG if PNG conversion fails.
+const RESVG_WASM_URL = 'https://cdn.jsdelivr.net/npm/@resvg/resvg-wasm@2.6.2/index_bg.wasm';
+
+async function initResvg() {
+    if (_wasmModule) return true;
+    if (_wasmIniting) return _wasmIniting;
+    _wasmIniting = (async () => {
+        try {
+            const res = await fetch(RESVG_WASM_URL);
+            if (!res || !res.ok) return false;
+            const wasmBuf = await res.arrayBuffer();
+            // resvg-wasm exports: render(svg_str, opts_json) → Uint8Array PNG
+            // We instantiate the raw WASM and call its exported functions directly.
+            const mod = await WebAssembly.instantiate(wasmBuf, {
+                // resvg-wasm 2.x imports — provide minimal stubs for non-essential imports
+                './index_bg.js': {
+                    __wbindgen_string_new: (ptr, len) => {
+                        const mem = new Uint8Array(_wasmModule.exports.memory.buffer);
+                        return _decodeStr(mem, ptr, len);
+                    },
+                    __wbindgen_throw: (ptr, len) => {
+                        const mem = new Uint8Array(_wasmModule.exports.memory.buffer);
+                        throw new Error(_decodeStr(mem, ptr, len));
+                    },
+                    __wbindgen_object_drop_ref: () => {},
+                    __wbg_new_abda76e883ba8a5f: () => ({ ptr: 0 }),
+                    __wbg_stack_658279fe44541cf6: () => {},
+                    __wbg_error_f851667af71bcfc6: () => {},
+                    __wbindgen_object_clone_ref: (x) => x,
+                    __wbindgen_cb_drop: () => false,
+                },
+            });
+            _wasmModule = mod.instance;
+            return true;
+        } catch (_) {
+            return false;
+        } finally {
+            _wasmIniting = null;
+        }
+    })();
+    return _wasmIniting;
+}
+
+function _decodeStr(mem, ptr, len) {
+    return new TextDecoder().decode(mem.subarray(ptr, ptr + len));
+}
+
+function _encodeStr(str) {
+    return new TextEncoder().encode(str);
+}
+
+// Render SVG string → PNG Uint8Array using resvg-wasm exports.
+// Returns null if anything fails — callers fall back to SVG.
+function _renderWithResvg(svgString) {
+    try {
+        const exports = _wasmModule.exports;
+        const mem     = exports.memory;
+
+        // Write SVG string into WASM memory
+        const svgBytes  = _encodeStr(svgString);
+        const optsBytes = _encodeStr(JSON.stringify({ font: { loadSystemFonts: false } }));
+
+        // Allocate memory via resvg malloc export
+        const svgPtr  = exports.__wbindgen_malloc(svgBytes.length, 1);
+        new Uint8Array(mem.buffer).set(svgBytes, svgPtr);
+
+        const optsPtr = exports.__wbindgen_malloc(optsBytes.length, 1);
+        new Uint8Array(mem.buffer).set(optsBytes, optsPtr);
+
+        // Call render — writes result pointer+length to retptr
+        const retptr = exports.__wbindgen_add_to_stack_pointer(-16);
+        exports.render(retptr, svgPtr, svgBytes.length, optsPtr, optsBytes.length);
+
+        // Read result pointer and length from retptr
+        const view   = new DataView(mem.buffer);
+        const resPtr = view.getUint32(retptr,     true);
+        const resLen = view.getUint32(retptr + 4, true);
+        exports.__wbindgen_add_to_stack_pointer(16);
+
+        if (!resPtr || !resLen) return null;
+
+        // Copy PNG bytes out before freeing
+        const png = new Uint8Array(mem.buffer, resPtr, resLen).slice();
+        exports.__wbindgen_free(resPtr, resLen, 1);
+        return png;
+    } catch (_) {
+        return null;
+    }
+}
+
+async function svgToPng(svgString) {
+    try {
+        const ok = await initResvg();
+        if (!ok) return null;
+        return _renderWithResvg(svgString);
+    } catch (_) {
+        return null;
+    }
+}
 async function loadAll(context) {
     if (_fontsCache && _popularCache && _logoB64 && _uiFontB64 && _catCache) {
         return {
@@ -529,12 +631,25 @@ export async function onRequestGet(context) {
     const name = url.searchParams.get('name') || '';
     const cat  = url.searchParams.get('cat')  || '';
 
-    const headers = {
+    const svgHeaders = {
         'Content-Type':                'image/svg+xml',
         'Cache-Control':               'public, max-age=86400, s-maxage=86400',
         'CDN-Cache-Control':           'public, max-age=86400',
         'Access-Control-Allow-Origin': '*',
     };
+    const pngHeaders = {
+        'Content-Type':                'image/png',
+        'Cache-Control':               'public, max-age=86400, s-maxage=86400',
+        'CDN-Cache-Control':           'public, max-age=86400',
+        'Access-Control-Allow-Origin': '*',
+    };
+
+    function respond(svg) {
+        return svgToPng(svg).then(png => {
+            if (png) return new Response(png, { status: 200, headers: pngHeaders });
+            return new Response(svg, { status: 200, headers: svgHeaders });
+        }).catch(() => new Response(svg, { status: 200, headers: svgHeaders }));
+    }
 
     try {
         const { fonts, popular, logoB64, uiFontB64, catNames } = await loadAll(context);
@@ -545,7 +660,7 @@ export async function onRequestGet(context) {
             if (!font) return new Response('Not found', { status: 404 });
             const previewB64 = await loadFontB64(context, font.path);
             const svg = buildFontSvg(font, uiFontB64, previewB64, logoB64, catNames);
-            return new Response(svg, { status: 200, headers });
+            return respond(svg);
         }
 
         // ── Category card ──────────────────────────────────────────────────────
@@ -573,7 +688,7 @@ export async function onRequestGet(context) {
                 samples3.map(f => loadFontB64(context, f.path))
             );
             const svg = buildCatSvg(cat, catLabel, catFonts, uiFontB64, logoB64, sampleFontsB64);
-            return new Response(svg, { status: 200, headers });
+            return respond(svg);
         }
 
         // ── Homepage card (نوێترین فۆنت) ──────────────────────────────────────
@@ -585,7 +700,7 @@ export async function onRequestGet(context) {
             nweSamples3.map(f => loadFontB64(context, f.path))
         );
         const svg = buildHomeSvg(nweFonts, fonts.length, uiFontB64, logoB64, nweFontsB64);
-        return new Response(svg, { status: 200, headers });
+        return respond(svg);
 
     } catch (err) {
         return new Response('Error: ' + err.message, { status: 500 });
