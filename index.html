@@ -5954,6 +5954,7 @@ function renderFonts(data, text, resetPage) {
             '</div>' +
             '<div class="card-body">' +
                 '<div class="preview" style="font-family: \'' + font.name + '\'; font-size:' + currentSize + 'px;" data-tw="' + (text || font.preview || 'فۆنتەکانی یونی‌قەیدار').replace(/"/g, '&quot;') + '">' +
+                    (text || font.preview || 'فۆنتەکانی یونی‌قەیدار') +
                 '</div>' +
                 '<div class="download-btn-wrap">' +
                     '<a href="' + font.path + '" class="trinity-dl" download data-font="' + font.name + '" aria-label="دابەزاندنی فۆنت" title="کلیک بکە">' +
@@ -6093,11 +6094,6 @@ function renderFonts(data, text, resetPage) {
         (function(c, delay) {
             setTimeout(function() {
                 c.classList.remove('animate-in');
-                var prev = c.querySelector('.preview');
-                if (prev) {
-                    var tw = prev.getAttribute('data-tw') || '';
-                    prev.textContent = tw;
-                }
             }, delay + 420);
         })(card, cardIndex * stagger);
         // ── Laser glow for featured (no badge — pure visual border) ──
