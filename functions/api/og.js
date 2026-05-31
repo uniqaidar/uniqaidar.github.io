@@ -180,15 +180,15 @@ const UI_FONT  = "'UQPeregraf', Tahoma, Arial, sans-serif";
 const FALLBACK = "Tahoma, Arial, sans-serif";
 
 // ── Build SVG: Font detail card ────────────────────────────────────────────────
-// Layout (y positions):
+// Layout (1200×630):
 //   0–6:     top orange bar
-//   6–32:    outer gap
-//   32–104:  header bar (#2a2a2a) — orange dot + font name + date
-//   104–460: preview area (#242424) — large RTL preview text centered
-//   460–461: divider line
-//   461–529: bottom action bar — orange icon box + blue download button + size badge
-//   529–598: branding bar (#2a2a2a) — logo right + URL left + category center
-//   598–630: outer gap + bottom orange bar at 624
+//   18–612:  main card (#242424, rx=12)
+//   18–104:  header bar (#2a2a2a, rx=12) — orange dot + font name + date
+//   104–454: preview area — large preview text in actual font, vertically centered
+//   454–455: divider line (#333)
+//   455–525: action bar — orange copy box + blue download btn + size badge
+//   525–594: branding bar (#2a2a2a) — logo right + URL left + cat label center
+//   624–630: bottom orange bar
 function buildFontSvg(font, uiFontB64, previewB64, logoB64, catNames) {
     const name      = font.name      || '';
     const preview   = font.preview   || 'فۆنتەکانی یونی‌قەیدار';
@@ -199,176 +199,162 @@ function buildFontSvg(font, uiFontB64, previewB64, logoB64, catNames) {
 
     const uiFont      = uiFontB64 ? UI_FONT : FALLBACK;
     const previewFont = previewB64 ? "'PreviewFont', Tahoma, Arial, sans-serif" : FALLBACK;
-    const previewText = trunc(preview, 28);
+    const previewText = trunc(preview, 22);
     const defs        = buildDefs(uiFontB64, previewB64);
 
-    // Size badge geometry
-    const sizeBadgeX = 750;
-    const sizeBadgeW = 202;
+    // Action bar geometry — orange box + blue btn + optional size badge
+    const copyBoxX  = 40;  const copyBoxW  = 60;
+    const badgeW    = size ? 210 : 0;
+    const badgeX    = size ? (1176 - badgeW) : 0;
+    const dlX       = copyBoxX + copyBoxW + 8;
+    const dlW       = size ? (badgeX - dlX - 8) : (1176 - dlX);
+    const dlCenterX = dlX + dlW / 2;
 
     return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630">
 ${defs}
+<defs>
+  <clipPath id="rowclip"><rect x="40" y="0" width="1120" height="630"/></clipPath>
+</defs>
   <!-- Background -->
   <rect width="1200" height="630" fill="#1a1a1a"/>
-
   <!-- Top orange bar -->
   <rect x="0" y="0" width="1200" height="6" fill="#ff5700"/>
-
   <!-- Main card -->
   <rect x="24" y="18" width="1152" height="594" rx="12" fill="#242424"/>
-
   <!-- Header bar -->
   <rect x="24" y="18" width="1152" height="86" rx="12" fill="#2a2a2a"/>
   <rect x="24" y="76" width="1152" height="28" fill="#2a2a2a"/>
-
   <!-- Orange dot -->
   <circle cx="62" cy="61" r="9" fill="#ff5700"/>
-
-  <!-- Font name (UI font, LTR for latin font names) -->
+  <!-- Font name — LTR Latin, left-aligned after dot -->
   <text x="86" y="61"
     font-family="${uiFont}"
     font-size="22"
     fill="#f0f0f0"
     text-anchor="start"
-    dominant-baseline="central">${esc(trunc(name, 52))}</text>
-
-  <!-- Date -->
-  ${date ? `<text x="1156" y="61"
+    dominant-baseline="central">${esc(trunc(name, 50))}</text>
+  <!-- Date — right-aligned -->
+  ${date ? `<text x="1152" y="61"
     font-family="${uiFont}"
     font-size="15"
     fill="#666"
     text-anchor="end"
     dominant-baseline="central">${esc(date)}</text>` : ''}
-
-  <!-- Preview text area -->
+  <!-- Preview area -->
   <rect x="24" y="104" width="1152" height="350" fill="#242424"/>
-
-  <!-- Large preview text — RTL, centered, actual font -->
-  <text x="600" y="286"
+  <!-- Preview text — centered, actual font, RTL -->
+  <text x="600" y="279"
     font-family="${previewFont}"
-    font-size="58"
+    font-size="62"
     fill="#f0f0f0"
     text-anchor="middle"
     dominant-baseline="central"
     direction="rtl"
-    unicode-bidi="embed">${esc(previewText)}</text>
-
+    unicode-bidi="bidi-override">${esc(previewText)}</text>
   <!-- Divider -->
   <rect x="24" y="454" width="1152" height="1" fill="#333"/>
-
-  <!-- Action bar background -->
+  <!-- Action bar -->
   <rect x="24" y="455" width="1152" height="70" fill="#242424"/>
-
-  <!-- Orange icon box (link/copy icon) -->
-  <rect x="40" y="462" width="56" height="56" rx="8" fill="#ff5700"/>
-  <text x="68" y="490"
+  <!-- Orange copy box -->
+  <rect x="${copyBoxX}" y="463" width="${copyBoxW}" height="54" rx="10" fill="#ff5700"/>
+  <text x="${copyBoxX + copyBoxW / 2}" y="490"
+    font-family="${uiFont}"
+    font-size="26"
+    fill="#fff"
+    text-anchor="middle"
+    dominant-baseline="central">🔗</text>
+  <!-- Blue download button -->
+  <rect x="${dlX}" y="463" width="${dlW}" height="54" rx="10" fill="#0984e3"/>
+  <text x="${dlCenterX}" y="490"
     font-family="${uiFont}"
     font-size="22"
     fill="#fff"
     text-anchor="middle"
-    dominant-baseline="central">🔗</text>
-
-  <!-- Blue download button -->
-  <rect x="106" y="462" width="${size ? sizeBadgeX - 116 : 1070}" height="56" rx="8" fill="#1976d2"/>
-  <text x="${size ? (106 + (sizeBadgeX - 116) / 2) : 606}" y="490"
-    font-family="${uiFont}"
-    font-size="24"
-    fill="#ffffff"
-    text-anchor="middle"
-    dominant-baseline="central">داونلۆدی فۆنت  ↓</text>
-
+    dominant-baseline="central"
+    direction="rtl">داونلۆدی فۆنت ↓</text>
   <!-- Size badge -->
-  ${size ? `<rect x="${sizeBadgeX}" y="462" width="${sizeBadgeW}" height="56" rx="8" fill="#2e2e2e"/>
-  <text x="${sizeBadgeX + sizeBadgeW / 2}" y="484"
+  ${size ? `<rect x="${badgeX}" y="463" width="${badgeW}" height="54" rx="10" fill="#2e2e2e"/>
+  <text x="${badgeX + badgeW / 2}" y="483"
     font-family="${uiFont}"
-    font-size="19"
+    font-size="18"
     fill="#aaa"
     text-anchor="middle"
     dominant-baseline="central">${esc(size)}</text>
-  <text x="${sizeBadgeX + sizeBadgeW / 2}" y="507"
+  <text x="${badgeX + badgeW / 2}" y="505"
     font-family="${uiFont}"
     font-size="13"
     fill="#555"
     text-anchor="middle"
     dominant-baseline="central">قەبارەی فۆنت</text>` : ''}
-
-  <!-- Branding bar background -->
-  <rect x="24" y="525" width="1152" height="67" rx="12" fill="#2a2a2a"/>
+  <!-- Branding bar -->
+  <rect x="24" y="525" width="1152" height="69" rx="12" fill="#2a2a2a"/>
   <rect x="24" y="525" width="1152" height="28" fill="#2a2a2a"/>
-
   <!-- Logo -->
   ${logoB64
-    ? `<image href="${logoB64}" x="940" y="534" width="220" height="32" preserveAspectRatio="xMidYMid meet"/>`
-    : `<text x="1156" y="558" font-family="${uiFont}" font-size="18" fill="#ff5700" text-anchor="end" dominant-baseline="central">UniQaidar Fonts</text>`}
-
+    ? `<image href="${logoB64}" x="936" y="534" width="216" height="42" preserveAspectRatio="xMidYMid meet"/>`
+    : `<text x="1152" y="559" font-family="${uiFont}" font-size="18" fill="#ff5700" text-anchor="end" dominant-baseline="central">UniQaidar Fonts</text>`}
   <!-- URL -->
-  <text x="40" y="558"
+  <text x="40" y="559"
     font-family="${uiFont}"
     font-size="16"
     fill="#555"
     text-anchor="start"
     dominant-baseline="central">uniqaidar.pages.dev</text>
-
-  <!-- Category label (Kurdish) -->
-  ${catLabel ? `<text x="600" y="558"
+  <!-- Category label — centered -->
+  ${catLabel ? `<text x="600" y="559"
     font-family="${uiFont}"
     font-size="16"
-    fill="#666"
+    fill="#777"
     text-anchor="middle"
     dominant-baseline="central"
     direction="rtl">${esc(catLabel)}</text>` : ''}
-
   <!-- Bottom orange bar -->
   <rect x="0" y="624" width="1200" height="6" fill="#ff5700"/>
 </svg>`;
 }
 
 // ── Build SVG: Category card ───────────────────────────────────────────────────
-// Layout:
+// Layout (1200×630):
 //   0–6:     top orange bar
-//   18–104:  header bar — orange dot + category label + font count badge
-//   110–530: three sample font rows, each 120px tall
-//   530–598: branding bar
+//   18–612:  main card (#242424, rx=12)
+//   18–104:  header bar (#2a2a2a) — orange dot + category label + count badge
+//   110–490: three sample font rows (118px each, gap 6px)
+//   494–594: branding bar (#2a2a2a)
 //   624–630: bottom orange bar
 function buildCatSvg(catId, catLabel, catFonts, uiFontB64, logoB64) {
     const count   = catFonts.length;
     const samples = catFonts.slice(0, 3);
     const uiFont  = uiFontB64 ? UI_FONT : FALLBACK;
 
-    // Badge width: roughly 10px per character + padding
-    const badgeLabel  = `${count} فۆنت`;
-    const badgeW      = Math.max(130, [...badgeLabel].length * 16 + 40);
-    const badgeX      = 1156 - badgeW;
+    const badgeLabel = `${count} فۆنت`;
+    const badgeW     = Math.max(130, [...badgeLabel].length * 17 + 40);
+    const badgeX     = 1156 - badgeW;
+    // Label sits between dot (cx=62) and badge — right-aligned up to badgeX-16
+    const labelX     = badgeX - 16;
 
     return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630">
 ${buildDefs(uiFontB64, null)}
   <!-- Background -->
   <rect width="1200" height="630" fill="#1a1a1a"/>
-
   <!-- Top orange bar -->
   <rect x="0" y="0" width="1200" height="6" fill="#ff5700"/>
-
   <!-- Main card -->
   <rect x="24" y="18" width="1152" height="594" rx="12" fill="#242424"/>
-
   <!-- Header bar -->
   <rect x="24" y="18" width="1152" height="86" rx="12" fill="#2a2a2a"/>
   <rect x="24" y="76" width="1152" height="28" fill="#2a2a2a"/>
-
   <!-- Orange dot -->
   <circle cx="62" cy="61" r="9" fill="#ff5700"/>
-
-  <!-- Category label (RTL Kurdish) -->
-  <text x="1140" y="61"
+  <!-- Category label — RTL, right-aligned, stops before badge -->
+  <text x="${labelX}" y="61"
     font-family="${uiFont}"
     font-size="26"
     fill="#f0f0f0"
     text-anchor="end"
     dominant-baseline="central"
-    direction="rtl">${esc(catLabel)}</text>
-
-  <!-- Font count badge (orange pill, right side) -->
-  <rect x="${badgeX}" y="37" width="${badgeW}" height="48" rx="10" fill="#ff5700"/>
+    direction="rtl">${esc(trunc(catLabel, 18))}</text>
+  <!-- Count badge -->
+  <rect x="${badgeX}" y="35" width="${badgeW}" height="50" rx="10" fill="#ff5700"/>
   <text x="${badgeX + badgeW / 2}" y="61"
     font-family="${uiFont}"
     font-size="20"
@@ -379,83 +365,79 @@ ${buildDefs(uiFontB64, null)}
 
   <!-- Sample font rows -->
   ${samples.map((f, i) => {
-    const rowY     = 118 + i * 124;
+    const rowY    = 110 + i * 124;
     const nameText = trunc(f.name || '', 50);
-    const prevText = trunc(f.preview || 'فۆنتەکانی یونی‌قەیدار', 40);
+    const prevText = trunc(f.preview || 'فۆنتەکانی یونی‌قەیدار', 32);
     return `
   <rect x="40" y="${rowY}" width="1120" height="112" rx="8" fill="#2a2a2a"/>
-  <text x="1140" y="${rowY + 28}"
+  <!-- Font name — LTR, right-aligned -->
+  <text x="1148" y="${rowY + 26}"
     font-family="${uiFont}"
     font-size="13"
     fill="#666"
     text-anchor="end"
     dominant-baseline="central">${esc(nameText)}</text>
-  <text x="40" y="${rowY + 72}"
+  <!-- Preview text — RTL, centered in row -->
+  <text x="600" y="${rowY + 72}"
     font-family="${uiFont}"
-    font-size="30"
+    font-size="28"
     fill="#f0f0f0"
-    text-anchor="start"
+    text-anchor="middle"
     dominant-baseline="central"
     direction="rtl"
-    unicode-bidi="embed">${esc(prevText)}</text>`;
+    unicode-bidi="bidi-override">${esc(prevText)}</text>`;
   }).join('')}
 
   <!-- Branding bar -->
-  <rect x="24" y="532" width="1152" height="62" rx="12" fill="#2a2a2a"/>
-  <rect x="24" y="532" width="1152" height="24" fill="#2a2a2a"/>
-
+  <rect x="24" y="494" width="1152" height="100" rx="12" fill="#2a2a2a"/>
+  <rect x="24" y="494" width="1152" height="28" fill="#2a2a2a"/>
   ${logoB64
-    ? `<image href="${logoB64}" x="934" y="540" width="220" height="32" preserveAspectRatio="xMidYMid meet"/>`
-    : `<text x="1156" y="563" font-family="${uiFont}" font-size="18" fill="#ff5700" text-anchor="end" dominant-baseline="central">UniQaidar Fonts</text>`}
-  <text x="40" y="563"
+    ? `<image href="${logoB64}" x="936" y="510" width="216" height="42" preserveAspectRatio="xMidYMid meet"/>`
+    : `<text x="1152" y="544" font-family="${uiFont}" font-size="18" fill="#ff5700" text-anchor="end" dominant-baseline="central">UniQaidar Fonts</text>`}
+  <text x="40" y="544"
     font-family="${uiFont}"
     font-size="16"
     fill="#555"
     text-anchor="start"
     dominant-baseline="central">uniqaidar.pages.dev</text>
-
   <!-- Bottom orange bar -->
   <rect x="0" y="624" width="1200" height="6" fill="#ff5700"/>
 </svg>`;
 }
 
 // ── Build SVG: Homepage card (نوێترین فۆنت) ───────────────────────────────────
+// Same layout as category card but title is نوێترین فۆنت and badge shows total count
 function buildHomeSvg(nweFonts, totalCount, uiFontB64, logoB64) {
-    const samples  = nweFonts.slice(0, 3);
-    const uiFont   = uiFontB64 ? UI_FONT : FALLBACK;
+    const samples    = nweFonts.slice(0, 3);
+    const uiFont     = uiFontB64 ? UI_FONT : FALLBACK;
     const badgeLabel = `${totalCount}+ فۆنتی کوردی`;
-    const badgeW   = Math.max(200, [...badgeLabel].length * 15 + 40);
-    const badgeX   = 1156 - badgeW;
+    const badgeW     = Math.max(210, [...badgeLabel].length * 15 + 40);
+    const badgeX     = 1156 - badgeW;
+    const labelX     = badgeX - 16;
 
     return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630">
 ${buildDefs(uiFontB64, null)}
   <!-- Background -->
   <rect width="1200" height="630" fill="#1a1a1a"/>
-
   <!-- Top orange bar -->
   <rect x="0" y="0" width="1200" height="6" fill="#ff5700"/>
-
   <!-- Main card -->
   <rect x="24" y="18" width="1152" height="594" rx="12" fill="#242424"/>
-
   <!-- Header bar -->
   <rect x="24" y="18" width="1152" height="86" rx="12" fill="#2a2a2a"/>
   <rect x="24" y="76" width="1152" height="28" fill="#2a2a2a"/>
-
   <!-- Orange dot -->
   <circle cx="62" cy="61" r="9" fill="#ff5700"/>
-
-  <!-- Title: نوێترین فۆنت (RTL Kurdish) -->
-  <text x="1140" y="61"
+  <!-- Title — RTL, right-aligned, stops before badge -->
+  <text x="${labelX}" y="61"
     font-family="${uiFont}"
     font-size="26"
     fill="#f0f0f0"
     text-anchor="end"
     dominant-baseline="central"
     direction="rtl">نوێترین فۆنت</text>
-
-  <!-- Font count badge -->
-  <rect x="${badgeX}" y="37" width="${badgeW}" height="48" rx="10" fill="#ff5700"/>
+  <!-- Count badge -->
+  <rect x="${badgeX}" y="35" width="${badgeW}" height="50" rx="10" fill="#ff5700"/>
   <text x="${badgeX + badgeW / 2}" y="61"
     font-family="${uiFont}"
     font-size="19"
@@ -466,41 +448,41 @@ ${buildDefs(uiFontB64, null)}
 
   <!-- Sample font rows from Nwe category -->
   ${samples.map((f, i) => {
-    const rowY     = 118 + i * 124;
+    const rowY     = 110 + i * 124;
     const nameText = trunc(f.name || '', 50);
-    const prevText = trunc(f.preview || 'فۆنتەکانی یونی‌قەیدار', 40);
+    const prevText = trunc(f.preview || 'فۆنتەکانی یونی‌قەیدار', 32);
     return `
   <rect x="40" y="${rowY}" width="1120" height="112" rx="8" fill="#2a2a2a"/>
-  <text x="1140" y="${rowY + 28}"
+  <!-- Font name — LTR, right-aligned -->
+  <text x="1148" y="${rowY + 26}"
     font-family="${uiFont}"
     font-size="13"
     fill="#666"
     text-anchor="end"
     dominant-baseline="central">${esc(nameText)}</text>
-  <text x="40" y="${rowY + 72}"
+  <!-- Preview text — RTL, centered in row -->
+  <text x="600" y="${rowY + 72}"
     font-family="${uiFont}"
-    font-size="30"
+    font-size="28"
     fill="#f0f0f0"
-    text-anchor="start"
+    text-anchor="middle"
     dominant-baseline="central"
     direction="rtl"
-    unicode-bidi="embed">${esc(prevText)}</text>`;
+    unicode-bidi="bidi-override">${esc(prevText)}</text>`;
   }).join('')}
 
   <!-- Branding bar -->
-  <rect x="24" y="532" width="1152" height="62" rx="12" fill="#2a2a2a"/>
-  <rect x="24" y="532" width="1152" height="24" fill="#2a2a2a"/>
-
+  <rect x="24" y="494" width="1152" height="100" rx="12" fill="#2a2a2a"/>
+  <rect x="24" y="494" width="1152" height="28" fill="#2a2a2a"/>
   ${logoB64
-    ? `<image href="${logoB64}" x="934" y="540" width="220" height="32" preserveAspectRatio="xMidYMid meet"/>`
-    : `<text x="1156" y="563" font-family="${uiFont}" font-size="18" fill="#ff5700" text-anchor="end" dominant-baseline="central">UniQaidar Fonts</text>`}
-  <text x="40" y="563"
+    ? `<image href="${logoB64}" x="936" y="510" width="216" height="42" preserveAspectRatio="xMidYMid meet"/>`
+    : `<text x="1152" y="544" font-family="${uiFont}" font-size="18" fill="#ff5700" text-anchor="end" dominant-baseline="central">UniQaidar Fonts</text>`}
+  <text x="40" y="544"
     font-family="${uiFont}"
     font-size="16"
     fill="#555"
     text-anchor="start"
     dominant-baseline="central">uniqaidar.pages.dev</text>
-
   <!-- Bottom orange bar -->
   <rect x="0" y="624" width="1200" height="6" fill="#ff5700"/>
 </svg>`;
