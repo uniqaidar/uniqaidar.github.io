@@ -164,7 +164,7 @@ function buildFontMeta(font, catNames, paraDefault) {
 
     const fontUrl  = `${BASE_URL}/?cat=${encodeURIComponent(firstCat)}&font=${encodeURIComponent(name)}`;
     const ttfUrl   = `${BASE_URL}/${path}`;
-    const logoUrl  = `${BASE_URL}/Logo.png`;
+    const logoUrl  = `${BASE_URL}/api/og?type=font&name=${encodeURIComponent(name)}`;
     const metaDesc = truncate(`${preview} — ${paragraph}`, 155);
     const catKeywords = allCats.map(c => catNames[c] || c).join(', ');
 
@@ -191,8 +191,8 @@ function buildFontMeta(font, catNames, paraDefault) {
 <meta property="og:description" content="${desc}">
 <meta property="og:url" content="${escHtml(fontUrl)}">
 <meta property="og:image" content="${logoUrl}">
-<meta property="og:image:width" content="699">
-<meta property="og:image:height" content="232">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="UniQaidar Fonts - Kurdish &amp; Arabic Font Library">
 <meta property="og:locale" content="ckb_IQ">
 <meta property="og:locale:alternate" content="en_US">
@@ -227,7 +227,7 @@ function buildFontMeta(font, catNames, paraDefault) {
 function buildCatMeta(cat, count, catNames) {
     const catLabel = catNames[cat] || cat;
     const catUrl   = `${BASE_URL}/?cat=${encodeURIComponent(cat)}`;
-    const logoUrl  = `${BASE_URL}/Logo.png`;
+    const logoUrl  = `${BASE_URL}/api/og?type=cat&cat=${encodeURIComponent(cat)}`;
 
     const title = `${escHtml(catLabel)} - فۆنتی کوردی | UniQaidar`;
     const desc  = `${count} فۆنتی کوردی بە خۆڕایی لە بەشی ${escHtml(catLabel)}. دابەزاندن و تاقیکردنەوەی فۆنتەکانی یونی‌قەیدار — ${count} free Kurdish fonts.`;
@@ -248,8 +248,8 @@ function buildCatMeta(cat, count, catNames) {
 <meta property="og:description" content="${desc}">
 <meta property="og:url" content="${escHtml(catUrl)}">
 <meta property="og:image" content="${logoUrl}">
-<meta property="og:image:width" content="699">
-<meta property="og:image:height" content="232">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="UniQaidar Fonts - Kurdish &amp; Arabic Font Library">
 <meta property="og:locale" content="ckb_IQ">
 <meta property="og:locale:alternate" content="en_US">
@@ -426,6 +426,28 @@ async function injectCanonical(response, requestUrl) {
             /<link\s+rel="canonical"[^>]*>/gi,
             `<link rel="canonical" href="${escapedCanonical}">`
         );
+
+        // Homepage og:image — replace Logo.png with dynamic home og image
+        // Only fires for the homepage (no query params) — crawlers only reach here for homepage
+        if (!parsedUrl.search) {
+            const homeOgUrl = `${BASE_URL}/api/og?type=home`;
+            html = html.replace(
+                /(<meta\s+property="og:image"\s+content=")[^"]*(")/gi,
+                `$1${homeOgUrl}$2`
+            );
+            html = html.replace(
+                /(<meta\s+property="og:image:width"\s+content=")[^"]*(")/gi,
+                '$11200$2'
+            );
+            html = html.replace(
+                /(<meta\s+property="og:image:height"\s+content=")[^"]*(")/gi,
+                '$1630$2'
+            );
+            html = html.replace(
+                /(<meta\s+name="twitter:image"\s+content=")[^"]*(")/gi,
+                `$1${homeOgUrl}$2`
+            );
+        }
 
         return new Response(html, {
             status: response.status,
