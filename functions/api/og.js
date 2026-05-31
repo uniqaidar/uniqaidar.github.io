@@ -1,3 +1,4 @@
+import { initWasm, Resvg } from '@resvg/resvg-wasm';
 // functions/api/og.js
 // Dynamic SVG og image generator for UniQaidar Fonts.
 //
@@ -59,43 +60,23 @@ async function toBase64(context, url) {
 }
 
 // ── resvg-wasm: init once, render SVG → PNG ────────────────────────────────────
-// Uses @resvg/resvg-wasm via its proper ESM JS wrapper from jsDelivr.
-// The JS wrapper handles all WASM imports correctly — no hand-written stubs needed.
+// Uses @resvg/resvg-wasm npm package (installed via build command).
 // Falls back silently to SVG if PNG conversion fails for any reason.
-const RESVG_JS_URL   = 'https://cdn.jsdelivr.net/npm/@resvg/resvg-wasm@2.6.2/index.js';
 const RESVG_WASM_URL = 'https://cdn.jsdelivr.net/npm/@resvg/resvg-wasm@2.6.2/index_bg.wasm';
 
-let _resvgModule  = null; // the imported resvg JS module
-let _wasmIniting  = null; // in-flight init promise — prevents duplicate fetches
+let _wasmReady   = false; // true after initWasm() has been called successfully
+let _wasmIniting = null;  // in-flight init promise — prevents duplicate fetches
 
 async function initResvg() {
-    if (_resvgModule) return true;
+    if (_wasmReady) return true;
     if (_wasmIniting) return _wasmIniting;
     _wasmIniting = (async () => {
         try {
-            // Fetch the JS wrapper module text and evaluate it as a module
-            const jsRes = await fetch(RESVG_JS_URL);
-            if (!jsRes || !jsRes.ok) return false;
-
-            // Fetch WASM binary
-            const wasmRes = await fetch(RESVG_WASM_URL);
-            if (!wasmRes || !wasmRes.ok) return false;
-            const wasmBuf = await wasmRes.arrayBuffer();
-
-            // The resvg-wasm ESM wrapper exports: initWasm(wasmInput), Resvg class
-            // We load the JS module text, create a blob URL, and dynamic-import it.
-            const jsText = await jsRes.text();
-            const blob   = new Blob([jsText], { type: 'application/javascript' });
-            const blobUrl = URL.createObjectURL(blob);
-            try {
-                const mod = await import(blobUrl);
-                // initWasm accepts an ArrayBuffer or Response
-                await mod.initWasm(wasmBuf);
-                _resvgModule = mod;
-                return true;
-            } finally {
-                URL.revokeObjectURL(blobUrl);
-            }
+            const res = await fetch(RESVG_WASM_URL);
+            if (!res || !res.ok) return false;
+            await initWasm(res);
+            _wasmReady = true;
+            return true;
         } catch (_) {
             return false;
         } finally {
@@ -108,10 +89,8 @@ async function initResvg() {
 async function svgToPng(svgString) {
     try {
         const ok = await initResvg();
-        if (!ok || !_resvgModule) return null;
-        const resvg = new _resvgModule.Resvg(svgString, {
-            font: { loadSystemFonts: false },
-        });
+        if (!ok) return null;
+        const resvg   = new Resvg(svgString, { font: { loadSystemFonts: false } });
         const pngData = resvg.render();
         return pngData.asPng();
     } catch (_) {
