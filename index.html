@@ -5641,7 +5641,7 @@ function changeFontSize(val) {
     var labelM = document.getElementById('size-label-mobile');
     if (labelM) labelM.textContent = val + 'px';
     var isMobile = window.innerWidth <= 768;
-    var paraOffset = isMobile ? 10 : 8;
+    var paraOffset = isMobile ? 16 : 12;
     document.querySelectorAll('.preview').forEach(function(p) {
         p.style.fontSize = (p.classList.contains('para-mode') ? (parseFloat(val) - paraOffset) : parseFloat(val)) + 'px';
     });
@@ -6339,6 +6339,7 @@ function filterFonts(category, btn) {
             else { params.delete('cat'); }
             params.delete('q');
             params.delete('page');
+            params.delete('font');
             history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params.toString() : ''));
         } catch(e) {}
     }
@@ -6995,7 +6996,7 @@ function showFontDetailView(fontName, catId) {
                             '<div class="para-svg-wrap" style="width:28px;height:28px;display:flex;flex-direction:column;gap:2px;align-items:flex-start;align-self:center;margin-top:11px;"><div class="para-line pl1" style="height:2px;background:rgba(255,255,255,0.85);width:100%;border-radius:1px;"></div><div class="para-line pl2" style="height:2px;background:rgba(255,255,255,0.85);width:68%;border-radius:1px;"></div><div class="para-line pl3" style="height:2px;background:rgba(255,255,255,0.85);width:100%;border-radius:1px;"></div><div class="para-line pl4" style="height:2px;background:rgba(255,255,255,0.85);width:52%;border-radius:1px;"></div></div>' +
                             'تێکستی پەرەگراف' +
                         '</div>' +
-                        '<div class="uq-para-box" id="uq-detail-para-box" style="font-family:\'' + fontObj.name + '\';font-size:' + Math.max(14, parseFloat(sliderVal) - (window.innerWidth <= 768 ? 10 : 8)) + 'px;line-height:' + lineH + ';">' +
+                        '<div class="uq-para-box" id="uq-detail-para-box" style="font-family:\'' + fontObj.name + '\';font-size:' + Math.max(14, parseFloat(sliderVal) - (window.innerWidth <= 768 ? 16 : 12)) + 'px;line-height:' + lineH + ';">' +
                             paraText +
                         '</div>' +
                     '</div>' +
@@ -7242,7 +7243,7 @@ function uqDetailTogglePara() {
     if (isActive) {
         paraBox.style.display = '';
         preview.classList.add('para-mode');
-        var paraSize = sliderEl ? (parseFloat(sliderEl.value) - (window.innerWidth <= 768 ? 10 : 8)) : 24;
+        var paraSize = sliderEl ? (parseFloat(sliderEl.value) - (window.innerWidth <= 768 ? 16 : 12)) : 24;
         preview.style.fontSize = paraSize + 'px';
         preview.style.textAlign = 'justify';
         preview.style.direction = 'rtl';
@@ -8117,7 +8118,7 @@ function toggleParaPreview(btn, fontName) {
             preview.style.setProperty('--para-line-height', lineH);
             // font-size + line-height set here; CSS transition on .preview smoothly interpolates them
             var sliderEl = document.getElementById('font-size-slider');
-            var paraSize = sliderEl ? (parseFloat(sliderEl.value) - (window.innerWidth <= 768 ? 10 : 8)) : 24;
+            var paraSize = sliderEl ? (parseFloat(sliderEl.value) - (window.innerWidth <= 768 ? 16 : 12)) : 24;
             preview.style.fontSize = paraSize + 'px';
             preview.style.lineHeight = lineH;
             preview.style.textAlign = 'justify';
