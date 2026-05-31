@@ -199,7 +199,7 @@ function buildFontSvg(font, uiFontB64, previewB64, logoB64, catNames) {
 
     const uiFont      = uiFontB64 ? UI_FONT : FALLBACK;
     const previewFont = previewB64 ? "'PreviewFont', Tahoma, Arial, sans-serif" : FALLBACK;
-    const previewText = trunc(preview, 42);
+    const previewText = trunc(preview, 28);
     const defs        = buildDefs(uiFontB64, previewB64);
 
     // Size badge geometry
@@ -246,7 +246,7 @@ ${defs}
   <!-- Large preview text — RTL, centered, actual font -->
   <text x="600" y="286"
     font-family="${previewFont}"
-    font-size="76"
+    font-size="58"
     fill="#f0f0f0"
     text-anchor="middle"
     dominant-baseline="central"
@@ -359,11 +359,11 @@ ${buildDefs(uiFontB64, null)}
   <circle cx="62" cy="61" r="9" fill="#ff5700"/>
 
   <!-- Category label (RTL Kurdish) -->
-  <text x="86" y="61"
+  <text x="1140" y="61"
     font-family="${uiFont}"
     font-size="26"
     fill="#f0f0f0"
-    text-anchor="start"
+    text-anchor="end"
     dominant-baseline="central"
     direction="rtl">${esc(catLabel)}</text>
 
@@ -390,11 +390,11 @@ ${buildDefs(uiFontB64, null)}
     fill="#666"
     text-anchor="end"
     dominant-baseline="central">${esc(nameText)}</text>
-  <text x="1140" y="${rowY + 72}"
+  <text x="40" y="${rowY + 72}"
     font-family="${uiFont}"
     font-size="30"
     fill="#f0f0f0"
-    text-anchor="end"
+    text-anchor="start"
     dominant-baseline="central"
     direction="rtl"
     unicode-bidi="embed">${esc(prevText)}</text>`;
@@ -446,11 +446,11 @@ ${buildDefs(uiFontB64, null)}
   <circle cx="62" cy="61" r="9" fill="#ff5700"/>
 
   <!-- Title: نوێترین فۆنت (RTL Kurdish) -->
-  <text x="86" y="61"
+  <text x="1140" y="61"
     font-family="${uiFont}"
     font-size="26"
     fill="#f0f0f0"
-    text-anchor="start"
+    text-anchor="end"
     dominant-baseline="central"
     direction="rtl">نوێترین فۆنت</text>
 
@@ -477,11 +477,11 @@ ${buildDefs(uiFontB64, null)}
     fill="#666"
     text-anchor="end"
     dominant-baseline="central">${esc(nameText)}</text>
-  <text x="1140" y="${rowY + 72}"
+  <text x="40" y="${rowY + 72}"
     font-family="${uiFont}"
     font-size="30"
     fill="#f0f0f0"
-    text-anchor="end"
+    text-anchor="start"
     dominant-baseline="central"
     direction="rtl"
     unicode-bidi="embed">${esc(prevText)}</text>`;
