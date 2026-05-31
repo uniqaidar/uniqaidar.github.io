@@ -199,7 +199,7 @@ function buildFontSvg(font, uiFontB64, previewB64, logoB64, catNames) {
 
     const uiFont      = uiFontB64 ? UI_FONT : FALLBACK;
     const previewFont = previewB64 ? "'PreviewFont', Tahoma, Arial, sans-serif" : FALLBACK;
-    const previewText = trunc(preview, 22);
+    const previewText = trunc(preview, 38);
     const defs        = buildDefs(uiFontB64, previewB64);
 
     // Action bar geometry — orange box + blue btn + optional size badge
@@ -245,7 +245,7 @@ ${defs}
   <!-- Preview text — centered, actual font, RTL -->
   <text x="600" y="279"
     font-family="${previewFont}"
-    font-size="62"
+    font-size="44"
     fill="#f0f0f0"
     text-anchor="middle"
     dominant-baseline="central"
@@ -325,7 +325,7 @@ ${defs}
 //   110–490: three sample font rows (118px each, gap 6px)
 //   494–594: branding bar (#2a2a2a)
 //   624–630: bottom orange bar
-function buildCatSvg(catId, catLabel, catFonts, uiFontB64, logoB64) {
+function buildCatSvg(catId, catLabel, catFonts, uiFontB64, logoB64, sampleFontsB64) {
     const count   = catFonts.length;
     const samples = catFonts.slice(0, 3);
     const uiFont  = uiFontB64 ? UI_FONT : FALLBACK;
@@ -336,8 +336,16 @@ function buildCatSvg(catId, catLabel, catFonts, uiFontB64, logoB64) {
     // Label sits between dot (cx=62) and badge — right-aligned up to badgeX-16
     const labelX     = badgeX - 16;
 
+    // Build @font-face for UI font + up to 3 sample fonts
+    let defsCSS = '';
+    if (uiFontB64) defsCSS += `@font-face{font-family:'UQPeregraf';src:url('data:font/ttf;base64,${uiFontB64}') format('truetype');}`;
+    (sampleFontsB64 || []).forEach((b64, i) => {
+        if (b64) defsCSS += `@font-face{font-family:'SampleFont${i}';src:url('data:font/ttf;base64,${b64}') format('truetype');}`;
+    });
+    const defs = defsCSS ? `<defs><style>${defsCSS}</style></defs>` : '';
+
     return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630">
-${buildDefs(uiFontB64, null)}
+${defs}
   <!-- Background -->
   <rect width="1200" height="630" fill="#1a1a1a"/>
   <!-- Top orange bar -->
@@ -368,9 +376,10 @@ ${buildDefs(uiFontB64, null)}
 
   <!-- Sample font rows -->
   ${samples.map((f, i) => {
-    const rowY    = 110 + i * 124;
-    const nameText = trunc(f.name || '', 50);
-    const prevText = trunc(f.preview || 'فۆنتەکانی یونی‌قەیدار', 32);
+    const rowY      = 110 + i * 124;
+    const nameText  = trunc(f.name || '', 50);
+    const prevText  = trunc(f.preview || 'فۆنتەکانی یونی‌قەیدار', 46);
+    const rowFont   = (sampleFontsB64 && sampleFontsB64[i]) ? `'SampleFont${i}', Tahoma, Arial, sans-serif` : uiFont;
     return `
   <rect x="40" y="${rowY}" width="1120" height="112" rx="8" fill="#2a2a2a"/>
   <!-- Font name — LTR, right-aligned -->
@@ -380,9 +389,9 @@ ${buildDefs(uiFontB64, null)}
     fill="#666"
     text-anchor="end"
     dominant-baseline="central">${esc(nameText)}</text>
-  <!-- Preview text — RTL, centered in row -->
+  <!-- Preview text — actual font, centered -->
   <text x="600" y="${rowY + 72}"
-    font-family="${uiFont}"
+    font-family="${rowFont}"
     font-size="28"
     fill="#f0f0f0"
     text-anchor="middle"
@@ -417,7 +426,7 @@ ${buildDefs(uiFontB64, null)}
 
 // ── Build SVG: Homepage card (نوێترین فۆنت) ───────────────────────────────────
 // Same layout as category card but title is نوێترین فۆنت and badge shows total count
-function buildHomeSvg(nweFonts, totalCount, uiFontB64, logoB64) {
+function buildHomeSvg(nweFonts, totalCount, uiFontB64, logoB64, sampleFontsB64) {
     const samples    = nweFonts.slice(0, 3);
     const uiFont     = uiFontB64 ? UI_FONT : FALLBACK;
     const badgeLabel = `${totalCount}+ فۆنتی کوردی`;
@@ -425,8 +434,16 @@ function buildHomeSvg(nweFonts, totalCount, uiFontB64, logoB64) {
     const badgeX     = 1156 - badgeW;
     const labelX     = badgeX - 16;
 
+    // Build @font-face for UI font + up to 3 sample fonts
+    let defsCSS = '';
+    if (uiFontB64) defsCSS += `@font-face{font-family:'UQPeregraf';src:url('data:font/ttf;base64,${uiFontB64}') format('truetype');}`;
+    (sampleFontsB64 || []).forEach((b64, i) => {
+        if (b64) defsCSS += `@font-face{font-family:'SampleFont${i}';src:url('data:font/ttf;base64,${b64}') format('truetype');}`;
+    });
+    const defs = defsCSS ? `<defs><style>${defsCSS}</style></defs>` : '';
+
     return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630">
-${buildDefs(uiFontB64, null)}
+${defs}
   <!-- Background -->
   <rect width="1200" height="630" fill="#1a1a1a"/>
   <!-- Top orange bar -->
@@ -459,7 +476,8 @@ ${buildDefs(uiFontB64, null)}
   ${samples.map((f, i) => {
     const rowY     = 110 + i * 124;
     const nameText = trunc(f.name || '', 50);
-    const prevText = trunc(f.preview || 'فۆنتەکانی یونی‌قەیدار', 32);
+    const prevText = trunc(f.preview || 'فۆنتەکانی یونی‌قەیدار', 46);
+    const rowFont  = (sampleFontsB64 && sampleFontsB64[i]) ? `'SampleFont${i}', Tahoma, Arial, sans-serif` : uiFont;
     return `
   <rect x="40" y="${rowY}" width="1120" height="112" rx="8" fill="#2a2a2a"/>
   <!-- Font name — LTR, right-aligned -->
@@ -469,9 +487,9 @@ ${buildDefs(uiFontB64, null)}
     fill="#666"
     text-anchor="end"
     dominant-baseline="central">${esc(nameText)}</text>
-  <!-- Preview text — RTL, centered in row -->
+  <!-- Preview text — actual font, centered -->
   <text x="600" y="${rowY + 72}"
-    font-family="${uiFont}"
+    font-family="${rowFont}"
     font-size="28"
     fill="#f0f0f0"
     text-anchor="middle"
@@ -550,7 +568,11 @@ export async function onRequestGet(context) {
             if (!catFonts.length) return new Response('Not found', { status: 404 });
 
             const catLabel = catNames[cat] || cat;
-            const svg = buildCatSvg(cat, catLabel, catFonts, uiFontB64, logoB64);
+            const samples3 = catFonts.slice(0, 3);
+            const sampleFontsB64 = await Promise.all(
+                samples3.map(f => loadFontB64(context, f.path))
+            );
+            const svg = buildCatSvg(cat, catLabel, catFonts, uiFontB64, logoB64, sampleFontsB64);
             return new Response(svg, { status: 200, headers });
         }
 
@@ -558,7 +580,11 @@ export async function onRequestGet(context) {
         const nweFonts = fonts.filter(f =>
             Array.isArray(f.category) && f.category.includes('Nwe')
         );
-        const svg = buildHomeSvg(nweFonts, fonts.length, uiFontB64, logoB64);
+        const nweSamples3 = nweFonts.slice(0, 3);
+        const nweFontsB64 = await Promise.all(
+            nweSamples3.map(f => loadFontB64(context, f.path))
+        );
+        const svg = buildHomeSvg(nweFonts, fonts.length, uiFontB64, logoB64, nweFontsB64);
         return new Response(svg, { status: 200, headers });
 
     } catch (err) {
