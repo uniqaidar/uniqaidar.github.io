@@ -306,8 +306,12 @@ ${defs}
     font-size="16"
     fill="#777"
     text-anchor="middle"
-    dominant-baseline="central"
-    direction="rtl">${esc(catLabel)}</text>` : ''}
+    dominant-baseline="central">${esc(catLabel)} · فۆنتەکانی یونی قەیدار</text>` : `<text x="600" y="559"
+    font-family="${uiFont}"
+    font-size="16"
+    fill="#777"
+    text-anchor="middle"
+    dominant-baseline="central">فۆنتی کوردی - فۆنتەکانی یونی قەیدار</text>`}
   <!-- Bottom orange bar -->
   <rect x="0" y="624" width="1200" height="6" fill="#ff5700"/>
 </svg>`;
@@ -345,14 +349,13 @@ ${buildDefs(uiFontB64, null)}
   <rect x="24" y="76" width="1152" height="28" fill="#2a2a2a"/>
   <!-- Orange dot -->
   <circle cx="62" cy="61" r="9" fill="#ff5700"/>
-  <!-- Category label — RTL, right-aligned, stops before badge -->
-  <text x="${labelX}" y="61"
+  <!-- Category label — after orange dot, extends right -->
+  <text x="86" y="61"
     font-family="${uiFont}"
     font-size="26"
     fill="#f0f0f0"
-    text-anchor="end"
-    dominant-baseline="central"
-    direction="rtl">${esc(trunc(catLabel, 18))}</text>
+    text-anchor="start"
+    dominant-baseline="central">${esc(trunc(catLabel, 18))}</text>
   <!-- Count badge -->
   <rect x="${badgeX}" y="35" width="${badgeW}" height="50" rx="10" fill="#ff5700"/>
   <text x="${badgeX + badgeW / 2}" y="61"
@@ -400,6 +403,13 @@ ${buildDefs(uiFontB64, null)}
     fill="#555"
     text-anchor="start"
     dominant-baseline="central">uniqaidar.pages.dev</text>
+  <!-- Kurdish site label — centered -->
+  <text x="600" y="544"
+    font-family="${uiFont}"
+    font-size="16"
+    fill="#777"
+    text-anchor="middle"
+    dominant-baseline="central">فۆنتی کوردی - فۆنتەکانی یونی قەیدار</text>
   <!-- Bottom orange bar -->
   <rect x="0" y="624" width="1200" height="6" fill="#ff5700"/>
 </svg>`;
@@ -428,14 +438,13 @@ ${buildDefs(uiFontB64, null)}
   <rect x="24" y="76" width="1152" height="28" fill="#2a2a2a"/>
   <!-- Orange dot -->
   <circle cx="62" cy="61" r="9" fill="#ff5700"/>
-  <!-- Title — RTL, right-aligned, stops before badge -->
-  <text x="${labelX}" y="61"
+  <!-- Title — after orange dot, extends right -->
+  <text x="86" y="61"
     font-family="${uiFont}"
     font-size="26"
     fill="#f0f0f0"
-    text-anchor="end"
-    dominant-baseline="central"
-    direction="rtl">نوێترین فۆنت</text>
+    text-anchor="start"
+    dominant-baseline="central">نوێترین فۆنت</text>
   <!-- Count badge -->
   <rect x="${badgeX}" y="35" width="${badgeW}" height="50" rx="10" fill="#ff5700"/>
   <text x="${badgeX + badgeW / 2}" y="61"
@@ -483,6 +492,13 @@ ${buildDefs(uiFontB64, null)}
     fill="#555"
     text-anchor="start"
     dominant-baseline="central">uniqaidar.pages.dev</text>
+  <!-- Kurdish site label — centered -->
+  <text x="600" y="544"
+    font-family="${uiFont}"
+    font-size="16"
+    fill="#777"
+    text-anchor="middle"
+    dominant-baseline="central">فۆنتی کوردی - فۆنتەکانی یونی قەیدار</text>
   <!-- Bottom orange bar -->
   <rect x="0" y="624" width="1200" height="6" fill="#ff5700"/>
 </svg>`;
