@@ -67,17 +67,19 @@ const RESVG_WASM_URL = 'https://cdn.jsdelivr.net/npm/@resvg/resvg-wasm@2.6.2/ind
 let _wasmReady   = false; // true after initWasm() has been called successfully
 let _wasmIniting = null;  // in-flight init promise — prevents duplicate fetches
 
+let _lastInitError = '';
 async function initResvg() {
     if (_wasmReady) return true;
     if (_wasmIniting) return _wasmIniting;
     _wasmIniting = (async () => {
         try {
             const res = await fetch(RESVG_WASM_URL);
-            if (!res || !res.ok) return false;
+            if (!res || !res.ok) { _lastInitError = 'wasm fetch failed:' + (res ? res.status : 'null'); return false; }
             await initWasm(res);
             _wasmReady = true;
             return true;
-        } catch (_) {
+        } catch (e) {
+            _lastInitError = 'initWasm threw:' + e.message;
             return false;
         } finally {
             _wasmIniting = null;
@@ -86,14 +88,16 @@ async function initResvg() {
     return _wasmIniting;
 }
 
+let _lastPngError = '';
 async function svgToPng(svgString) {
     try {
         const ok = await initResvg();
-        if (!ok) return null;
+        if (!ok) { _lastPngError = 'initResvg=false:' + _lastInitError; return null; }
         const resvg   = new Resvg(svgString, { font: { loadSystemFonts: false } });
         const pngData = resvg.render();
         return pngData.asPng();
-    } catch (_) {
+    } catch (e) {
+        _lastPngError = 'render:' + e.message;
         return null;
     }
 }
@@ -584,8 +588,12 @@ export async function onRequestGet(context) {
     function respond(svg) {
         return svgToPng(svg).then(png => {
             if (png) return new Response(png, { status: 200, headers: pngHeaders });
-            return new Response(svg, { status: 200, headers: svgHeaders });
-        }).catch(() => new Response(svg, { status: 200, headers: svgHeaders }));
+            const dbgHeaders = Object.assign({}, svgHeaders, { 'X-PNG-Error': _lastPngError || 'unknown' });
+            return new Response(svg, { status: 200, headers: dbgHeaders });
+        }).catch((e) => {
+            const dbgHeaders = Object.assign({}, svgHeaders, { 'X-PNG-Error': 'respond-catch:' + e.message });
+            return new Response(svg, { status: 200, headers: dbgHeaders });
+        });
     }
 
     try {
