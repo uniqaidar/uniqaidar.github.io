@@ -199,7 +199,7 @@ function buildFontSvg(font, uiFontB64, previewB64, logoB64, catNames) {
 
     const uiFont      = uiFontB64 ? UI_FONT : FALLBACK;
     const previewFont = previewB64 ? "'PreviewFont', Tahoma, Arial, sans-serif" : FALLBACK;
-    const previewText = trunc(preview, 38);
+    const previewText = trunc(preview, 60);
     const defs        = buildDefs(uiFontB64, previewB64);
 
     // Action bar geometry — orange box + blue btn + optional size badge
