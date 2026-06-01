@@ -317,7 +317,7 @@ async function injectSeoMeta(context, seo) {
     html = html.replace(/<script\s+type="application\/ld\+json">[\s\S]*?<\/script>/gi, '');
 
     // 4. Inject all new meta + JSON-LD right before </head>
-    html = html.replace('</head>', `${seo.meta}\n</head>`);
+    html = html.replace('<body', `${seo.meta}\n<body`);
 
     return html;
 }
