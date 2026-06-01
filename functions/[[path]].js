@@ -34,7 +34,7 @@ async function fetchAsset(context, url) {
             if (res.ok) return res.text();
         } catch (_) { /* fall through */ }
     }
-    const res = await fetch(url, { headers: { 'User-Agent': 'UniQaidar-Render/1.0' } });
+    const res = await fetch(url, { headers: { 'User-Agent': 'UniQaidar-Render/1.0', 'X-Internal-Asset': '1' } });
     return res.ok ? res.text() : '';
 }
 
@@ -471,6 +471,7 @@ export async function onRequest(context) {
     const url      = new URL(context.request.url);
     const pathname = url.pathname;
     const ua       = context.request.headers.get('User-Agent') || '';
+    if (context.request.headers.get('X-Internal-Asset') === '1') return context.next();
 
     // ── ROLE 1: Sitemaps (all visitors) ──────────────────────────────────────
     if (pathname === '/sitemap.xml') {
