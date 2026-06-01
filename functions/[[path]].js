@@ -195,7 +195,7 @@ function buildFontMeta(font, catNames, paraDefault) {
 <meta property="og:site_name" content="UniQaidar Fonts — فۆنتەکانی یونی‌قەیدار">
 <meta property="og:title" content="${title}">
 <meta property="og:description" content="${desc}">
-<meta property="og:url" content="${escHtml(fontShareUrl)}">
+<meta property="og:url" content="${escHtml(fontUrl)}">
 <meta property="og:image" content="${logoUrl}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
