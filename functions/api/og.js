@@ -12,7 +12,13 @@ export async function onRequestGet(context) {
     });
     return new Response(response.body, {
         status:  response.status,
-        headers: response.headers,
+        headers: {
+            'Content-Type':                 response.headers.get('content-type') || 'image/png',
+            'Cache-Control':                'public, max-age=86400',
+            'CDN-Cache-Control':            'no-store',
+            'Cloudflare-CDN-Cache-Control': 'no-store',
+            'Access-Control-Allow-Origin':  '*',
+        },
     });
 }
 
