@@ -107,7 +107,9 @@ async function loadData(context) {
 function isCrawler(ua) {
     if (!ua) return false;
     const s = ua.toLowerCase();
-    return (
+
+    // Known named bots (explicit — fastest path)
+    if (
         s.includes('googlebot')             ||
         s.includes('google-inspectiontool') ||
         s.includes('bingbot')               ||
@@ -116,10 +118,40 @@ function isCrawler(ua) {
         s.includes('duckduckbot')           ||
         s.includes('slurp')                 ||
         s.includes('facebookexternalhit')   ||
+        s.includes('facebot')               ||  // Facebook Messenger chat previews
         s.includes('whatsapp')              ||
         s.includes('telegrambot')           ||
         s.includes('twitterbot')            ||
-        s.includes('linkedinbot')
+        s.includes('linkedinbot')           ||
+        s.includes('instagram')             ||  // Instagram link scraper
+        s.includes('pinterest')             ||  // Pinterest link preview
+        s.includes('slack')                 ||  // Slack unfurl (Slackbot-LinkExpanding)
+        s.includes('discordbot')            ||  // Discord embed scraper
+        s.includes('viber')                 ||  // Viber chat preview
+        s.includes('skypeuripreview')       ||  // Skype / Microsoft Teams unfurl
+        s.includes('applebot')              ||  // Apple search + iMessage preview
+        s.includes('snapchat')              ||  // Snapchat link preview
+        s.includes('redditbot')             ||  // Reddit embed scraper
+        s.includes('chatgpt-user')          ||  // OpenAI ChatGPT browsing agent
+        s.includes('gptbot')               ||  // OpenAI training / indexing crawler
+        s.includes('perplexitybot')         ||  // Perplexity AI crawler
+        s.includes('claudebot')             ||  // Anthropic Claude crawler
+        s.includes('quora')                 ||  // Quora / Poe link scraper
+        s.includes('vkshare')              ||  // VKontakte social share scraper
+        s.includes('line-poker')            ||  // LINE app link preview
+        s.includes('signal')                    // Signal chat link preview
+    ) return true;
+
+    // Generic catch-all — covers any future bot/crawler/spider automatically.
+    // Human browsers never send these strings in their User-Agent.
+    return (
+        s.includes('bot')      ||
+        s.includes('crawler')  ||
+        s.includes('spider')   ||
+        s.includes('preview')  ||
+        s.includes('scraper')  ||
+        s.includes('fetcher')  ||
+        s.includes('fetch')
     );
 }
 
