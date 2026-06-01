@@ -1,4 +1,5 @@
 import { initWasm, Resvg } from '@resvg/resvg-wasm';
+import { RESVG_WASM_B64 } from './_resvg_wasm_b64.js';
 // functions/api/og.js
 // Dynamic SVG og image generator for UniQaidar Fonts.
 //
@@ -62,7 +63,6 @@ async function toBase64(context, url) {
 // ── resvg-wasm: init once, render SVG → PNG ────────────────────────────────────
 // Uses @resvg/resvg-wasm npm package (installed via build command).
 // Falls back silently to SVG if PNG conversion fails for any reason.
-const RESVG_WASM_URL = 'https://cdn.jsdelivr.net/npm/@resvg/resvg-wasm@2.6.2/index_bg.wasm';
 
 let _wasmReady   = false; // true after initWasm() has been called successfully
 let _wasmIniting = null;  // in-flight init promise — prevents duplicate fetches
@@ -73,9 +73,11 @@ async function initResvg() {
     if (_wasmIniting) return _wasmIniting;
     _wasmIniting = (async () => {
         try {
-            const res = await fetch(RESVG_WASM_URL);
-            if (!res || !res.ok) { _lastInitError = 'wasm fetch failed:' + (res ? res.status : 'null'); return false; }
-            await initWasm(res);
+            // Decode base64 WASM embedded at build time — no fetch, no runtime instantiate block
+            const binary = atob(RESVG_WASM_B64);
+            const bytes  = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            await initWasm(bytes.buffer);
             _wasmReady = true;
             return true;
         } catch (e) {
