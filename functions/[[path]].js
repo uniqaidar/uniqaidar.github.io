@@ -558,10 +558,12 @@ export async function onRequest(context) {
             return new Response(html, {
                 status: 200,
                 headers: {
-                    'Content-Type':  'text/html; charset=utf-8',
-                    'Cache-Control': 'public, max-age=86400, s-maxage=86400',
-                    'X-Robots-Tag':  'index, follow',
-                    'Vary':          'User-Agent',
+                    'Content-Type':                 'text/html; charset=utf-8',
+                    'Cache-Control':                'no-store',
+                    'CDN-Cache-Control':            'no-store',
+                    'Cloudflare-CDN-Cache-Control': 'no-store',
+                    'X-Robots-Tag':                 'index, follow',
+                    'Vary':                         'User-Agent',
                 }
             });
         }
@@ -595,10 +597,12 @@ export async function onRequest(context) {
             return new Response(html, {
                 status: 200,
                 headers: {
-                    'Content-Type':  'text/html; charset=utf-8',
-                    'Cache-Control': 'public, max-age=86400, s-maxage=86400',
-                    'X-Robots-Tag':  'index, follow',
-                    'Vary':          'User-Agent',
+                    'Content-Type':                 'text/html; charset=utf-8',
+                    'Cache-Control':                'no-store',
+                    'CDN-Cache-Control':            'no-store',
+                    'Cloudflare-CDN-Cache-Control': 'no-store',
+                    'X-Robots-Tag':                 'index, follow',
+                    'Vary':                         'User-Agent',
                 }
             });
         }
