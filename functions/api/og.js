@@ -14,7 +14,7 @@ export async function onRequestGet(context) {
         status:  response.status,
         headers: {
             'Content-Type':                 response.headers.get('content-type') || 'image/png',
-            'Cache-Control':                'public, max-age=86400',
+            'Cache-Control':                'no-store',
             'CDN-Cache-Control':            'no-store',
             'Cloudflare-CDN-Cache-Control': 'no-store',
             'Access-Control-Allow-Origin':  '*',
