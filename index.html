@@ -6258,7 +6258,7 @@ function filterFonts(category, btn) {
         b.classList.remove('active');
     });
     if (btn) btn.classList.add('active');
-    var _catTitles = { 'Ali': 'فۆنتەکانی عەلی' }; var _catLabel = _catTitles[category] || _uqGetCatLabel(category); var _fullTitle = _catLabel + ' — فۆنتی کوردی'; document.title = _fullTitle.length <= 70 ? _fullTitle : _catLabel.substring(0, 53) + '... — فۆنتی کوردی';
+    var _catTitles = { 'Ali': 'فۆنتەکانی عەلی' }; var _catLabel = _catTitles[category] || _uqGetCatLabel(category); var _fullTitle = _catLabel + ' — داگرتنی فۆنتی کوردی'; document.title = _fullTitle.length <= 70 ? _fullTitle : _catLabel.substring(0, 53) + '... — داگرتنی فۆنتی کوردی';
 
     // ئەگەر دوگمەکە لە desktop-panel بوو: لیبلی نوێ بدە و دابخە
     if (btn && btn.closest('#desktop-panel')) {
@@ -6918,6 +6918,7 @@ function showFontDetailView(fontName, catId) {
 
     var catLabel = _uqGetCatLabel(catId);
     var backText = 'گەڕانەوە بۆ بەشی ' + catLabel;
+    var _fontFullTitle = 'داگرتنی فۆنتی کوردی — ' + fontObj.name; document.title = _fontFullTitle.length <= 70 ? _fontFullTitle : 'داگرتنی فۆنتی کوردی — ' + fontObj.name.substring(0, 47) + '...';
 
     // Desktop: show back button beside scaler; keep hamburger visible but update its label to Sorani preview
     var desktopBack = document.getElementById('uq-detail-back-desktop');
