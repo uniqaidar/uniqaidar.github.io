@@ -6258,6 +6258,7 @@ function filterFonts(category, btn) {
         b.classList.remove('active');
     });
     if (btn) btn.classList.add('active');
+    var _catTitles = { 'Ali': 'فۆنتەکانی عەلی' }; var _catLabel = _catTitles[category] || _uqGetCatLabel(category); var _fullTitle = _catLabel + ' — فۆنتی کوردی'; document.title = _fullTitle.length <= 70 ? _fullTitle : _catLabel.substring(0, 53) + '... — فۆنتی کوردی';
 
     // ئەگەر دوگمەکە لە desktop-panel بوو: لیبلی نوێ بدە و دابخە
     if (btn && btn.closest('#desktop-panel')) {
