@@ -481,6 +481,11 @@ async function injectCanonical(response, requestUrl) {
                 /(<meta\s+property="og:image:height"\s+content=")[^"]*(")/gi,
                 '$1630$2'
             );
+            // Remove og:image:type entirely — index.html has image/svg+xml which
+            // tells WhatsApp and Messenger the image is SVG. They refuse to render
+            // SVG as OG images and show nothing. The PNG Content-Type from /api/og
+            // is sufficient — no og:image:type tag needed.
+            html = html.replace(/<meta\s+property="og:image:type"[^>]*>/gi, '');
             html = html.replace(
                 /(<meta\s+name="twitter:image"\s+content=")[^"]*(")/gi,
                 `$1${homeOgUrl}$2`
