@@ -7271,13 +7271,6 @@ function fitMobileLabel() {
     var text = label.textContent || '';
     if (!text.trim()) return;
 
-    // ── Cache guard: skip full reflow if text and width unchanged ──
-    var currentWidth = Math.round(window.innerWidth);
-    if (fitMobileLabel._cacheText === text && fitMobileLabel._cacheWidth === currentWidth && fitMobileLabel._cacheFontSize) {
-        label.style.fontSize = fitMobileLabel._cacheFontSize;
-        return;
-    }
-
     // ── Step 1: measure available width ──────────────────
     var arrow     = toggle.querySelector('.toggle-arrow');
     var hamburger = toggle.querySelector('span:first-child');
@@ -7337,11 +7330,6 @@ function fitMobileLabel() {
 
     // Use lo directly (it's the largest size that fits) — no floor, no extra shrink
     label.style.fontSize = lo + 'px';
-
-    // ── Store result in cache ──
-    fitMobileLabel._cacheText     = text;
-    fitMobileLabel._cacheWidth    = currentWidth;
-    fitMobileLabel._cacheFontSize = lo + 'px';
 }
 
 // Re-run fitMobileLabel after custom font is guaranteed loaded
