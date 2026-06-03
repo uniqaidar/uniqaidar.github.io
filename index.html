@@ -319,6 +319,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
     gap: 28px;
     padding: 36px 40px;
     align-items: start;
+    transform: translateZ(0);
 }
 
 .card {
@@ -1240,6 +1241,7 @@ body.is-scrolled .filter-bar-logo-mobile img {
     opacity: 0;
     transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease, padding 0.3s ease;
     pointer-events: none;
+    transform: translateZ(0);
 }
 .filter-mobile-panel.open {
     max-height: 70vh;
@@ -8653,8 +8655,4 @@ document.addEventListener('click', function(e) {
     }
 });
 </script>
-<!-- TEMPORARY DEBUG TOOL — REMOVE AFTER DIAGNOSIS -->
-<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script>
-<!-- END TEMPORARY DEBUG TOOL -->
 </body>
