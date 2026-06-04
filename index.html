@@ -1229,32 +1229,28 @@ body.is-scrolled .filter-bar-logo-mobile img {
 .filter-mobile-toggle .toggle-arrow { transition: transform 0.25s; font-size: 0.8rem; }
 .filter-mobile-toggle.open .toggle-arrow { transform: rotate(180deg); }
 .filter-mobile-panel {
-    display: grid;
-    grid-template-rows: 0fr;
+    display: block;
+    height: 0;
     background: #111;
     border-top: 1px solid rgba(255,255,255,0.08);
     opacity: 0;
-    transition: grid-template-rows 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease;
+    overflow: visible;
+    transition: height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease;
     pointer-events: none;
 }
 .filter-mobile-panel.open {
-    grid-template-rows: 1fr;
     opacity: 1;
     pointer-events: auto;
 }
 .filter-mobile-panel-inner {
-    overflow: hidden;
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    padding: 0;
-    min-height: 0;
-}
-.filter-mobile-panel.open .filter-mobile-panel-inner {
+    padding: 12px 14px 16px;
     overflow-y: auto;
     overflow-x: hidden;
     max-height: 70vh;
-    padding: 12px 14px 16px;
+    box-sizing: border-box;
 }
 
 
@@ -6241,9 +6237,30 @@ function toggleDesktopCats() {
 function toggleMobileCats() {
     const panel  = document.getElementById('mobile-panel');
     const toggle = document.getElementById('mobile-toggle');
+    const inner  = panel.querySelector('.filter-mobile-panel-inner');
     const isOpen = panel.classList.contains('open');
-    panel.classList.toggle('open', !isOpen);
-    toggle.classList.toggle('open', !isOpen);
+    if (!isOpen) {
+        const targetH = Math.min(inner ? inner.scrollHeight : 300, window.innerHeight * 0.7);
+        panel.style.height = '0px';
+        panel.classList.add('open');
+        toggle.classList.add('open');
+        requestAnimationFrame(function() {
+            panel.style.height = targetH + 'px';
+            setTimeout(function() {
+                if (panel.classList.contains('open')) panel.style.height = 'auto';
+            }, 420);
+        });
+    } else {
+        panel.style.height = panel.offsetHeight + 'px';
+        panel.classList.remove('open');
+        toggle.classList.remove('open');
+        requestAnimationFrame(function() {
+            panel.style.height = '0px';
+            setTimeout(function() {
+                if (!panel.classList.contains('open')) panel.style.height = '0';
+            }, 420);
+        });
+    }
 }
 
 // ── فلتەر کردن بەپێی کاتێگۆری ──────────────────────────
@@ -6297,8 +6314,19 @@ function filterFonts(category, btn) {
         // the cat-dl-mobile-wrap — measuring toggle width before that gives a wrong
         // available width (toggle appears full-width while download btn is still hidden).
         setTimeout(fitMobileLabel, 0);
-        document.getElementById('mobile-panel').classList.remove('open');
-        document.getElementById('mobile-toggle').classList.remove('open');
+        (function() {
+            var mp = document.getElementById('mobile-panel');
+            var mt = document.getElementById('mobile-toggle');
+            if (mp && mp.classList.contains('open')) {
+                mp.style.height = mp.offsetHeight + 'px';
+                mp.classList.remove('open');
+                if (mt) mt.classList.remove('open');
+                requestAnimationFrame(function() {
+                    mp.style.height = '0px';
+                    setTimeout(function() { mp.style.height = '0'; }, 420);
+                });
+            }
+        })();
     }
 
     // فلتەر کردنی لیست — case-insensitive so renamed IDs still work
