@@ -7363,6 +7363,24 @@ function buildArcSel() {
 // ══════════════════════════════════════════
 // Arc (font search list — Fonts tab)
 // ══════════════════════════════════════════
+// Format date for admin font list display
+// adminAddedAt (ISO): "11:24:12 AM — 4 June 2026"
+// dateAdded only: "4 June 2026"
+function formatAdminDate(f) {
+    if (f.adminAddedAt) {
+        const d = new Date(f.adminAddedAt);
+        const time = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        const date = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        return `<span style="font-size:0.68rem;color:var(--muted);font-family:var(--mono);white-space:nowrap;">${time} — ${date}</span>`;
+    }
+    if (f.dateAdded) {
+        const d = new Date(f.dateAdded);
+        const date = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        return `<span style="font-size:0.68rem;color:var(--muted);font-family:var(--mono);white-space:nowrap;">${date}</span>`;
+    }
+    return '';
+}
+
 function renderArc() {
     const q = (document.getElementById('arc-search')?.value || '').toLowerCase();
     const el = document.getElementById('arc-list');
@@ -7376,10 +7394,9 @@ function renderArc() {
     const makeItem = (f) => {
         const div = document.createElement('div');
         div.className = 'arc-item';
-        const adminDate = f.adminAddedAt ? `<span style="font-size:0.68rem;color:var(--muted);font-family:var(--mono);white-space:nowrap;">${f.adminAddedAt.replace('T',' ').slice(0,16)}</span>` : '';
         div.innerHTML = `
             <span class="arc-name">${f.name}</span>
-            ${adminDate}
+            ${formatAdminDate(f)}
             <span class="arc-prev">${f.preview||''}</span>
             <button class="btn btn-ghost" style="padding:5px 10px;font-size:0.75rem;" onclick="openEdit(${fnts.indexOf(f)})">✏️</button>
             <button class="btn btn-red"   style="padding:5px 10px;font-size:0.75rem;" onclick="deleteFont(${fnts.indexOf(f)})">🗑</button>`;
@@ -7441,10 +7458,9 @@ function renderArcFull() {
         }).join('');
         const div = document.createElement('div');
         div.className = 'arc-item';
-        const adminDate = f.adminAddedAt ? `<span style="font-size:0.68rem;color:var(--muted);font-family:var(--mono);white-space:nowrap;">${f.adminAddedAt.replace('T',' ').slice(0,16)}</span>` : '';
         div.innerHTML = `
             <span class="arc-name">${f.name}</span>
-            ${adminDate}
+            ${formatAdminDate(f)}
             <span class="arc-prev">${f.preview||''}</span>
             <span style="display:flex;gap:3px;flex-wrap:wrap;">${badgesHtml}</span>
             <button class="btn btn-ghost" style="padding:5px 10px;font-size:0.75rem;" onclick="openEdit(${fnts.indexOf(f)})">✏️</button>
