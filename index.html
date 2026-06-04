@@ -7453,7 +7453,6 @@ async function loadFontsAndInit() {
     const source = document.querySelector('.marquee-content');
     const desktopPanel = document.getElementById('desktop-panel');
     const mobilePanel  = document.getElementById('mobile-panel');
-    mobilePanel.innerHTML = '';
 
     source.querySelectorAll('.filter-btn').forEach(function(btn) {
         const onclick = btn.getAttribute('onclick') || '';
