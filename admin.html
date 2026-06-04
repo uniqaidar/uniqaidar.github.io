@@ -5512,7 +5512,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
           <div id="trending-last-update" style="font-size:0.74rem;color:var(--yellow);font-family:var(--mono);margin-bottom:6px;min-height:18px;"></div>
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
             <label style="font-size:0.82rem;color:var(--text);white-space:nowrap;">🔢 <span data-ku>ژمارەی فۆنتی تاپ</span><span data-en style="display:none">Top Fonts Limit</span></label>
-            <input type="number" id="trending-limit-input" min="1" max="200" value="25" style="width:80px;direction:ltr;font-family:var(--mono);font-size:0.88rem;padding:5px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);" oninput="trendingApplyLimit(this.value)">
+            <input type="number" id="trending-limit-input" min="1" max="200" value="" placeholder="—" style="width:80px;direction:ltr;font-family:var(--mono);font-size:0.88rem;padding:5px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);" oninput="trendingApplyLimit(this.value)">
             <span style="font-size:0.75rem;color:var(--muted);"><span data-ku>(بۆ ⚡ Auto-fill و 💾 Save و پیشاندانی لیست دەکرێت)</span><span data-en style="display:none">(used by ⚡ Auto-fill, 💾 Save and list display)</span></span>
           </div>
           <p style="font-size:0.8rem;color:var(--text);margin-bottom:14px;"><span data-ku>You can reorder fonts by ▲▼ یان بە لابردن و زیادکردن. ژمارەی فۆنتی تاپ لەسەر بەشی 🔥 سایتەکە دەخرێنە پیشاندان.</span><span data-en style="display:none">You can reorder fonts by ▲▼ or by removing and adding. The top fonts limit controls how many are shown in the 🔥 section of the site.</span><br>
@@ -6316,12 +6316,15 @@ async function ghPutHeaders(message) {
         '',
         '/',
         '  X-Frame-Options: SAMEORIGIN',
+        '  Cache-Control: no-cache, must-revalidate',
         '',
         '/index.html',
         '  X-Frame-Options: SAMEORIGIN',
+        '  Cache-Control: no-cache, must-revalidate',
         '',
         '/admin.html',
         '  X-Frame-Options: SAMEORIGIN',
+        '  Cache-Control: no-cache, must-revalidate',
         '',
     ];
     const HEADERS_CONTENT = lines.join('\n');  // GUARANTEED LF — never CRLF
@@ -7373,8 +7376,10 @@ function renderArc() {
     const makeItem = (f) => {
         const div = document.createElement('div');
         div.className = 'arc-item';
+        const adminDate = f.adminAddedAt ? `<span style="font-size:0.68rem;color:var(--muted);font-family:var(--mono);white-space:nowrap;">${f.adminAddedAt.replace('T',' ').slice(0,16)}</span>` : '';
         div.innerHTML = `
             <span class="arc-name">${f.name}</span>
+            ${adminDate}
             <span class="arc-prev">${f.preview||''}</span>
             <button class="btn btn-ghost" style="padding:5px 10px;font-size:0.75rem;" onclick="openEdit(${fnts.indexOf(f)})">✏️</button>
             <button class="btn btn-red"   style="padding:5px 10px;font-size:0.75rem;" onclick="deleteFont(${fnts.indexOf(f)})">🗑</button>`;
@@ -7436,8 +7441,10 @@ function renderArcFull() {
         }).join('');
         const div = document.createElement('div');
         div.className = 'arc-item';
+        const adminDate = f.adminAddedAt ? `<span style="font-size:0.68rem;color:var(--muted);font-family:var(--mono);white-space:nowrap;">${f.adminAddedAt.replace('T',' ').slice(0,16)}</span>` : '';
         div.innerHTML = `
             <span class="arc-name">${f.name}</span>
+            ${adminDate}
             <span class="arc-prev">${f.preview||''}</span>
             <span style="display:flex;gap:3px;flex-wrap:wrap;">${badgesHtml}</span>
             <button class="btn btn-ghost" style="padding:5px 10px;font-size:0.75rem;" onclick="openEdit(${fnts.indexOf(f)})">✏️</button>
@@ -7609,6 +7616,7 @@ async function addFont() {
     if (date)                                newEntry.dateAdded = date;
     if (displayName && displayName !== name) newEntry.displayName = displayName;
     if (window._scanSizes && window._scanSizes[filename]) newEntry.size = window._scanSizes[filename] + ' KB';
+    newEntry.adminAddedAt = new Date().toISOString();
 
     // ── ① Add @font-face to index.html ──
     let next = RAW;
@@ -11347,12 +11355,15 @@ async function sitemapSelfHeal() {
             '',
             '/',
             '  X-Frame-Options: SAMEORIGIN',
+            '  Cache-Control: no-cache, must-revalidate',
             '',
             '/index.html',
             '  X-Frame-Options: SAMEORIGIN',
+            '  Cache-Control: no-cache, must-revalidate',
             '',
             '/admin.html',
             '  X-Frame-Options: SAMEORIGIN',
+            '  Cache-Control: no-cache, must-revalidate',
             '',
         ];
         const headersContent = headersLines.join('\n');
