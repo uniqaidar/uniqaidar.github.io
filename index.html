@@ -1232,27 +1232,23 @@ body.is-scrolled .filter-bar-logo-mobile img {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    padding: 12px 14px 16px;
+    padding: 0 14px;
     background: #111;
     border-top: 1px solid rgba(255,255,255,0.08);
-    height: 0;
-    max-height: 70vh;
+    max-height: 0;
     overflow: hidden;
     opacity: 0;
-    transform: scaleY(0);
-    transform-origin: top;
-    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease, height 0s 0.4s;
+    transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease, padding 0.3s ease;
     pointer-events: none;
 }
 .filter-mobile-panel.open {
-    height: auto;
+    max-height: 70vh;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     opacity: 1;
-    transform: scaleY(1);
+    padding: 12px 14px 16px;
     pointer-events: auto;
-    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease;
 }
 
 
@@ -1810,7 +1806,7 @@ a:active, button:active {
 
     /* تۆگڵی کاتیگۆری — مۆبایل */
     .filter-mobile-toggle { font-size: 1.2rem !important; background: transparent !important; min-width: 0 !important; }
-    #mobile-active-label { font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif !important; font-weight: normal !important; white-space: nowrap !important; overflow: visible !important; min-width: 0 !important; pointer-events: none !important; }
+    #mobile-active-label { font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif !important; font-weight: normal !important; white-space: nowrap !important; overflow: visible !important; min-width: 0 !important; }
 
     /* بۆکسی تاقیکردنەوە */
     #test-input {
@@ -7457,6 +7453,7 @@ async function loadFontsAndInit() {
     const source = document.querySelector('.marquee-content');
     const desktopPanel = document.getElementById('desktop-panel');
     const mobilePanel  = document.getElementById('mobile-panel');
+    mobilePanel.innerHTML = '';
 
     source.querySelectorAll('.filter-btn').forEach(function(btn) {
         const onclick = btn.getAttribute('onclick') || '';
