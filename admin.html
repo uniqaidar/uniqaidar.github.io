@@ -55,8 +55,9 @@ header h1 { font-size: 0.95rem; font-weight: bold; color: var(--accent); }
 .header-right { display: flex; align-items: center; gap: 10px; }
 .repo-badge { font-family: var(--mono); font-size: 0.7rem; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; color: var(--yellow); }
 /* Live Sulaymaniyah clock */
+@font-face { font-family: 'UniQAIDAR_DIGITAL'; src: url('UniQaidarFonts/UniQAIDAR_DIGITAL.ttf'); font-display: swap; }
 #sul-clock {
-    font-family: var(--mono);
+    font-family: 'UniQAIDAR_DIGITAL', var(--mono);
     font-size: 0.78rem;
     color: var(--green);
     background: var(--bg);
@@ -7371,12 +7372,12 @@ function formatAdminDate(f) {
         const d = new Date(f.adminAddedAt);
         const time = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
         const date = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-        return `<span style="font-size:0.68rem;color:var(--muted);font-family:var(--mono);white-space:nowrap;">${time} — ${date}</span>`;
+        return `<span dir="ltr" style="font-size:0.68rem;color:var(--muted);font-family:var(--mono);white-space:nowrap;display:inline-block;">${time} — ${date}</span>`;
     }
     if (f.dateAdded) {
         const d = new Date(f.dateAdded);
         const date = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-        return `<span style="font-size:0.68rem;color:var(--muted);font-family:var(--mono);white-space:nowrap;">${date}</span>`;
+        return `<span dir="ltr" style="font-size:0.68rem;color:var(--muted);font-family:var(--mono);white-space:nowrap;display:inline-block;">${date}</span>`;
     }
     return '';
 }
