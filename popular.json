@@ -41,13 +41,13 @@
   "UniQAIDAR_Free 006",
   "UniQAIDAR_Free 002",
   "UniQAIDAR_BiLaL 063",
+  "UniQAIDAR_BiLaL 089",
   "UniQAIDAR_BiLaL 017",
   "UniQAIDAR_BiLaL 026",
   "UniQAIDAR_Nastaliq 002",
   "UniQAIDAR_BiLaL 069",
   "UniQAIDAR_Soz 017",
   "UniQAIDAR_BiLaL 082",
-  "UniQAIDAR_BiLaL 089",
   "UniQAIDAR_Free 005",
   "UniQAIDAR_BiLaL 035",
   "UniQAIDAR_BiLaL 027 Trim",
@@ -89,6 +89,7 @@
   "UniQAIDAR_Money Heist 001",
   "UniQAIDAR_Gate",
   "UniQAIDAR_ZANA",
+  "UniQAIDAR_BiLaL 090",
   "UniQAIDAR_Talabat 02",
   "UniQAIDAR_BiLaL 073",
   "UniQAIDAR_BiLaL 068 PTKNH",
@@ -107,6 +108,5 @@
   "UniQAIDAR_Soz 010 Hollow",
   "UniQAIDAR_DWANGE",
   "UniQAIDAR_AKSamik 001",
-  "UniQAIDAR_BiLaL 016 PY",
-  "QAIDAR_ISLAMIC00"
+  "UniQAIDAR_BiLaL 016 PY"
 ]
