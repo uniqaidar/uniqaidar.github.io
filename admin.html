@@ -7189,7 +7189,7 @@ function buildCatList() {
             count = fnts.length;
         } else if (c.id === 'Trending') {
             count = (typeof _trendingList !== 'undefined' && Array.isArray(_trendingList) && _trendingList.length)
-                    ? _trendingList.length : Math.min(parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25, fnts.length);
+                    ? _trendingList.length : Math.min(trendingLimit(), fnts.length);
         } else {
             count = fnts.filter(f => (Array.isArray(f.category)?f.category:[f.category]).includes(c.id)).length;
         }
@@ -7347,7 +7347,7 @@ function buildArcSel() {
                 count = fnts.length;
             } else if (c.id === 'Trending') {
                 count = (typeof _trendingList !== 'undefined' && Array.isArray(_trendingList) && _trendingList.length)
-                    ? _trendingList.length : Math.min(parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25, fnts.length);
+                    ? _trendingList.length : Math.min(trendingLimit(), fnts.length);
             } else {
                 count = fnts.filter(f => (Array.isArray(f.category) ? f.category : [f.category]).includes(c.id)).length;
             }
@@ -9070,7 +9070,7 @@ async function loadAllStats(force) {
             });
             const cfCountMap = {};
             singleEvs.forEach(ev => { const k = ev.font||'?'; cfCountMap[k] = (cfCountMap[k]||0)+1; });
-            const _trendLimit = Math.max(1, parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25);
+            const _trendLimit = Math.max(1, trendingLimit());
             const cfTop25 = Object.entries(cfCountMap).sort((a,b)=>b[1]-a[1]).slice(0,_trendLimit).map(([n])=>n);
 
             if (cfTop25.length) {
@@ -10421,7 +10421,7 @@ async function updateTrending() {
     });
 
     // ── Step 6: Sort by total count desc, take top N names only ──
-    const _trendLimitVal = Math.max(1, parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25);
+    const _trendLimitVal = Math.max(1, trendingLimit());
     const top25 = Object.entries(countMap)
         .sort((a, b) => b[1] - a[1])
         .slice(0, _trendLimitVal)
@@ -10478,6 +10478,14 @@ async function updateTrending() {
 var _trendingList = []; // current working list (array of font name strings)
 var _popularJsonSha = undefined; // GitHub SHA for PUT update
 var _popularJsonFromGitHub = false; // true once loadPopularJson() has successfully loaded
+
+// Returns the current trending limit — always reads from _trendingList if loaded, never hardcoded
+function trendingLimit() {
+    if (_trendingList && _trendingList.length) return _trendingList.length;
+    const inp = document.getElementById('trending-limit-input');
+    const v = inp ? parseInt(inp.value, 10) : NaN;
+    return isNaN(v) || v < 1 ? 110 : v;
+}
 
 // Load popular.json from GitHub
 async function loadPopularJson() {
@@ -10601,7 +10609,7 @@ function autoFillTrending() {
     });
     const countMap = {};
     singleEvents.forEach(ev => { const k = ev.font || '?'; countMap[k] = (countMap[k] || 0) + 1; });
-    const _afLimit = Math.max(1, parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25);
+    const _afLimit = Math.max(1, trendingLimit());
     _trendingList = Object.entries(countMap)
         .sort((a, b) => b[1] - a[1])
         .slice(0, _afLimit)
@@ -10671,7 +10679,7 @@ function buildTrendingList() {
             <button class="btn btn-red" style="padding:4px 10px;font-size:0.72rem;" onclick="trendingRemove(${i})">&#128465;</button>`;
         el.appendChild(row);
     });
-    const _displayLimit = Math.max(1, parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25);
+    const _displayLimit = Math.max(1, trendingLimit());
     if (countEl) countEl.textContent = _trendingList.length + (document.body.classList.contains('lang-en') ? ` / ${_displayLimit} fonts` : ` / ${_displayLimit} \u0641\u06c6\u0646\u062a`);
 }
 
@@ -10696,7 +10704,7 @@ function trendingAddFont() {
         alert2(al, '⚠️ This font is already in the list.', 'inf');
         return;
     }
-    const _addLimit = Math.max(1, parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25);
+    const _addLimit = Math.max(1, trendingLimit());
     if (_trendingList.length >= _addLimit) {
         alert2(al, `⚠️ The list is full (${_addLimit} fonts). Please remove one before adding more.`, 'inf');
         return;
@@ -10737,7 +10745,7 @@ async function savePopularJson() {
 
         // ── Also update MAX_FONTS_TRACKED in update-popular.yml ──
         try {
-            const _limitVal = Math.max(1, parseInt((document.getElementById('trending-limit-input')||{value:'25'}).value,10)||25);
+            const _limitVal = Math.max(1, trendingLimit());
             const ymlPath = '.github/workflows/update-popular.yml';
             const ymlApiUrl = `https://api.github.com/repos/${USER}/${REPO}/contents/${ymlPath}?ref=${BRANCH}`;
             const ymlRes = await fetch(ymlApiUrl, { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } });
