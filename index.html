@@ -1229,26 +1229,32 @@ body.is-scrolled .filter-bar-logo-mobile img {
 .filter-mobile-toggle .toggle-arrow { transition: transform 0.25s; font-size: 0.8rem; }
 .filter-mobile-toggle.open .toggle-arrow { transform: rotate(180deg); }
 .filter-mobile-panel {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 0 14px;
+    display: grid;
+    grid-template-rows: 0fr;
     background: #111;
     border-top: 1px solid rgba(255,255,255,0.08);
-    max-height: 0;
-    overflow: hidden;
     opacity: 0;
-    transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease, padding 0.3s ease;
+    transition: grid-template-rows 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease;
     pointer-events: none;
 }
 .filter-mobile-panel.open {
-    max-height: 70vh;
+    grid-template-rows: 1fr;
+    opacity: 1;
+    pointer-events: auto;
+}
+.filter-mobile-panel-inner {
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0;
+    min-height: 0;
+}
+.filter-mobile-panel.open .filter-mobile-panel-inner {
     overflow-y: auto;
     overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    opacity: 1;
+    max-height: 70vh;
     padding: 12px 14px 16px;
-    pointer-events: auto;
 }
 
 
@@ -7453,6 +7459,10 @@ async function loadFontsAndInit() {
     const source = document.querySelector('.marquee-content');
     const desktopPanel = document.getElementById('desktop-panel');
     const mobilePanel  = document.getElementById('mobile-panel');
+    mobilePanel.innerHTML = '';
+    const mobilePanelInner = document.createElement('div');
+    mobilePanelInner.className = 'filter-mobile-panel-inner';
+    mobilePanel.appendChild(mobilePanelInner);
 
     source.querySelectorAll('.filter-btn').forEach(function(btn) {
         const onclick = btn.getAttribute('onclick') || '';
@@ -7509,7 +7519,7 @@ async function loadFontsAndInit() {
         mCopy.onclick = function(e) { e.stopPropagation(); copyCatLink(catId, mCopy); };
         mWrap.appendChild(mBtn);
         mWrap.appendChild(mCopy);
-        mobilePanel.appendChild(mWrap);
+        mobilePanelInner.appendChild(mWrap);
     });
 
     // ── Default category: always activate "Nwe" (نوێترین فۆنت) on load ──
