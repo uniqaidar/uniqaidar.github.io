@@ -1245,35 +1245,10 @@ body.is-scrolled .filter-bar-logo-mobile img {
     max-height: 70vh;
     overflow-y: auto;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
     opacity: 1;
     padding: 12px 14px 16px;
     pointer-events: auto;
-}
-/* Mobile-only panel: JS-controlled height, no clip during animation */
-.filter-mobile-panel-mob {
-    display: block;
-    height: 0;
-    max-height: none;
-    overflow: visible;
-    flex-wrap: unset;
-    gap: unset;
-    padding: 0;
-    transition: height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease;
-}
-.filter-mobile-panel-mob.open {
-    max-height: none;
-    overflow: visible;
-    padding: 0;
-}
-.filter-mobile-panel-inner {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 12px 14px 16px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    max-height: 70vh;
-    box-sizing: border-box;
 }
 
 
@@ -3136,10 +3111,11 @@ body.dark-mode .card:focus-within {
     transform: translateY(-2px) !important;
     transition: all 0.18s cubic-bezier(0.34,1.4,0.64,1) !important;
 }
-/* Filter buttons: blue shadow (no transform — prevents GPU layer conflict on Android) */
+/* Filter buttons: pop up + blue shadow */
 .filter-btn:hover, .filter-btn:active {
+    transform: translateY(-3px) scale(1.04) !important;
     box-shadow: 0 6px 18px rgba(0,112,228,0.4) !important;
-    transition: background 0.22s cubic-bezier(0.34,1.56,0.64,1), border-color 0.22s cubic-bezier(0.34,1.56,0.64,1), color 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s cubic-bezier(0.34,1.56,0.64,1) !important;
+    transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1) !important;
 }
 /* Trinity size (file size): lift + blue shadow */
 .trinity-size:hover {
@@ -5118,7 +5094,7 @@ function uqWelcomeToggle() {}
                 <span class="uq-back-btn-inner" id="uq-back-mobile-inner"><span class="uq-back-label">گەڕانەوە بۆ</span><span class="uq-back-icon">◀</span></span>
             </button>
         </div>
-        <div class="filter-mobile-panel filter-mobile-panel-mob" id="mobile-panel"></div>
+        <div class="filter-mobile-panel" id="mobile-panel"></div>
     </div>
 
 </div>
@@ -6260,30 +6236,9 @@ function toggleDesktopCats() {
 function toggleMobileCats() {
     const panel  = document.getElementById('mobile-panel');
     const toggle = document.getElementById('mobile-toggle');
-    const inner  = panel.querySelector('.filter-mobile-panel-inner');
     const isOpen = panel.classList.contains('open');
-    if (!isOpen) {
-        const targetH = Math.min(inner ? inner.scrollHeight : 300, window.innerHeight * 0.7);
-        panel.style.height = '0px';
-        panel.classList.add('open');
-        toggle.classList.add('open');
-        requestAnimationFrame(function() {
-            panel.style.height = targetH + 'px';
-            setTimeout(function() {
-                if (panel.classList.contains('open')) panel.style.height = 'auto';
-            }, 420);
-        });
-    } else {
-        panel.style.height = panel.offsetHeight + 'px';
-        panel.classList.remove('open');
-        toggle.classList.remove('open');
-        requestAnimationFrame(function() {
-            panel.style.height = '0px';
-            setTimeout(function() {
-                if (!panel.classList.contains('open')) panel.style.height = '0';
-            }, 420);
-        });
-    }
+    panel.classList.toggle('open', !isOpen);
+    toggle.classList.toggle('open', !isOpen);
 }
 
 // ── فلتەر کردن بەپێی کاتێگۆری ──────────────────────────
@@ -6337,19 +6292,8 @@ function filterFonts(category, btn) {
         // the cat-dl-mobile-wrap — measuring toggle width before that gives a wrong
         // available width (toggle appears full-width while download btn is still hidden).
         setTimeout(fitMobileLabel, 0);
-        (function() {
-            var mp = document.getElementById('mobile-panel');
-            var mt = document.getElementById('mobile-toggle');
-            if (mp && mp.classList.contains('open')) {
-                mp.style.height = mp.offsetHeight + 'px';
-                mp.classList.remove('open');
-                if (mt) mt.classList.remove('open');
-                requestAnimationFrame(function() {
-                    mp.style.height = '0px';
-                    setTimeout(function() { mp.style.height = '0'; }, 420);
-                });
-            }
-        })();
+        document.getElementById('mobile-panel').classList.remove('open');
+        document.getElementById('mobile-toggle').classList.remove('open');
     }
 
     // فلتەر کردنی لیست — case-insensitive so renamed IDs still work
@@ -7509,10 +7453,6 @@ async function loadFontsAndInit() {
     const source = document.querySelector('.marquee-content');
     const desktopPanel = document.getElementById('desktop-panel');
     const mobilePanel  = document.getElementById('mobile-panel');
-    mobilePanel.innerHTML = '';
-    const mobilePanelInner = document.createElement('div');
-    mobilePanelInner.className = 'filter-mobile-panel-inner';
-    mobilePanel.appendChild(mobilePanelInner);
 
     source.querySelectorAll('.filter-btn').forEach(function(btn) {
         const onclick = btn.getAttribute('onclick') || '';
@@ -7569,7 +7509,7 @@ async function loadFontsAndInit() {
         mCopy.onclick = function(e) { e.stopPropagation(); copyCatLink(catId, mCopy); };
         mWrap.appendChild(mBtn);
         mWrap.appendChild(mCopy);
-        mobilePanelInner.appendChild(mWrap);
+        mobilePanel.appendChild(mWrap);
     });
 
     // ── Default category: always activate "Nwe" (نوێترین فۆنت) on load ──
