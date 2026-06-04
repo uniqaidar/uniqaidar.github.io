@@ -1229,18 +1229,41 @@ body.is-scrolled .filter-bar-logo-mobile img {
 .filter-mobile-toggle .toggle-arrow { transition: transform 0.25s; font-size: 0.8rem; }
 .filter-mobile-toggle.open .toggle-arrow { transform: rotate(180deg); }
 .filter-mobile-panel {
-    display: block;
-    height: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 14px;
     background: #111;
     border-top: 1px solid rgba(255,255,255,0.08);
+    max-height: 0;
+    overflow: hidden;
     opacity: 0;
-    overflow: visible;
-    transition: height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease;
+    transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease, padding 0.3s ease;
     pointer-events: none;
 }
 .filter-mobile-panel.open {
+    max-height: 70vh;
+    overflow-y: auto;
+    overflow-x: hidden;
     opacity: 1;
+    padding: 12px 14px 16px;
     pointer-events: auto;
+}
+/* Mobile-only panel: JS-controlled height, no clip during animation */
+.filter-mobile-panel-mob {
+    display: block;
+    height: 0;
+    max-height: none;
+    overflow: visible;
+    flex-wrap: unset;
+    gap: unset;
+    padding: 0;
+    transition: height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease;
+}
+.filter-mobile-panel-mob.open {
+    max-height: none;
+    overflow: visible;
+    padding: 0;
 }
 .filter-mobile-panel-inner {
     display: flex;
@@ -5095,7 +5118,7 @@ function uqWelcomeToggle() {}
                 <span class="uq-back-btn-inner" id="uq-back-mobile-inner"><span class="uq-back-label">گەڕانەوە بۆ</span><span class="uq-back-icon">◀</span></span>
             </button>
         </div>
-        <div class="filter-mobile-panel" id="mobile-panel"></div>
+        <div class="filter-mobile-panel filter-mobile-panel-mob" id="mobile-panel"></div>
     </div>
 
 </div>
