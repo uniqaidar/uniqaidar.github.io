@@ -6239,11 +6239,6 @@ function toggleMobileCats() {
     const isOpen = panel.classList.contains('open');
     panel.classList.toggle('open', !isOpen);
     toggle.classList.toggle('open', !isOpen);
-    if (!isOpen) {
-        if (window.pauseTypewriter) window.pauseTypewriter();
-    } else {
-        if (window.resumeTypewriter) window.resumeTypewriter();
-    }
 }
 
 // ── فلتەر کردن بەپێی کاتێگۆری ──────────────────────────
@@ -7757,17 +7752,6 @@ window.addEventListener('popstate', function() {
         startTypewriter();
         fitMobileLabel();
     });
-
-    // Expose pause/resume for mobile panel toggle
-    window.pauseTypewriter = function() {
-        clearTimeout(typeTimer);
-        clearTimeout(pauseTimer);
-        clearInterval(cursorTimer);
-    };
-    window.resumeTypewriter = function() {
-        startTypewriter();
-        startCursorBlink();
-    };
 })();
 
 // ── Theme toggle ──────────────────────────────────────
