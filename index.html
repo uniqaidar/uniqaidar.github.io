@@ -6355,8 +6355,8 @@ function filterFonts(category, btn) {
     // Update category download bar
     updateCatDownloadBar(filtered, category);
 
-    _isSearchMode = true;
-    renderFonts(filtered, null, true);
+    var _testInput = document.getElementById('test-input');
+    renderFonts(filtered, _testInput ? _testInput.value : null, true);
 }
 
 // ── بۆکسی تاقیکردنەوە ──────────────────────────────────
