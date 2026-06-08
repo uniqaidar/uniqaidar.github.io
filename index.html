@@ -5693,6 +5693,7 @@ var _filteredFonts = [];   // full filtered list for current category
 var _currentCatId  = '';   // current active category ID
 var _trendingSort  = 'rank'; // 'rank' | 'name' | 'date' — sort for Trending category
 var _uqInitDone    = false; // true after applyUrlParams — suppresses replaceState during init
+var _isSearchMode  = false; // true when search results are showing (Enter pressed)
 
 // ══════════════════════════════════════════════════════════
 // UNIVERSAL RADAR — enriched tracking engine
@@ -6149,7 +6150,7 @@ function renderPagination(total, perPage) {
     prev.className = 'pg-btn';
     prev.textContent = '‹ پێشوو';
     prev.disabled = (_currentPage <= 1);
-    prev.onclick = function() { _currentPage--; grid.style.opacity='0'; window.scrollTo({top:0,behavior:'smooth'}); setTimeout(function(){ grid.style.opacity=''; renderFonts(_filteredFonts, input.value); }, 400); };
+    prev.onclick = function() { _currentPage--; grid.style.opacity='0'; window.scrollTo({top:0,behavior:'smooth'}); setTimeout(function(){ grid.style.opacity=''; renderFonts(_filteredFonts, _isSearchMode ? null : input.value); }, 400); };
     bar.appendChild(prev);
 
     // Page number buttons (show max 7 around current)
@@ -6157,7 +6158,7 @@ function renderPagination(total, perPage) {
     var hi = Math.min(totalPages, _currentPage + 3);
     if (lo > 1) {
         var b1 = document.createElement('button'); b1.className='pg-btn'; b1.textContent='1';
-        b1.onclick=(function(p){return function(){_currentPage=p;grid.style.opacity='0';window.scrollTo({top:0,behavior:'smooth'});setTimeout(function(){grid.style.opacity='';renderFonts(_filteredFonts,input.value);},400);};})(1);
+        b1.onclick=(function(p){return function(){_currentPage=p;grid.style.opacity='0';window.scrollTo({top:0,behavior:'smooth'});setTimeout(function(){grid.style.opacity='';renderFonts(_filteredFonts,_isSearchMode?null:input.value);},400);};})(1);
         bar.appendChild(b1);
         if (lo > 2) { var sp=document.createElement('span'); sp.id='pg-info'; sp.textContent='…'; bar.appendChild(sp); }
     }
@@ -6165,13 +6166,13 @@ function renderPagination(total, perPage) {
         var btn = document.createElement('button');
         btn.className = 'pg-btn' + (p === _currentPage ? ' active' : '');
         btn.textContent = p;
-        (function(pg){ btn.onclick = function(){ _currentPage=pg; grid.style.opacity='0'; window.scrollTo({top:0,behavior:'smooth'}); setTimeout(function(){ grid.style.opacity=''; renderFonts(_filteredFonts,input.value); },400); }; })(p);
+        (function(pg){ btn.onclick = function(){ _currentPage=pg; grid.style.opacity='0'; window.scrollTo({top:0,behavior:'smooth'}); setTimeout(function(){ grid.style.opacity=''; renderFonts(_filteredFonts,_isSearchMode?null:input.value); },400); }; })(p);
         bar.appendChild(btn);
     }
     if (hi < totalPages) {
         if (hi < totalPages - 1) { var sp2=document.createElement('span'); sp2.id='pg-info'; sp2.textContent='…'; bar.appendChild(sp2); }
         var bLast=document.createElement('button'); bLast.className='pg-btn'; bLast.textContent=totalPages;
-        bLast.onclick=(function(p){return function(){_currentPage=p;grid.style.opacity='0';window.scrollTo({top:0,behavior:'smooth'});setTimeout(function(){grid.style.opacity='';renderFonts(_filteredFonts,input.value);},400);};})(totalPages);
+        bLast.onclick=(function(p){return function(){_currentPage=p;grid.style.opacity='0';window.scrollTo({top:0,behavior:'smooth'});setTimeout(function(){grid.style.opacity='';renderFonts(_filteredFonts,_isSearchMode?null:input.value);},400);};})(totalPages);
         bar.appendChild(bLast);
     }
 
@@ -6180,7 +6181,7 @@ function renderPagination(total, perPage) {
     next.className = 'pg-btn';
     next.textContent = 'دواتر ›';
     next.disabled = (_currentPage >= totalPages);
-    next.onclick = function() { _currentPage++; grid.style.opacity='0'; window.scrollTo({top:0,behavior:'smooth'}); setTimeout(function(){ grid.style.opacity=''; renderFonts(_filteredFonts, input.value); }, 400); };
+    next.onclick = function() { _currentPage++; grid.style.opacity='0'; window.scrollTo({top:0,behavior:'smooth'}); setTimeout(function(){ grid.style.opacity=''; renderFonts(_filteredFonts, _isSearchMode ? null : input.value); }, 400); };
     bar.appendChild(next);
 
     // Info
@@ -6246,6 +6247,7 @@ function toggleMobileCats() {
 // ── فلتەر کردن بەپێی کاتێگۆری ──────────────────────────
 // تەنها ئەم فونکشنە دەخوێندرێتەوە کاتێک دوگمەی فلتەر کلیک دەکرێت
 function filterFonts(category, btn) {
+    _isSearchMode = false;
     // Fix mobile 3/4: if detail view is active and this call comes from a category button click, close it first
     var _detailEl = document.getElementById('uq-font-detail-view');
     if (_detailEl && _detailEl.classList.contains('active') && btn) {
@@ -6351,6 +6353,7 @@ function filterFonts(category, btn) {
     // Update category download bar
     updateCatDownloadBar(filtered, category);
 
+    _isSearchMode = true;
     renderFonts(filtered, null, true);
 }
 
@@ -6410,6 +6413,7 @@ input.addEventListener('input', function() {
 // ── Clear search and reset to first category ──
 function clearSearchAndReset() {
     input.value = '';
+    _isSearchMode = false;
     var firstBtn = document.querySelector('#desktop-panel .filter-btn, #mobile-panel .filter-btn');
     if (firstBtn) {
         var catId = firstBtn.getAttribute('onclick').split("'")[1];
