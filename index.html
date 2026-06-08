@@ -6365,6 +6365,8 @@ function filterFonts(category, btn) {
 input.addEventListener('input', function() {
     // Track search keywords with 1s debounce
     if (typeof trackSearch === 'function') trackSearch(input.value);
+    // Keep _renderText in sync so pagination re-renders with the current preview text
+    if (!_isSearchMode) _renderText = input.value;
     // Only update the preview text shown in each visible card — do NOT filter fonts
     var q = input.value;
     var previews = document.querySelectorAll('#font-grid .preview');
