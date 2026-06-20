@@ -22,7 +22,7 @@ export async function onRequestPost(context) {
         const device    = (body.device  || 'Unknown').slice(0, 20);
         const source    = (body.source  || 'Direct').slice(0, 80);
         const landingUrl= (body.url     || '').slice(0, 300);
-        const eventType = (body.event   || 'download').slice(0, 40); // download | copy_font | copy_category | copy_bulk_modal
+        const eventType = (body.event   || 'download').slice(0, 40); // download | copy_font | copy_category | copy_bulk_page
         const searchQ   = (body.search  || '').slice(0, 200);
 
         const now      = new Date();

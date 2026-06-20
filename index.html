@@ -218,14 +218,16 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
 }
 
         .header {
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 10000;
     /* ڕەنگە نوێیەکە لێرە جێگیر کراوە */
     background: #1a1a1a; 
     color: #2d3436; 
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     padding: 18px 10px 14px;
     text-align: center;
-    overflow: hidden;
+    overflow: visible;
     width: 100%;
     box-sizing: border-box;
 }
@@ -580,7 +582,7 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
         .dm-direct-btn-el:hover .arrow-part, .dm-direct-btn-el:active .arrow-part,
         #cat-dl-btn:hover .arrow-part, #cat-dl-btn:active .arrow-part,
         #cat-dl-btn-mobile:hover .arrow-part, #cat-dl-btn-mobile:active .arrow-part,
-        #downloadModalBtn:hover .arrow-part, #downloadModalBtn:active .arrow-part,
+        #downloadPageBtn:hover .arrow-part, #downloadPageBtn:active .arrow-part,
         .trinity-dl:hover .arrow-part, .trinity-dl:active .arrow-part {
             animation: modernArrowLoop 0.8s ease-in-out infinite;
         }
@@ -1617,6 +1619,8 @@ a:active, button:active {
 
     /* هێدەر */
     .header {
+        position: relative;
+        overflow: hidden;
         padding: 12px 10px 15px;
     }
 
@@ -2931,8 +2935,8 @@ body.dark-mode .uq-para-box {
 .trinity-copy.copied { background: #009944; }
 
 /* ══ Task 6: liquidSweep on header download btn + category banner ══ */
-#downloadModalBtn { position:relative; overflow:hidden; }
-#downloadModalBtn::after {
+#downloadPageBtn { position:relative; overflow:hidden; }
+#downloadPageBtn::after {
     content:''; position:absolute; top:0; right:-100%; width:80%; height:100%;
                         background: linear-gradient(-90deg, transparent, rgba(255,255,255,0.1), rgba(255,255,255,0.3), rgba(255,255,255,0.1), transparent);
     animation: liquidSweepRTL 5.0s cubic-bezier(0.4, 0, 0.2, 1) infinite;
@@ -3032,7 +3036,7 @@ body.dark-mode .card:focus-within {
     transition: all 0.22s cubic-bezier(0.34,1.4,0.64,1) !important;
 }
 /* Header bulk download: scale pulse + orange glow */
-#downloadModalBtn:hover, #downloadModalBtn:active {
+#downloadPageBtn:hover, #downloadPageBtn:active {
     transform: scale(1.07) !important;
     background: #ff5700 !important;
     border-color: #ff5700 !important;
@@ -3754,7 +3758,7 @@ body.dark-mode .card-body {
 <button id="theme-toggle-btn" onclick="toggleTheme()"  aria-label="گۆڕینی شێوازی ڕووکار" title="گۆڕینی شێوازی ڕووکار (تاریک / ڕووناک)"><i class="fas fa-sun"></i></button>
 
 
-<button id="downloadModalBtn" class="header-btn" aria-label="داگرتنی تەواوی فۆنتەکان" title="کلیک بکە">
+<button id="downloadPageBtn" class="header-btn" aria-label="داگرتنی تەواوی فۆنتەکان" title="کلیک بکە">
     <span class="modern-dl-icon">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path class="base-part" d="M19 18H5V19H19V18Z" />
@@ -3770,112 +3774,6 @@ body.dark-mode .card-body {
 </a>
 
 
-<div id="downloadModal" class="modal">
-    <div class="modal-content" style="max-width:560px;position:relative;">
-        <div class="modal-inner-scroll" style="padding-top:54px;">
-        <button class="close-download" aria-label="داخستن" title="داخستن"><i class="fas fa-times"></i></button>
-        <h2 id="dm-title" style="font-size:1.5rem;letter-spacing:0.01em;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:normal;padding-right:44px;">
-            داگرتنی تەواوی فۆنتەکان
-            <button id="dm-copy-link-btn" onclick="copyDmLink(this)" title="کۆپیکردنی لینکی داگرتن" aria-label="کۆپیکردنی لینکی داگرتن" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:rgba(7,190,255,0.12);border:1px solid rgba(7,190,255,0.4);border-radius:7px;cursor:pointer;padding:0;transition:background 0.2s,border-color 0.2s,transform 0.18s,box-shadow 0.2s;flex-shrink:0;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#07beff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-            </button><style>
-#dm-copy-link-btn:hover,
-#dm-copy-link-btn:active {
-    background: rgba(7,190,255,0.25) !important;
-    border-color: #07beff !important;
-    transform: scale(1.15) !important;
-    box-shadow: 0 3px 12px rgba(7,190,255,0.45) !important;
-}
-#dm-copy-link-btn.copied {
-    background: rgba(46,204,113,0.2) !important;
-    border-color: #2ecc71 !important;
-}
-#dm-copy-link-btn.copied svg {
-    stroke: #2ecc71 !important;
-}
-</style>
-        </h2>
-        <div class="download-box" style="text-align:center;padding:24px 20px 32px;">
-            <!-- Icon -->
-            <div id="dm-icon-wrap" style="width:80px;height:80px;background:linear-gradient(135deg,#fff3cd,#ffe082);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:0 4px 15px rgba(241,196,15,0.3);">
-                <i class="fas fa-file-archive" style="font-size:38px;color:#e6a800;"></i>
-            </div>
-
-            <!-- Description -->
-            <p id="dm-desc" style="font-size:1.05rem;margin-bottom:24px;color:#444;line-height:1.8;background:#f4f7ff;border-radius:12px;padding:14px 18px;border:1px solid #d8e3ff;">
-            فەرموون لەگەڵ داگرتنی دوایین ئەپدەیتی تەواوی فۆنتەکانی یونی‌قەیدار بە شێوەی فایلی زیپ (ZIP) کە لە ئێستادا ژمارەی فۆنتەکان ٤٥٣ فۆنتە:
-        </p>
-
-            <!-- Google Drive Button -->
-            <div id="dm-btn-wrap" style="display:flex;justify-content:center;margin-bottom:12px;">
-                <a id="dm-btn" href="https://drive.google.com/uc?export=download&id=1sXwTWo3D8_Z_ohppLHHu-YxALLUteiGe" target="_blank" class="dm-drive-btn"
-                   onclick="trackFontDownload('داگرتنی تەواوی فۆنتەکان (Google Drive)', 'bulk')"
-                   style="display:inline-flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(90deg, rgba(10,74,34,1) 0%, rgba(46,204,113,1) 40%, rgba(39,174,96,1) 60%, rgba(10,74,34,1) 100%);background-size:200% auto;animation:uqGreenMoving 2.5s linear infinite;color:white;text-decoration:none;padding:10px 20px;border-radius:12px;font-size:0.95rem;box-shadow:0 4px 14px rgba(39,174,96,0.4);transition:all 0.2s;position:relative;overflow:hidden;width:fit-content;">
-                    <span class="modern-dl-icon">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path class="base-part" d="M19 18H5V19H19V18Z" />
-                            <path class="arrow-part" d="M12 15L17 10H14V4H10V10H7L12 15Z" />
-                        </svg>
-                    </span>
-                    <span id="dm-btn-label">
-            داگرتن لە ڕێگەی لینکی ڕاستەوخۆی گۆگڵ درایڤەوە
-        </span>
-                    <style>
-                        .dm-drive-btn::after {
-                            content: '';
-                            position: absolute;
-                            top: 0; right: -100%; width: 80%; height: 100%;
-                            background: linear-gradient(-90deg, transparent, rgba(255,255,255,0.1), rgba(255,255,255,0.3), rgba(255,255,255,0.1), transparent);
-                            animation: liquidSweepRTL 5.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-                            animation-delay: 0.5s;
-                            pointer-events: none;
-                        }
-                    </style>
-                </a>
-            </div>
-
-            <!-- Divider -->
-            <div class="dm-divider" style="display:flex;align-items:center;gap:10px;margin:14px 0;color:#aaa;font-size:0.85rem;">
-                <div class="dm-divider-line" style="flex:1;height:1px;background:#e0e0e0;"></div>
-                <span>یان</span>
-                <div class="dm-divider-line" style="flex:1;height:1px;background:#e0e0e0;"></div>
-            </div>
-
-            <!-- Direct Download Button -->
-            <div id="dm-direct-wrap" style="display:flex;justify-content:center;">
-                <button id="dm-direct-btn" onclick="downloadFontsDirectly()" class="dm-direct-btn-el"
-                        style="display:inline-flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(90deg, rgba(140,40,0,1) 0%, rgba(255,107,26,1) 40%, rgba(255,87,0,1) 60%, rgba(140,40,0,1) 100%);background-size:200% auto;animation:uqGreenMoving 2.5s linear infinite;color:white;padding:10px 20px;border-radius:12px;font-size:0.95rem;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(255,87,0,0.35);transition:all 0.2s;position:relative;overflow:hidden;width:fit-content;">
-                    <span class="modern-dl-icon">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path class="base-part" d="M19 18H5V19H19V18Z" />
-                            <path class="arrow-part" d="M12 15L17 10H14V4H10V10H7L12 15Z" />
-                        </svg>
-                    </span>
-                    <span id="dm-direct-label">
-            داگرتنی ڕاستەوخۆ بەبێ گووگڵ درایڤ
-        </span>
-                    <style>
-                        .dm-direct-btn-el::after {
-                            content: '';
-                            position: absolute;
-                            top: 0; right: -100%; width: 80%; height: 100%;
-                            background: linear-gradient(-90deg, transparent, rgba(255,255,255,0.1), rgba(255,255,255,0.3), rgba(255,255,255,0.1), transparent);
-                            animation: liquidSweepRTL 4.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-                            animation-delay: 3.0s;
-                            pointer-events: none;
-                        }
-                    </style>
-                </button>
-            </div>
-
-            <!-- Progress -->
-            <div id="zip-progress" style="display:none;margin-top:16px;font-size:0.95rem;color:#555;direction:rtl;background:#f8f9fa;border-radius:10px;padding:12px 16px;">
-                <i class="fas fa-spinner fa-spin"></i> <span id="zip-progress-text">چاوەڕێ بکە...</span>
-            </div>
-        </div>
-        </div><!-- /modal-inner-scroll -->
-    </div>
-</div>
     </div>
 
     <div class="header-logo">
@@ -4079,6 +3977,282 @@ body.dark-mode .card-body {
 
 </section><!-- /uq-welcome-section -->
 
+<!-- ══════════════════════════════════════════════════════════════════
+     UniQaidar Download Page Section
+     ID: download-section
+     Independent page — shown/hidden by downloadPageBtn, hidden by default
+     ═══════════════════════════════════════════════════════════════════ -->
+<section id="download-section" style="display:none;">
+    <div class="dls-bg-glow"></div>
+    <div class="dls-frame">
+
+        <header class="dls-nav-header">
+            <div class="dls-title-row">
+                <span class="dls-title-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </span>
+                <h2 id="dm-title">داگرتنی تەواوی فۆنتەکان</h2>
+                <button id="dm-copy-link-btn" onclick="copyDmLink(this)" title="کۆپیکردنی لینکی داگرتن" aria-label="کۆپیکردنی لینکی داگرتن">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#07beff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="dls-hero-section">
+            <p class="dls-intro-line" id="dls-intro-line">فەرموون لەگەڵ داگرتنی دوایین ئەپدەیتی تەواوی فۆنتەکانی یونی‌قەیدار بە شێوەی فایلی زیپ (ZIP)</p>
+            <span class="dls-font-total" id="dls-font-total">٠</span>
+            <p class="dls-hero-title" id="dls-hero-title">ژمارەی فۆنتەکان لە ئێستادا</p>
+            <div class="dls-hero-divider"></div>
+            <p class="dls-last-updated">دوایین ئەپدەیت: <span id="dls-last-updated-date">—</span></p>
+        </div>
+
+        <div class="dls-options-grid">
+            <div class="dls-download-card" id="dls-gdrive-trigger">
+                <i class="fab fa-google-drive"></i>
+                <h3 id="dls-gdrive-h3">Google Drive</h3>
+                <p id="dls-gdrive-p">داگرتن لە سێرڤەری گۆگڵ درایڤ</p>
+                <div class="dls-scanning-line"></div>
+            </div>
+            <div class="dls-download-card" id="dls-direct-trigger">
+                <i class="fas fa-terminal"></i>
+                <h3 id="dls-direct-h3">سێرڤەری ڕاستەوخۆ</h3>
+                <p id="dls-direct-card-text">دروستکردنی فایلی زیپ لە ئێستادا</p>
+                <div class="dls-scanning-line" id="dls-card-scan"></div>
+            </div>
+        </div>
+
+        <div class="dls-progress-wrapper" id="zip-progress">
+            <div class="dls-progress-label">
+                <span id="zip-progress-text">چاوەڕێ بکە...</span>
+                <span id="dls-percent-text">٪٠</span>
+            </div>
+            <div class="dls-bar-outer">
+                <div class="dls-bar-inner" id="dls-progress-bar"></div>
+            </div>
+            <div id="dls-log-window"></div>
+        </div>
+
+        <div class="dls-about-block">
+            <div class="dls-about-sep"></div>
+            <div class="dls-about-ku" dir="rtl">
+                <h3 class="dls-about-heading" id="dls-about-ku-heading">فۆنتەکانی یونی‌قەیدار</h3>
+                <p id="dls-about-ku-p1">فۆنتەکانی یونی‌قەیدار کۆمەڵێک فۆنتی کوردی و عەرەبی کوالێتی بەرزن کە لەلایەن قەیدار ڕەحیمەوە لە مانگی ئابی ٢٠٠٩دا دەست بە بەرهەمهێنانی کراوە و ژمارەی فۆنتەکان بەردەوام ڕوو لە زیادبوونە. ئامانجی سەرەکی ئەم پڕۆژەیە بریتییە لە دابینکردنی فۆنتی کوردی ستاندارد و گونجاو بۆ بەکارهێنان لە بوارە جیاوازەکاندا، لە دیزاینی گرافیکەوە تا نووسینی دەقی درێژ. ئەم فۆنتانە بە تایبەتمەندی ڕێکی و ڕەوانی لە دیزایندا ناسراون و بە تەواوی یونیکۆدن، کە وایان لێدەکات بەبێ کێشە لەسەر هەموو سیستەمەکانی ویندۆز، ماک، ئەندرۆید، و ئایفۆن کار بکەن.</p>
+                <p id="dls-about-ku-p2">یونی‌قەیدار ڕۆڵێکی گرنگ دەبینێت لە پەرەپێدانی زمانی کوردی لە بواری دیجیتاڵیدا. بە دابینکردنی فۆنتی کوالێتی بەرز و گونجاو، یارمەتی دیزاینەران، نووسەران، و بەکارهێنەرانی تر دەدات کە ناوەڕۆکی کوردی بە شێوەیەکی پیشەیی و جوان پێشکەش بکەن. ئەمەش بەشداری دەکات لە پاراستن و گەشەپێدانی زمانی کوردی لە جیهانی مۆدێرندا.</p>
+            </div>
+            <div class="dls-about-divider"></div>
+            <div class="dls-about-en" dir="ltr">
+                <h3 class="dls-about-heading" id="dls-about-en-heading">UniQaidar Fonts</h3>
+                <p id="dls-about-en-p1">UniQaidar Fonts is a collection of high-quality Kurdish and Arabic typefaces, originally launched by Qaidar Rahim in August 2009. Since its inception, the collection has continuously expanded. The project's primary goal is to provide standardized Kurdish fonts suitable for a wide range of applications, from intricate graphic design to long-form text. Known for their clean and fluid design, these fonts are fully Unicode-compliant, ensuring seamless performance across all major operating systems, including Windows, macOS, Android, and iOS.</p>
+                <p id="dls-about-en-p2">UniQaidar plays a vital role in the digital evolution of the Kurdish language. By providing professional-grade typography, it empowers designers, writers, and creators to present Kurdish content with elegance and precision. Ultimately, this initiative contributes significantly to the preservation and growth of the Kurdish language in the modern digital world.</p>
+            </div>
+        </div>
+
+        <div class="dls-back-footer">
+            <div class="dls-back-footer-sep"></div>
+            <a href="#" id="dls-back-link-mobile" class="dls-back-mobile" title="گەڕانەوە بۆ ماڵپەڕ">
+                <i class="fas fa-chevron-left"></i> <span id="dls-back-label">گەڕانەوە</span>
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<style>
+/* ── Download Page Section ── */
+#download-section {
+    --dls-bg: #050505;
+    --dls-surface: #111;
+    --dls-accent: #ff5700;
+    --dls-text: #ffffff;
+    --dls-muted: #666;
+    --dls-border: #222;
+    background-color: var(--dls-bg);
+    color: var(--dls-text);
+    overflow-x: hidden;
+    padding: 0 20px 80px;
+    position: relative;
+    min-height: calc(100vh - 60px);
+    flex-grow: 1;
+}
+.dls-bg-glow {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at 50% 30%, #ff570018 0%, transparent 70%);
+    z-index: 0; pointer-events: none;
+}
+.dls-frame { width: 100%; max-width: 800px; margin: 0 auto; position: relative; z-index: 1; }
+.dls-nav-header {
+    display: flex; justify-content: center; align-items: center;
+    flex-wrap: wrap; gap: 10px;
+    margin-bottom: 40px;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    border-bottom: 1px solid var(--dls-border);
+    padding: 20px 20px 15px;
+    background: var(--dls-bg);
+    position: relative;
+    z-index: 2;
+}
+.dls-title-row {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: rgba(255,87,0,0.08);
+    border: 1px solid rgba(255,87,0,0.25);
+    border-radius: 10px;
+    padding: 8px 14px;
+}
+.dls-title-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px;
+    background: rgba(255,87,0,0.15);
+    border-radius: 7px;
+    color: var(--dls-accent);
+    flex-shrink: 0;
+}
+.dls-title-row h2 { font-size: 1.2rem; font-weight: normal; color: #fff; margin: 0; }
+#dm-copy-link-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px;
+    background: rgba(7,190,255,0.12); border: 1px solid rgba(7,190,255,0.4);
+    border-radius: 7px; cursor: pointer; padding: 0;
+    transition: background 0.2s, border-color 0.2s, transform 0.18s;
+    flex-shrink: 0;
+}
+#dm-copy-link-btn:hover { background: rgba(7,190,255,0.25) !important; border-color: #07beff !important; transform: scale(1.12) !important; }
+#dm-copy-link-btn.copied { background: rgba(46,204,113,0.2) !important; border-color: #2ecc71 !important; }
+#dm-copy-link-btn.copied svg { stroke: #2ecc71 !important; }
+.dls-back-footer { display: block; text-align: center; }
+.dls-about-block { margin-top: 48px; }
+.dls-about-sep { height: 1px; background: linear-gradient(90deg, transparent, var(--dls-border), transparent); margin-bottom: 40px; }
+.dls-about-ku { text-align: right; margin-bottom: 32px; }
+.dls-about-en { text-align: left; }
+.dls-about-heading { font-size: 1rem; font-weight: normal; color: var(--dls-accent); margin: 0 0 14px; letter-spacing: 0.5px; }
+.dls-about-ku p, .dls-about-en p { font-size: 0.88rem; line-height: 1.9; color: #c8c8c8; margin: 0 0 12px; font-weight: normal; text-align: justify; text-align-last: start; word-break: normal; overflow-wrap: break-word; hyphens: auto; }
+.dls-about-ku p:last-child, .dls-about-en p:last-child { margin-bottom: 0; }
+.dls-about-divider { height: 1px; background: var(--dls-border); margin: 32px 0; }
+.dls-back-footer-sep { height: 1px; background: var(--dls-border); margin: 32px 0 24px; }
+.dls-back-mobile {
+    color: var(--dls-muted); text-decoration: none; font-size: 1.15rem;
+    display: inline-flex; align-items: center; gap: 8px; transition: color 0.2s;
+}
+.dls-back-mobile i { font-size: 1.1rem; }
+.dls-back-mobile:hover { color: var(--dls-accent); }
+.dls-hero-section { text-align: center; margin-bottom: 50px; }
+.dls-intro-line { color: #bbb; font-size: 0.95rem; line-height: 1.85; max-width: 520px; margin: 0 auto 24px; }
+.dls-font-total {
+    font-size: 6rem; font-weight: normal; line-height: 1;
+    color: var(--dls-accent); display: block; margin-bottom: 10px;
+    text-shadow: 0 0 30px rgba(255,87,0,0.3);
+}
+.dls-hero-title { font-size: 1.1rem; font-weight: normal; letter-spacing: 2px; color: #aaa; margin: 0 0 14px; }
+.dls-hero-divider {
+    width: 60px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--dls-accent), transparent);
+    margin: 0 auto 14px;
+}
+.dls-last-updated { color: var(--dls-muted); font-size: 0.85rem; margin: 0; }
+.dls-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.dls-download-card {
+    background: var(--dls-surface); border: 1px solid var(--dls-border);
+    padding: 30px; text-align: center;
+    transition: border-color 0.3s, transform 0.3s, background 0.3s;
+    cursor: pointer; position: relative; overflow: hidden;
+}
+.dls-download-card:hover { border-color: var(--dls-accent); transform: translateY(-4px); background: #161616; }
+.dls-download-card i { font-size: 2.5rem; margin-bottom: 20px; display: block; color: var(--dls-muted); transition: color 0.3s; }
+.dls-download-card:hover i { color: var(--dls-accent); }
+.dls-download-card h3 { margin: 0 0 8px; font-size: 1.05rem; font-weight: normal; color: #fff; }
+.dls-download-card p { color: var(--dls-muted); font-size: 0.82rem; margin: 0; }
+.dls-scanning-line {
+    position: absolute; bottom: 0; left: 0;
+    width: 0%; height: 2px;
+    background: var(--dls-accent);
+    box-shadow: 0 0 8px var(--dls-accent);
+    opacity: 0;
+    transition: width 0.3s ease, opacity 0.2s;
+}
+.dls-download-card.dls-scanning .dls-scanning-line { opacity: 1; }
+#dls-card-scan {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 0%;
+    background: rgba(255,87,0,0.18);
+    box-shadow: none;
+    opacity: 0;
+    transition: height 0.3s ease, opacity 0.2s;
+}
+.dls-download-card.dls-scanning #dls-card-scan { opacity: 1; }
+.dls-progress-wrapper { margin-top: 28px; display: none; }
+.dls-progress-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--dls-muted); margin-bottom: 8px; }
+.dls-bar-outer { height: 4px; background: #1a1a1a; width: 100%; overflow: hidden; }
+.dls-bar-inner { height: 100%; background: var(--dls-accent); width: 0%; transition: width 0.3s; box-shadow: 0 0 10px var(--dls-accent); }
+#dls-log-window { margin-top: 16px; font-family: monospace; font-size: 0.72rem; color: #3a3a3a; height: 36px; overflow: hidden; text-align: left; direction: ltr; }
+@media (max-width: 650px) {
+    .dls-options-grid { grid-template-columns: 1fr; }
+    .dls-font-total { font-size: 4rem; }
+    .dls-title-row { padding: 6px 10px; }
+    .dls-title-row h2 { font-size: 1rem; }
+    /* Mobile: center the title/button row */
+    .dls-nav-header { justify-content: center; }
+}
+body:not(.dark-mode) #download-section {
+    --dls-bg: #f4f4f4;
+    --dls-surface: #ffffff;
+    --dls-accent: #ff5700;
+    --dls-text: #111111;
+    --dls-muted: #888888;
+    --dls-border: #dddddd;
+}
+body:not(.dark-mode) #download-section .dls-bg-glow {
+    background: radial-gradient(circle at 50% 30%, #ff570012 0%, transparent 70%);
+}
+body:not(.dark-mode) #download-section .dls-intro-line { color: #444; }
+body.dark-mode #download-section .dls-intro-line { color: #bbb; }
+body:not(.dark-mode) #download-section .dls-hero-title { color: #555; }
+body:not(.dark-mode) #download-section .dls-title-row h2 { color: #111; }
+body.dark-mode #download-section .dls-title-row h2 { color: #ffffff; }
+body:not(.dark-mode) #download-section .dls-download-card:hover { background: #f9f9f9; }
+body:not(.dark-mode) #download-section .dls-download-card h3 { color: #111; }
+body:not(.dark-mode) #download-section .dls-bar-outer { background: #e0e0e0; }
+body:not(.dark-mode) #download-section #dls-log-window { color: #aaa; }
+body:not(.dark-mode) #download-section .dls-about-ku p,
+body:not(.dark-mode) #download-section .dls-about-en p { color: #222; }
+/* ── Download nav-header: fixed as soon as download page opens (desktop only) ── */
+@media (min-width: 651px) {
+    body.dls-open.dls-scrolled .dls-nav-header {
+        position: fixed;
+        top: var(--dls-header-h, 0px);
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        background: var(--dls-bg);
+        padding: 20px 20px 15px;
+        border-bottom: 1px solid var(--dls-border);
+    }
+    body.dls-open.dls-scrolled .dls-frame {
+        padding-top: var(--dls-navh-h, 80px);
+    }
+}
+@media (max-width: 650px) {
+    body.dls-open .header {
+        position: sticky;
+        top: 0;
+        overflow: visible;
+    }
+    body.dls-open.dls-scrolled .dls-nav-header {
+        position: fixed;
+        top: var(--dls-header-h, 0px);
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        background: var(--dls-bg);
+        padding: 20px 20px 15px;
+        border-bottom: 1px solid var(--dls-border);
+    }
+    body.dls-open.dls-scrolled .dls-frame {
+        padding-top: var(--dls-navh-h, 80px);
+    }
+}
+</style>
+
 <style>
 /* ══════════════════════════════════════════════════════════
    UQ Welcome Section v2 — Always-open animated hero
@@ -4091,6 +4265,13 @@ body.dark-mode .card-body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+/* Gradual fade-out, all viewports, while the download page is open and scrolling */
+body.dls-open #uq-welcome-section {
+    transition: opacity 0.15s linear, transform 0.15s linear, margin-top 0.15s linear;
+    will-change: opacity, transform;
+    background: #050505;
+    overflow: hidden;
 }
 
 /* ══ HERO BANNER — Option D ══════════════════════════════ */
@@ -5827,7 +6008,7 @@ var _renderText    = null;  // last text argument passed to renderFonts — reus
         } catch(e) {}
     };
 
-    // ── Viral event tracker (copy_font, copy_category, copy_bulk_modal,
+    // ── Viral event tracker (copy_font, copy_category, copy_bulk_page,
     //    social_facebook, social_telegram, contact_whatsapp, contact_telegram_support) ──
     window.trackViralEvent = function(eventType, label) {
         try {
@@ -5905,13 +6086,14 @@ function renderFonts(data, text, resetPage) {
     if (_currentPage > totalPages && totalPages > 0) _currentPage = totalPages;
     if (_currentPage < 1) _currentPage = 1;
 
-    // ── Sync page number to URL ──
+    // ── Sync page number to URL (real history entry so back/forward works) ──
     if (_uqInitDone) {
         try {
             var params = new URLSearchParams(location.search);
             if (_currentPage > 1) { params.set('page', _currentPage); }
             else { params.delete('page'); }
-            history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params.toString() : ''));
+            var _histMethod2 = window._uqPopstate ? 'replaceState' : 'pushState';
+            history[_histMethod2](null, '', location.pathname + (params.toString() ? '?' + params.toString() : ''));
         } catch(e) {}
     }
 
@@ -6347,7 +6529,7 @@ function filterFonts(category, btn) {
     // Update category state for pagination and cat-download
     _currentCatId = category;
 
-    // ── Sync category + reset page in URL (only after init, so applyUrlParams can read original URL) ──
+    // ── Sync category + reset page in URL (real history entry so back/forward works) ──
     if (_uqInitDone) {
         try {
             var params = new URLSearchParams(location.search);
@@ -6356,7 +6538,8 @@ function filterFonts(category, btn) {
             params.delete('q');
             params.delete('page');
             params.delete('font');
-            history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params.toString() : ''));
+            var _histMethod = window._uqPopstate ? 'replaceState' : 'pushState';
+            history[_histMethod](null, '', location.pathname + (params.toString() ? '?' + params.toString() : ''));
         } catch(e) {}
     }
 
@@ -6457,15 +6640,7 @@ function doSearch() {
     }
     const q = input.value.trim().toLowerCase();
     if (!q) {
-        // Clear ?q= from URL when search is cleared
-        try {
-            var _urlObj = new URL(window.location.href);
-            if (_urlObj.searchParams.has('q')) {
-                _urlObj.searchParams.delete('q');
-                var _newHref = _urlObj.pathname + (_urlObj.search && _urlObj.search !== '?' ? _urlObj.search : '') + _urlObj.hash;
-                history.replaceState(null, '', _newHref);
-            }
-        } catch(e) {}
+        // URL is synced by filterFonts() below (single history entry: clears q/page/font, sets cat)
         const activeBtn = document.querySelector('#desktop-panel .filter-btn.active, #mobile-panel .filter-btn.active');
         const firstBtn  = document.querySelector('#desktop-panel .filter-btn, #mobile-panel .filter-btn');
         const fallbackId = firstBtn ? firstBtn.getAttribute('onclick').split("'")[1] : 'Nwe';
@@ -6473,13 +6648,13 @@ function doSearch() {
         filterFonts(category, null);
         return;
     }
-    // Sync ?q= into the URL so results are shareable and bookmarkable
+    // Sync ?q= into the URL so results are shareable and bookmarkable (real history entry — only on submit, not while typing)
     try {
         var _urlQ = new URL(window.location.href);
         _urlQ.searchParams.set('q', input.value.trim());
         _urlQ.searchParams.delete('font');
         _urlQ.searchParams.delete('cat');
-        history.replaceState(null, '', _urlQ.pathname + _urlQ.search + _urlQ.hash);
+        history.pushState(null, '', _urlQ.pathname + _urlQ.search + _urlQ.hash);
     } catch(e) {}
     // Search across ALL fonts regardless of active category
     var wrap = document.getElementById('cat-dl-inline-wrap');
@@ -6687,10 +6862,9 @@ function copyCatLink(catId, btn) {
 
 function copyDmLink(btn) {
     var params = new URLSearchParams(location.search);
-    params.set('dm', '1');
-    var url = location.origin + location.pathname + '?' + params.toString();
+    var url = location.origin + location.pathname + '?KurdishfontsdownloadUniQaidarFonts';
     copyLink(url, btn, '🔗');
-    if (typeof trackViralEvent === 'function') trackViralEvent('copy_bulk_modal', 'bulk-download-modal');
+    if (typeof trackViralEvent === 'function') trackViralEvent('copy_bulk_page', 'bulk-download-page');
 }
 
 function copyFontLink(fontName, catId, btn) {
@@ -6706,7 +6880,7 @@ function applyUrlParams() {
     const params = new URLSearchParams(location.search);
     const catParam  = params.get('cat');
     const fontParam = params.get('font');
-    const dmParam   = params.get('dm');
+    const dmParam   = params.has('KurdishfontsdownloadUniQaidarFonts') ? 'KurdishfontsdownloadUniQaidarFonts' : params.get('dm');
     const pageParam = params.get('page');
     const qParam    = params.get('q');
 
@@ -6716,10 +6890,9 @@ function applyUrlParams() {
         if (!isNaN(pg) && pg > 1) _currentPage = pg;
     }
 
-    // If ?dm=1 is present, auto-open the download modal
-    if (dmParam === '1') {
-        var dlModal = document.getElementById('downloadModal');
-        if (dlModal) openModal(dlModal);
+    // If ?dm=1 is present, open the download page
+    if (dmParam === 'KurdishfontsdownloadUniQaidarFonts' || dmParam === '1') {
+        if (typeof openDownloadPage === 'function') openDownloadPage();
     }
 
     // If only font param (from admin link), show ALL fonts first so the card exists in DOM
@@ -7371,6 +7544,7 @@ async function loadFontsAndInit() {
             if (!Array.isArray(f.category)) f.category = f.category ? [f.category] : [];
             return f;
         });
+        initDownloadSection();
     } catch(e) {
         console.error('fonts.json بارنەکرا:', e);
         var g = document.getElementById('font-grid');
@@ -7593,6 +7767,12 @@ async function loadFontsAndInit() {
     applyUrlParams();
     _uqInitDone = true;
 
+    // Safety-net history entry: ensures the very first back-button press lands
+    // on this site's initial state instead of exiting the tab/site immediately.
+    try {
+        history.pushState(null, '', location.pathname + location.search);
+    } catch(e) {}
+
     // BTT setup moved to standalone script block at bottom of page
 
     // ── Theme: default is DARK; stays dark unless user explicitly chose 'light' ──
@@ -7659,18 +7839,126 @@ document.addEventListener('DOMContentLoaded', function() {
     loadFontsAndInit();
 });
 
-// Handle browser back/forward button for font detail view
+// ── Download section: live font count + last-updated date + card wiring ──
+function uqToEasternArabicDigits(str) {
+    var map = { '0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','7':'٧','8':'٨','9':'٩' };
+    return String(str).replace(/[0-9]/g, function(d) { return map[d]; });
+}
+
+function uqFormatEasternArabicDate(dateObj) {
+    var day = dateObj.getDate();
+    var month = dateObj.getMonth() + 1;
+    var year = dateObj.getFullYear();
+    return uqToEasternArabicDigits(day) + 'ی ' + uqToEasternArabicDigits(month) + 'ی ' + uqToEasternArabicDigits(year);
+}
+
+function uqAnimateDownloadCounter(el, from, to, durationMs) {
+    var start = null;
+    var range = to - from;
+    function step(ts) {
+        if (!start) start = ts;
+        var elapsed = ts - start;
+        var progress = Math.min(elapsed / durationMs, 1);
+        var ease = 1 - Math.pow(1 - progress, 3);
+        var current = Math.round(from + ease * range);
+        el.textContent = uqToEasternArabicDigits(current);
+        if (progress < 1) requestAnimationFrame(step);
+        else el.textContent = uqToEasternArabicDigits(to);
+    }
+    requestAnimationFrame(step);
+}
+
+function initDownloadSection() {
+    // ── Live font count (same source as the هەموو فۆنتەکان category: fonts.length) ──
+    var totalEl = document.getElementById('dls-font-total');
+    if (totalEl && Array.isArray(fonts)) {
+        uqAnimateDownloadCounter(totalEl, 0, fonts.length, 1400);
+    }
+
+    // ── Last-updated date: most recent adminAddedAt across all fonts, falling back to dateAdded ──
+    var dateEl = document.getElementById('dls-last-updated-date');
+    if (dateEl && Array.isArray(fonts) && fonts.length) {
+        var latestTs = null;
+        fonts.forEach(function(f) {
+            if (f.adminAddedAt) {
+                var t = new Date(f.adminAddedAt);
+                if (!isNaN(t) && (!latestTs || t > latestTs)) latestTs = t;
+            }
+        });
+        if (!latestTs) {
+            // Fallback: no adminAddedAt anywhere — use the newest dateAdded string instead
+            var latestDateStr = null;
+            fonts.forEach(function(f) {
+                if (f.dateAdded && (!latestDateStr || f.dateAdded > latestDateStr)) latestDateStr = f.dateAdded;
+            });
+            if (latestDateStr) latestTs = new Date(latestDateStr);
+        }
+        dateEl.textContent = latestTs && !isNaN(latestTs) ? uqFormatEasternArabicDate(latestTs) : '—';
+    }
+
+    // ── Back link: sessionStorage first (real prior navigation), then explicitly /?cat=Nwe ──
+    var backLinkMobile = document.getElementById('dls-back-link-mobile');
+    if (backLinkMobile) {
+        backLinkMobile.onclick = function(e) {
+            e.preventDefault();
+            closeDownloadPage();
+        };
+    }
+
+    // ── Download cards: wire to the real tracking + download functions ──
+    var gdriveCard = document.getElementById('dls-gdrive-trigger');
+    if (gdriveCard && !gdriveCard._dlsWired) {
+        gdriveCard._dlsWired = true;
+        gdriveCard.addEventListener('click', function() {
+            if (typeof trackFontDownload === 'function') trackFontDownload('داگرتنی تەواوی فۆنتەکان (Google Drive)', 'bulk');
+            window.open('https://drive.google.com/uc?export=download&id=1sXwTWo3D8_Z_ohppLHHu-YxALLUteiGe', '_blank'); // admin:gdrive-url
+        });
+    }
+    var directCard = document.getElementById('dls-direct-trigger');
+    if (directCard && !directCard._dlsWired) {
+        directCard._dlsWired = true;
+        directCard.addEventListener('click', function() {
+            directCard.classList.add('dls-scanning');
+            var _ct = document.getElementById('dls-direct-card-text');
+            if (_ct) { _ct.textContent = 'هەموو فۆنتەکان لە ئێستادا دەکرێتە فایلێکی زیپەوە و پێشکەشت دەکرێت. تکایە چاوەڕوان بە'; } // admin:direct-progress-text
+            downloadFontsDirectly();
+        });
+    }
+}
+
+// ── Track the last non-download page the user was on, so the back link can return to it ──
+(function() {
+    function saveLastPage() {
+        if (location.pathname.indexOf('download') === -1 || true) {
+            // Only skip saving while the user is already inside the download section's own URL state (?dm=1)
+            var p = new URLSearchParams(location.search);
+            if (!p.has('KurdishfontsdownloadUniQaidarFonts') && p.get('dm') !== '1') {
+                try { sessionStorage.setItem('uq_last_page_url', location.pathname + location.search); } catch(e) {}
+            }
+        }
+    }
+    window.addEventListener('popstate', saveLastPage);
+    document.addEventListener('DOMContentLoaded', saveLastPage);
+})();
+
+
 window.addEventListener('popstate', function() {
     var params = new URLSearchParams(location.search);
     var fontParam = params.get('font');
     var catParam  = params.get('cat');
+    var qParam    = params.get('q');
+    var pageParam = params.get('page');
     var detailEl  = document.getElementById('uq-font-detail-view');
-    if (fontParam) {
-        // navigated forward into a font detail — show it
-        showFontDetailView(fontParam, catParam || 'All');
-    } else if (detailEl && detailEl.classList.contains('active')) {
-        // navigated back out of a font detail — close it
-        var storedCat = detailEl.dataset.backCat || catParam || 'Nwe';
+
+    // If the download page is open and back was pressed (dm=1 gone from new URL), close it
+    var dlSection = document.getElementById('download-section');
+    if (dlSection && dlSection.style.display !== 'none' && !params.has('KurdishfontsdownloadUniQaidarFonts') && params.get('dm') !== '1') {
+        closeDownloadPage();
+        return;
+    }
+
+    // Close any open font-detail view first so applyUrlParams starts from a clean slate
+    if (detailEl && detailEl.classList.contains('active') && !fontParam) {
         detailEl.classList.remove('active');
         detailEl.innerHTML = '';
         var desktopBack = document.getElementById('uq-detail-back-desktop');
@@ -7681,26 +7969,35 @@ window.addEventListener('popstate', function() {
         var pb = document.getElementById('pagination-bar');
         if (g) g.style.display = '';
         if (pb) pb.style.display = '';
-        var tBtn = null;
+    }
+
+    if (!catParam && !fontParam && !qParam && !pageParam) {
+        // Back past everything this site recorded — restore the default landing state
+        var nweBtn = null;
         document.querySelectorAll('#desktop-panel .filter-btn').forEach(function(b) {
             var bid = (b.getAttribute('onclick') || '').split("'")[1] || '';
-            if (bid.toLowerCase() === storedCat.toLowerCase()) tBtn = b;
+            if (bid.toLowerCase() === 'nwe') nweBtn = b;
         });
-        filterFonts(storedCat, tBtn);
-        // Restore mobile label (popstate doesn't go through closeFontDetailView)
-        var tBtnM = null;
-        document.querySelectorAll('#mobile-panel .filter-btn').forEach(function(b) {
-            var bid = (b.getAttribute('onclick') || '').split("'")[1] || '';
-            if (bid.toLowerCase() === storedCat.toLowerCase()) tBtnM = b;
-        });
-        var mLabel = document.getElementById('mobile-active-label');
-        if (mLabel) {
-            var mLabelText = tBtnM ? tBtnM.textContent.trim().replace(/\s*\(\d+\)\s*$/, '').trim() : _uqGetCatLabel(storedCat);
-            var mCountTxt = tBtnM ? (tBtnM.querySelector('.cat-count') ? tBtnM.querySelector('.cat-count').textContent.trim() : '') : '';
-            mLabel.innerHTML = mLabelText + (mCountTxt ? ' <span style="font-size:0.72em;opacity:0.75;font-family:inherit;vertical-align:middle;line-height:1;position:relative;top:0.18em;">' + mCountTxt + '</span>' : '');
-            fitMobileLabel();
+        if (!nweBtn) nweBtn = document.querySelector('#desktop-panel .filter-btn');
+        document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+        if (nweBtn) {
+            nweBtn.classList.add('active');
+            var nweCatId = nweBtn.getAttribute('onclick').split("'")[1];
+            filterFonts(nweCatId, nweBtn);
+            document.querySelectorAll('#mobile-panel .filter-btn').forEach(function(b) {
+                var bid = (b.getAttribute('onclick') || '').split("'")[1] || '';
+                if (bid.toLowerCase() === nweCatId.toLowerCase()) b.classList.add('active');
+            });
         }
+        // Replenish the safety-net entry so the next back press stays on the site
+        try { history.pushState(null, '', location.pathname + location.search); } catch(e) {}
+        return;
     }
+
+    // Re-derive the full visible state (category / page / search / font detail) from the URL
+    window._uqPopstate = true;
+    applyUrlParams();
+    window._uqPopstate = false;
 });
 
 
@@ -7785,8 +8082,6 @@ function toggleTheme() {
 }
 
 // ── مۆدالی داگرتن ───────────────────────────────────────
-const downloadModal = document.getElementById('downloadModal');
-
 function openModal(m)  {
     m.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
@@ -7796,15 +8091,106 @@ function closeModal(m) {
     document.body.style.overflow = '';
 }
 
-document.getElementById('downloadModalBtn').onclick = function() {
-    openModal(downloadModal);
+// ── Download page: open/close as independent page under welcome bar ──
+// The filter-container wraps desktop-panel, mobile rows, font-grid, and pagination-bar — hiding it hides all main content
+function _dlsGetMainEls() {
+    var els = [];
+    document.querySelectorAll('.filter-container').forEach(function(el) { els.push(el); });
+    return els;
+}
+
+function openDownloadPage() {
+    // Guard: if already open, do nothing (prevents double-open empty-space bug)
+    var dl = document.getElementById('download-section');
+    if (dl && dl.style.display !== 'none') return;
+
+    // Hide all main page content (filter-container wraps panels, font-grid, pagination)
+    _dlsGetMainEls().forEach(function(el) {
+        el.dataset.dlsHidden = el.style.display || '';
+        el.style.display = 'none';
+    });
+
+    // Also hide font-grid, detail view, and pagination-bar which sit outside .filter-container
+    var _fg = document.getElementById('font-grid');
+    if (_fg) { _fg.dataset.dlsHidden = _fg.style.display || ''; _fg.style.display = 'none'; }
+    var _dv = document.getElementById('uq-font-detail-view');
+    if (_dv) { _dv.dataset.dlsHidden = _dv.style.display || ''; _dv.style.display = 'none'; }
+    var _pb = document.getElementById('pagination-bar');
+    if (_pb) { _pb.dataset.dlsHidden = _pb.style.display || ''; _pb.style.display = 'none'; }
+
+    // Show download page
+    if (dl) { dl.style.display = 'block'; window.scrollTo({ top: 0, behavior: 'instant' }); }
+    document.body.classList.add('dls-open');
+    var _hdr = document.querySelector('.header');
+    var _nav = document.querySelector('.dls-nav-header');
+    if (_hdr || _nav) {
+        requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+                if (_hdr) document.documentElement.style.setProperty('--dls-header-h', _hdr.offsetHeight + 'px');
+                if (_nav) document.documentElement.style.setProperty('--dls-navh-h', _nav.offsetHeight + 'px');
+            });
+        });
+    }
+
+    // Animate counter every time the page opens
+    var totalEl = document.getElementById('dls-font-total');
+    if (totalEl && Array.isArray(fonts)) {
+        totalEl.textContent = '٠';
+        uqAnimateDownloadCounter(totalEl, 0, fonts.length, 1400);
+    }
+
+    // Reset progress bar, percent, card scan, and progress wrapper every time the page opens
+    var _dlBar = document.getElementById('dls-progress-bar');
+    if (_dlBar) { _dlBar.style.width = '0%'; }
+    var _dlPct = document.getElementById('dls-percent-text');
+    if (_dlPct) { _dlPct.textContent = '٪٠'; }
+    var _dlScan = document.getElementById('dls-card-scan');
+    if (_dlScan) { _dlScan.style.height = '0%'; }
+    var _dlProg = document.getElementById('zip-progress');
+    if (_dlProg) { _dlProg.style.display = 'none'; }
+    var _dlDirect = document.getElementById('dls-direct-trigger');
+    if (_dlDirect) { _dlDirect.classList.remove('dls-scanning'); }
+    var _dlCardText = document.getElementById('dls-direct-card-text');
+    if (_dlCardText) { _dlCardText.textContent = 'دروستکردنی فایلی زیپ لە ئێستادا'; }
+
+    // Push history entry so browser back closes it
+    try { history.pushState({ dlPage: true }, '', location.pathname + '?KurdishfontsdownloadUniQaidarFonts'); } catch(e) {}
+}
+
+function closeDownloadPage() {
+    // Hide download page
+    var dl = document.getElementById('download-section');
+    if (dl) dl.style.display = 'none';
+    document.body.classList.remove('dls-open');
+
+    // Restore all hidden main content
+    _dlsGetMainEls().forEach(function(el) {
+        el.style.display = el.dataset.dlsHidden || '';
+        delete el.dataset.dlsHidden;
+    });
+
+    // Restore font-grid, detail view, pagination-bar, and welcome section
+    var _fg = document.getElementById('font-grid');
+    if (_fg) { _fg.style.display = _fg.dataset.dlsHidden || ''; delete _fg.dataset.dlsHidden; }
+    var _dv = document.getElementById('uq-font-detail-view');
+    if (_dv) { _dv.style.display = _dv.dataset.dlsHidden || ''; delete _dv.dataset.dlsHidden; }
+    var _pb = document.getElementById('pagination-bar');
+    if (_pb) { _pb.style.display = _pb.dataset.dlsHidden || ''; delete _pb.dataset.dlsHidden; }
+
+    // Restore URL — remove KurdishfontsdownloadUniQaidarFonts param
+    try {
+        var p = new URLSearchParams(location.search);
+        p.delete('dm');
+        var newSearch = p.toString().replace(/KurdishfontsdownloadUniQaidarFonts&?/g, '').replace(/&$/, '');
+        history.pushState(null, '', location.pathname + (newSearch ? '?' + newSearch : ''));
+    } catch(e) {}
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.getElementById('downloadPageBtn').onclick = function() {
+    openDownloadPage();
 };
-document.querySelector('.close-download').onclick = function() {
-    closeModal(downloadModal);
-};
-window.addEventListener('click', function(e) {
-    if (e.target === downloadModal) closeModal(downloadModal);
-});
 
 document.getElementById('contact-whatsapp').addEventListener('click', function() {
     if (typeof trackViralEvent === 'function') trackViralEvent('contact_whatsapp', 'whatsapp');
@@ -8017,7 +8403,7 @@ function openFacebookModal(pageUrl) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
 async function downloadFontsDirectly() {
-    const btn = document.getElementById('dm-direct-btn');
+    const btn = document.getElementById('dls-direct-trigger');
     const progressDiv = document.getElementById('zip-progress');
     const progressText = document.getElementById('zip-progress-text');
 
@@ -8042,6 +8428,13 @@ async function downloadFontsDirectly() {
 
     btn.disabled = true;
     btn.style.opacity = '0.6';
+    // Reset progress bar and card scan fill from any previous download before starting a new one
+    var _cardScanReset = document.getElementById('dls-card-scan');
+    if (_cardScanReset) { _cardScanReset.style.height = '0%'; }
+    var _barReset = document.getElementById('dls-progress-bar');
+    if (_barReset) { _barReset.style.width = '0%'; }
+    var _pctReset = document.getElementById('dls-percent-text');
+    if (_pctReset) { _pctReset.textContent = '٪٠'; }
     progressDiv.style.display = 'block';
     progressText.textContent = 'کۆکردنەوەی ناونیشانی فۆنتەکان...';
 
@@ -8083,6 +8476,14 @@ async function downloadFontsDirectly() {
                 } else { failed++; }
             } catch(e) { failed++; }
             done++;
+            // ── Issues 3 + 7: update card scan line, bottom bar, and percent text with real progress ──
+            var pct = Math.round((done / total) * 100);
+            var percentEl = document.getElementById('dls-percent-text');
+            var barEl = document.getElementById('dls-progress-bar');
+            var cardScanEl = document.getElementById('dls-card-scan');
+            if (percentEl) percentEl.textContent = '٪' + uqToEasternArabicDigits(pct);
+            if (barEl) barEl.style.width = pct + '%';
+            if (cardScanEl) cardScanEl.style.height = pct + '%';
         }
 
         progressText.textContent = 'زیپ دروست دەکرێت...';
@@ -8097,6 +8498,8 @@ async function downloadFontsDirectly() {
         a.click();
         document.body.removeChild(a);
         progressText.textContent = '✅ تەواو! ' + (total - failed) + ' فۆنت داگیرا';
+        var _ctDone = document.getElementById('dls-direct-card-text');
+        if (_ctDone) { _ctDone.textContent = 'هەموو فۆنتەکانت داونلۆد کرد.. هەر بژی..'; } // admin:direct-done-text
 
         // Track bulk download
         trackFontDownload('داگرتنی تەواوی فۆنتەکان (Direct ZIP)', 'bulk');
@@ -8650,6 +9053,88 @@ function toggleParaPreview(btn, fontName) {
     }
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll(); // run once on load in case page is already scrolled
+
+    // ── Keep filter-container flush below sticky header ──
+    function syncFilterTop() {
+        var hdr = document.querySelector('.header');
+        var fc  = document.querySelector('.filter-container');
+        if (!hdr || !fc) return;
+        // Only apply on desktop (header is sticky); on mobile header is relative so top stays 0
+        var style = window.getComputedStyle(hdr);
+        if (style.position === 'sticky') {
+            fc.style.top = hdr.offsetHeight + 'px';
+        } else {
+            fc.style.top = '';
+        }
+    }
+    window.addEventListener('resize', syncFilterTop);
+    // Run after fonts and layout settle
+    window.addEventListener('load', syncFilterTop);
+    setTimeout(syncFilterTop, 300);
+})();
+
+// ── Download page: gradual welcome-bar fade on scroll (desktop only) ────────
+(function() {
+    var FADE_DISTANCE = 40; // px of scroll over which the welcome bar fully fades
+    var DESKTOP_MIN_WIDTH = 651;
+    var ticking = false;
+
+    function isDesktop() { return window.innerWidth >= DESKTOP_MIN_WIDTH; }
+
+    function update() {
+        ticking = false;
+        if (!document.body.classList.contains('dls-open')) return;
+
+        var ws = document.getElementById('uq-welcome-section');
+        if (!ws) return;
+
+        var y = window.scrollY;
+        var progress = Math.max(0, Math.min(1, y / FADE_DISTANCE));
+
+        ws.style.opacity = String(1 - progress);
+        ws.style.transform = 'translateY(' + (-progress * 16) + 'px)';
+        ws.style.marginTop = (-progress * ws.offsetHeight) + 'px';
+        ws.style.pointerEvents = progress > 0.05 ? 'none' : '';
+
+        // Once fully faded, hand off to the sticky/fixed nav-header
+        if (progress >= 1) {
+            document.body.classList.add('dls-scrolled');
+        } else {
+            document.body.classList.remove('dls-scrolled');
+        }
+    }
+
+    function onDlsScroll() {
+        if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(update);
+        }
+    }
+
+    window.addEventListener('scroll', onDlsScroll, { passive: true });
+    window.addEventListener('resize', onDlsScroll, { passive: true });
+
+    // Reset welcome-bar fade state whenever the download page opens/closes,
+    // so it always starts fully visible (not mid-fade from a previous scroll position)
+    var _origOpenDP = window.openDownloadPage;
+    if (typeof _origOpenDP === 'function') {
+        window.openDownloadPage = function() {
+            _origOpenDP.apply(this, arguments);
+            var ws = document.getElementById('uq-welcome-section');
+            if (ws) { ws.style.opacity = ''; ws.style.transform = ''; ws.style.marginTop = ''; ws.style.pointerEvents = ''; }
+            document.body.classList.remove('dls-scrolled');
+            requestAnimationFrame(update);
+        };
+    }
+    var _origCloseDP = window.closeDownloadPage;
+    if (typeof _origCloseDP === 'function') {
+        window.closeDownloadPage = function() {
+            var ws = document.getElementById('uq-welcome-section');
+            if (ws) { ws.style.opacity = ''; ws.style.transform = ''; ws.style.marginTop = ''; ws.style.pointerEvents = ''; }
+            document.body.classList.remove('dls-scrolled');
+            _origCloseDP.apply(this, arguments);
+        };
+    }
 })();
 </script>
 <script>

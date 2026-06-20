@@ -742,7 +742,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
             <div class="box-body">
                 <div style="display:flex;gap:10px;flex-wrap:wrap;">
                     <button class="btn btn-ghost" onclick="go('t-visual', document.querySelector('.tab[onclick*=t-visual]')); setTimeout(function(){ pvbOpenModal('about'); }, 400);">ℹ About Modal</button>
-                    <button class="btn btn-ghost" onclick="go('t-visual', document.querySelector('.tab[onclick*=t-visual]')); setTimeout(function(){ pvbOpenModal('download'); }, 400);">⬇ Download Modal</button>
+                    <button class="btn btn-ghost" onclick="go('t-visual', document.querySelector('.tab[onclick*=t-visual]')); setTimeout(function(){ pvbOpenModal('download'); }, 400);">⬇ Download Page</button>
                 </div>
             </div>
         </div>
@@ -1377,56 +1377,135 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
     <!-- ══════════════════════════════════════════════════════ -->
     <div id="t-modals" class="tab-content">
 
-        <!-- Download Modal Editor -->
+        <!-- Download Page Editor -->
         <div class="box">
-            <div class="box-header"><div class="dot" style="background:var(--accent)"></div> 📥 Download Modal</div>
+            <div class="box-header"><div class="dot" style="background:var(--accent)"></div> 📥 Download Page</div>
             <div class="box-body">
                 <div class="form-grid">
+
+                    <!-- ── Header ── -->
+                    <div class="form-group full" style="border-bottom:1px solid #2a2a2a;padding-bottom:14px;margin-bottom:4px;">
+                        <label style="color:#888;font-size:10px;letter-spacing:1px;text-transform:uppercase;">Header</label>
+                    </div>
                     <div class="form-group">
                         <label>Header Button Label</label>
                         <input type="text" id="dm-header-btn-inp" placeholder="داگرتنی تەواوی فۆنتەکان" style="direction:rtl;">
                     </div>
                     <div class="form-group">
-                        <label>Modal Title <span style="font-size:10px;color:#666;">(shared with About Modal title)</span></label>
+                        <label>Page Title</label>
                         <input type="text" id="dm-title-inp" placeholder="داگرتنی تەواوی فۆنتەکان" style="direction:rtl;">
                         <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
                             <label style="font-size:10px;color:#aaa;margin:0;">☀️</label>
-                            <button type="button" id="dm-title-light-color" data-hex="#339cff" title="Light mode: .modal-content h2" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#339cff;"></span>Pick</button>
+                            <button type="button" id="dm-title-light-color" data-hex="#111111" title="Light mode: body:not(.dark-mode) #download-section .dls-title-row h2" onclick="(function(btn){var cur=btn.dataset.hex||'111111';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})(this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#111111;"></span>Pick</button>
                             <label style="font-size:10px;color:#aaa;margin:0;">🌙</label>
-                            <button type="button" id="dm-title-dark-color" data-hex="#07beff" title="Dark mode: body.dark-mode .modal-content h2" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#07beff;"></span>Pick</button>
+                            <button type="button" id="dm-title-dark-color" data-hex="#ffffff" title="Dark mode: body.dark-mode #download-section .dls-title-row h2" onclick="(function(btn){var cur=btn.dataset.hex||'ffffff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})(this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffffff;"></span>Pick</button>
                         </div>
+                    </div>
+
+                    <!-- ── Hero Section ── -->
+                    <div class="form-group full" style="border-bottom:1px solid #2a2a2a;padding-bottom:14px;margin-bottom:4px;margin-top:8px;">
+                        <label style="color:#888;font-size:10px;letter-spacing:1px;text-transform:uppercase;">Hero Section</label>
                     </div>
                     <div class="form-group full">
-                        <label>Description</label>
-                        <textarea id="dm-desc-inp" style="direction:rtl;height:64px;" placeholder="پێناسەی مۆدالی داگرتن..."></textarea>
+                        <label>Intro Line</label>
+                        <textarea id="dm-desc-inp" style="direction:rtl;height:64px;" placeholder="فەرموون لەگەڵ داگرتنی..."></textarea>
                         <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
                             <label style="font-size:10px;color:#aaa;margin:0;">☀️</label>
-                            <button type="button" id="dm-desc-light-color" data-hex="#111111" title="Light mode: body:not(.dark-mode) #dm-desc color" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#111111;"></span>Pick</button>
+                            <button type="button" id="dm-desc-light-color" data-hex="#444444" title="Light mode: body:not(.dark-mode) #download-section .dls-intro-line" onclick="(function(btn){var cur=btn.dataset.hex||'444444';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})(this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#444444;"></span>Pick</button>
                             <label style="font-size:10px;color:#aaa;margin:0;">🌙</label>
-                            <button type="button" id="dm-desc-dark-color" data-hex="#ffffff" title="Dark mode: body.dark-mode #dm-desc color" onclick="(function(btn){var cur=btn.dataset.hex||'07beff';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})  (this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#ffffff;"></span>Pick</button>
+                            <button type="button" id="dm-desc-dark-color" data-hex="#bbbbbb" title="Dark mode: body.dark-mode #download-section .dls-intro-line" onclick="(function(btn){var cur=btn.dataset.hex||'bbbbbb';uqOpenPicker(cur.replace('#',''),function(hex){btn.dataset.hex=hex;btn.querySelector('.uq-css-dot').style.background=hex;})})(this)" style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;background:#2a2a2a;border:1px solid #555;border-radius:3px;cursor:pointer;font-size:11px;color:#ccc;vertical-align:middle;"><span class="uq-css-dot" style="width:14px;height:14px;border-radius:2px;border:1px solid #666;display:inline-block;flex-shrink:0;background:#bbbbbb;"></span>Pick</button>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Download Button Label</label>
-                        <input type="text" id="dm-btn-inp" placeholder="داگرتن لە Google Drive" style="direction:rtl;">
+                        <label>Font Count Label</label>
+                        <input type="text" id="dm-hero-title-inp" placeholder="ژمارەی فۆنتەکان لە ئێستادا" style="direction:rtl;">
+                    </div>
+
+                    <!-- ── Download Cards ── -->
+                    <div class="form-group full" style="border-bottom:1px solid #2a2a2a;padding-bottom:14px;margin-bottom:4px;margin-top:8px;">
+                        <label style="color:#888;font-size:10px;letter-spacing:1px;text-transform:uppercase;">Download Cards</label>
                     </div>
                     <div class="form-group">
-                        <label>Download URL</label>
-                        <input type="text" id="dl-url" placeholder="https://drive.google.com/..." style="direction:ltr;">
+                        <label>Google Drive Card — Title</label>
+                        <input type="text" id="dm-btn-inp" placeholder="Google Drive" style="direction:ltr;">
                     </div>
                     <div class="form-group">
-                        <label>Direct Download Label</label>
-                        <input type="text" id="dm-direct-inp" placeholder="داگرتنی ڕاستەوخۆ" style="direction:rtl;">
+                        <label>Google Drive Card — Subtitle</label>
+                        <input type="text" id="dm-gdrive-p-inp" placeholder="داگرتن لە سێرڤەری گۆگڵ درایڤ" style="direction:rtl;">
+                    </div>
+                    <div class="form-group full">
+                        <label>Google Drive URL</label>
+                        <input type="text" id="dl-url" placeholder="https://drive.google.com/uc?export=download&id=..." style="direction:ltr;">
+                    </div>
+                    <div class="form-group">
+                        <label>Direct Server Card — Title</label>
+                        <input type="text" id="dm-direct-inp" placeholder="سێرڤەری ڕاستەوخۆ" style="direction:rtl;">
+                    </div>
+                    <div class="form-group">
+                        <label>Direct Server Card — Subtitle</label>
+                        <input type="text" id="dm-direct-card-inp" placeholder="دروستکردنی فایلی زیپ لە ئێستادا" style="direction:rtl;">
+                    </div>
+                    <div class="form-group full">
+                        <label>Direct Server Card — Progress Text (shown while zipping)</label>
+                        <input type="text" id="dm-direct-progress-inp" placeholder="هەموو فۆنتەکان لە ئێستادا دەکرێتە فایلێکی زیپەوە و پێشکەشت دەکرێت. تکایە چاوەڕوان بە" style="direction:rtl;">
+                    </div>
+                    <div class="form-group full">
+                        <label>Direct Server Card — Done Text (shown after download)</label>
+                        <input type="text" id="dm-direct-done-inp" placeholder="هەموو فۆنتەکانت داونلۆد کرد.. هەر بژی.." style="direction:rtl;">
+                    </div>
+
+                    <!-- ── About Block — Kurdish ── -->
+                    <div class="form-group full" style="border-bottom:1px solid #2a2a2a;padding-bottom:14px;margin-bottom:4px;margin-top:8px;">
+                        <label style="color:#888;font-size:10px;letter-spacing:1px;text-transform:uppercase;">About Block — Kurdish (RTL)</label>
+                    </div>
+                    <div class="form-group full">
+                        <label>Kurdish Heading</label>
+                        <input type="text" id="dm-about-ku-heading-inp" placeholder="فۆنتەکانی یونی‌قەیدار" style="direction:rtl;">
+                    </div>
+                    <div class="form-group full">
+                        <label>Kurdish Paragraph 1</label>
+                        <textarea id="dm-about-ku-p1-inp" style="direction:rtl;height:80px;" placeholder="فۆنتەکانی یونی‌قەیدار..."></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>Kurdish Paragraph 2</label>
+                        <textarea id="dm-about-ku-p2-inp" style="direction:rtl;height:80px;" placeholder="یونی‌قەیدار ڕۆڵێکی..."></textarea>
+                    </div>
+
+                    <!-- ── About Block — English ── -->
+                    <div class="form-group full" style="border-bottom:1px solid #2a2a2a;padding-bottom:14px;margin-bottom:4px;margin-top:8px;">
+                        <label style="color:#888;font-size:10px;letter-spacing:1px;text-transform:uppercase;">About Block — English (LTR)</label>
+                    </div>
+                    <div class="form-group full">
+                        <label>English Heading</label>
+                        <input type="text" id="dm-about-en-heading-inp" placeholder="UniQaidar Fonts" style="direction:ltr;">
+                    </div>
+                    <div class="form-group full">
+                        <label>English Paragraph 1</label>
+                        <textarea id="dm-about-en-p1-inp" style="direction:ltr;height:80px;" placeholder="UniQaidar Fonts is a collection..."></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>English Paragraph 2</label>
+                        <textarea id="dm-about-en-p2-inp" style="direction:ltr;height:80px;" placeholder="UniQaidar plays a vital role..."></textarea>
+                    </div>
+
+                    <!-- ── Footer ── -->
+                    <div class="form-group full" style="border-bottom:1px solid #2a2a2a;padding-bottom:14px;margin-bottom:4px;margin-top:8px;">
+                        <label style="color:#888;font-size:10px;letter-spacing:1px;text-transform:uppercase;">Footer</label>
+                    </div>
+                    <div class="form-group">
+                        <label>Back Link Label</label>
+                        <input type="text" id="dm-back-label-inp" placeholder="گەڕانەوە" style="direction:rtl;">
                     </div>
                     <div class="form-group">
                         <label>Category Download Button Label</label>
                         <input type="text" id="dm-cat-dl-inp" placeholder="داگرتنی کاتێگۆری" style="direction:rtl;">
                     </div>
+
                 </div>
                 <div id="dl-alert" class="alert" style="margin-top:10px;"></div>
                 <div class="btn-row">
                     <button class="btn btn-ghost" onclick="if(typeof loadAllSettings==='function') loadAllSettings()">↺ Reload from GitHub</button>
-                    <button class="btn btn-primary" onclick="saveDownloadModal()">💾 Save Download Modal</button>
+                    <button class="btn btn-primary" onclick="saveDownloadModal()">💾 Save Download Page</button>
                 </div>
             </div>
         </div>
@@ -1786,7 +1865,7 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                             <label class="pvb-label">📋 Open Modals for Editing</label>
                             <div style="display:flex;gap:6px;">
                                 <button class="pvb-btn pvb-btn-sm pvb-btn-ghost" style="flex:1;" onclick="pvbOpenModal('about')">ℹ About</button>
-                                <button class="pvb-btn pvb-btn-sm pvb-btn-ghost" style="flex:1;" onclick="pvbOpenModal('download')">⬇ Download</button>
+                                <button class="pvb-btn pvb-btn-sm pvb-btn-ghost" style="flex:1;" onclick="pvbOpenModal('download')">⬇ Download Page</button>
                             </div>
                         </div>
                     </div>
@@ -3677,19 +3756,22 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                 modalEl = (win.aboutModal instanceof Element) ? win.aboutModal
                         : _pvbIDoc.getElementById('aboutModal')
                         || _pvbIDoc.querySelector('[id*="about" i][id*="modal" i]');
+                if (modalEl) {
+                    if (typeof win.openModal === 'function') {
+                        win.openModal(modalEl);
+                    } else {
+                        modalEl.style.cssText += ';display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:all!important;';
+                        modalEl.classList.add('active','open','show');
+                    }
+                }
             } else {
-                modalEl = (win.downloadModal instanceof Element) ? win.downloadModal
-                        : _pvbIDoc.getElementById('downloadModal')
-                        || _pvbIDoc.getElementById('dl-modal')
-                        || _pvbIDoc.querySelector('[id*="download" i][id*="modal" i]');
+                // Download is now a full page, not a modal — open it and target #download-section
+                if (typeof win.openDownloadPage === 'function') {
+                    win.openDownloadPage();
+                }
+                modalEl = _pvbIDoc.getElementById('download-section');
             }
             if (modalEl) {
-                if (typeof win.openModal === 'function') {
-                    win.openModal(modalEl);
-                } else {
-                    modalEl.style.cssText += ';display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:all!important;';
-                    modalEl.classList.add('active','open','show');
-                }
                 if (!_pvbIDoc.getElementById('pvb-modal-zfix')) {
                     const s = _pvbIDoc.createElement('style');
                     s.id = 'pvb-modal-zfix';
@@ -3722,14 +3804,14 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                 }
                 _pvbEl = modalEl;
                 const bc = document.getElementById('pvb-sel-breadcrumb');
-                if (bc) bc.textContent = (which === 'about' ? 'About Modal' : 'Download Modal');
+                if (bc) bc.textContent = (which === 'about' ? 'About Modal' : 'Download Page');
                 document.getElementById('pvb-inspector-section').style.display = 'block';
                 document.getElementById('pvb-inspect-empty').style.display = 'none';
-                document.getElementById('pvb-selected-label').textContent = which + ' modal';
+                document.getElementById('pvb-selected-label').textContent = which === 'about' ? 'about modal' : 'download page';
                 return;
             }
-            alert('Modal element not found in canvas.');
-        } catch(e) { alert('Error opening modal: ' + e.message); }
+            alert(which === 'about' ? 'Modal element not found in canvas.' : 'Download section not found in canvas.');
+        } catch(e) { alert('Error opening: ' + e.message); }
     }
 
     // ── Theme Presets ─────────────────────────────────────
@@ -4621,7 +4703,8 @@ body.lang-en .arc-item, body.lang-en .arc-prev { direction: rtl; }
                     '[id*="modal"].active','[id*="modal"].open','[id*="modal"].show',
                     '.modal.active','.modal.open','.modal.show','.modal.modal-open',
                     '.modal-open',
-                    '[id="aboutModal"]','[id="downloadModal"]','[id="dl-modal"]'
+                    '[id="aboutModal"]','[id="downloadModal"]','[id="dl-modal"]',
+                    '#download-section'
                 ];
                 let visibleModal = null;
                 for (const sel of modalSelectors) {
@@ -7999,26 +8082,62 @@ function loadAllSettings() {
             return '<span style="color:' + color + ';">' + inner + '</span>';
         }
 
-        // Download Modal fields
+        // Download Page fields
         var _hBtn = _rawInner('header-btn-label');
         if (_hBtn !== null) set('dm-header-btn-inp', _hBtn.trim());
 
         var _dmTitle = _rawInnerNoBtn('dm-title');
         if (_dmTitle !== null) set('dm-title-inp', _dmTitle);
 
-        var _dmDesc = _rawInner('dm-desc');
-        if (_dmDesc !== null) set('dm-desc-inp', _dmDesc.trim());
+        var _introLine = _rawInner('dls-intro-line');
+        if (_introLine !== null) set('dm-desc-inp', _introLine.trim());
 
-        var _dmBtnLbl = _rawInner('dm-btn-label');
-        if (_dmBtnLbl !== null) set('dm-btn-inp', _dmBtnLbl.trim());
+        var _heroTitle = _rawInner('dls-hero-title');
+        if (_heroTitle !== null) set('dm-hero-title-inp', _heroTitle.trim());
 
-        // Download URL — extract from href attribute (not innerHTML)
-        var _dmHrefM = RAW.match(/<a\s[^>]*\bid="dm-btn"[^>]*\bhref="([^"]*)"[^>]*>/i)
-                    || RAW.match(/<a\s[^>]*\bhref="([^"]*)"[^>]*\bid="dm-btn"[^>]*>/i);
-        if (_dmHrefM) set('dl-url', _dmHrefM[1]);
+        var _gdriveH3 = _rawInner('dls-gdrive-h3');
+        if (_gdriveH3 !== null) set('dm-btn-inp', _gdriveH3.trim());
 
-        var _dmDirect = _rawInner('dm-direct-label');
-        if (_dmDirect !== null) set('dm-direct-inp', _dmDirect.trim());
+        var _gdriveP = _rawInner('dls-gdrive-p');
+        if (_gdriveP !== null) set('dm-gdrive-p-inp', _gdriveP.trim());
+
+        // Google Drive URL — extract from JS hardcoded string via admin marker
+        var _gdriveUrlM = RAW.match(/window\.open\('([^']+)',[^)]*\);\s*\/\/\s*admin:gdrive-url/);
+        if (_gdriveUrlM) set('dl-url', _gdriveUrlM[1]);
+
+        var _directH3 = _rawInner('dls-direct-h3');
+        if (_directH3 !== null) set('dm-direct-inp', _directH3.trim());
+
+        var _directCardText = _rawInner('dls-direct-card-text');
+        if (_directCardText !== null) set('dm-direct-card-inp', _directCardText.trim());
+
+        // Direct card progress/done text — hardcoded in JS, extracted via admin marker
+        var _directProgressM = RAW.match(/_ct\.textContent\s*=\s*'([^']*)';\s*\}\s*\/\/\s*admin:direct-progress-text/);
+        if (_directProgressM) set('dm-direct-progress-inp', _directProgressM[1]);
+
+        var _directDoneM = RAW.match(/_ctDone\.textContent\s*=\s*'([^']*)';\s*\}\s*\/\/\s*admin:direct-done-text/);
+        if (_directDoneM) set('dm-direct-done-inp', _directDoneM[1]);
+
+        var _aboutKuHeading = _rawInner('dls-about-ku-heading');
+        if (_aboutKuHeading !== null) set('dm-about-ku-heading-inp', _aboutKuHeading.trim());
+
+        var _aboutKuP1 = _rawInner('dls-about-ku-p1');
+        if (_aboutKuP1 !== null) set('dm-about-ku-p1-inp', _aboutKuP1.trim());
+
+        var _aboutKuP2 = _rawInner('dls-about-ku-p2');
+        if (_aboutKuP2 !== null) set('dm-about-ku-p2-inp', _aboutKuP2.trim());
+
+        var _aboutEnHeading = _rawInner('dls-about-en-heading');
+        if (_aboutEnHeading !== null) set('dm-about-en-heading-inp', _aboutEnHeading.trim());
+
+        var _aboutEnP1 = _rawInner('dls-about-en-p1');
+        if (_aboutEnP1 !== null) set('dm-about-en-p1-inp', _aboutEnP1.trim());
+
+        var _aboutEnP2 = _rawInner('dls-about-en-p2');
+        if (_aboutEnP2 !== null) set('dm-about-en-p2-inp', _aboutEnP2.trim());
+
+        var _backLabel = _rawInner('dls-back-label');
+        if (_backLabel !== null) set('dm-back-label-inp', _backLabel.trim());
 
         var _catDl = _rawInner('cat-download-btn-label');
         if (_catDl !== null) set('dm-cat-dl-inp', _catDl.trim());
@@ -8068,13 +8187,13 @@ function loadAllSettings() {
                 if (dot) dot.style.background = hex;
             }
 
-            // ── Modal h2 title (Download + About) ──
-            _setSwatch('dm-title-light-color',  _cssColor(/\.modal-content h2\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
-            _setSwatch('dm-title-dark-color',   _cssColor(/body\.dark-mode\s+\.modal-content h2\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
+            // ── Download page title (dls-title-row h2) ──
+            _setSwatch('dm-title-light-color',  _cssColor(/body:not\(\.dark-mode\)\s+#download-section\s+\.dls-title-row\s+h2\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
+            _setSwatch('dm-title-dark-color',   _cssColor(/body\.dark-mode\s+#download-section\s+\.dls-title-row\s+h2\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
 
-            // ── dm-desc ──
-            _setSwatch('dm-desc-light-color',   _cssColor(/body:not\(\.dark-mode\)\s+#dm-desc\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
-            _setSwatch('dm-desc-dark-color',    _cssColor(/body\.dark-mode\s+#dm-desc\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
+            // ── Download page intro line (dls-intro-line) ──
+            _setSwatch('dm-desc-light-color',   _cssColor(/body:not\(\.dark-mode\)\s+#download-section\s+\.dls-intro-line\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
+            _setSwatch('dm-desc-dark-color',    _cssColor(/body\.dark-mode\s+#download-section\s+\.dls-intro-line\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
 
             // ── about-content ──
             _setSwatch('about-content-light-color', _cssColor(/body:not\(\.dark-mode\)\s+#about-content\s*\{[^}]*color\s*:\s*(#[0-9a-fA-F]{3,8})/i));
@@ -8300,12 +8419,10 @@ function _rawReplaceInner(rawStr, elementId, newInner, stripButtons) {
 }
 
 // ══════════════════════════════════════════
-// Save: Download Modal
+// Save: Download Page
 // ══════════════════════════════════════════
 async function saveDownloadModal() {
-    const al        = document.getElementById('dl-alert');
-    const url       = v('dl-url');
-    if (!url) return alert2(al,'لینکی داگرتن پڕ بکەرەوە!','err');
+    const al = document.getElementById('dl-alert');
 
     // Helper: get full innerHTML from RTE if present, else fall back to .value
     function rteVal(id) {
@@ -8316,37 +8433,6 @@ async function saveDownloadModal() {
             ? rte.innerHTML.trim() : inp.value.trim();
     }
 
-    // Helper: strip display-wrapper span added by _rawInnerWithElColor (color is on the element itself)
-    function _stripWrapperSpanDm(val) {
-        if (!val) return val;
-        var m = val.match(/^<span[^>]*style\s*=\s*["'][^"']*color\s*:[^"']*["'][^>]*>([\s\S]*?)<\/span>$/i);
-        return m ? m[1].trim() : val;
-    }
-
-    const headerBtn = rteVal('dm-header-btn-inp');
-    const title     = rteVal('dm-title-inp');
-    const desc      = rteVal('dm-desc-inp');
-    const btnLabel  = rteVal('dm-btn-inp');
-    const directLbl = rteVal('dm-direct-inp');
-    const catDlLbl  = rteVal('dm-cat-dl-inp');
-
-    let next = RAW;
-
-    // Direct replacements via shared utility
-    if (headerBtn) next = _rawReplaceInner(next, 'header-btn-label', headerBtn, false);
-
-    // dm-title: preserve the existing <button id="dm-copy-link-btn"> inside the h2
-    if (title)    next = _rawReplaceInner(next, 'dm-title', title, true);
-
-    if (desc)     next = _rawReplaceInner(next, 'dm-desc', desc, false);
-    if (btnLabel) next = _rawReplaceInner(next, 'dm-btn-label', btnLabel, false);
-    if (directLbl)next = _rawReplaceInner(next, 'dm-direct-label', directLbl, false);
-    if (catDlLbl) next = _rawReplaceInner(next, 'cat-download-btn-label', catDlLbl, false);
-
-    // Download URL is an attribute, not innerHTML — use regex
-    next = next.replace(/(<a id="dm-btn" href=")[^"]*"/, `$1${url}"`);
-
-    // ── CSS color saves for Download Modal ──
     function _swHex(id) {
         var el = document.getElementById(id);
         return el ? (el.dataset.hex || '').replace('#','') : null;
@@ -8356,16 +8442,88 @@ async function saveDownloadModal() {
         return raw.replace(pattern, '$1#' + hex);
     }
 
-    // h2 title (shared with About Modal)
-    next = _cssReplace(next, /(\.modal-content h2\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHex('dm-title-light-color'));
-    next = _cssReplace(next, /(body\.dark-mode\s+\.modal-content h2\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHex('dm-title-dark-color'));
+    const headerBtn        = rteVal('dm-header-btn-inp');
+    const title            = rteVal('dm-title-inp');
+    const introLine        = rteVal('dm-desc-inp');
+    const heroTitle        = rteVal('dm-hero-title-inp');
+    const gdriveH3         = rteVal('dm-btn-inp');
+    const gdriveP          = rteVal('dm-gdrive-p-inp');
+    const url              = rteVal('dl-url');
+    const directH3         = rteVal('dm-direct-inp');
+    const directCardText   = rteVal('dm-direct-card-inp');
+    const directProgress   = rteVal('dm-direct-progress-inp');
+    const directDone       = rteVal('dm-direct-done-inp');
+    const aboutKuHeading   = rteVal('dm-about-ku-heading-inp');
+    const aboutKuP1        = rteVal('dm-about-ku-p1-inp');
+    const aboutKuP2        = rteVal('dm-about-ku-p2-inp');
+    const aboutEnHeading   = rteVal('dm-about-en-heading-inp');
+    const aboutEnP1        = rteVal('dm-about-en-p1-inp');
+    const aboutEnP2        = rteVal('dm-about-en-p2-inp');
+    const backLabel        = rteVal('dm-back-label-inp');
+    const catDlLbl         = rteVal('dm-cat-dl-inp');
 
-    // dm-desc text color
-    next = _cssReplace(next, /(body:not\(\.dark-mode\)\s+#dm-desc\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHex('dm-desc-light-color'));
-    next = _cssReplace(next, /(body\.dark-mode\s+#dm-desc\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i, _swHex('dm-desc-dark-color'));
+    let next = RAW;
+
+    // ── Text content replacements ──
+    if (headerBtn)      next = _rawReplaceInner(next, 'header-btn-label',     headerBtn,      false);
+    if (title)          next = _rawReplaceInner(next, 'dm-title',             title,          true);  // preserve copy-link button
+    if (introLine)      next = _rawReplaceInner(next, 'dls-intro-line',       introLine,      false);
+    if (heroTitle)      next = _rawReplaceInner(next, 'dls-hero-title',       heroTitle,      false);
+    if (gdriveH3)       next = _rawReplaceInner(next, 'dls-gdrive-h3',        gdriveH3,       false);
+    if (gdriveP)        next = _rawReplaceInner(next, 'dls-gdrive-p',         gdriveP,        false);
+    if (directH3)       next = _rawReplaceInner(next, 'dls-direct-h3',        directH3,       false);
+    if (directCardText) next = _rawReplaceInner(next, 'dls-direct-card-text', directCardText, false);
+    if (aboutKuHeading) next = _rawReplaceInner(next, 'dls-about-ku-heading', aboutKuHeading, false);
+    if (aboutKuP1)      next = _rawReplaceInner(next, 'dls-about-ku-p1',      aboutKuP1,      false);
+    if (aboutKuP2)      next = _rawReplaceInner(next, 'dls-about-ku-p2',      aboutKuP2,      false);
+    if (aboutEnHeading) next = _rawReplaceInner(next, 'dls-about-en-heading', aboutEnHeading, false);
+    if (aboutEnP1)      next = _rawReplaceInner(next, 'dls-about-en-p1',      aboutEnP1,      false);
+    if (aboutEnP2)      next = _rawReplaceInner(next, 'dls-about-en-p2',      aboutEnP2,      false);
+    if (backLabel)      next = _rawReplaceInner(next, 'dls-back-label',       backLabel,      false);
+    if (catDlLbl)       next = _rawReplaceInner(next, 'cat-download-btn-label', catDlLbl,     false);
+
+    // ── Google Drive URL — hardcoded in JS, target via admin marker comment ──
+    if (url) {
+        next = next.replace(
+            /(window\.open\(')[^']*(',[^)]*\);\s*\/\/\s*admin:gdrive-url)/,
+            '$1' + url.replace(/'/g, "\\'") + '$2'
+        );
+    }
+
+    // ── Direct card progress/done text — hardcoded in JS, target via admin marker comment ──
+    if (directProgress) {
+        next = next.replace(
+            /(_ct\.textContent\s*=\s*')[^']*('\s*;\s*\}\s*\/\/\s*admin:direct-progress-text)/,
+            '$1' + directProgress.replace(/'/g, "\\'") + '$2'
+        );
+    }
+    if (directDone) {
+        next = next.replace(
+            /(_ctDone\.textContent\s*=\s*')[^']*('\s*;\s*\}\s*\/\/\s*admin:direct-done-text)/,
+            '$1' + directDone.replace(/'/g, "\\'") + '$2'
+        );
+    }
+
+    // ── CSS color saves ──
+    // Page title: light mode
+    next = _cssReplace(next,
+        /(body:not\(\.dark-mode\)\s+#download-section\s+\.dls-title-row\s+h2\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i,
+        _swHex('dm-title-light-color'));
+    // Page title: dark mode
+    next = _cssReplace(next,
+        /(body\.dark-mode\s+#download-section\s+\.dls-title-row\s+h2\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i,
+        _swHex('dm-title-dark-color'));
+    // Intro line: light mode
+    next = _cssReplace(next,
+        /(body:not\(\.dark-mode\)\s+#download-section\s+\.dls-intro-line\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i,
+        _swHex('dm-desc-light-color'));
+    // Intro line: dark mode
+    next = _cssReplace(next,
+        /(body\.dark-mode\s+#download-section\s+\.dls-intro-line\s*\{[^}]*color\s*:\s*)#[0-9a-fA-F]{3,8}/i,
+        _swHex('dm-desc-dark-color'));
 
     alert2(al,'Saving...','inf');
-    const ok = await ghPut(next,'Update: download modal');
+    const ok = await ghPut(next,'Update: download page');
     if (ok) { RAW = next; alert2(al,'✅ سەیڤکرا!','ok'); }
     else alert2(al,'❌ سەیڤ سەرنەکەوت. تۆکێنەکەت بپشکنەوە!','err');
 }
@@ -8739,8 +8897,14 @@ function set(id,val) {
             // Map admin input IDs to index.html element IDs
             var idMap = {
                 'dm-header-btn-inp':'header-btn-label','dm-title-inp':'dm-title',
-                'dm-desc-inp':'dm-desc','dm-btn-inp':'dm-btn-label',
-                'dm-direct-inp':'dm-direct-label','dm-cat-dl-inp':'cat-download-btn-label',
+                'dm-desc-inp':'dls-intro-line','dm-hero-title-inp':'dls-hero-title',
+                'dm-btn-inp':'dls-gdrive-h3','dm-gdrive-p-inp':'dls-gdrive-p',
+                'dm-direct-inp':'dls-direct-h3','dm-direct-card-inp':'dls-direct-card-text',
+                'dm-about-ku-heading-inp':'dls-about-ku-heading',
+                'dm-about-ku-p1-inp':'dls-about-ku-p1','dm-about-ku-p2-inp':'dls-about-ku-p2',
+                'dm-about-en-heading-inp':'dls-about-en-heading',
+                'dm-about-en-p1-inp':'dls-about-en-p1','dm-about-en-p2-inp':'dls-about-en-p2',
+                'dm-back-label-inp':'dls-back-label','dm-cat-dl-inp':'cat-download-btn-label',
                 'about-title-inp':'about-title','about-text':'about-content',
                 'about-features-title-inp':'about-features-title',
                 'about-feat1-text-inp':'about-feat1-text','about-feat2-text-inp':'about-feat2-text',
@@ -8883,7 +9047,7 @@ async function loadHistoricalData() {
         const sizeMB = (totalBytes / 1048576).toFixed(2);
 
         // 3. Flatten — each archive file is [{date, downloads:[], visits:[]}, ...]
-        //    All event types (download, copy_font, copy_category, copy_bulk_modal, search)
+        //    All event types (download, copy_font, copy_category, copy_bulk_modal/copy_bulk_page, search)
         //    are preserved as-is inside the downloads array; visits array holds page visits.
         HIST_DL = [];
         HIST_VT = [];
@@ -9338,8 +9502,8 @@ function renderVisitStats() {
         }
     }
 
-    // ── Virality table (copy_font | copy_category | copy_bulk_modal) ──
-    const viralEvents = DL_DATA.filter(ev => ['copy_font','copy_category','copy_bulk_modal'].includes(ev.event||''));
+    // ── Virality table (copy_font | copy_category | copy_bulk_modal/copy_bulk_page) ──
+    const viralEvents = DL_DATA.filter(ev => ['copy_font','copy_category','copy_bulk_modal','copy_bulk_page'].includes(ev.event||''));
     // Build copy-count per (event+font) pair for "Count of Copy Link" column
     const copyCountMap = {};
     viralEvents.forEach(ev => {
@@ -9363,8 +9527,8 @@ function renderVisitStats() {
         if (!vvSlice.length) {
             vtbody.innerHTML = '<tr><td colspan="10" style="padding:20px;text-align:center;color:var(--muted);">No records found</td></tr>';
         } else {
-            const evtColors = { copy_font: '#74b9ff', copy_category: '#a29bfe', copy_bulk_modal: '#fd79a8' };
-            const evtLabels = { copy_font: '🔗 Font', copy_category: '📁 Category', copy_bulk_modal: '📦 Modal' };
+            const evtColors = { copy_font: '#74b9ff', copy_category: '#a29bfe', copy_bulk_modal: '#fd79a8', copy_bulk_page: '#fd79a8' };
+            const evtLabels = { copy_font: '🔗 Font', copy_category: '📁 Category', copy_bulk_modal: '📦 Modal', copy_bulk_page: '📦 Page' };
 
             // ── AGGREGATION MODE: every sort column except ts groups identical values ──
             const _viralIsAgg = (VIRAL_SORT !== 'ts');
@@ -12127,7 +12291,11 @@ const RTE_IDS=[
   'uq-cfg-visit-tpl','uq-cfg-dl-tpl',
   'uq-cfg-sp-visit-tpl','uq-cfg-sp-dl-tpl',
   // t-modals text fields
-  'dm-header-btn-inp','dm-title-inp','dm-desc-inp','dm-btn-inp','dm-direct-inp','dm-cat-dl-inp',
+  'dm-header-btn-inp','dm-title-inp','dm-desc-inp','dm-hero-title-inp',
+  'dm-btn-inp','dm-gdrive-p-inp','dm-direct-inp','dm-direct-card-inp',
+  'dm-about-ku-heading-inp','dm-about-ku-p1-inp','dm-about-ku-p2-inp',
+  'dm-about-en-heading-inp','dm-about-en-p1-inp','dm-about-en-p2-inp',
+  'dm-back-label-inp','dm-cat-dl-inp',
   'about-title-inp','about-features-title-inp','about-text',
   'about-feat1-text-inp','about-feat2-text-inp','about-feat3-text-inp','about-feat4-text-inp',
   'about-dev-inp','about-launch-inp'
