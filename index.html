@@ -3999,9 +3999,9 @@ body.dark-mode .card-body {
         </header>
 
         <div class="dls-hero-section">
-            <p class="dls-intro-line" id="dls-intro-line">فەرموون لەگەڵ داگرتنی دوایین ئەپدەیتی تەواوی فۆنتەکانی یونی‌قەیدار بە شێوەی فایلی زیپ (ZIP)</p>
+            <p class="dls-intro-line" id="dls-intro-line">فەرموون لەگەڵ داگرتنی دوایین ئەپدەیتی تەواوی فۆنتەکانی یونی‌قەیدار بە شێوەی فایلی زیپ (ZIP). ژمارەی فۆنتەکان لە ئێستادا:</p>
             <span class="dls-font-total" id="dls-font-total">٠</span>
-            <p class="dls-hero-title" id="dls-hero-title">ژمارەی فۆنتەکان لە ئێستادا</p>
+            <p class="dls-hero-title" id="dls-hero-title">فۆنتە</p>
             <div class="dls-hero-divider"></div>
             <p class="dls-last-updated">دوایین ئەپدەیت: <span id="dls-last-updated-date">—</span></p>
         </div>
@@ -4143,7 +4143,7 @@ body.dark-mode .card-body {
     color: var(--dls-accent); display: block; margin-bottom: 10px;
     text-shadow: 0 0 30px rgba(255,87,0,0.3);
 }
-.dls-hero-title { font-size: 1.1rem; font-weight: normal; letter-spacing: 2px; color: #aaa; margin: 0 0 14px; }
+.dls-hero-title { font-size: 1.3rem; font-weight: normal; letter-spacing: 2px; color: #aaa; margin: 0 0 14px; }
 .dls-hero-divider {
     width: 60px; height: 1px;
     background: linear-gradient(90deg, transparent, var(--dls-accent), transparent);
@@ -6624,6 +6624,12 @@ function clearSearchAndReset() {
 
 // ── 🔍 Search button: filters font list by name/displayName/preview ──
 function doSearch() {
+    // If the download page is open, close it first so search results are actually visible
+    var _dsDlSection = document.getElementById('download-section');
+    if (_dsDlSection && _dsDlSection.style.display !== 'none') {
+        closeDownloadPage();
+    }
+
     // If font detail view is active, dismiss it before showing search results
     var _dsDetail = document.getElementById('uq-font-detail-view');
     if (_dsDetail && _dsDetail.classList.contains('active')) {
@@ -8186,6 +8192,9 @@ function closeDownloadPage() {
     } catch(e) {}
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Re-fit the mobile category label, which lost its sizing while the filter bar was hidden
+    setTimeout(fitMobileLabel, 0);
 }
 
 document.getElementById('downloadPageBtn').onclick = function() {
