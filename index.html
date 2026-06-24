@@ -7885,24 +7885,14 @@ function initDownloadSection() {
         uqAnimateDownloadCounter(totalEl, 0, fonts.length, 1400);
     }
 
-    // ── Last-updated date: most recent adminAddedAt across all fonts, falling back to dateAdded ──
+    // ── Last-updated date: most recent dateAdded across all fonts ──
     var dateEl = document.getElementById('dls-last-updated-date');
     if (dateEl && Array.isArray(fonts) && fonts.length) {
-        var latestTs = null;
+        var latestDateStr = null;
         fonts.forEach(function(f) {
-            if (f.adminAddedAt) {
-                var t = new Date(f.adminAddedAt);
-                if (!isNaN(t) && (!latestTs || t > latestTs)) latestTs = t;
-            }
+            if (f.dateAdded && (!latestDateStr || f.dateAdded > latestDateStr)) latestDateStr = f.dateAdded;
         });
-        if (!latestTs) {
-            // Fallback: no adminAddedAt anywhere — use the newest dateAdded string instead
-            var latestDateStr = null;
-            fonts.forEach(function(f) {
-                if (f.dateAdded && (!latestDateStr || f.dateAdded > latestDateStr)) latestDateStr = f.dateAdded;
-            });
-            if (latestDateStr) latestTs = new Date(latestDateStr);
-        }
+        var latestTs = latestDateStr ? new Date(latestDateStr) : null;
         dateEl.textContent = latestTs && !isNaN(latestTs) ? uqFormatEasternArabicDate(latestTs) : '—';
     }
 
