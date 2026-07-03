@@ -5017,7 +5017,7 @@ function renderHtmlTemplate(htmlTpl, value, numColor, numFontSize) {
     }
 
     // Supabase client — primary analytics layer (anon key: INSERT only, no SELECT via RLS)
-    var _supabase = supabase.createClient('https://jmzydiwerjqccjuwegcb.supabase.co', 'sb_publishable_RBfa-lMWdyouPmyawiLIfQ_O_f8fCyo');
+    var _supabase = (typeof supabase !== 'undefined') ? supabase.createClient('https://jmzydiwerjqccjuwegcb.supabase.co', 'sb_publishable_RBfa-lMWdyouPmyawiLIfQ_O_f8fCyo') : null;
 
     // Fetch all data in parallel
     var BASE = 'https://uniqaidar.pages.dev/';
@@ -5028,6 +5028,7 @@ function renderHtmlTemplate(htmlTpl, value, numColor, numFontSize) {
 
     // Fetch today's counts from Supabase (primary); fall back to KV cache:counts silently
     function fetchTodayCounts() {
+        if (!_supabase) { return fetch(BASE + 'api/stats?type=counts').then(function(r){return r.ok?r.json():{ok:false};}).catch(function(){return {ok:false};}); }
         return Promise.all([
             _supabase.from('visits').select('*', { count: 'exact', head: true }).eq('date', todayIQ),
             _supabase.from('downloads').select('*', { count: 'exact', head: true }).eq('date', todayIQ).or('event.is.null,event.eq.download')
@@ -5104,6 +5105,7 @@ function renderHtmlTemplate(htmlTpl, value, numColor, numFontSize) {
                 applyFinalCounts(0, 0);
             } else {
                 // Yesterday not yet archived — fetch it live from Supabase, KV fallback
+                if (!_supabase) { applyFinalCounts(0, 0); return; }
                 Promise.all([
                     _supabase.from('visits').select('*', { count: 'exact', head: true }).eq('date', yesterdayIQ),
                     _supabase.from('downloads').select('*', { count: 'exact', head: true }).eq('date', yesterdayIQ).or('event.is.null,event.eq.download')
@@ -5945,7 +5947,7 @@ var _renderText    = null;  // last text argument passed to renderFonts — reus
     var _uqUrl     = window.location.href;
     var _uqCountry = '';
     var _uqCity    = '';
-    var _supabase  = supabase.createClient('https://jmzydiwerjqccjuwegcb.supabase.co', 'sb_publishable_RBfa-lMWdyouPmyawiLIfQ_O_f8fCyo');
+    var _supabase  = (typeof supabase !== 'undefined') ? supabase.createClient('https://jmzydiwerjqccjuwegcb.supabase.co', 'sb_publishable_RBfa-lMWdyouPmyawiLIfQ_O_f8fCyo') : null;
 
     // Fetch geo once — Cloudflare knows country/city, browser does not
     // Fire-and-forget: if it hasn't returned yet when first event fires,
@@ -5967,6 +5969,7 @@ var _renderText    = null;  // last text argument passed to renderFonts — reus
         try {
             var _t0 = _uqNow();
             var _vtEvent = { date: _t0.date, time: _t0.time, device: _uqDevice, source: _uqSource, url: _uqUrl, country: _uqCountry, city: _uqCity };
+            if (!_supabase) { fetch('/api/visit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(_vtEvent) }).catch(function(){}); return; }
             _supabase.from('visits').insert(_vtEvent, { returning: 'minimal' }).then(function(res) {
                 if (res.error) {
                     // Supabase failed — fall back to KV silently
@@ -5996,6 +5999,7 @@ var _renderText    = null;  // last text argument passed to renderFonts — reus
                 device: _uqDevice, source: _uqSource, url: _uqUrl,
                 event: 'download', country: _uqCountry, city: _uqCity
             };
+            if (!_supabase) { fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(_dlEvent) }).catch(function(){}); return; }
             _supabase.from('downloads').insert(_dlEvent, { returning: 'minimal' }).then(function(res) {
                 if (res.error) {
                     fetch('/api/track', {
@@ -6025,6 +6029,7 @@ var _renderText    = null;  // last text argument passed to renderFonts — reus
                 device: _uqDevice, source: _uqSource, url: _uqUrl,
                 event: eventType, country: _uqCountry, city: _uqCity
             };
+            if (!_supabase) { fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(_veEvent) }).catch(function(){}); return; }
             _supabase.from('downloads').insert(_veEvent, { returning: 'minimal' }).then(function(res) {
                 if (res.error) {
                     fetch('/api/track', {
@@ -6058,6 +6063,7 @@ var _renderText    = null;  // last text argument passed to renderFonts — reus
                     event: 'search', search: query.trim(),
                     country: _uqCountry, city: _uqCity
                 };
+                if (!_supabase) { fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(_srEvent) }).catch(function(){}); return; }
                 _supabase.from('downloads').insert(_srEvent, { returning: 'minimal' }).then(function(res) {
                     if (res.error) {
                         fetch('/api/track', {
