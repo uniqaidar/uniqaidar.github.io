@@ -4223,6 +4223,9 @@ body:not(.dark-mode) #download-section .dls-about-en p { color: #222; }
 body.dark-mode #download-section .dls-last-updated { color: #d0d0d0; }
 body.dark-mode #download-section #dls-last-updated-date { color: #d0d0d0; }
 body.dark-mode #download-section #dls-direct-card-text { color: #ffffff !important; }
+body.dark-mode #download-section .dls-download-card.dls-scanning #dls-direct-card-text { color: #ffffff !important; }
+body.dark-mode #download-section .dls-download-card.dls-scanning i { color: #ffffff !important; }
+body.dark-mode #download-section .dls-download-card.dls-scanning h3 { color: #ffffff !important; }
 body.dark-mode #download-section #dls-card-scan { background: #054d6b; }
 body.dark-mode #download-section #dls-gdrive-p { color: #d0d0d0; }
 /* ── Download nav-header: fixed as soon as download page opens (desktop only) ── */
@@ -7933,6 +7936,8 @@ function initDownloadSection() {
         directCard._dlsWired = true;
         directCard.addEventListener('click', function() {
             directCard.classList.add('dls-scanning');
+            var _scanStart = document.getElementById('dls-card-scan');
+            if (_scanStart) { _scanStart.style.height = '0%'; }
             var _ct = document.getElementById('dls-direct-card-text');
             if (_ct) { _ct.textContent = 'هەموو فۆنتەکان لە ئێستادا دەکرێتە فایلێکی زیپەوە و پێشکەشت دەکرێت. تکایە چاوەڕوان بە'; } // admin:direct-progress-text
             downloadFontsDirectly();
@@ -8518,7 +8523,7 @@ async function downloadFontsDirectly() {
         var _ctDone = document.getElementById('dls-direct-card-text');
         if (_ctDone) { _ctDone.textContent = 'هەموو فۆنتەکانت داونلۆد کرد.. هەر بژی..'; } // admin:direct-done-text
         var _scanDone = document.getElementById('dls-card-scan');
-        if (_scanDone) { _scanDone.style.height = '0%'; _scanDone.style.opacity = '0'; }
+        if (_scanDone) { _scanDone.style.height = '0%'; _scanDone.style.opacity = ''; }
         var _cardDone = document.getElementById('dls-direct-trigger');
         if (_cardDone) { _cardDone.classList.remove('dls-scanning'); }
 
