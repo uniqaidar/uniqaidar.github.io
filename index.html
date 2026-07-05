@@ -4162,10 +4162,10 @@ body.dark-mode .card-body {
     cursor: pointer; position: relative; overflow: hidden;
 }
 .dls-download-card:hover { border-color: var(--dls-accent); transform: translateY(-4px); background: #161616; }
-.dls-download-card i { font-size: 2.5rem; margin-bottom: 20px; display: block; color: var(--dls-muted); transition: color 0.3s; }
+.dls-download-card i { font-size: 2.5rem; margin-bottom: 20px; display: block; color: var(--dls-muted); transition: color 0.3s; position: relative; z-index: 1; }
 .dls-download-card:hover i { color: var(--dls-accent); }
-.dls-download-card h3 { margin: 0 0 8px; font-size: 1.05rem; font-weight: normal; color: #fff; }
-.dls-download-card p { color: var(--dls-muted); font-size: 0.82rem; margin: 0; }
+.dls-download-card h3 { margin: 0 0 8px; font-size: 1.05rem; font-weight: normal; color: #fff; position: relative; z-index: 1; }
+.dls-download-card p { color: var(--dls-muted); font-size: 0.82rem; margin: 0; position: relative; z-index: 1; }
 .dls-scanning-line {
     position: absolute; bottom: 0; left: 0;
     width: 0%; height: 2px;
@@ -4222,6 +4222,7 @@ body:not(.dark-mode) #download-section .dls-about-en p { color: #222; }
 body.dark-mode #download-section .dls-last-updated { color: #d0d0d0; }
 body.dark-mode #download-section #dls-last-updated-date { color: #d0d0d0; }
 body.dark-mode #download-section #dls-direct-card-text { color: #d0d0d0; }
+body.dark-mode #download-section #dls-card-scan { background: rgba(255,87,0,0.07); }
 body.dark-mode #download-section #dls-gdrive-p { color: #d0d0d0; }
 /* ── Download nav-header: fixed as soon as download page opens (desktop only) ── */
 @media (min-width: 651px) {
