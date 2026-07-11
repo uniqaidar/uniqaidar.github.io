@@ -19,7 +19,6 @@
     <!-- ── Open Graph (Facebook, WhatsApp, Telegram, LinkedIn) ── -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="UniQaidar Fonts">
-    <meta name="application-name" content="UniQaidar Fonts">
     <meta property="og:title" content="فۆنتی کوردی فۆنتەکانی یونی قەیدار | Kurdish Font UniQaidar Fonts">
     <meta property="og:description" content="Browse, test, and download over 440+ free Kurdish and Arabic fonts instantly.">
     <meta property="og:url" content="https://uniqaidar.pages.dev/">
@@ -473,8 +472,9 @@ i, .fa, .fas, .fab, .far, .fa-brands, [class*="fa-"] {
 .card-date {
     font-size: 0.63rem;
     color: #555;
-    font-family: monospace;
-    direction: ltr;
+    font-family: 'UniQAIDAR_Peregraf 01', Tahoma, sans-serif;
+    font-weight: normal !important;
+    direction: rtl;
     text-align: center;
 }
 .card-body {
@@ -6106,6 +6106,13 @@ var _renderText    = null;  // last text argument passed to renderFonts — reus
 // data: لیستی فۆنتەکان بۆ نیشاندان (تەواو، پەیجینگ لێرە دەکرێت)
 // text: دەقی تاقیکردنەوە
 // resetPage: ئەگەر true بوو، پەیجەکە دووبارە دەگەڕێتەوە بۆ ١
+function formatKurdishDate(dateStr) {
+    if (!dateStr) return '';
+    var parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    var y = parts[0], m = parseInt(parts[1], 10), d = parseInt(parts[2], 10);
+    return 'بەرواری بڵاوکردنەوە: ' + d + 'ی ' + m + 'ی ' + y;
+}
 function renderFonts(data, text, resetPage) {
     _renderText = (text === undefined) ? null : text;
     if (resetPage) _currentPage = 1;
@@ -6184,7 +6191,7 @@ function renderFonts(data, text, resetPage) {
         card.innerHTML =
             '<div class="card-header">' +
                 '<span class="card-eng-name">' + (isNew ? '<span class="new-badge">نوێ</span>' : '') + engName + '</span>' +
-                (dateStr ? '<span class="card-date">&#128197; ' + dateStr + '</span>' : '') +
+                (dateStr ? '<span class="card-date">' + formatKurdishDate(dateStr) + '</span>' : '') +
             '</div>' +
             '<div class="card-body">' +
                 '<div class="preview" style="font-family: \'' + font.name + '\'; font-size:' + currentSize + 'px; line-height: 2;" data-tw="' + (text || font.preview || 'فۆنتەکانی یونی‌قەیدار').replace(/"/g, '&quot;') + '">' +
@@ -7215,7 +7222,7 @@ function showFontDetailView(fontName, catId) {
             '<div class="card" style="border-radius:16px;overflow:hidden;">' +
                 '<div class="card-header">' +
                     '<span class="card-eng-name">' + (isNew ? '<span class="new-badge">نوێ</span>' : '') + fontObj.name + '</span>' +
-                    (dateStr ? '<span class="card-date">&#128197; ' + dateStr + '</span>' : '') +
+                    (dateStr ? '<span class="card-date">' + formatKurdishDate(dateStr) + '</span>' : '') +
                 '</div>' +
                 '<div class="card-body">' +
                     '<div class="preview" id="uq-detail-preview" style="font-family:\'' + fontObj.name + '\';font-size:' + sliderVal + 'px;line-height:1.5;" data-tw="' + (fontObj.preview || 'فۆنتەکانی یونی‌قەیدار').replace(/"/g, '&quot;') + '">' +
@@ -7322,7 +7329,7 @@ function showFontDetailView(fontName, catId) {
             sfCard.innerHTML =
                 '<div class="card-header">' +
                     '<span class="card-eng-name">' + (sfNew ? '<span class="new-badge">نوێ</span>' : '') + sf.name + '</span>' +
-                    (sfDate ? '<span class="card-date">&#128197; ' + sfDate + '</span>' : '') +
+                    (sfDate ? '<span class="card-date">' + formatKurdishDate(sfDate) + '</span>' : '') +
                 '</div>' +
                 '<div class="card-body">' +
                     '<div class="preview" style="font-family:\'' + sf.name + '\';font-size:' + szVal + 'px;line-height:1.5;" data-tw="' + (sf.preview || 'فۆنتەکانی یونی‌قەیدار').replace(/"/g, '&quot;') + '">' +
