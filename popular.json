@@ -1,8 +1,8 @@
 [
   "UniQAIDAR_Nastaliq 004 Typo",
   "UniQAIDAR_Nastaliq 005 Typo",
-  "UniQAIDAR_Bahar 001",
   "UniQAIDAR_Nastaliq 006",
+  "UniQAIDAR_Bahar 001",
   "UniQAIDAR_Soz 018",
   "UniQAIDAR_BiLaL 092",
   "UniQAIDAR_Blawkrawe 019",
@@ -60,8 +60,8 @@
   "UniQAIDAR_BiLaL 017",
   "UniQAIDAR_BiLaL 077",
   "UniQAIDAR_BiLaL 026",
-  "UniQAIDAR_Afarin_003",
   "UniQAIDAR_AKSamik 001",
+  "UniQAIDAR_Afarin_003",
   "UniQAIDAR_BiLaL 082",
   "UniQAIDAR_NewsHeadLine 019",
   "UniQAIDAR_Soz 017",
@@ -107,6 +107,6 @@
   "UniQAIDAR_PayamNews",
   "UniQAIDAR_BiLaL 080",
   "UniQAIDAR_BiLaL 021 PY",
-  "UniQAIDAR_Blawkrawe 018",
-  "UniQAIDAR_AKJiddah"
+  "UniQAIDAR_AKJiddah",
+  "UniQAIDAR_Blawkrawe 018"
 ]
